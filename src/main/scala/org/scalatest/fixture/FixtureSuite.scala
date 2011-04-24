@@ -335,11 +335,11 @@ import org.scalatest.Suite._
  *
  *    def testHello(configMap: Map[String, Any]) {
  *      // Use the configMap passed to runTest in the test
- *      assert(configMap.contains("hello")
+ *      assert(configMap.contains("hello"))
  *    }
  *
  *    def testWorld(configMap: Map[String, Any]) {
- *      assert(configMap.contains("world")
+ *      assert(configMap.contains("world"))
  *    }
  *  }
  * </pre>
@@ -348,7 +348,7 @@ import org.scalatest.Suite._
  * Note: because a <code>FixtureSuite</code>'s test methods are invoked with reflection at runtime, there is no good way to
  * create a <code>FixtureSuite</code> containing test methods that take different fixtures. If you find you need to do this,
  * you may want to split your class into multiple <code>FixtureSuite</code>s, each of which contains test methods that take the
- * common <code>Fixture</code> type defined in that class, or use a <a href="MultipleFixtureFunSuite.html"><code>MultipleFixtureFunSuite</code></a>. 
+ * common <code>FixtureParam</code> type defined in that class, or use a <a href="MultipleFixtureFunSuite.html"><code>MultipleFixtureFunSuite</code></a>. 
  * </p>
  *
  * @author Bill Venners

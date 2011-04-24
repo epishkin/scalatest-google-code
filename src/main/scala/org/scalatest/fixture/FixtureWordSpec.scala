@@ -31,11 +31,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * This trait behaves similarly to trait <code>org.scalatest.WordSpec</code>, except that tests may take a fixture object. The type of the
- * fixture object passed is defined by the abstract <code>Fixture</code> type, which is declared as a member of this trait (inherited
+ * fixture object passed is defined by the abstract <code>FixtureParam</code> type, which is declared as a member of this trait (inherited
  * from supertrait <code>FixtureSuite</code>).
  * This trait also inherits the abstract method <code>withFixture</code> from supertrait <code>FixtureSuite</code>. The <code>withFixture</code> method
  * takes a <code>OneArgTest</code>, which is a nested trait defined as a member of supertrait <code>FixtureSuite</code>.
- * <code>OneArgTest</code> has an <code>apply</code> method that takes a <code>Fixture</code>.
+ * <code>OneArgTest</code> has an <code>apply</code> method that takes a <code>FixtureParam</code>.
  * This <code>apply</code> method is responsible for running a test.
  * This trait's <code>runTest</code> method delegates the actual running of each test to <code>withFixture</code>, passing
  * in the test code to run via the <code>OneArgTest</code> argument. The <code>withFixture</code> method (abstract in this trait) is responsible
@@ -47,9 +47,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  * 
  * <ol>
- * <li>define the type of the fixture object by specifying type <code>Fixture</code></li>
+ * <li>define the type of the fixture object by specifying type <code>FixtureParam</code></li>
  * <li>define the <code>withFixture</code> method</li>
- * <li>write tests that take a <code>Fixture</code> (You can also define tests that don't take a <code>Fixture</code>.)</li>
+ * <li>write tests that take a <code>FixtureParam</code> (You can also define tests that don't take a <code>FixtureParam</code>.)</li>
  * </ol>
  *
  * <p>
@@ -341,11 +341,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  *    "The final contrived example" should {
  *      "contain hello" in { configMap =>
  *        // Use the configMap passed to runTest in the test
- *        assert(configMap.contains("hello")
+ *        assert(configMap.contains("hello"))
  *      }
  *
  *      "contain world" in { configMap =>
- *        assert(configMap.contains("world")
+ *        assert(configMap.contains("world"))
  *      }
  *    }
  *  }

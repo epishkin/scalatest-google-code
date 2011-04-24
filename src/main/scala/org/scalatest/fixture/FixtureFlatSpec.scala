@@ -30,11 +30,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * This trait behaves similarly to trait <code>org.scalatest.FlatSpec</code>, except that tests may take a fixture object. The type of the
- * fixture object passed is defined by the abstract <code>Fixture</code> type, which is declared as a member of this trait (inherited
+ * fixture object passed is defined by the abstract <code>FixtureParam</code> type, which is declared as a member of this trait (inherited
  * from supertrait <code>FixtureSuite</code>).
  * This trait also inherits the abstract method <code>withFixture</code> from supertrait <code>FixtureSuite</code>. The <code>withFixture</code> method
  * takes a <code>OneArgTest</code>, which is a nested trait defined as a member of supertrait <code>FixtureSuite</code>.
- * <code>OneArgTest</code> has an <code>apply</code> method that takes a <code>Fixture</code>.
+ * <code>OneArgTest</code> has an <code>apply</code> method that takes a <code>FixtureParam</code>.
  * This <code>apply</code> method is responsible for running a test.
  * This trait's <code>runTest</code> method delegates the actual running of each test to <code>withFixture</code>, passing
  * in the test code to run via the <code>OneArgTest</code> argument. The <code>withFixture</code> method (abstract in this trait) is responsible
@@ -46,9 +46,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  * 
  * <ol>
- * <li>define the type of the fixture object by specifying type <code>Fixture</code></li>
+ * <li>define the type of the fixture object by specifying type <code>FixtureParam</code></li>
  * <li>define the <code>withFixture</code> method</li>
- * <li>write tests that take a <code>Fixture</code> (You can also define tests that don't take a <code>Fixture</code>.)</li>
+ * <li>write tests that take a <code>FixtureParam</code> (You can also define tests that don't take a <code>FixtureParam</code>.)</li>
  * </ol>
  *
  * <p>
@@ -329,11 +329,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *    it should "contain hello" in { configMap =>
  *      // Use the configMap passed to runTest in the test
- *      assert(configMap.contains("hello")
+ *      assert(configMap.contains("hello"))
  *    }
  *
  *    it should "contain world" in { configMap =>
- *      assert(configMap.contains("world")
+ *      assert(configMap.contains("world"))
  *    }
  *  }
  * </pre>
@@ -509,7 +509,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
 
     /**
-     * Supports the registration of tagged, one-arg tests (tests that take a <code>Fixture</code> object as a parameter) in a <code>FixtureFlatSpec</code>.
+     * Supports the registration of tagged, one-arg tests (tests that take a <code>FixtureParam</code> object as a parameter) in a <code>FixtureFlatSpec</code>.
      *
      * <p>
      * This method supports syntax such as the following:
@@ -574,7 +574,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
 
     /**
-     * Supports the registration of ignored, tagged, one-arg tests (tests that take a <code>Fixture</code> object
+     * Supports the registration of ignored, tagged, one-arg tests (tests that take a <code>FixtureParam</code> object
      * as a parameter) in a <code>FixtureFlatSpec</code>.
      *
      * <p>
@@ -665,7 +665,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
 
     /**
-     * Supports the registration of one-arg tests (tests that take a <code>Fixture</code> object as a parameter) in a <code>FixtureFlatSpec</code>.
+     * Supports the registration of one-arg tests (tests that take a <code>FixtureParam</code> object as a parameter) in a <code>FixtureFlatSpec</code>.
      *
      * <p>
      * This method supports syntax such as the following:
@@ -728,7 +728,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
 
     /**
-     * Supports the registration of ignored one-arg tests (tests that take a <code>Fixture</code> object as a parameter) in a <code>FixtureFlatSpec</code>.
+     * Supports the registration of ignored one-arg tests (tests that take a <code>FixtureParam</code> object as a parameter) in a <code>FixtureFlatSpec</code>.
      *
      * <p>
      * This method supports syntax such as the following:
@@ -1002,7 +1002,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
 
     /**
-     * Supports the registration of ignored, tagged, one-arg tests (tests that take a <code>Fixture</code> object as a parameter)
+     * Supports the registration of ignored, tagged, one-arg tests (tests that take a <code>FixtureParam</code> object as a parameter)
      * in a <code>FixtureFlatSpec</code>.
      *
      * <p>
@@ -1121,7 +1121,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
      
     /**
-     * Supports the registration of ignored, one-arg tests (tests that take a <code>Fixture</code> object
+     * Supports the registration of ignored, one-arg tests (tests that take a <code>FixtureParam</code> object
      * as a parameter) in a <code>FixtureFlatSpec</code>.
      *
      * <p>
@@ -1322,7 +1322,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>FixtureFlatSpec</code>.
    * A <code>FixtureFlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
    * test function and another that takes a one-arg test function (a test that takes a
-   * <code>Fixture</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
+   * <code>FixtureParam</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
    * only one <code>in</code> method that takes a by-name parameter. As a result,
    * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> each provide an implicit conversion
    * from <code>ResultOfStringPassedToVerb</code> to a type that provides the appropriate
@@ -1379,7 +1379,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
 
     /**
-     * Supports the registration of one-arg tests (tests that take a <code>Fixture</code> parameter) in shorthand form.
+     * Supports the registration of one-arg tests (tests that take a <code>FixtureParam</code> parameter) in shorthand form.
      *
      * <p>
      * This method supports syntax such as the following:
@@ -1400,7 +1400,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
 
     /**
-     * Supports the registration of ignored, one-arg tests (tests that take a <code>Fixture</code> parameter) in shorthand form.
+     * Supports the registration of ignored, one-arg tests (tests that take a <code>FixtureParam</code> parameter) in shorthand form.
      *
      * <p>
      * This method supports syntax such as the following:
@@ -1459,7 +1459,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>FixtureFlatSpec</code>.
    * A <code>FixtureFlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
    * test function and another that takes a one-arg test function (a test that takes a
-   * <code>Fixture</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
+   * <code>FixtureParam</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
    * only one <code>in</code> method that takes a by-name parameter. As a result,
    * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> each provide an implicit conversion
    * from <code>ResultOfTaggedAsInvocation</code> to a type that provides the appropriate
@@ -1519,7 +1519,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
 
     /**
-     * Supports the registration of tagged, one-arg tests (tests that take a <code>Fixture</code> parameter) in shorthand form.
+     * Supports the registration of tagged, one-arg tests (tests that take a <code>FixtureParam</code> parameter) in shorthand form.
      *
      * <p>
      * This method supports syntax such as the following:
@@ -1540,7 +1540,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
 
     /**
-     * Supports the registration of tagged, ignored, one-arg tests (tests that take a <code>Fixture</code> parameter) in shorthand form.
+     * Supports the registration of tagged, ignored, one-arg tests (tests that take a <code>FixtureParam</code> parameter) in shorthand form.
      *
      * <p>
      * This method supports syntax such as the following:
