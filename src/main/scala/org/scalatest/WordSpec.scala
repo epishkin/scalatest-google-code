@@ -884,7 +884,6 @@ import Suite.anErrorThatShouldCauseAnAbort
  *       behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
  *       behave like nonFullStack(stackWithOneItem)
  *     }
- *
  *     
  *     "it contains one item less than capacity" should {
  *       behave like nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed)
@@ -949,7 +948,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime
  * complaining that multiple tests are being registered with the same test name. A good way to solve this problem in a <code>WordSpec</code> is to make sure
  * each invocation of a behavior function is in the context of a different surrounding <code>when</code>, 
- * <code>should</code>/<code>must</code>/<code>can</code>, or <code>that</code> clause, because a tests name is the concatenation of its
+ * <code>should</code>/<code>must</code>/<code>can</code>, or <code>that</code> clause, because a test's name is the concatenation of its
  * surrounding clauses and after words, followed by the "spec text".
  * For example, the following code in a <code>WordSpec</code> would register a test with the name <code>"A Stack when empty should be empty"</code>:
  * </p>
