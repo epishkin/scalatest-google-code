@@ -49,12 +49,12 @@ import org.scalatest._
  * class MyFeatureSpec extends MultipleFixtureFeatureSpec {
  * 
  *   // The "with-fixture" method for tests that take a String fixture
- *   implicit def withStringFixture(testFunction: String => Unit): FixtureParam => Unit =
- *     testFunction("howdy")
+ *   implicit def withStringFixture(testFun: String => Unit): FixtureParam => Unit =
+ *     configMap => testFun("howdy")
  * 
  *   // The "with-fixture" method for tests that take a List[Int] fixture
- *   implicit def withListFixture(testFunction: List[Int] => Unit): FixtureParam => Unit =
- *     configMap => testFunction(List(configMap.size))
+ *   implicit def withListFixture(testFun: List[Int] => Unit): FixtureParam => Unit =
+ *     configMap => testFun(List(configMap.size))
  * 
  *   // A test that takes a String fixture
  *   scenario("takes a string fixture") { (s: String) =>
@@ -79,27 +79,19 @@ import org.scalatest._
  * </p>
  *
  * <pre>
- * implicit def withStringFixture(testFunction: String => Unit): FixtureParam => Unit =
- *   testFunction("howdy")
+ * implicit def withStringFixture(testFun: String => Unit): FixtureParam => Unit =
+ *   configMap => testFun("howdy")
  * </pre>
  * 
  * <p>
- * Although the result type of this implicit conversion method is <code>FixtureParam => Unit</code>, if a fixture doesn't need anything
- * from the <code>configMap</code>, you can leave off the <code>configMap =></code> at the beginning of the result function. The
- * reason this works is that <code>MultipleFixtureFeatureSpec</code> inherits an implicit conversion from a by-name parameter to
- * <code>FixtureParam => Unit</code> from supertrait <code>FixtureFeatureSpec</code>. This implicit conversion is used to enable 
- * tests that take no fixture (such as the one named <code>takes no fixture</code> in this example) to be included in the
- * same class as tests that take type <code>Fixture</code>. That same implicit conversion is used here to allow you to leave off
- * the <code>configMap =></code> except when you actually need something from the <code>configMap</code>. By leaving it off, you
- * indicte to readers of the code that this fixture doesn't require anything from the <code>configMap</code>.
+ * Although the string fixture doesn't need anything from the config map, you still need the <code>configMap =></code> at
+ * the beginning of the result function to get the expression to type check.
  * </p>
  *
  * <p>
  * The next method in this class, <code>withListFixture</code>, is the implicit conversion function for tests that take a
  * fixture of type <code>List[Int]</code>.  In this contrived example, a <code>List[Int]</code> that contains one element, the
- * size of the <code>configMap</code>, is passed to the test function. Because the fixture uses the <code>configMap</code>,
- * it has an explicit <code>configMap =></code> parameter at the beginning of the result. (Remember, the <code>Fixture</code>
- * type is defined to be <code>Map[String, Any]</code>, the type of the <code>configMap</code>, in supertrait <code>ConfigMapFixture</code>.
+ * size of the <code>configMap</code>, is passed to the test function. 
  * </p>
  *
  * <p>
