@@ -26,6 +26,336 @@ import java.util.ConcurrentModificationException
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
 
+/**
+ * A sister trait to <code>org.scalatest.FreeSpec</code> that can pass a fixture object into its tests.
+ *
+ * <p>
+ * This trait behaves similarly to trait <code>org.scalatest.FreeSpec</code>, except that tests may take a fixture object. The type of the
+ * fixture object passed is defined by the abstract <code>FixtureParam</code> type, which is declared as a member of this trait (inherited
+ * from supertrait <code>FixtureSuite</code>).
+ * This trait also inherits the abstract method <code>withFixture</code> from supertrait <code>FixtureSuite</code>. The <code>withFixture</code> method
+ * takes a <code>OneArgTest</code>, which is a nested trait defined as a member of supertrait <code>FixtureSuite</code>.
+ * <code>OneArgTest</code> has an <code>apply</code> method that takes a <code>FixtureParam</code>.
+ * This <code>apply</code> method is responsible for running a test.
+ * This trait's <code>runTest</code> method delegates the actual running of each test to <code>withFixture</code>, passing
+ * in the test code to run via the <code>OneArgTest</code> argument. The <code>withFixture</code> method (abstract in this trait) is responsible
+ * for creating the fixture and passing it to the test function.
+ * </p>
+ * 
+ * <p>
+ * Subclasses of this trait must, therefore, do three things differently from a plain old <code>org.scalatest.FreeSpec</code>:
+ * </p>
+ * 
+ * <ol>
+ * <li>define the type of the fixture object by specifying type <code>FixtureParam</code></li>
+ * <li>define the <code>withFixture</code> method</li>
+ * <li>write tests that take a <code>FixtureParam</code> (You can also define tests that don't take a <code>FixtureParam</code>.)</li>
+ * </ol>
+ *
+ * <p>
+ * Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture.FixtureFreeSpec
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MyFreeSpec extends FixtureFreeSpec {
+ *
+ *   // 1. define type FixtureParam
+ *   type FixtureParam = FileReader
+ *
+ *   // 2. define the withFixture method
+ *   def withFixture(test: OneArgTest) {
+ *
+ *     val FileName = "TempFile.txt"
+ *
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       test(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *   // 3. write tests that take a fixture parameter
+ *   "A contrived example" - {
+ *     "should read from the temp file" in { reader =>
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
+ *       }
+ *       assert(builder.toString === "Hello, test!")
+ *     }
+ * 
+ *     "should read the first char of the temp file" in { reader =>
+ *       assert(reader.read() === 'H')
+ *     }
+ * 
+ *     // (You can also write tests that don't take a fixture parameter.)
+ *     "should not be required" in { () =>
+ *       assert(1 + 1 === 2)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If the fixture you want to pass into your tests consists of multiple objects, you will need to combine
+ * them into one object to use this trait. One good approach to passing multiple fixture objects is
+ * to encapsulate them in a tuple. Here's an example that takes the tuple approach:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture.FixtureFreeSpec
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class MyFreeSpec extends FixtureFreeSpec {
+ *
+ *   type FixtureParam = (StringBuilder, ListBuffer[String])
+ *
+ *   def withFixture(test: OneArgTest) {
+ *
+ *     // Create needed mutable objects
+ *     val stringBuilder = new StringBuilder("ScalaTest is ")
+ *     val listBuffer = new ListBuffer[String]
+ *
+ *     // Invoke the test function, passing in the mutable objects
+ *     test(stringBuilder, listBuffer)
+ *   }
+ *
+ *   "Another contrived example" - {
+ *     "should mutate shared fixture objects" in { fixture =>
+ *       val (builder, buffer) = fixture
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
+ *
+ *     "should get a fresh set of mutable fixture objects" in { fixture =>
+ *       val (builder, buffer) = fixture
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * When using a tuple to pass multiple fixture objects, it is usually helpful to give names to each
+ * individual object in the tuple with a pattern-match assignment, as is done at the beginning
+ * of each test here with:
+ * </p>
+ *
+ * <pre>
+ * val (builder, buffer) = fixture
+ * </pre>
+ *
+ * <p>
+ * Another good approach to passing multiple fixture objects is
+ * to encapsulate them in a case class. Here's an example that takes the case class approach:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture.FixtureFreeSpec
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class MyFreeSpec extends FixtureFreeSpec {
+ *
+ *   case class FixtureHolder(builder: StringBuilder, buffer: ListBuffer[String])
+ *
+ *   type FixtureParam = FixtureHolder
+ *
+ *   def withFixture(test: OneArgTest) {
+ *
+ *     // Create needed mutable objects
+ *     val stringBuilder = new StringBuilder("ScalaTest is ")
+ *     val listBuffer = new ListBuffer[String]
+ *
+ *     // Invoke the test function, passing in the mutable objects
+ *     test(FixtureHolder(stringBuilder, listBuffer))
+ *   }
+ *
+ *   "Another contrived example" - {
+ *     "should mutate shared fixture objects" in { fixture =>
+ *       import fixture._
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
+ *
+ *     "should get a fresh set of mutable fixture objects" in { fixture =>
+ *       fixture.builder.append("fun!")
+ *       assert(fixture.builder.toString === "ScalaTest is fun!")
+ *       assert(fixture.buffer.isEmpty)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * When using a case class to pass multiple fixture objects, it can be helpful to make the names of each
+ * individual object available as a single identifier with an import statement. This is the approach
+ * taken by the <code>testEasy</code> method in the previous example. Because it imports the members
+ * of the fixture object, the test code can just use them as unqualified identifiers:
+ * </p>
+ *
+ * <pre>
+ * "mutate shared fixture objects" in { fixture =>
+ *   import fixture._
+ *   builder.append("easy!")
+ *   assert(builder.toString === "ScalaTest is easy!")
+ *   assert(buffer.isEmpty)
+ *   buffer += "sweet"
+ * }
+ * </pre>
+ *
+ * <p>
+ * Alternatively, you may sometimes prefer to qualify each use of a fixture object with the name
+ * of the fixture parameter. This approach, taken by the <code>testFun</code> method in the previous
+ * example, makes it more obvious which variables in your test 
+ * are part of the passed-in fixture:
+ * </p>
+ *
+ * <pre>
+ * "get a fresh set of mutable fixture objects" in { fixture =>
+ *   fixture.builder.append("fun!")
+ *   assert(fixture.builder.toString === "ScalaTest is fun!")
+ *   assert(fixture.buffer.isEmpty)
+ * }
+ * </pre>
+ *
+ * <h2>Configuring fixtures and tests</h2>
+ * 
+ * <p>
+ * Sometimes you may want to write tests that are configurable. For example, you may want to write
+ * a suite of tests that each take an open temp file as a fixture, but whose file name is specified
+ * externally so that the file name can be can be changed from run to run. To accomplish this
+ * the <code>OneArgTest</code> trait has a <code>configMap</code>
+ * method, which will return a <code>Map[String, Any]</code> from which configuration information may be obtained.
+ * The <code>runTest</code> method of this trait will pass a <code>OneArgTest</code> to <code>withFixture</code>
+ * whose <code>configMap</code> method returns the <code>configMap</code> passed to <code>runTest</code>.
+ * Here's an example in which the name of a temp file is taken from the passed <code>configMap</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture.FixtureFreeSpec
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MyFreeSpec extends FixtureFreeSpec {
+ *
+ *   type FixtureParam = FileReader
+ *
+ *   def withFixture(test: OneArgTest) {
+ *
+ *     require(
+ *       test.configMap.contains("TempFileName"),
+ *       "This suite requires a TempFileName to be passed in the configMap"
+ *     )
+ *
+ *     // Grab the file name from the configMap
+ *     val FileName = test.configMap("TempFileName").asInstanceOf[String]
+ *
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       test(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *   "A contrived example" - {
+ *     "should read from the temp file" in { reader =>
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
+ *       }
+ *       assert(builder.toString === "Hello, test!")
+ *     }
+ * 
+ *     "should read the first char of the temp file" in { reader =>
+ *       assert(reader.read() === 'H')
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you want to pass into each test the entire <code>configMap</code> that was passed to <code>runTest</code>, you 
+ * can mix in trait <code>ConfigMapFixture</code>. See the <a href="ConfigMapFixture.html">documentation
+ * for <code>ConfigMapFixture</code></a> for the details, but here's a quick
+ * example of how it looks:
+ * </p>
+ *
+ * <pre>
+ *  import org.scalatest.fixture.FixtureFreeSpec
+ *  import org.scalatest.fixture.ConfigMapFixture
+ *
+ *  class MyFreeSpec extends FixtureFreeSpec with ConfigMapFixture {
+ *
+ *    "The final contrived example" - {
+ *      "should contain hello" in { configMap =>
+ *        // Use the configMap passed to runTest in the test
+ *        assert(configMap.contains("hello"))
+ *      }
+ *
+ *      "should contain world" in { configMap =>
+ *        assert(configMap.contains("world"))
+ *      }
+ *    }
+ *  }
+ * </pre>
+ *
+ * <p>
+ * <code>ConfigMapFixture</code> can also be used to facilitate writing <code>FixtureFreeSpec</code>s that include tests
+ * that take different fixture types. See the documentation for <a href="MultipleFixtureFreeSpec.html"><code>MultipleFixtureFreeSpec</code></a> for more information.
+ * </p>
+ *
+ * @author Bill Venners
+ */
 trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
 
   private final val engine = new FixtureEngine[FixtureParam]("concurrentFixtureFreeSpecMod", "FixtureFreeSpec")
