@@ -272,7 +272,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     )
  *
  *     // Grab the file name from the configMap
- *     val FileName = test.configMap("TempFileName")
+ *     val FileName = test.configMap("TempFileName").asInstanceOf[String]
  *
  *     // Set up the temp file needed by the test
  *     val writer = new FileWriter(FileName)

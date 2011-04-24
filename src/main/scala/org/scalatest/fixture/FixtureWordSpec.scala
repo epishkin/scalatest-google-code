@@ -113,10 +113,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  * 
  *     // (You can also write tests that don't take a fixture parameter.)
- *     "not be required" in {
- *       without fixture {
- *         assert(1 + 1 === 2)
- *       }
+ *     "not be required" in { () =>
+ *       assert(1 + 1 === 2)
  *     }
  *   }
  * }
@@ -281,7 +279,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     )
  *
  *     // Grab the file name from the configMap
- *     val FileName = test.configMap("TempFileName")
+ *     val FileName = test.configMap("TempFileName").asInstanceOf[String]
  *
  *     // Set up the temp file needed by the test
  *     val writer = new FileWriter(FileName)

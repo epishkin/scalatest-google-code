@@ -115,10 +115,8 @@ import org.scalatest.Suite._
  *   }
  * 
  *   // (You can also write tests methods that don't take a fixture parameter.)
- *   def testWithoutAFixture() { 
- *     without fixture {
- *       assert(1 + 1 === 2)
- *     }
+ *   def testWithoutAFixture() {
+ *     assert(1 + 1 === 2)
  *   }
  * }
  * </pre>
@@ -278,7 +276,7 @@ import org.scalatest.Suite._
  *     )
  *
  *     // Grab the file name from the configMap
- *     val FileName = test.configMap("TempFileName")
+ *     val FileName = test.configMap("TempFileName").asInstanceOf[String]
  *
  *     // Set up the temp file needed by the test
  *     val writer = new FileWriter(FileName)
