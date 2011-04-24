@@ -64,6 +64,14 @@ class Specs(specsToNest: Suite*) extends Suite {
 /**
  * Companion object to class <code>Specs</code> that offers an <code>apply</code> factory method
  * for creating a <code>Specs</code> instance.
+ *
+ * <p>
+ * One use case for this object is to run multiple specification-style suites in the Scala interpreter, like this:
+ * </p>
+ *
+ * <pre>
+ * scala> Specs(new MyFirstSpec, new MyNextSpec).execute()
+ * </pre>
  */
 object Specs {
 

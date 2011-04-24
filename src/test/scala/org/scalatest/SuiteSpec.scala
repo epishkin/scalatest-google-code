@@ -601,6 +601,18 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
         }
       }
     }
+    it("should, when a test methods takes an Informer and writes to it, report the info after the test completion event") {
+      val msg = "hi there dude"
+      class MySuite extends Suite {
+        def testWithInformer(info: Informer) {
+          info(msg)
+        }
+      }
+      val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
+        getIndexesForInformerEventOrderTests(new MySuite, "testWithInformer(Informer)", msg)
+      assert(testStartingIndex < testSucceededIndex)
+      assert(testSucceededIndex < infoProvidedIndex)
+    }
   }
   describe("the stopper") {
     it("should stop nested suites from being executed") {

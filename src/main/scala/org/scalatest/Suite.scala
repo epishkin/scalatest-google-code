@@ -1588,8 +1588,14 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
 
     val formatter = getIndentedText(testName, 1, true)
 
+    val informerForThisTest =
+      MessageRecordingInformer2(
+        (message, isConstructingThread, testWasPending) => reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, isConstructingThread, true, Some(testWasPending))
+      )
+
     val args: Array[Object] =
       if (testMethodTakesAnInformer(testName)) {
+/*
         val informer =
           new Informer {
             def apply(message: String) {
@@ -1598,10 +1604,12 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
               reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, true)
             }
           }
-        Array(informer)  
+*/
+        Array(informerForThisTest)  
       }
       else Array()
 
+    var testWasPending = false
     try {
       val theConfigMap = configMap
       withFixture(
@@ -1620,6 +1628,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
         t match {
           case _: TestPendingException =>
             reportTestPending(this, report, tracker, testName, formatter)
+            testWasPending = true // Set so info's printed out in the finally clause show up yellow
           case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
             handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
@@ -1629,6 +1638,9 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
         val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
       case e => throw e  
+    }
+    finally {
+      informerForThisTest.fireRecordedMessages(testWasPending)
     }
   }
 
