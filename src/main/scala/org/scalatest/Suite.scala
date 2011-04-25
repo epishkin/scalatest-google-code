@@ -1283,40 +1283,172 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
 */
 
   /**
-   * Executes the test specified as <code>testName</code> in this <code>Suite</code> with the specified <code>configMap</code>, printing
-   * results to the standard output.
+   * Executes one or more tests in this <code>Suite</code>, printing results to the standard output.
    *
    * <p>
-   * This method implementation calls <code>run</code> on this <code>Suite</code>, passing in:
+   * This method invokes <code>run</code> on itself, passing in values that can be configured via the parameters to this
+   * method, all of which have default values. This behavior is convenient when working with ScalaTest in the Scala interpreter.
+   * Here's a summary of this method's parameters and how you can use them:
    * </p>
    *
+   * <p>
+   * <strong>The <code>testName</code> parameter</strong>
+   * </p>
+   *
+   * <p>
+   * If you leave <code>testName</code> at its default value (of <code>null</code>), this method will pass <code>None</code> to
+   * the <code>testName</code> parameter of <code>run</code>, and as a result all the tests in this suite will be executed. If you
+   * specify a <code>testName</code>, this method will pass <code>Some(testName)</code> to <code>run</code>, and only that test
+   * will be run. Thus to run all tests in a suite from the Scala interpreter, you can write:
+   * </p>
+   *
+   * <pre>
+   * scala> (new MySuite).execute()
+   * </pre>
+   *
+   * <p>
+   * To run just the test named <code>"my favorite test"</code> in a suite from the Scala interpreter, you would write:
+   * </p>
+   *
+   * <pre>
+   * scala> (new MySuite).execute("my favorite test")
+   * </pre>
+   *
+   * <p>
+   * Or:
+   * </p>
+   *
+   * <pre>
+   * scala> (new MySuite).execute(testName = "my favorite test")
+   * </pre>
+   *
+   * <p>
+   * <strong>The <code>configMap</code> parameter</strong>
+   * </p>
+   *
+   * <p>
+   * If you provide a value for the <code>configMap</code> parameter, this method will pass it to <code>run</code>. If not, the default value
+   * of an empty <code>Map</code> will be passed. For more information on how to use a config map to configure your test suites, see
+   * the <a href="#configMapSection">config map section</a> in the main documentation for this trait. Here's an example in which you configure
+   * a run with the name of an input file:
+   * </p>
+   *
+   * <pre>
+   * scala> (new MySuite).execute(configMap = Map("inputFileName" -> "in.txt")
+   * </pre>
+   *
+   * <p>
+   * <strong>The <code>color</code> parameter</strong>
+   * </p>
+   *
+   * <p>
+   * If you leave the <code>color</code> parameter unspecified, this method will configure the reporter it passes to <code>run</code> to print
+   * to the standard output in color (via ansi escape characters). If you don't want color output, specify false for <code>color</code>, like this:
+   * </p>
+   *
+   * <pre>
+   * scala> (new MySuite).execute(color = false)
+   * </pre>
+   *
+   * <p>
+   * <strong>The <code>durations</code> parameter</strong>
+   * </p>
+   *
+   * <p>
+   * If you leave the <code>durations</code> parameter unspecified, this method will configure the reporter it passes to <code>run</code> to
+   * <em>not</em> print durations for tests and suites to the standard output. If you want durations printed, specify true for <code>durations</code>,
+   * like this:
+   * </p>
+   *
+   * <pre>
+   * scala> (new MySuite).execute(durations = true)
+   * </pre>
+   *
+   * <p>
+   * <strong>The <code>shortStacks</code> and <code>fullStacks</code> parameters</strong>
+   * </p>
+   *
+   * <p>
+   * If you leave both the <code>shortStacks</code> and <code>fullStacks</code> parameters unspecified, this method will configure the reporter
+   * it passes to <code>run</code> to <em>not</em> print stack traces for failed tests if it has a stack depth that identifies the offending
+   * line of test code. If you prefer a short stack trace (10 to 15 stack frames) to be printed with any test failure, specify true for
+   * <code>shortStacks</code>:
+   * </p>
+   *
+   * <pre>
+   * scala> (new MySuite).execute(shortStacks = true)
+   * </pre>
+   *
+   * <p>
+   * For full stack traces, set <code>fullStacks</code> to true:
+   * </p>
+   *
+   * <pre>
+   * scala> (new MySuite).execute(fullStacks = true)
+   * </pre>
+   *
+   * <p>
+   * If you specify true for both <code>shortStacks</code> and <code>fullStacks</code>, you'll get full stack traces.
+   * </p>
+   *
+   * <p>
+   * <strong>The <code>stats</code> parameter</strong>
+   * </p>
+   *
+   * <p>
+   * If you leave the <code>stats</code> parameter unspecified, this method will <em>not</em> fire <code>RunStarting</code> and either <code>RunCompleted</code>
+   * or <code>RunAborted</code> events to the reporter it passes to <code>run</code>.
+   * If you specify true for <code>stats</code>, this method will fire the run events to the reporter, and the reporter will print the
+   * expected test count before the run, and various statistics after, including the number of suites completed and number of tests that
+   * succeeded, failed, were ignored or marked pending. Here's how you get the stats:
+   * </p>
+   *
+   * <pre>
+   * scala> (new MySuite).execute(stats = true)
+   * </pre>
+   *
+   *
+   * <p>
+   * To summarize, this method will pass to <code>run</code>:
+   * </p>
    * <ul>
-   * <li><code>testName</code> - <code>Some(testName)</code></li>
+   * <li><code>testName</code> - <code>None</code> if this method's <code>testName</code> parameter is left at its default value of <code>null</code>, else <code>Some(testName)</code>.
    * <li><code>reporter</code> - a reporter that prints to the standard output</li>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
    * <li><code>filter</code> - a <code>Filter</code> constructed with <code>None</code> for <code>tagsToInclude</code> and <code>Set()</code>
    *   for <code>tagsToExclude</code></li>
-   * <li><code>configMap</code> - the specified <code>configMap</code> <code>Map[String, Any]</code></li>
+   * <li><code>configMap</code> - the <code>configMap</code> passed to this method</li>
    * <li><code>distributor</code> - <code>None</code></li>
    * <li><code>tracker</code> - a new <code>Tracker</code></li>
    * </ul>
    *
    * <p>
-   * This method serves as a convenient way to execute a single test, passing in some objects via the <code>configMap</code>, especially from
-   * within the Scala interpreter.
-   * </p>
-   *
-   * <p>
    * Note:  In ScalaTest, the terms "execute" and "run" basically mean the same thing and
-   * can be used interchangably. The reason this convenience method and its three overloaded forms
-   * aren't named <code>run</code> is described the documentation of the overloaded form that
-   * takes no parameters: <a href="#execute%28%29">execute()</a>.
+   * can be used interchangably. One reason this method isn't named <code>run</code>
+   * is because <code>junit.framework.TestCase</code> declares a <code>run</code> method
+   * that takes no arguments but returns a <code>junit.framework.TestResult</code>. That
+   * <code>run</code> method would not overload with this method if it were named <code>run</code>,
+   * because it would have the same parameters but a different return type than the one
+   * defined in <code>TestCase</code>. To facilitate integration with JUnit 3, therefore,
+   * this "run" method is named <code>execute</code>. In particular, this allows trait
+   * <code>org.scalatest.junit.JUnit3Suite</code> to extend both <code>org.scalatest.Suite</code> and
+   * <code>junit.framework.TestCase</code>, which enables the creating of classes that
+   * can be run with either ScalaTest or JUnit 3, as is done with <code>org.scalatest.junit.JUnit3Suite</code>.
+   * The other reason this method isn't named <code>run</code> is that it takes advantage of
+   * default arguments, and you can't mix overloaded methods and default arguments in Scala. (If named <code>run</code>,
+   * this method would have the same name but different arguments than the main <a href="#run"><code>run</code> method</a> that
+   * takes seven arguments. Thus it would overload and couldn't be used with default argument values.)
    * </p>
    *
    * @param testName the name of one test to run.
    * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param color a boolean that configures whether output is printed in color
+   * @param durations a boolean that configures whether test and suite durations are printed to the standard output
+   * @param shortStacks a boolean that configures whether short stack traces should be printed for test failures
+   * @param fullStacks a boolean that configures whether full stack traces should be printed for test failures
+   * @param stats a boolean that configures whether test and suite statistics are printed to the standard output
    *
-   * @throws NullPointerException if either of the passed <code>testName</code> or <code>configMap</code> parameters is <code>null</code>.
+   * @throws NullPointerException if the passed <code>configMap</code> parameter is <code>null</code>.
    * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
    *     exists in this <code>Suite</code>
    */
@@ -1329,6 +1461,11 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     fullStacks: Boolean = false,
     stats: Boolean = false
   ) {
+    if (configMap == null)
+      throw new NullPointerException("configMap was null")
+    if (testName != null && !testNames.contains(testName))
+      throw new IllegalArgumentException(Resources("testNotFound", testName))
+
     val dispatch = new DispatchReporter(List(new StandardOutReporter(durations, color, shortStacks, fullStacks)))
     val tracker = new Tracker
     val filter = Filter()
