@@ -195,19 +195,6 @@ path&gt; [...]]
  * </p>
  *
  * <p>
- * <strong>Deprecation Note: Prior to 1.0, ScalaTest's <code>Runner</code> allowed you specify configuration parameters on reports that
- * indicated a particular event should be <em>presented</em>. This meant that people could opt to not show
- * test failures, suite aborted events, <em>etc</em>. To prevent important events from being dropped accidentally,
- * starting in 1.0 the configuration parameters indicate which events should <em>not</em> be presented, and important
- * events can't be dropped at all. For two releases,
- * the old config parameters will be tolerated, but have no effect (except for F, which turns on printing of <code>TestFailedException</code>
- * stack traces). Only the new parameters will have any effect,
- * and none of the new ones overlap with any of the old ones. So you have two releases to change your scripts to
- * use the new config parameters. Starting with 1.2, using the old parameters&mdash;Y, Z, T, F, G, U, P, B, I, S, A, R&mdash;will
- * cause <code>Runner</code> to abort with an error message and not run the tests.</strong>
- * </p>
- *
- * <p>
  * The following three reporter configuration parameters may additionally be used on standard output (-o), standard error (-e),
  * and file (-f) reporters: 
  * </p>
@@ -215,11 +202,12 @@ path&gt; [...]]
  * <ul>
  * <li> <code><b>W</b></code> - without color</li>
  * <li> <code><b>D</b></code> - show all durations</li>
- * <li> <code><b>F</b></code> - show <code>TestFailedException</code> stack traces</li>
+ * <li> <code><b>F</b></code> - show short stack traces</li>
+ * <li> <code><b>F</b></code> - show full stack traces</li>
  * </ul>
  *
  * <p>
- * If you specify a W, D, or F for any reporter other than standard output, standard error, or file reporters, <code>Runner</code>
+ * If you specify a W, D, S, or F for any reporter other than standard output, standard error, or file reporters, <code>Runner</code>
  * will complain with an error message and not perform the run.
  * </p>
  *
