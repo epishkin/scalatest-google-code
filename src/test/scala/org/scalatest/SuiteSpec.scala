@@ -766,5 +766,19 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       assert(y.testsExecutedCount === 4)
     }
   }
+  describe("A Suite's execute method") {
+    it("should throw NPE if passed null for configMap") {
+      class MySuite extends Suite
+      intercept[NullPointerException] {
+        (new MySuite).execute(configMap = null)
+      }
+    }
+    it("should throw IAE if a testName is passed that does not exist on the suite") {
+      class MySuite extends Suite
+      intercept[IllegalArgumentException] {
+        (new MySuite).execute(testName = "fred")
+      }
+    }
+  }
 }
 
