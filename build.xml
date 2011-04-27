@@ -651,6 +651,7 @@
         <copy file="deploy.xml" tofile="${build}/pom.xml" overwrite="true">
             <filterset>
                 <filter token="RELEASE" value="${release}" />
+                <filter token="SCALAVERSION" value="${scala.version}" />
             </filterset>
         </copy>
 

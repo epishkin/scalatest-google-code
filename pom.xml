@@ -7,9 +7,9 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>        
   </properties>
-	
+
   <groupId>org.scalatest</groupId>
-  <artifactId>scalatest</artifactId>
+  <artifactId>scalatest_2.8.1</artifactId>
   <version>@RELEASE@</version>
   <packaging>jar</packaging>
   <name>ScalaTest</name>
