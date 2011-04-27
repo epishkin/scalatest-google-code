@@ -290,6 +290,7 @@
         <copy file="${resources}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" overwrite="true">
             <filterset>
                 <filter token="RELEASE" value="${release}" />
+                <filter token="SCALAVERSION" value="${scala.version}" />
             </filterset>
         </copy>
         <copy todir="${jar.contents}/images">
