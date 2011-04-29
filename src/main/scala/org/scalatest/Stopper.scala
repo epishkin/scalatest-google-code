@@ -22,7 +22,7 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-trait Stopper extends (() => Boolean) {
+trait Stopper /* extends (() => Boolean) */ {
 
   /**
    * Indicates whether a stop has been requested.  Call this method
@@ -31,49 +31,34 @@ trait Stopper extends (() => Boolean) {
    * stop requested function. If <code>true</code>,
    * the <code>run</code> method should interrupt its work and simply return.
    */
-  override def apply() = false
+  def apply() = false
 }
-// One question people will have is do I make this a val or a def in the supertype.
-// A val can override a def. Can it be the other way around? How does he implement
-// this?
 
-/*
-   Could make this a function too. Would simply be () => Boolean. Could name the parameter stopRequested
-  
-   Then the code would be:
+/**
+ * Companion object to Stopper that holds a deprecated implicit conversion.
+ */
+object Stopper {
 
-   if (stopRequested()) {
-     // bla bla bla
-   }
-
-   Instead of:
-
-   if (stopper.stopRequested) {
-     // bla bla bla
-   }
-
-   Could call it StopRequestedFunction instead of Stopper
-   stopRequested: StopRequestedFunction
-
-   Or could just not give it a name so they'd write:
-   stopRequested: () => Boolean
-
-   Blech. Could also use StopRequestedFun
-   stopRequested: StopRequestedFun
-
-  Or just, StopRequested
-  stopRequested: StopRequested
-
-  StopRequested, Distribute, Report (hmm. deprecation is a problem here), Filter
-  StopRequestedFun, DistributeFun, ReportFun, FilterFun
-
-  Honestly, I kind of like: StopRequested, Distribute, Filter, and Report (problem with these latter two is they pass as nouns too, and in the case of Report that's misleading)
-
-  StopRequestedFunction, DistributeFunction, ReportFunction, FilterFunction
-  testName: Option[String], report: ReportFunction, stopRequested: StopRequestedFunction, filter: FilterFunction, configMap: Map[String, Set[String]], distribute: Option[DistributeFunction]
-
-  I think that latter is the most clear.
-*/
-
-
-
+  /**
+   * Converts a <code>Stopper</code> to a function type that prior to the ScalaTest 1.5 release the
+   * <code>Stopper</code> extended.
+   *
+   * <p>
+   * Prior to ScalaTest 1.5, <code>Stopper</code> extended function type <code>() => Boolean</code>.
+   * This inheritance relationship was severed in 1.5 to make it possible to implement <code>Stopper</code>s in Java, a request by an IDE
+   * vendor to isolate their ScalaTest integration from binary incompatibility between different Scala/ScalaTest releases.
+   * To make a trait easily implementable in Java, it needs to have no concrete methods. <code>Stopper</code> itself does not declare
+   * any concrete methods, but <code>() => Boolean</code> does.
+   * </p>
+   *
+   * <p>
+   * This implicit conversion was added in ScalaTest 1.5 to avoid breaking any source code that was actually using
+   * <code>Stopper</code> as an <code>() => Boolean</code> function. It is unlikely anyone was actually doing that, but if you were
+   * and now get the deprecation warning, please email scalatest-users@googlegroups.com if you believe this implicit conversion should
+   * be retained. If no one steps forward with a compelling justification, it will be removed in a future version of ScalaTest.
+   * </p>
+   */
+  @deprecated("See the documentation for Stopper.convertStopperToFunction for information")
+  implicit def convertStopperToFunction(stopper: Stopper): () => Boolean =
+    () => stopper()
+}

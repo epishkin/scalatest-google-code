@@ -36,7 +36,7 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-trait Distributor extends ((Suite, Tracker) => Unit) {
+trait Distributor /* extends ((Suite, Tracker) => Unit) */ {
 
   /**
    * Puts a <code>Suite</code> into the <code>Distributor</code>.
@@ -46,5 +46,34 @@ trait Distributor extends ((Suite, Tracker) => Unit) {
    *
    * @throws NullPointerException if either <code>suite</code> or <code>tracker</code> is <code>null</code>.
    */
-  override def apply(suite: Suite, tracker: Tracker)
+  def apply(suite: Suite, tracker: Tracker)
+}
+
+/**
+ * Companion object to Distributor that holds a deprecated implicit conversion.
+ */
+object Distributor {
+
+  /**
+   * Converts a <code>Distributor</code> to a function type that prior to the ScalaTest 1.5 release the
+   * <code>Distributor</code> extended.
+   *
+   * <p>
+   * Prior to ScalaTest 1.5, <code>Distributor</code> extended function type <code>(Suite, Tracker) => Unit</code>.
+   * This inheritance relationship was severed in 1.5 to make it possible to implement <code>Distributor</code>s in Java, a request by an IDE
+   * vendor to isolate their ScalaTest integration from binary incompatibility between different Scala/ScalaTest releases.
+   * To make a trait easily implementable in Java, it needs to have no concrete methods. <code>Distributor</code> itself does not declare
+   * any concrete methods, but <code>(Suite, Tracker) => Unit</code> does.
+   * </p>
+   *
+   * <p>
+   * This implicit conversion was added in ScalaTest 1.5 to avoid breaking any source code that was actually using
+   * <code>Distributor</code> as an <code>(Suite, Tracker) => Unit</code> function. It is unlikely anyone was actually doing that, but if you were
+   * and now get the deprecation warning, please email scalatest-users@googlegroups.com if you believe this implicit conversion should
+   * be retained. If no one steps forward with a compelling justification, it will be removed in a future version of ScalaTest.
+   * </p>
+   */
+  @deprecated("See the documentation for Distributor.convertDistributorToFunction for information")
+  implicit def convertDistributorToFunction(distributor: Distributor): (Suite, Tracker) => Unit =
+    (suite: Suite, tracker: Tracker) => distributor(suite, tracker)
 }
