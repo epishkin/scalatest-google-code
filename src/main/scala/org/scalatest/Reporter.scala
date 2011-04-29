@@ -104,7 +104,7 @@ import org.scalatest.events.Event
  *
  * @author Bill Venners
  */
-trait Reporter extends (Event => Unit) {
+trait Reporter /* extends (Event => Unit) */ {
 
   /**
    * Invoked to report an event that subclasses may wish to report in some way to the user.
@@ -124,7 +124,31 @@ trait Reporter extends (Event => Unit) {
    */
 }
 
-private[scalatest] object Reporter {
+/**
+ * Companion object to Reporter that holds a deprecated implicit conversion.
+ */
+object Reporter {
+
+  /**
+   * Converts a <code>Reporter</code> to a function type that prior to the ScalaTest 1.5 release the
+   * <code>Reporter</code> extended.
+   *
+   * <p>
+   * Prior to ScalaTest 1.5, <code>Reporter</code> extended function type <code>(Event) => Unit</code>. This was done for no good reason, which
+   * turned out, in fact, to not be a good reason. The theory was that since <code>Reporter</code> had the structure of a function, why not
+   * make it one so it could be passed to higher order functions that would accept it, used in for expressions, etc. But there was no such
+   * use case in mind. Later, however, a user did give a good use case for implemnting a <code>Reporter</code> in Java, and becuase it extended
+   * <code>Function1</code>, it was not possible (or easy) to do so. To make a trait easily implementable in Java, it needs to have no implemented
+   * methods. <code>Reporter</code> itself did not declare any concrete methods, but <code>Function1</code> does. So this implicit conversion
+   * was added in ScalaTest 1.5 to avoid breaking any source code that was actually using <code>Reporter</code> as an <code>(Event) => Unit</code>
+   * function. It is unlikely anyone was actually doing that, but if you were and now get the deprecation warning, email scalatest-users@googlegroups.com
+   * to make the case for which this implicit conversion should be retained. If no one steps forward with a compelling justification, it will
+   * be removed in a future version of ScalaTest.
+   * </p>
+   */
+  @deprecated("See the documentation for Reporter.convertReporterToFunction for information")
+  implicit def convertReporterToFunction(repo: Reporter): (Event) => Unit =
+    (e: Event) => repo(e)
 
   private[scalatest] def indentStackTrace(stackTrace: String, level: Int): String = {
     val indentation = if (level > 0) "  " * level else ""
