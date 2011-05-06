@@ -33,7 +33,8 @@ class SuitesSpec extends Spec {
         new Suites(a, b, null, d, e)
       }
       intercept[NullPointerException] {
-        new Suites(null: _*)
+        val aNull: Array[Suite] = null
+        new Suites(aNull: _*)
       }
     }
   }
@@ -47,7 +48,8 @@ class SuitesSpec extends Spec {
         new Specs(a, b, null, d, e)
       }
       intercept[NullPointerException] {
-        new Specs(null: _*)
+        val aNull: Array[Suite] = null
+        new Specs(aNull: _*)
       }
     }
   }
