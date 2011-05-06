@@ -1424,17 +1424,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    *
    * <p>
    * Note:  In ScalaTest, the terms "execute" and "run" basically mean the same thing and
-   * can be used interchangably. One reason this method isn't named <code>run</code>
-   * is because <code>junit.framework.TestCase</code> declares a <code>run</code> method
-   * that takes no arguments but returns a <code>junit.framework.TestResult</code>. That
-   * <code>run</code> method would not overload with this method if it were named <code>run</code>,
-   * because it would have the same parameters but a different return type than the one
-   * defined in <code>TestCase</code>. To facilitate integration with JUnit 3, therefore,
-   * this "run" method is named <code>execute</code>. In particular, this allows trait
-   * <code>org.scalatest.junit.JUnit3Suite</code> to extend both <code>org.scalatest.Suite</code> and
-   * <code>junit.framework.TestCase</code>, which enables the creating of classes that
-   * can be run with either ScalaTest or JUnit 3, as is done with <code>org.scalatest.junit.JUnit3Suite</code>.
-   * The other reason this method isn't named <code>run</code> is that it takes advantage of
+   * can be used interchangably. The reason this method isn't named <code>run</code> is that it takes advantage of
    * default arguments, and you can't mix overloaded methods and default arguments in Scala. (If named <code>run</code>,
    * this method would have the same name but different arguments than the main <a href="#run"><code>run</code> method</a> that
    * takes seven arguments. Thus it would overload and couldn't be used with default argument values.)
