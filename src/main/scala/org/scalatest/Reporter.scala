@@ -92,14 +92,13 @@ import org.scalatest.events.Event
  * <h2>Extensibility</h2>
  *
  * <p>
- * You can create classes that extend <code>ReportFunction</code> to report test results in custom ways, and to
+ * You can create classes that extend <code>Reporter</code> to report test results in custom ways, and to
  * report custom information passed as an event "payload." For more information on the latter
  * use case, see the <em>Extensibility</em> section of the <a href="Event.html"><code>Event</code> documentation</a>.
  * </p>
  *
  * <p>
- * Reporter classes can handle events in any manner, including doing nothing.
- * For convenience, trait <code>ReporterFunction</code> includes a default implentation of <code>apply</code> that does nothing.
+ * <code>Reporter</code> classes can handle events in any manner, including doing nothing.
  * </p>
  *
  * @author Bill Venners
