@@ -29,7 +29,7 @@
     <property name="jdoc" value="${build}/jdoc" />
     <property name="zipper" value="zipper" />
     <property name="project.name" value="ScalaTest" />
-    <property name="release" value="1.3" />
+    <property name="release" value="1.4" />
     <property name="demo" value="${build}/demo" />
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
@@ -124,7 +124,7 @@
                 <pathelement location="${classes}" />
                 <pathelement location="${lib}/scala-library.jar" />
                 <pathelement location="${lib}/junit-4.4.jar" />
-                <pathelement location="${lib}/scalacheck_2.8.1-1.8.jar" />
+                <pathelement location="${lib}/scalacheck_2.9.0-1.8.jar" />
                 <pathelement location="${lib}/mockito-all-1.6.jar" />
                 <pathelement location="${lib}/testng-5.7-jdk15.jar" />
                 <pathelement location="${lib}/jmock-2.5.1.jar" />
@@ -158,7 +158,7 @@
     <target name="compile-main" depends="init">
 
         <!-- Compile the Java code from ${javasrc} into ${classes}  Needs to go first because TagAnnotation used in Suite -->
-        <javac srcdir="${javasrc}" destdir="${classes}" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
+        <javac srcdir="${javasrc}" destdir="${classes}" compiler="javac1.5" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
             <include name="org/scalatest/Ignore.java" />
             <include name="org/scalatest/tools/ScalaTestTask.java" />
         </javac>
@@ -183,7 +183,7 @@
         <scalac srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
 
         <!-- Compile the Java code from ${javasrc.test} into ${build.tests} -->
-        <javac srcdir="${javasrc.test}" destdir="${build.tests}" memoryMaximumSize="1500M" fork="true" classpath="${classes}:${lib}/scala-library.jar:${lib}/junit-4.4.jar" debug="yes" />
+        <javac srcdir="${javasrc.test}" destdir="${build.tests}" compiler="javac1.5" memoryMaximumSize="1500M" fork="true" classpath="${classes}:${lib}/scala-library.jar:${lib}/junit-4.4.jar" debug="yes" />
     </target>
 
     <target name="compile-examples" depends="compile-main">
@@ -192,7 +192,7 @@
         <scalac srcdir="${scalasrc.examples}:${javasrc.examples}" destdir="${build.examples}" target="jvm-1.5" classpathref="build.test.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
 
         <!-- Compile the Java code from ${examples} into ${build.examples} -->
-        <javac srcdir="${javasrc.examples}" destdir="${build.examples}" classpath="${classes}:${lib}/easymock-3.0.jar:${lib}/scala-library.jar" debug="yes" />
+        <javac srcdir="${javasrc.examples}" destdir="${build.examples}" compiler="javac1.5" classpath="${classes}:${lib}/easymock-3.0.jar:${lib}/scala-library.jar" debug="yes" />
     </target>
 
     <!-- Compile demo into its own directory. I.e., the class files will sit alongside the java files
@@ -678,7 +678,7 @@
                 <pathelement location="${build.examples}" />
                 <pathelement location="${lib}/scala-library.jar" />
                 <pathelement location="${lib}/junit-4.4.jar" />
-                <pathelement location="${lib}/scalacheck_2.8.1-1.8.jar" />
+                <pathelement location="${lib}/scalacheck_2.9.0-1.8.jar" />
                 <pathelement location="${lib}/mockito-all-1.6.jar" />
                 <pathelement location="${lib}/testng-5.7-jdk15.jar" />
                 <pathelement location="${lib}/jmock-2.5.1.jar" />
