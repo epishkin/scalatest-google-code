@@ -1,4 +1,4 @@
-ScalaTest 1.4
+ScalaTest 1.4.1
 
 ScalaTest is a free, open-source testing toolkit for Scala and
 Java programmers.  Because different developers take different approaches to creating
@@ -13,7 +13,7 @@ GETTING STARTED
 
 To learn how to use ScalaTest, please
 open in your browser the scaladoc documentation in the
-/scalatest-1.4/doc directory. Look first at the documentation for trait
+/scalatest-1.4.1/doc directory. Look first at the documentation for trait
 org.scalatest.Suite, which gives a decent intro. All the other types are
 documented as well, so you can hop around to learn more.
 org.scalatest.tools.Runner explains how to use the application. The
@@ -22,13 +22,13 @@ Ignore class is written in Java, and isn't currently shown in the Scaladoc.
 To try it out, you can use ScalaTest to run its own tests, i.e., the tests
 used to test ScalaTest itself. This command will run the GUI:
 
-scala -classpath scalatest-1.4.jar org.scalatest.tools.Runner -p "scalatest-1.4-tests.jar" -g -s org.scalatest.SuiteSuite
+scala -classpath scalatest-1.4.1.jar org.scalatest.tools.Runner -p "scalatest-1.4.1-tests.jar" -g -s org.scalatest.SuiteSuite
 
 This command will run and just print results to the standard output:
 
-scala -classpath scalatest-1.4.jar org.scalatest.tools.Runner -p "scalatest-1.4-tests.jar" -o -s org.scalatest.SuiteSuite
+scala -classpath scalatest-1.4.1.jar org.scalatest.tools.Runner -p "scalatest-1.4.1-tests.jar" -o -s org.scalatest.SuiteSuite
 
-ScalaTest 1.4 was compile and tested with Scala version 2.9.0, so it is not
+ScalaTest 1.4.1 was compile and tested with Scala version 2.9.0, so it is not
 guaranteed to work with earlier Scala versions.
 
 ABOUT SCALATEST
