@@ -172,7 +172,7 @@
     <target name="compile-main" depends="init, gentables, gengen">
 
         <!-- Compile the Java code from ${javasrc} into ${classes}  Needs to go first because TagAnnotation used in Suite -->
-        <javac srcdir="${javasrc}" destdir="${classes}" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
+        <javac srcdir="${javasrc}" destdir="${classes}" compiler="javac1.5" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
             <include name="org/scalatest/Ignore.java" />
             <include name="org/scalatest/tools/ScalaTestTask.java" />
         </javac>
@@ -195,7 +195,7 @@
         <scalac srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" deprecation="yes" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
 
         <!-- Compile the Java code from ${javasrc.test} into ${build.tests} -->
-        <javac srcdir="${javasrc.test}" destdir="${build.tests}" memoryMaximumSize="2000M" fork="true" classpath="${classes}:${org.scala-lang:scala-library:jar}:${junit:junit:jar}" debug="yes" />
+        <javac srcdir="${javasrc.test}" destdir="${build.tests}" compiler="javac1.5" memoryMaximumSize="2000M" fork="true" classpath="${classes}:${org.scala-lang:scala-library:jar}:${junit:junit:jar}" debug="yes" />
     </target>
 
     <target name="compile-examples" depends="compile-main">
@@ -204,14 +204,14 @@
         <scalac srcdir="${scalasrc.examples}:${javasrc.examples}" destdir="${build.examples}" target="jvm-1.5" classpathref="build.test.class.path" addparams="-no-specialization" deprecation="yes" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
 
         <!-- Compile the Java code from ${examples} into ${build.examples} -->
-        <javac srcdir="${javasrc.examples}" destdir="${build.examples}" classpath="${classes}:${org.easymock:easymock:jar}:${org.scala-lang:scala-library:jar}" debug="yes" />
+        <javac srcdir="${javasrc.examples}" destdir="${build.examples}" compiler="javac1.5" classpath="${classes}:${org.easymock:easymock:jar}:${org.scala-lang:scala-library:jar}" debug="yes" />
     </target>
 
     <!-- Compile demo into its own directory. I.e., the class files will sit alongside the java files
        so that people can more easily look at them. All of these source files are used as demonstrations
        of something, usually described in articles on Artima.com. -->
     <target name="demo" depends="dist">
-        <javac srcdir="${example}" destdir="${example}" classpath="${classes}:${junit:junit:jar}" debug="yes" />
+        <javac srcdir="${example}" destdir="${example}" compiler="javac1.5" classpath="${classes}:${junit:junit:jar}" debug="yes" />
     </target>
 
     <target name="jartests" depends="compile">
