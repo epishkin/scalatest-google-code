@@ -184,6 +184,12 @@
         <!-- Compile the Scala code from ${build.generated.src} into ${classes}. Scalac will parse any referenced .java files. -->
         <scalac srcref="scalac.source.path" destdir="${classes}" target="jvm-1.5" deprecation="yes" classpathref="build.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
 
+       <!-- copy these here not in dist because sometimes I like to do -cp target/jar_contents things, such as REPL sessions -->
+        <copy file="${resources}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
+        <copy todir="${jar.contents}/images">
+            <fileset dir="${images}" />
+        </copy>
+
     </target>
 
     <target name="compile-tests" depends="compile-main">
@@ -241,11 +247,6 @@
         <!-- Create the distribution directory -->
         <mkdir dir="${dist}/lib" />
         <delete file="${dist}/lib/scalatest.jar" />
-
-        <copy file="${resources}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
-        <copy todir="${jar.contents}/images">
-            <fileset dir="${images}" />
-        </copy>
 
         <!-- Put everything in ${jar.contents} into the MyProject-${DSTAMP}.jar file -->
         <jar jarfile="${dist}/lib/scalatest.jar" basedir="${jar.contents}">
