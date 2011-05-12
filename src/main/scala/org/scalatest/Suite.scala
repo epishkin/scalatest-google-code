@@ -1365,30 +1365,30 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * </pre>
    *
    * <p>
-   * <strong>The <code>shortStacks</code> and <code>fullStacks</code> parameters</strong>
+   * <strong>The <code>shortstacks</code> and <code>fullstacks</code> parameters</strong>
    * </p>
    *
    * <p>
-   * If you leave both the <code>shortStacks</code> and <code>fullStacks</code> parameters unspecified, this method will configure the reporter
+   * If you leave both the <code>shortstacks</code> and <code>fullstacks</code> parameters unspecified, this method will configure the reporter
    * it passes to <code>run</code> to <em>not</em> print stack traces for failed tests if it has a stack depth that identifies the offending
    * line of test code. If you prefer a short stack trace (10 to 15 stack frames) to be printed with any test failure, specify true for
-   * <code>shortStacks</code>:
+   * <code>shortstacks</code>:
    * </p>
    *
    * <pre>
-   * scala> (new MySuite).execute(shortStacks = true)
+   * scala> (new MySuite).execute(shortstacks = true)
    * </pre>
    *
    * <p>
-   * For full stack traces, set <code>fullStacks</code> to true:
+   * For full stack traces, set <code>fullstacks</code> to true:
    * </p>
    *
    * <pre>
-   * scala> (new MySuite).execute(fullStacks = true)
+   * scala> (new MySuite).execute(fullstacks = true)
    * </pre>
    *
    * <p>
-   * If you specify true for both <code>shortStacks</code> and <code>fullStacks</code>, you'll get full stack traces.
+   * If you specify true for both <code>shortstacks</code> and <code>fullstacks</code>, you'll get full stack traces.
    * </p>
    *
    * <p>
@@ -1430,12 +1430,34 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * takes seven arguments. Thus it would overload and couldn't be used with default argument values.)
    * </p>
    *
+   * <p>
+   * Design note: This method has two "features" that may seem unidiomatic. First, the default value of <code>testName</code> is <code>null</code>.
+   * Normally in Scala the type of <code>testName</code> would be <code>Option[String]</code> and the default value would
+   * be <code>None</code>, as it is in this trait's <code>run</code> method. The <code>null</code> value is used here for two reasons. First, in
+   * ScalaTest 1.5, <code>execute</code> was changed from four overloaded methods to one method with default values, taking advantage of
+   * the default and named parameters feature introduced in Scala 2.8.
+   * To not break existing source code, <code>testName</code> needed to have type <code>String</code>, as it did in two of the overloaded
+   * <code>execute</code> methods prior to 1.5. The other reason is that <code>execute</code> has always been designed to be called primarily
+   * from an interpeter environment, such as the Scala REPL (Read-Evaluate-Print-Loop). In an interpreter environment, minimizing keystrokes is king.
+   * A <code>String</code> type with a <code>null</code> default value lets users type <code>suite.execute("my test name")</code> rather than
+   * <code>suite.execute(Some("my test name"))</code>, saving several keystrokes.
+   * </p>
+   *
+   * <p>
+   * The second non-idiomatic feature is that <code>shortstacks</code> and <code>fullstacks</code> are all lower case rather than
+   * camel case. This is done to be consistent with the <a href="Shell.html"><code>Shell</code></a>, which also uses those forms. The reason 
+   * lower case is used in the <code>Shell</code> is to save keystrokes in an interpreter environment.  Most Unix commands, for
+   * example, are all lower case, making them easier and quicker to type.  In the ScalaTest
+   * <code>Shell</code>, methods like <code>shortstacks</code>, <code>fullstacks</code>, and <code>nostats</code>, <em>etc.</em>, are 
+   * designed to be all lower case so they feel more like shell commands than methods.
+   * </p>
+   *
    * @param testName the name of one test to run.
    * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param color a boolean that configures whether output is printed in color
    * @param durations a boolean that configures whether test and suite durations are printed to the standard output
-   * @param shortStacks a boolean that configures whether short stack traces should be printed for test failures
-   * @param fullStacks a boolean that configures whether full stack traces should be printed for test failures
+   * @param shortstacks a boolean that configures whether short stack traces should be printed for test failures
+   * @param fullstacks a boolean that configures whether full stack traces should be printed for test failures
    * @param stats a boolean that configures whether test and suite statistics are printed to the standard output
    *
    * @throws NullPointerException if the passed <code>configMap</code> parameter is <code>null</code>.
@@ -1447,8 +1469,8 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     configMap: Map[String, Any] = Map(),
     color: Boolean = true,
     durations: Boolean = false,
-    shortStacks: Boolean = false,
-    fullStacks: Boolean = false,
+    shortstacks: Boolean = false,
+    fullstacks: Boolean = false,
     stats: Boolean = false
   ) {
     if (configMap == null)
@@ -1456,7 +1478,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     if (testName != null && !testNames.contains(testName))
       throw new IllegalArgumentException(Resources("testNotFound", testName))
 
-    val dispatch = new DispatchReporter(List(new StandardOutReporter(durations, color, shortStacks, fullStacks)))
+    val dispatch = new DispatchReporter(List(new StandardOutReporter(durations, color, shortstacks, fullstacks)))
     val tracker = new Tracker
     val filter = Filter()
     val runStartTime = System.currentTimeMillis
