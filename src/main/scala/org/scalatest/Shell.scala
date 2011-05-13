@@ -32,7 +32,7 @@ class ArithmeticSuite extends FunSuite with matchers.ShouldMatchers {
 */
 
 /**
- * Class whose instances provide a <code>run</code> method and configuration methods that implement
+ * Trait whose instances provide a <code>run</code> method and configuration fields that implement
  * the <em>ScalaTest shell</em>: its DSL for the Scala interpreter.
  *
  * <p>
@@ -59,16 +59,16 @@ class ArithmeticSuite extends FunSuite with matchers.ShouldMatchers {
  * </p>
  *
  * <p>
- * All of these commands are methods of class <code>org.scalatest.Shell</code>. Each configuration command is a method that produces
+ * All of these commands are fields of trait <code>org.scalatest.Shell</code>. Each configuration command is a field that refers to
  * another <code>Shell</code> instance with every configuration parameter
- * the same except for the one you've asked to change. For example, when you invoke <code>durations</code>, you'll get back a
+ * the same except for the one you've asked to change. For example, <code>durations</code> provides a
  * <code>Shell</code> instance that has every parameter configured the same way, except with durations enabled. When you invoke
- * <code>run</code> on that, you get a run with durations enabled and every other configuration parameter at its default value.
+ * <code>run</code> on that, you will get a run with durations enabled and every other configuration parameter at its default value.
  * <p>
  *
  * <p>
  * Two other useful "commands"
- * to know about, though not technically part of the shell, are the <code>apply</code> factory methods in the <code>Suites</code> and <code>Specs</code>
+ * to know about, though not technically part of the shell, are the <code>apply</code> factory methods in the <a href="Suites$.html"><code>Suites</code></a> and <a href="Specs$.html"><code>Specs</code></a>
  * singleton objects. These allow you to easily create composite suites out of nested suites, which you can then pass to <code>run</code>. This
  * will be demonstrated later in this documentation.
  * </p>
@@ -76,8 +76,9 @@ class ArithmeticSuite extends FunSuite with matchers.ShouldMatchers {
  * <h2>Using the ScalaTest shell</h2>
  *
  * <p>
- * The package object of the <code>org.scalatest</code> package extends <code>Shell</code> with all its parameters set to their default values. A
- * good way to use the ScalaTest shell, therefore, is to import the members of package <code>org.scalatest</code>:
+ * The package object of the <code>org.scalatest</code> package, although it does not extend <code>Shell</code>, declares all the
+ * same members as <code>Shell</code>. Its <code>run</code> method runs with all the <code>Shell</code> configuration parameters set
+ * to their default values. A good way to use the ScalaTest shell, therefore, is to import the members of package <code>org.scalatest</code>:
  * </p>
  *
  * <pre style="background-color: #2c415c; padding: 10px">
@@ -313,64 +314,95 @@ class ArithmeticSuite extends FunSuite with matchers.ShouldMatchers {
  * - addition works</span>
  * </pre>
  */
-case class Shell(private val colorPassed: Boolean = true, private val durationsPassed: Boolean = false, private val shortStacksPassed: Boolean = false, private val fullStacksPassed: Boolean = false, private val statsPassed: Boolean = false) {
+sealed trait Shell {
 
   /**
-   * Returns a copy of this <code>Shell</code> with <code>colorPassed</code> configuration parameter set to <code>true</code>.
+   * A <code>Shell</code> whose <code>run</code> method will pass <code>true</code> for <code>execute</code>'s <code>color</code>
+   * parameter, and pass for all other parameters the same values as this <code>Shell</code>.
    */
-  lazy val color: Shell = copy(colorPassed = true)
+  val color: Shell
 
   /**
-   * Returns a copy of this <code>Shell</code> with <code>durationsPassed</code> configuration parameter set to <code>true</code>.
+   * A <code>Shell</code> whose <code>run</code> method will pass <code>true</code> for <code>execute</code>'s <code>durations</code>
+   * parameter, and pass for all other parameters the same values as this <code>Shell</code>.
    */
-  lazy val durations: Shell = copy(durationsPassed = true)
+  val durations: Shell
 
   /**
-   * Returns a copy of this <code>Shell</code> with <code>shortStacksPassed</code> configuration parameter set to <code>true</code>.
+   * A <code>Shell</code> whose <code>run</code> method will pass <code>true</code> for <code>execute</code>'s <code>shortstacks</code>
+   * parameter and <code>false</code> for its <code>fullstacks</code> parameter, and pass for all other parameters the same values as
+   * this <code>Shell</code>.
    */
-  lazy val shortstacks: Shell = copy(shortStacksPassed = true)
+  val shortstacks: Shell
 
   /**
-   * Returns a copy of this <code>Shell</code> with <code>fullStacksPassed</code> configuration parameter set to <code>true</code>.
+   * A <code>Shell</code> whose <code>run</code> method will pass <code>false</code> for <code>execute</code>'s <code>shortstacks</code>
+   * parameter and <code>true</code> for its <code>fullstacks</code> parameter, and pass for all other parameters the same values as this <code>Shell</code>.
    */
-  lazy val fullstacks: Shell = copy(fullStacksPassed = true)
+  val fullstacks: Shell
 
   /**
-   * Returns a copy of this <code>Shell</code> with <code>statsPassed</code> configuration parameter set to <code>true</code>.
+   * A <code>Shell</code> whose <code>run</code> method will pass <code>true</code> for <code>execute</code>'s <code>stats</code>
+   * parameter, and pass for all other parameters the same values as this <code>Shell</code>.
    */
-  lazy val stats: Shell = copy(statsPassed = true)
+  val stats: Shell
 
   /**
    * Returns a copy of this <code>Shell</code> with <code>colorPassed</code> configuration parameter set to <code>false</code>.
    */
-  lazy val nocolor: Shell = copy(colorPassed = false)
+  val nocolor: Shell
 
   /**
    * Returns a copy of this <code>Shell</code> with <code>durationsPassed</code> configuration parameter set to <code>false</code>.
    */
-  lazy val nodurations: Shell = copy(durationsPassed = false)
+  val nodurations: Shell
 
   /**
    * Returns a copy of this <code>Shell</code> with <code>shortStacksPassed</code> configuration parameter set to <code>false</code>.
    */
-  lazy val nostacks: Shell = copy(shortStacksPassed = false, fullStacksPassed = false)
+  val nostacks: Shell
 
   /**
    * Returns a copy of this <code>Shell</code> with <code>statsPassed</code> configuration parameter set to <code>false</code>.
    */
-  lazy val nostats: Shell = copy(statsPassed = false)
+  val nostats: Shell
 
   /**
    * Run the passed suite, optionally passing in a test name and config map. 
    *
    * <p>
    * This method will invoke <code>execute</code> on the passed <code>suite</code>, passing in
-   * the specified (or default) <code>testName</code> and <code>configMap</code> and the configuration values
-   * passed to this <code>Shell</code>'s constructor (<code>colorPassed</code>, <code>durationsPassed</code>, <code>shortStacksPassed</code>,
-   * <code>fullStacksPassed</code>, and <code>statsPassed</code>).
+   * the specified (or default) <code>testName</code> and <code>configMap</code> and a set of configuration values. A
+   * particular <code>Shell</code> instance will always pass the same configuration values (<code>color</code>,
+   * <code>durations</code>, <code>shortstacks</code>, <code>fullstacks</code>, and <code>stats</code>) to <code>execute</code> each time
+   * this method is invoked.
    * </p>
    */
+  def run(suite: Suite, testName: String = null, configMap: Map[String, Any] = Map()): Unit
+}
+
+// parameters were private, but after pulling out the trait so I don't import copy() as part
+// of the package object, I made the whole case class private[scalatest], so I made these normal
+// so that I could write some tests against it.
+private[scalatest] final case class ShellImpl(
+  colorPassed: Boolean = true,
+  durationsPassed: Boolean = false,
+  shortstacksPassed: Boolean = false,
+  fullstacksPassed: Boolean = false,
+  statsPassed: Boolean = false
+) extends Shell {
+
+  lazy val color: Shell = copy(colorPassed = true)
+  lazy val durations: Shell = copy(durationsPassed = true)
+  lazy val shortstacks: Shell = copy(shortstacksPassed = true, fullstacksPassed = false)
+  lazy val fullstacks: Shell = copy(fullstacksPassed = true, shortstacksPassed = false)
+  lazy val stats: Shell = copy(statsPassed = true)
+  lazy val nocolor: Shell = copy(colorPassed = false)
+  lazy val nodurations: Shell = copy(durationsPassed = false)
+  lazy val nostacks: Shell = copy(shortstacksPassed = false, fullstacksPassed = false)
+  lazy val nostats: Shell = copy(statsPassed = false)
+
   def run(suite: Suite, testName: String = null, configMap: Map[String, Any] = Map()) {
-    suite.execute(testName, configMap, colorPassed, durationsPassed, shortStacksPassed, fullStacksPassed, statsPassed)
+    suite.execute(testName, configMap, colorPassed, durationsPassed, shortstacksPassed, fullstacksPassed, statsPassed)
   }
 }
