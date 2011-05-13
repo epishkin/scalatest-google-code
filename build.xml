@@ -6,9 +6,10 @@
              uri="antlib:org.apache.maven.artifact.ant"
              classpathref="maven-ant-tasks.classpath" />
 
+    <!-- set global properties for this build -->
+    <property name="release" value="1.5-SNAPSHOT" />
     <property name="scala.version" value="2.8.1" />
 
-    <!-- set global properties for this build -->
     <property name="scalasrc" value="src/main/scala" />
     <property name="javasrc" value="src/main/java" />
     <property name="scalasrc.test" value="src/test/scala" />
@@ -37,7 +38,6 @@
     <property name="jdoc" value="${build}/jdoc" />
     <property name="zipper" value="zipper" />
     <property name="project.name" value="ScalaTest" />
-    <property name="release" value="1.5-SNAPSHOT" />
     <property name="demo" value="${build}/demo" />
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
@@ -64,9 +64,16 @@
         <mkdir dir="${jdoc}" />
         <mkdir dir="${jdoc}" />
 
-	    <artifact:dependencies pathId="lib.path" useScope="test">
-	      <pom file="pom.xml"/>
-	    </artifact:dependencies>
+        <copy file="pom_template.xml" tofile="${build}/pom.xml" overwrite="true">
+          <filterset>
+            <filter token="RELEASE" value="${release}" />
+            <filter token="SCALA_VERSION" value="${scala.version}" />
+          </filterset>
+        </copy>
+
+        <artifact:dependencies pathId="lib.path" useScope="test">
+          <pom file="${build}/pom.xml"/>
+        </artifact:dependencies>
 	
         <path id="build.class.path">
             <pathelement location="${classes}" />
@@ -168,7 +175,7 @@
 
     <target name="compile" depends="compile-main, compile-tests, compile-examples"/>
 
-   <!-- <target name="compile-main" depends="init">-->
+    <!--<target name="compile-main" depends="init">-->
     <target name="compile-main" depends="init, gentables, gengen">
 
         <!-- Compile the Java code from ${javasrc} into ${classes}  Needs to go first because TagAnnotation used in Suite -->
@@ -642,36 +649,97 @@
       -   </servers>
       - 
       -->
-    <target name="deploy" depends="jar,jartests,jarsrc,jartestsrc,doc">
-        <path id="maven-ant-tasks.classpath"
-              path="lib/maven-ant-tasks-2.0.10.jar" />
-        <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
-                 uri="antlib:org.apache.maven.artifact.ant"
-                 classpathref="maven-ant-tasks.classpath" />
+     <target name="deploy" depends="jar,jartests,jarsrc,jartestsrc,doc">
+      <artifact:pom id="pom" file="${build}/pom.xml" />
 
-        <copy file="deploy.xml" tofile="${build}/pom.xml" overwrite="true">
-            <filterset>
-                <filter token="RELEASE" value="${release}" />
-                <filter token="SCALAVERSION" value="${scala.version}" />
-            </filterset>
-        </copy>
+      <property name="snapshot.repository"
+                value="${pom.distributionManagement.snapshotRepository.url}" />
+      <property name="release.repository"
+                value="${pom.distributionManagement.repository.url}" />
+      <property name="snapshot.repository.id"
+                value="${pom.distributionManagement.snapshotRepository.id}" />
+      <property name="release.repository.id"
+                value="${pom.distributionManagement.repository.id}" />
+      <property name="mvn.deploy.plugin"
+                value="org.apache.maven.plugins:maven-gpg-plugin:1.1:sign-and-deploy-file" />
 
-        <jar jarfile="${build}/scalatest-scaladoc.jar" basedir="${doc}"/>
-        <jar jarfile="${build}/scalatest-javadoc.jar"  basedir="${jdoc}"/>
+      <condition property="maven.repository.url" value="${snapshot.repository}"
+                 else="${release.repository}">
+        <contains string="${release}" substring="-SNAPSHOT"/>
+      </condition>
 
-        <artifact:deploy file="${dist}/lib/scalatest.jar">
-            <pom file="${build}/pom.xml"/>
-            <attach file="${build.tests.jar}"
-                    type="test-jar"/>
-            <attach file="${build}/scalatest-sources.jar"
-                    classifier="sources"/>
-            <attach file="${build}/scalatest-test-sources.jar"
-                    classifier="test-sources"/>
-            <attach file="${build}/scalatest-scaladoc.jar"
-                    classifier="scaladoc"/>
-            <attach file="${build}/scalatest-javadoc.jar"
-                    classifier="javadoc"/>
-        </artifact:deploy>
+      <condition property="repository.id" value="${snapshot.repository.id}"
+                 else="${release.repository.id}">
+        <contains string="${release}" substring="-SNAPSHOT"/>
+      </condition>
+
+      <jar jarfile="${build}/scalatest-scaladoc.jar" basedir="${doc}"/>
+      <jar jarfile="${build}/scalatest-javadoc.jar"  basedir="${jdoc}"/>
+
+      <artifact:mvn>
+        <arg value="${mvn.deploy.plugin}" />
+        <arg value="-Dfile=${dist}/lib/scalatest.jar" />
+        <arg value="-Durl=${maven.repository.url}" />
+        <arg value="-DpomFile=${build}/pom.xml" />
+        <arg value="-DrepositoryId=${repository.id}" />
+        <arg value="-DuniqueVersion=false" />
+        <arg value="-Pgpg" />
+      </artifact:mvn>
+
+      <artifact:mvn>
+        <arg value="${mvn.deploy.plugin}" />
+        <arg value="-Dfile=${build.tests.jar}" />
+        <arg value="-Dclassifier=tests" />
+        <arg value="-Durl=${maven.repository.url}" />
+        <arg value="-DpomFile=${build}/pom.xml" />
+        <arg value="-DrepositoryId=${repository.id}" />
+        <arg value="-DuniqueVersion=false" />
+        <arg value="-Pgpg" />
+      </artifact:mvn>
+
+      <artifact:mvn>
+        <arg value="${mvn.deploy.plugin}" />
+        <arg value="-Dfile=${build}/scalatest-sources.jar" />
+        <arg value="-Dclassifier=sources" />
+        <arg value="-Durl=${maven.repository.url}" />
+        <arg value="-DpomFile=${build}/pom.xml" />
+        <arg value="-DrepositoryId=${repository.id}" />
+        <arg value="-DuniqueVersion=false" />
+        <arg value="-Pgpg" />
+      </artifact:mvn>
+
+      <artifact:mvn>
+        <arg value="${mvn.deploy.plugin}" />
+        <arg value="-Dfile=${build}/scalatest-test-sources.jar" />
+        <arg value="-Dclassifier=test-sources" />
+        <arg value="-Durl=${maven.repository.url}" />
+        <arg value="-DpomFile=${build}/pom.xml" />
+        <arg value="-DrepositoryId=${repository.id}" />
+        <arg value="-DuniqueVersion=false" />
+        <arg value="-Pgpg" />
+      </artifact:mvn>
+
+      <artifact:mvn>
+        <arg value="${mvn.deploy.plugin}" />
+        <arg value="-Dfile=${build}/scalatest-scaladoc.jar" />
+        <arg value="-Dclassifier=scaladoc" />
+        <arg value="-Durl=${maven.repository.url}" />
+        <arg value="-DpomFile=${build}/pom.xml" />
+        <arg value="-DrepositoryId=${repository.id}" />
+        <arg value="-DuniqueVersion=false" />
+        <arg value="-Pgpg" />
+      </artifact:mvn>
+
+      <artifact:mvn>
+        <arg value="${mvn.deploy.plugin}" />
+        <arg value="-Dfile=${build}/scalatest-javadoc.jar" />
+        <arg value="-Dclassifier=javadoc" />
+        <arg value="-Durl=${maven.repository.url}" />
+        <arg value="-DpomFile=${build}/pom.xml" />
+        <arg value="-DrepositoryId=${repository.id}" />
+        <arg value="-DuniqueVersion=false" />
+        <arg value="-Pgpg" />
+      </artifact:mvn>
     </target>
 
     <target name="test-junit">
