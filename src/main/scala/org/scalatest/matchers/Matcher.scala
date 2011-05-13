@@ -286,8 +286,8 @@ trait Matcher[-T] extends Function1[T, MatchResult] { thisMatcher =>
    * </p>
    *
    * <pre>
-   * "3" should beOdd
-   * "4" should not (beOdd)
+   * "3" should beOddAsInt
+   * "4" should not (beOddAsInt)
    * </pre>
    */
   override def compose[U](g: U => T): Matcher[U] =
