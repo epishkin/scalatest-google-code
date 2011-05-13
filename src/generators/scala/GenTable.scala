@@ -312,15 +312,16 @@ class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*)
         fun($alphaLower$)
       }
       catch {
-        case e =>
+        case _: DiscardedEvaluationException => // discard this evaluation and move on to the next
+        case ex =>
           val ($alphaName$) = heading
 
           throw new TableDrivenPropertyCheckFailedException(
-            sde => FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + 
+            sde => FailureMessages("propertyException", UnquotedString(ex.getClass.getSimpleName)) + 
               ( sde.failedCodeFileNameAndLineNumberString match { case Some(s) => " (" + s + ")"; case None => "" }) + "\n" + 
-              "  " + FailureMessages("thrownExceptionsMessage", if (e.getMessage == null) "None" else UnquotedString(e.getMessage)) + "\n" +
+              "  " + FailureMessages("thrownExceptionsMessage", if (ex.getMessage == null) "None" else UnquotedString(ex.getMessage)) + "\n" +
               (
-                e match {
+                ex match {
                   case sd: StackDepth if sd.failedCodeFileNameAndLineNumberString.isDefined =>
                     "  " + FailureMessages("thrownExceptionsLocation", UnquotedString(sd.failedCodeFileNameAndLineNumberString.get)) + "\n"
                   case _ => ""
@@ -329,7 +330,7 @@ class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*)
               "  " + FailureMessages("occurredAtRow", idx) + "\n" +
 $namesAndValues$
               "  )",
-            Some(e),
+            Some(ex),
             getStackDepthForPropCheck("TableDrivenPropertyChecks.scala", "forAll"),
             FailureMessages("undecoratedPropertyCheckFailureMessage"),
             List($alphaLower$),
@@ -935,6 +936,22 @@ $columnsOfOnes$
     forAll (examples) { ($names$) => $sumOfArgs$ should equal ($n$) }
   }
 
+  test("table for $n$, which succeeds even though DiscardedEvaluationException is thrown") {
+    val numbers =
+      Table(
+        ($argNames$),
+$columnOfMinusOnes$
+$columnsOfOnes$
+      )
+
+    forAll (numbers) { ($names$) =>
+
+      whenever (a > 0) {
+        a should be > 0
+      }
+    }
+  }
+
   test("table for $n$, which fails") {
 
     val examples =
@@ -1102,10 +1119,12 @@ $columnsOfIndexes$
       val alpha = "abcdefghijklmnopqrstuv"
       for (i <- 1 to 22) {
         val st = new org.antlr.stringtemplate.StringTemplate(tableSuiteTemplate)
+        val rowOfMinusOnes = List.fill(i)(" -1").mkString(", ")
         val rowOfOnes = List.fill(i)("  1").mkString(", ")
         val rowOfTwos = List.fill(i)("  2").mkString(", ")
         val listOfIs = List.fill(i)("i").mkString(", ")
         val columnsOfOnes = List.fill(i)("        (" + rowOfOnes + ")").mkString(",\n")
+        val columnOfMinusOnes = "        (" + rowOfMinusOnes + "),"
         val columnsOfTwos = List.fill(i)("        (" + rowOfTwos + ")").mkString(",\n")
         val rawRows =                              
           for (idx <- 0 to 9) yield                
@@ -1116,6 +1135,7 @@ $columnsOfIndexes$
         val sumOfArgs = alpha.take(i).mkString(" + ")
         st.setAttribute("n", i)
         st.setAttribute("columnsOfOnes", columnsOfOnes)
+        st.setAttribute("columnOfMinusOnes", columnOfMinusOnes)
         st.setAttribute("columnsOfTwos", columnsOfTwos)
         st.setAttribute("columnsOfIndexes", columnsOfIndexes)
         st.setAttribute("argNames", argNames)
