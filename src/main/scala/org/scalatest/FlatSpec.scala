@@ -170,6 +170,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <code>TestRegistrationClosedException</code>.
  * </p>
  *
+ * <p>
+ * See also: <a href="http://www.scalatest.org/getting_started_with_flat_spec" target="_blank">Getting started with <code>FlatSpec</code>.</a>
+ * </p>
+ *
  * <h2>Shared fixtures</h2>
  *
  * <p>

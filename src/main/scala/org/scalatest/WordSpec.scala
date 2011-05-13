@@ -63,7 +63,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * <em>Note: Trait <code>WordSpec</code> is in part inspired by class <code>org.specs.Specification</code>, designed by
- * Eric Torreborre for the <a href="http://code.google.com/p/specs/">Specs framework</a>.</em>
+ * Eric Torreborre for the <a href="http://code.google.com/p/specs/" target="_blank">specs framework</a>.</em>
+ * </p>
+ *
+ * <p>
+ * See also: <a href="http://www.scalatest.org/getting_started_with_word_spec" target="_blank">Getting started with <code>WordSpec</code>.</a>
  * </p>
  *
  * <p>

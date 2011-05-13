@@ -113,6 +113,14 @@ import Suite.reportTestIgnored
  * - should throw NoSuchElementException if an empty stack is popped
  * </pre>
  *
+ * <p>
+ * <em>Note: Trait <code>Spec</code>'s syntax is in great part inspired by <a href="http://rspec.info/" target="_blank">RSpec</a>, a Ruby BDD framework.</em>
+ *</p>
+ *
+ * <p>
+ * See also: <a href="http://www.scalatest.org/getting_started_with_spec" target="_blank">Getting started with <code>Spec</code>.</a>
+ * </p>
+ *
  * <h2>Shared fixtures</h2>
  *
  * <p>
