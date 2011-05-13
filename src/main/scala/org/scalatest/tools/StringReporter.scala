@@ -197,9 +197,15 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
         case _ => "" // Don't show it in the non-stack depth case. It will be shown after the exception class name and colon.
       }
 
+    // The whiteSpace is just used for printing out stack traces, etc., things that go after a test name. The formatted
+    // text for test names actually goes over to the left once in a sense, to make room for the icon. So if the indentation
+    // level is 3 for example, the "- " for that test's formatted text is really indented 2 times (or four spaces: "    ")
+    // So that's why normally the indentation level times two spaces should be the white space. But at the top level (indentation
+    // level of 0), the icon also has to go at 0 (because subtracting one would put it at -1), so in that case the white space
+    // should be two spaces (or 1 level of indentation).
     val whiteSpace =
       formatter match {
-        case Some(IndentedText(_, _, indentationLevel)) => indentation(indentationLevel)
+        case Some(IndentedText(_, _, indentationLevel)) if (indentationLevel != 0) => indentation(indentationLevel)
         case _ => indentation(1)
       }
 
