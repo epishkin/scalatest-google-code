@@ -202,7 +202,7 @@ path&gt; [...]]
  * <ul>
  * <li> <code><b>W</b></code> - without color</li>
  * <li> <code><b>D</b></code> - show all durations</li>
- * <li> <code><b>F</b></code> - show short stack traces</li>
+ * <li> <code><b>S</b></code> - show short stack traces</li>
  * <li> <code><b>F</b></code> - show full stack traces</li>
  * </ul>
  *
@@ -277,13 +277,13 @@ path&gt; [...]]
  * </ul>
  * </p>
  *
- * <h2>Executing <code>Suite</code>s concurrently</h2>
+ * <h2>Executing <code>Suite</code>s in parallel</h2>
  *
  * <p>
  * With the proliferation of multi-core architectures, and the often parallelizable nature of tests, it is useful to be able to run
- * tests concurrently. If you include <code>-c</code> on the command line, <code>Runner</code> will pass a <code>Distributor</code> to 
+ * tests in parallel. If you include <code>-c</code> on the command line, <code>Runner</code> will pass a <code>Distributor</code> to 
  * the <code>Suite</code>s you specify with <code>-s</code>. <code>Runner</code> will set up a thread pool to execute any <code>Suite</code>s
- * passed to the <code>Distributor</code>'s <code>put</code> method concurrently. Trait <code>Suite</code>'s implementation of
+ * passed to the <code>Distributor</code>'s <code>put</code> method in parallel. Trait <code>Suite</code>'s implementation of
  * <code>runNestedSuites</code> will place any nested <code>Suite</code>s into this <code>Distributor</code>. Thus, if you have a <code>Suite</code>
  * of tests that must be executed sequentially, you should override <code>runNestedSuites</code> as described in the <a href="../Distributor.html">documentation for <code>Distributor</code></a>.
  * </p>
