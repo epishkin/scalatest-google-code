@@ -50,13 +50,13 @@
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
-      <version>${scala.version}</version>
+      <version>@SCALA_VERSION@</version>
     </dependency>
 
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-compiler</artifactId>
-      <version>${scala.version}</version>
+      <version>@SCALA_VERSION@</version>
       <optional/>
     </dependency>
 
@@ -76,7 +76,7 @@
 
     <dependency>
       <groupId>org.scala-tools.testing</groupId>
-      <artifactId>scalacheck_${scala.version}</artifactId>
+      <artifactId>scalacheck_@SCALA_VERSION@</artifactId>
       <version>1.8</version>
       <optional/>
     </dependency>
