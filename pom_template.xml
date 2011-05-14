@@ -48,59 +48,72 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>1.3.2</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-compiler</artifactId>
       <version>${scala.version}</version>
-      <scope>provided</scope>
+      <optional/>
     </dependency>
 
     <dependency>
       <groupId>org.scala-tools.testing</groupId>
       <artifactId>test-interface</artifactId>
       <version>0.5</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm-tree</artifactId>
-      <version>3.0</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>antlr</groupId>
-      <artifactId>antlr</artifactId>
-      <version>2.7.7</version>
-      <scope>provided</scope>
+      <optional/>
     </dependency>
 
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>stringtemplate</artifactId>
       <version>3.2</version>
-      <scope>provided</scope>
-	  <optional/>
+      <optional/>
     </dependency>
 
     <dependency>
       <groupId>org.scala-tools.testing</groupId>
       <artifactId>scalacheck_${scala.version}</artifactId>
       <version>1.8</version>
-      <scope>provided</scope>
+      <optional/>
+    </dependency>
+
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymockclassextension</artifactId>
+      <version>3.0</version>
+      <optional/>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock-legacy</artifactId>
+      <version>2.5.1</version>
+      <optional/>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.6</version>
+      <optional/>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>5.7</version>
+      <classifier>jdk15</classifier>
+      <optional/>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.4</version>
       <optional/>
     </dependency>
 
@@ -111,46 +124,11 @@
       <scope>test</scope>
     </dependency>
 
-
     <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymockclassextension</artifactId>
-      <version>3.0</version>
-      <scope>provided</scope>
-      <optional/>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock-legacy</artifactId>
-      <version>2.5.1</version>
-      <scope>provided</scope>
-      <optional/>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.6</version>
-      <scope>provided</scope>
-      <optional/>
-    </dependency>
-
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>5.7</version>
-	  <classifier>jdk15</classifier>
-      <scope>provided</scope>
-      <optional/>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.4</version>
-      <scope>provided</scope>
-      <optional/>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.3.2</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
