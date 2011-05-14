@@ -26,6 +26,12 @@ import org.scalatest._
  * <h2>Creating custom matchers</h2>
  * 
  * <p>
+ * <em>Note: We are planning on adding some new matchers to ScalaTest in a future release, and would like your feedback.
+ * Please let us know if you have felt the need for a matcher ScalaTest doesn't yet provide, whether or
+ * not you wrote a custom matcher for it. Please email your feedback to bill AT artima.com.</em>
+ * </p>
+ *
+ * <p>
  * If none of the built-in matcher syntax  satisfy a particular need you have, you can create
  * custom <code>Matcher</code>s that allow
  * you to place your own syntax directly after <code>should</code> or <code>must</code>. For example, class <code>java.io.File</code> has a method <code>exists</code>, which
@@ -171,6 +177,130 @@ import org.scalatest._
  * Note that when you use custom <code>Matcher</code>s, you will need to put parentheses around the custom matcher when if follows <code>not</code>,
  * as shown in the last assertion above: <code>tempFile should not (exist)</code>.
  * </p>
+ *
+ * <a name="otherways"></a><h2>Other ways to create matchers</h2>
+ *
+ * <p>
+ * There are other ways to create new matchers besides defining one as shown above. For example, you would normally check to ensure
+ * an option is defined like this:
+ * </p>
+ *
+ * <pre>
+ * Some("hi") should be ('defined)
+ * </pre>
+ *
+ * <p>
+ * If you wanted to get rid of the tick mark, you could simply define <code>defined</code> like this:
+ * </p>
+ *
+ * <pre>
+ * val defined = 'defined
+ * </pre>
+ *
+ * <p>
+ * Now you can check that an option is defined without the tick mark:
+ * </p>
+ *
+ * <pre>
+ * Some("hi") should be (defined)
+ * </pre>
+ *
+ * <p>
+ * Perhaps after using that for a while, you realize you're tired of typing the parentheses. You could
+ * get rid of them with another one-liner:
+ * </p>
+ *
+ * <pre>
+ * val beDefined = be (defined)
+ * </pre>
+ *
+ * <p>
+ * Now you can check that an option is defined without the tick mark or the parentheses:
+ * </p>
+ *
+ * <pre>
+ * Some("hi") should beDefined
+ * </pre>
+ *
+ * <p>
+ * You can also use ScalaTest matchers' logical operators to combine existing matchers into new ones, like this:
+ * </p>
+ *
+ * <pre>
+ * val beWithinTolerance = be >= 0 and be <= 10
+ * </pre>
+ *
+ * <p>
+ * Now you could check that a number is within the tolerance (in this case, between 0 and 10, inclusive), like this:
+ * </p>
+ *
+ * <pre>
+ * num should beWithinTolerance
+ * </pre>
+ *
+ * <p>
+ * When defining a full blown matcher, one shorthand is to use one of the factory methods in <code>Matcher</code>'s companion
+ * object. For example, instead of writing this:
+ * </p>
+ *
+ * <pre>
+ * val beOdd =
+ *   new Matcher[Int] {
+ *     def apply(left: Int) =
+ *       MatchResult(
+ *         left % 2 == 1,
+ *         left + " was not odd",
+ *         left + " was odd"
+ *       )
+ *   }
+ * </pre>
+ *
+ * <p>
+ * You could alternately write this:
+ * </p>
+ *
+ * <pre>
+ * val beOdd =
+ *   Matcher { (left: Int) =>
+ *     MatchResult(
+ *       left % 2 == 1,
+ *       left + " was not odd",
+ *       left + " was odd"
+ *     )
+ *   }
+ * </pre>
+ *
+ * <p>
+ * Either way you define the <code>beOdd</code> matcher, you could use it like this:
+ * </p>
+ *
+ * <pre>
+ * 3 should beOdd
+ * 4 should not (beOdd)
+ * </pre>
+ *
+ * <p>
+ * You can also compose matchers. If for some odd reason, you wanted a <code>Matcher[String]</code> that 
+ * checked whether a string, when converted to an <code>Int</code>,
+ * was odd, you could make one by composing <code>beOdd</code> with
+ * a function that converts a string to an <code>Int</code>, like this:
+ * </p>
+ *
+ * <pre>
+ * val beOddAsInt = beOdd compose { (s: String) => s.toInt }
+ * </pre>
+ *
+ * <p>
+ * Now you have a <code>Matcher[String]</code> whose <code>apply</code> method first
+ * invokes the converter function to convert the passed string to an <code>Int</code>,
+ * then passes the resulting <code>Int</code> to <code>beOdd</code>. Thus, you could use
+ * <code>beOddAsInt</code> like this:
+ * </p>
+ *
+ * <pre>
+ * "3" should beOddAsInt
+ * "4" should not (beOddAsInt)
+ * </pre>
  *
  * <h2>Matcher's variance</h2>
  *
