@@ -218,6 +218,23 @@ final case class MatchResult(
  */
 object MatchResult {
 
+/* Can't seem to redefine this to get the Scaladoc.
+  /**
+   * Factory method that constructs a new <code>MatchResult</code> with passed <code>matches</code>, <code>failureMessage</code>, 
+   * <code>negativeFailureMessage</code>, <code>midSentenceFailureMessage</code>, and
+   * <code>midSentenceNegatedFailureMessage</code> fields.
+   *
+   * @param matches indicates whether or not the matcher matched
+   * @param failureMessage a failure message to report if a match fails
+   * @param negatedFailureMessage a message with a meaning opposite to that of the failure message
+   * @param midSentenceFailureMessage a failure message to report if a match fails
+   * @param midSentenceNegatedFailureMessage a message with a meaning opposite to that of the failure message
+   */
+  def apply(matches: Boolean, failureMessage: String, negatedFailureMessage: String, midSentenceFailureMessage: String,
+      midSentenceNegatedFailureMessage: String): MatchResult =
+    new MatchResult(matches, failureMessage, negatedFailureMessage, midSentenceFailureMessage, midSentenceNegatedFailureMessage)
+*/
+
   /**
    * Factory method that constructs a new <code>MatchResult</code> with passed <code>matches</code>, <code>failureMessage</code>, and
    * <code>negativeFailureMessage</code> fields. The <code>midSentenceFailureMessage</code> will return the same
