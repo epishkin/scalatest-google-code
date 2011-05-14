@@ -83,13 +83,13 @@ package org.scalatest.testng {
       context.assertIsSatisfied()
     }
     
-    def createSuite( suiteNode: scala.xml.Elem ) : String = {
+    def createSuite(suiteNode: scala.xml.Elem) : String = {
       val tmp = File.createTempFile("testng", "wrapper")
       FileUtils.writeStringToFile(tmp, suiteNode.toString)
       tmp.getAbsolutePath
     }
   }
-  
+
   package testpackage {
     import org.testng.annotations._
   
