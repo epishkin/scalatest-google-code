@@ -94,7 +94,7 @@ import org.scalatest.events.Event
  * <p>
  * You can create classes that extend <code>Reporter</code> to report test results in custom ways, and to
  * report custom information passed as an event "payload." For more information on the latter
- * use case, see the <em>Extensibility</em> section of the <a href="Event.html"><code>Event</code> documentation</a>.
+ * use case, see the <em>Extensibility</em> section of the <a href="events/Event.html"><code>Event</code> documentation</a>.
  * </p>
  *
  * <p>
