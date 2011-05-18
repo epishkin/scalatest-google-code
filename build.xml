@@ -320,10 +320,13 @@
         </copy>
     </target>
 
-    <target name="test" depends="compile,copyprops,jartests,taskdefscalatest">
-        <scalatest fork="true" runpath="${build.tests.jar}" parallel="true" haltonfailure="true">
+    <!--
+      - Called from 'test' and 'testfromjar' targets.
+      -->
+    <target name="runtest" depends="compile,copyprops,taskdefscalatest">
+        <scalatest fork="true" runpath="${test.runpath}" parallel="true" haltonfailure="true">
             <jvmarg value="-XX:MaxPermSize=512m"/>
-            <reporter type="graphic" />
+            <reporter type="graphic"/>
             <reporter type="junitxml" directory="target"/>
             <reporter type="stdout" config="D"/>
             <membersonly package="org.scalatest" />
@@ -338,6 +341,18 @@
             <membersonly package="org.scalatest.mock" />
             <config name="dbname" value="testdb" />
         </scalatest>
+    </target>
+
+    <target name="testfromjar" depends="jartests"
+            description="test from test.jar after jarring test class files">
+      <property name="test.runpath" value="${build.tests.jar}"/>
+      <antcall target="runtest"/>
+    </target>
+
+    <target name="test"
+            description="test using test class files stored in directory tree">
+      <property name="test.runpath" value="${build.tests}"/>
+      <antcall target="runtest"/>
     </target>
 
     <target name="shouldmatcherstest" depends="compile,copyprops,jartests,taskdefscalatest">
