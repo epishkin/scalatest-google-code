@@ -99,7 +99,7 @@ class ScalaTestFramework extends Framework {
               arg contains 'S',
               arg contains 'F'
              )
-             case None => (false, false, false, false)
+             case None => (false, true, false, false)
           }
 
         //  def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
