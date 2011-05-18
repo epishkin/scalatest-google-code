@@ -136,6 +136,19 @@
           <pathelement location="${log4j:log4j:jar}" />
         </path>
 
+        <uptodate property="gentables.uptodate"
+                  srcfile="src/generators/scala/GenTable.scala">
+          <mapper type="merge" to=
+            "target/generated/src/main/scala/org/scalatest/prop/TableFor1.scala">
+          </mapper>
+        </uptodate>
+
+        <uptodate property="gengen.uptodate"
+                  srcfile="src/generators/scala/GenGen.scala">
+          <mapper type="merge" to=
+            "target/generated/src/main/scala/org/scalatest/prop/GeneratorDrivenPropertyChecks.scala">
+          </mapper>
+        </uptodate>
     </target>
 
     <target name="taskdefscalatest">
@@ -153,13 +166,14 @@
         <scalac srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" deprecation="yes" classpathref="build.generators.class.path" />
     </target>
 
-    <target name="gentables" depends="init, compile-codegenerators">
-        <!-- Then, run it. -->
-        <java classname="GenTable" classpathref="run.generators.class.path" fork="false" />
+    <target name="gentables" depends="init, compile-codegenerators"
+            unless="gentables.uptodate">
+        <java classname="GenTable" classpathref="run.generators.class.path"
+              fork="false" />
     </target>
 
-    <target name="gengen" depends="init, compile-codegenerators">
-        <!-- Then, run it. -->
+    <target name="gengen" depends="init, compile-codegenerators"
+            unless="gengen.uptodate">
         <java classname="GenGen" classpathref="run.generators.class.path" fork="false" />
     </target>
 

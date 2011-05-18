@@ -1000,7 +1000,7 @@ $columnsOfIndexes$
 
   def genTableForNs() {
 
-    val bw = new BufferedWriter(new FileWriter("target/generated/src/main/scala/org/scalatest/prop/Table.scala"))
+    val bw = new BufferedWriter(new FileWriter("target/generated/src/main/scala/org/scalatest/prop/TableFor1.scala"))
  
     try {
       val st = new org.antlr.stringtemplate.StringTemplate(copyrightTemplate)
