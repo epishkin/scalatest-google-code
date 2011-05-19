@@ -41,7 +41,7 @@ import org.scalatest._
  * property assertions similar to the dynamic ones that use symbols:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * tempFile should be a ('file) // dynamic: uses reflection
  * tempFile should be a (file)  // type safe: only works on Files; no reflection used
  * </pre>
@@ -102,7 +102,7 @@ import org.scalatest._
  * These matches should succeed, but if for example the first match, <code>tempFile should be a (file)</code>, were to fail, you would get an error message like:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * /tmp/delme1234me was not a file
  * </pre>
  *
@@ -126,7 +126,7 @@ trait BePropertyMatcher[-T] extends Function1[T, BePropertyMatchResult] {
    * usually the value to the left of a <code>should</code> or <code>must</code> invocation. For example, <code>tempFile</code>
    * would be passed as the <code>objectWithProperty</code> in:
    *
-   * <pre>
+   * <pre class="stExamples">
    * tempFile should be a (file)
    * </pre>
    *

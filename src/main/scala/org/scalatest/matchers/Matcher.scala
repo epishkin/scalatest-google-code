@@ -39,7 +39,7 @@ import org.scalatest._
  * you can call it using <code>be</code> with a symbol or <code>BePropertyMatcher</code>, yielding assertions like:
  * </p>
  * 
- * <pre class="indent">
+ * <pre class="stExamples">
  * file should be ('exists)  // using a symbol
  * file should be (inExistance)   // using a BePropertyMatcher
  * </pre>
@@ -51,7 +51,7 @@ import org.scalatest._
  * named <code>exist</code>, which you could then use to write expressions like:
  * </p>
  *
- * <pre class="indent">
+ * <pre class="stExamples">
  * // using a plain-old Matcher
  * file should exist
  * file should not (exist)
@@ -135,7 +135,7 @@ import org.scalatest._
  * message would be:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * The file named temp.txt did not exist
  * </pre>
  *
@@ -185,7 +185,7 @@ import org.scalatest._
  * an option is defined like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * Some("hi") should be ('defined)
  * </pre>
  *
@@ -201,7 +201,7 @@ import org.scalatest._
  * Now you can check that an option is defined without the tick mark:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * Some("hi") should be (defined)
  * </pre>
  *
@@ -218,7 +218,7 @@ import org.scalatest._
  * Now you can check that an option is defined without the tick mark or the parentheses:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * Some("hi") should beDefined
  * </pre>
  *
@@ -234,7 +234,7 @@ import org.scalatest._
  * Now you could check that a number is within the tolerance (in this case, between 0 and 10, inclusive), like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * num should beWithinTolerance
  * </pre>
  *
@@ -274,7 +274,7 @@ import org.scalatest._
  * Either way you define the <code>beOdd</code> matcher, you could use it like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * 3 should beOdd
  * 4 should not (beOdd)
  * </pre>
@@ -297,7 +297,7 @@ import org.scalatest._
  * <code>beOddAsInt</code> like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * "3" should beOddAsInt
  * "4" should not (beOddAsInt)
  * </pre>
@@ -352,7 +352,7 @@ trait Matcher[-T] extends Function1[T, MatchResult] { thisMatcher =>
    * usually the value to the left of a <code>should</code> or <code>must</code> invocation. For example,
    * in:
    *
-   * <pre>
+   * <pre class="stExamples">
    * list should equal (List(1, 2, 3))
    * </pre>
    *
@@ -392,7 +392,7 @@ trait Matcher[-T] extends Function1[T, MatchResult] { thisMatcher =>
    * You could use <code>beOdd</code> like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * 3 should beOdd
    * 4 should not (beOdd)
    * </pre>
@@ -415,7 +415,7 @@ trait Matcher[-T] extends Function1[T, MatchResult] { thisMatcher =>
    * <code>beOddAsInt</code> like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * "3" should beOddAsInt
    * "4" should not (beOddAsInt)
    * </pre>

@@ -56,7 +56,7 @@ import org.scalatest._
  * For example, if 8 is passed, <code>equalSeven</code>'s <code>MatchResult</code> will contain:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *            expression: equalSeven(8)
  *               matches: false
  *        failureMessage: 8 did not equal 7
@@ -69,7 +69,7 @@ import org.scalatest._
  * method, by contrast, the <code>failureMessage</code> and <code>negatedFailureMessage</code> will be:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *            expression: notEqualSeven(8)
  *               matches: true
  *        failureMessage: 8 equaled 7
@@ -90,7 +90,7 @@ import org.scalatest._
  * will be:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *            expression: equalSeven(7)
  *               matches: true
  *        failureMessage: 7 did not equal 7
@@ -104,7 +104,7 @@ import org.scalatest._
  * method, you'll get:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *            expression: notEqualSeven(7)
  *               matches: false
  *        failureMessage: 7 equaled 7
@@ -125,7 +125,7 @@ import org.scalatest._
  * For example:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * 8 should (equal (7) or equal (9))
  * </pre>
  *
@@ -133,7 +133,7 @@ import org.scalatest._
  * This above expression would fail with the following failure message reported to the user:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * 8 did not equal 7, and 8 did not equal 9
  * </pre>
  *
@@ -141,7 +141,7 @@ import org.scalatest._
  * This works fine, but what if the failure messages being combined begin with a capital letter, such as:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * The name property did not equal "Ricky"
  * </pre>
  *
@@ -149,7 +149,7 @@ import org.scalatest._
  * A combination of two such failure messages might result in an abomination of English punctuation, such as:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * The name property did not equal "Ricky", and The name property did not equal "Bobby"
  * </pre>
  *
@@ -162,7 +162,7 @@ import org.scalatest._
  * will be used. Given these failure message strings:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *            failureMessage: The name property did not equal "Bobby"
  * midSentenceFailureMessage: the name property did not equal "Bobby"
  * </pre>
@@ -171,7 +171,7 @@ import org.scalatest._
  * The resulting failure of the <code>or</code> expression involving to matchers would make any English teacher proud:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * The name property did not equal "Ricky", and the name property did not equal "Bobby"
  * </pre>
  *

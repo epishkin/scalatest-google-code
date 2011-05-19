@@ -12,7 +12,7 @@ import StringReporter.colorizeLinesIndividually
  * To use ScalaTest from within sbt, simply add a line like this to your project file, replacing 1.5 with whatever version you desire:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * val scalatest = "org.scalatest" % "scalatest_2.8.1" % "1.5"
  * </pre>
  *
@@ -22,7 +22,7 @@ import StringReporter.colorizeLinesIndividually
  * you need to add test options, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * override def testOptions = super.testOptions ++
  *   Seq(TestArgument(TestFrameworks.ScalaTest, "-oD"))
  * </pre>

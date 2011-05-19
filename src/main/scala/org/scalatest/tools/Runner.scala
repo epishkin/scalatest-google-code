@@ -44,7 +44,7 @@ import java.util.concurrent.ExecutorService
  * All of these arguments are described in more detail below. Here's a summary:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * scala [-classpath scalatest-&lt;version&gt;.jar:...] org.scalatest.tools.Runner 
 [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] 
 [-n &lt;includes&gt;] [-l &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; 
@@ -57,7 +57,7 @@ path&gt; [...]]
  * The simplest way to start <code>Runner</code> is to specify the directory containing your compiled tests as the sole element of the runpath, for example:
  * </p>
  *
- * <pre>scala -classpath scalatest-&lt;version&gt;.jar org.scalatest.tools.Runner -p compiled_tests</pre>
+ * <pre class="stExamples">scala -classpath scalatest-&lt;version&gt;.jar org.scalatest.tools.Runner -p compiled_tests</pre>
  *
  * <p>
  * Given the previous command, <code>Runner</code> will discover and execute all <code>Suite</code>s in the <code>compiled_tests</code> directory and its subdirectories,
@@ -75,7 +75,7 @@ path&gt; [...]]
  * For example:
  * </p>
  *
- * <pre>-Ddbname=testdb -Dserver=192.168.1.188</pre>
+ * <pre class="stExamples">-Ddbname=testdb -Dserver=192.168.1.188</pre>
  *
  * <h2>Specifying a runpath</h2>
  *
@@ -98,7 +98,7 @@ path&gt; [...]]
  * place a backslash (\) in front of the space. Here's an example:
  * </p>
  *
- * <pre>-p "serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar target/class\ files"</pre>
+ * <pre class="stExamples">-p "serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar target/class\ files"</pre>
  *
  * <h2>Specifying reporters</h2>
  *
@@ -145,7 +145,7 @@ path&gt; [...]]
  * writing to a file named <code>"test.out"</code>, you would type:
  * </p>
  *
- * <pre>java -jar scalatest.jar -p mydir <b>-g -f test.out</b> -s MySuite</pre>
+ * <pre class="stExamples">java -jar scalatest.jar -p mydir <b>-g -f test.out</b> -s MySuite</pre>
  *
  * <p>
  * The <code><b>-g</b></code>, <code><b>-o</b></code>, or <code><b>-e</b></code> options can
@@ -303,7 +303,7 @@ path&gt; [...]]
  * name of a <code>Suite</code> subclass, as in:
  * </p>
  *
- * <pre>-s com.artima.serviceuitest.ServiceUITestkit</pre>
+ * <pre class="stExamples">-s com.artima.serviceuitest.ServiceUITestkit</pre>
  *
  * <p>
  * Each specified suite class must be public, a subclass of

@@ -19,7 +19,7 @@ import org.apache.tools.ant.taskdefs.Java
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *  &lt;path id="scalatest.classpath"&gt;
  *    &lt;pathelement location="${lib}/scalatest.jar"/&gt;
  *    &lt;pathelement location="${lib}/scala-library.jar"/&gt;
@@ -38,7 +38,7 @@ import org.apache.tools.ant.taskdefs.Java
  * Once defined, you use the task by specifying information in a <code>scalatest</code> element:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest ...&gt;
  *     ...
  *   &lt;/scalatest&gt;
@@ -49,7 +49,7 @@ import org.apache.tools.ant.taskdefs.Java
  * like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest&gt;
  *     &lt;config name="dbname" value="testdb"/&gt;
  *     &lt;config name="server" value="192.168.1.188"/&gt;
@@ -60,13 +60,13 @@ import org.apache.tools.ant.taskdefs.Java
  * <code>&lt;runpath&gt;</code> elements, using standard ant path notation:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest runpath="serviceuitest-1.1beta4.jar:myjini"&gt;
  * </pre>
  *
  * or
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest&gt;
  *     &lt;runpath&gt;
  *       &lt;pathelement location="serviceuitest-1.1beta4.jar"/&gt;
@@ -79,7 +79,7 @@ import org.apache.tools.ant.taskdefs.Java
  * (since ant paths don't support URLs):
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest&gt;
  *     &lt;runpathurl url="http://foo.com/bar.jar"/&gt;
  * </pre>
@@ -104,7 +104,7 @@ import org.apache.tools.ant.taskdefs.Java
  * <code>filename</code>, <code>directory</code>, and <code>classname</code>, respectively:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest&gt;
  *     &lt;reporter type="stdout"        config="FAB"/&gt;
  *     &lt;reporter type="file"          filename="test.out"/&gt;
@@ -117,7 +117,7 @@ import org.apache.tools.ant.taskdefs.Java
  * <code>&lt;tagsToExclude&gt;</code> elements, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest&gt;
  *     &lt;tagsToInclude&gt;
  *         CheckinTests
@@ -135,7 +135,7 @@ import org.apache.tools.ant.taskdefs.Java
  * <code>&lt;suite&gt;</code> elements:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest suite="com.artima.serviceuitest.ServiceUITestkit"&gt;
  * </pre>
  *
@@ -143,7 +143,7 @@ import org.apache.tools.ant.taskdefs.Java
  * or
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest&gt;
  *     &lt;suite classname="com.artima.serviceuitest.ServiceUITestkit"/&gt;
  * </pre>
@@ -154,7 +154,7 @@ import org.apache.tools.ant.taskdefs.Java
  * <code>&lt;membersonly&gt;</code> or <code>&lt;wildcard&gt;</code> elements:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest membersonly="com.artima.serviceuitest"&gt;
  * </pre>
  *
@@ -162,7 +162,7 @@ import org.apache.tools.ant.taskdefs.Java
  * or
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest wildcard="com.artima.joker"&gt;
  * </pre>
  *
@@ -170,7 +170,7 @@ import org.apache.tools.ant.taskdefs.Java
  * or
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest&gt;
  *     &lt;membersonly package="com.artima.serviceuitest"/&gt;
  *     &lt;wildcard package="com.artima.joker"/&gt;
@@ -200,7 +200,7 @@ import org.apache.tools.ant.taskdefs.Java
  * run the tests.
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;scalatest maxmemory="1280M"&gt;
  * </pre>
  *
@@ -211,7 +211,7 @@ import org.apache.tools.ant.taskdefs.Java
  * you could add the following <code>jvmarg</code> to bump up the JVM's <code>MaxPermSize</code> value:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   &lt;jvmarg value="-XX:MaxPermSize=128m"/&gt;
  * </pre>
  *
