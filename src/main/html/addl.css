@@ -1,0 +1,28 @@
+
+pre.stExamples {
+  background-color: #2c415c;
+  padding: 10px;
+  color: white;
+}
+
+pre.stREPL {
+  background-color: #2c415c;
+  padding: 10px;
+  color: white;
+}
+
+.stYellow {
+  color: #cfc923;
+}
+
+.stCyan {
+  color: #00dddd;
+}
+
+.stGreen {
+  color: #00cc00;
+}
+
+.stRed {
+  color: #dd2233;
+}

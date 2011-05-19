@@ -251,8 +251,11 @@
         <scaladoc addparams="-no-specialization" srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" doctitle="ScalaTest ${release}">
             <include name="**/*.scala" />
         </scaladoc>
-        <delete file="${doc}/lib/template.css"/>
-        <copy file="${html}/template.css" todir="${doc}/lib" />
+
+        <concat destfile="${doc}/lib/template.css" force="yes">
+          <filelist dir="${html}" files="template.css, addl.css"/>
+        </concat>
+
         <!--
       <javadoc sourcepath="${example}"
         destdir="${demodoc}"
