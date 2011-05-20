@@ -4,6 +4,12 @@ import org.scalatools.testing._
 import org.scalatest.tools.Runner.parsePropertiesArgsIntoMap
 import org.scalatest.tools.Runner.parseCompoundArgIntoSet
 import StringReporter.colorizeLinesIndividually
+import org.scalatest.Suite.formatterForSuiteStarting
+import org.scalatest.Suite.formatterForSuiteCompleted
+import org.scalatest.Suite.formatterForSuiteAborted
+import org.scalatest.events.SuiteStarting
+import org.scalatest.events.SuiteCompleted
+import org.scalatest.events.SuiteAborted
 
 /**
  * Class that makes ScalaTest tests visible to sbt.
@@ -43,8 +49,8 @@ import StringReporter.colorizeLinesIndividually
  * of time spent in each test).
  * </p>
  *
- * @author Josh Cough
  * @author Bill Venners
+ * @author Josh Cough
  */
 class ScalaTestFramework extends Framework {
 
@@ -79,14 +85,14 @@ class ScalaTestFramework extends Framework {
     import org.scalatest._
 
     def run(testClassName: String, fingerprint: TestFingerprint, eventHandler: EventHandler, args: Array[String]) {
-      val testClass = Class.forName(testClassName, true, testLoader).asSubclass(classOf[Suite])
+      val suiteClass = Class.forName(testClassName, true, testLoader).asSubclass(classOf[Suite])
 
       // println("sbt args: " + args.toList)
-      if (isAccessibleSuite(testClass)) {
+      if (isAccessibleSuite(suiteClass)) {
 
         val (propertiesArgsList, includesArgsList,
         excludesArgsList, repoArg) = parsePropsAndTags(args.filter(!_.equals("")))
-        val propertiesMap: Map[String, String] = parsePropertiesArgsIntoMap(propertiesArgsList)
+        val configMap: Map[String, String] = parsePropertiesArgsIntoMap(propertiesArgsList)
         val tagsToInclude: Set[String] = parseCompoundArgIntoSet(includesArgsList, "-n")
         val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
         val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
@@ -102,11 +108,37 @@ class ScalaTestFramework extends Framework {
              case None => (false, true, false, false)
           }
 
-        //  def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-        //              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
-        val repo = new ScalaTestReporter(eventHandler, presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces)
-        testClass.newInstance.run(None, repo, new Stopper {},
-          filter, propertiesMap, None, new Tracker)
+        val report = new ScalaTestReporter(eventHandler, presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces)
+
+        val tracker = new Tracker
+        val suiteStartTime = System.currentTimeMillis
+
+        val suite = suiteClass.newInstance
+
+        val formatter = formatterForSuiteStarting(suite)
+
+        report(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suiteClass.getName), formatter, None))
+
+        try {
+          suite.run(None, report, new Stopper {}, filter, configMap, None, tracker)
+
+          val formatter = formatterForSuiteCompleted(suite)
+
+          val duration = System.currentTimeMillis - suiteStartTime
+          report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suiteClass.getName), Some(duration), formatter, None))
+        }
+        catch {       
+          case e: Exception => {
+
+            // TODO: Could not get this from Resources. Got:
+            // java.util.MissingResourceException: Can't find bundle for base name org.scalatest.ScalaTestBundle, locale en_US
+            val rawString = "Exception encountered when attempting to run a suite with class name: " + suiteClass.getName
+            val formatter = formatterForSuiteAborted(suite, rawString)
+
+            val duration = System.currentTimeMillis - suiteStartTime
+            report(SuiteAborted(tracker.nextOrdinal(), rawString, suite.suiteName, Some(suiteClass.getName), Some(e), Some(duration), formatter, None))
+          }
+        }
       }
       else throw new IllegalArgumentException("Class is not an accessible org.scalatest.Suite: " + testClassName)
     }
@@ -127,16 +159,6 @@ class ScalaTestFramework extends Framework {
       }
     }
 
-/*
-    private def logTrace(t: Throwable) = loggers.foreach(_ trace t)
-
-    private def logError(msg: String) = loggers.foreach(_ error msg)
-
-    private def logWarn(msg: String) = loggers.foreach(_ warn msg)
-
-    private def logInfo(msg: String) = loggers.foreach(_ info msg)
-*/
-
     private class ScalaTestReporter(eventHandler: EventHandler, presentAllDurations: Boolean,
         presentInColor: Boolean, presentShortStackTraces: Boolean, presentFullStackTraces: Boolean) extends StringReporter(
         presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces) {
@@ -146,7 +168,6 @@ class ScalaTestFramework extends Framework {
       protected def printPossiblyInColor(text: String, ansiColor: String) {
         import PrintReporter.ansiReset
         loggers.foreach { logger =>
-          // logger.info(if (logger.ansiCodesSupported && presentInColor) ansiColor + text + ansiReset else text)
           logger.info(if (logger.ansiCodesSupported && presentInColor) colorizeLinesIndividually(text, ansiColor) else text)
         }
       }
@@ -154,15 +175,6 @@ class ScalaTestFramework extends Framework {
       def dispose() = ()
 
       def fireEvent(tn: String, r: Result, e: Option[Throwable]) = {
-/*
-        r match {
-          case Result.Skipped => logInfo("Test Skipped: " + tn)
-          case Result.Failure =>
-            logError("Test Failed: " + tn)
-            e.foreach {logTrace(_)}
-          case Result.Success => logInfo("Test Passed: " + tn)
-        }
-*/
         eventHandler.handle(
           new org.scalatools.testing.Event {
             def testName = tn
