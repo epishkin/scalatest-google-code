@@ -360,11 +360,11 @@ import org.scalatest.Suite._
  * import org.scalatest._
  *
  * scala> run(new StackSuite, configMap = Map("IntToPush" -> 9, "StringToPush" -> "nine"))
- * StackSuite:
+ * <span class="stGreen">StackSuite:
  * - testPopAStringValue
  * - testPopAnIntValue
  * - testPushAStringValue(FixtureParam)
- * - testPushAnIntValue(FixtureParam)
+ * - testPushAnIntValue(FixtureParam)</span>
  * </pre>
  *
  * @author Bill Venners

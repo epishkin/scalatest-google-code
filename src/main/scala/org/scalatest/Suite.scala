@@ -340,7 +340,7 @@ import Suite.reportInfoProvided
  * write suites that look like:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import org.scalatest.matchers.ShouldMatchers
  *
@@ -374,7 +374,7 @@ import Suite.reportInfoProvided
  * imported, then used within a ScalaTest suite:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import org.junit.Assert._
  *
@@ -414,7 +414,7 @@ import Suite.reportInfoProvided
  * parameters. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import org.scalatest.Suites
  *
@@ -491,7 +491,7 @@ import Suite.reportInfoProvided
  * test method that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import collection.mutable.ListBuffer
  *
@@ -528,7 +528,7 @@ import Suite.reportInfoProvided
  * will be run in its own instance of the <code>Suite</code>, similar to the way JUnit tests are executed. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import org.scalatest.OneInstancePerTest
  * import collection.mutable.ListBuffer
