@@ -80,21 +80,21 @@ trait FailureOf {
  * an alternative to mixing it in. One use case is to import <code>FailureOf</code>'s method so you can use
  * it in the Scala interpreter:
  *
- * <pre>
+ * <pre class="stREPL">
  * $scala -classpath scalatest.jar
  * Welcome to Scala version 2.8.0.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_22).
  * Type in expressions to have them evaluated.
  * Type :help for more information.
- * 
+ * &nbsp;
  * scala> import org.scalatest.Assertions._
  * import org.scalatest.Assertions._
- * 
+ * &nbsp;
  * scala> import org.scalatest.FailureOf._
  * import org.scalatest.FailureOf._
- * 
+ * &nbsp;
  * scala> failureOf { assert(1 + 1 === 2) }
  * res0: Option[Throwable] = None
- * 
+ * &nbsp;
  * scala> failureOf { assert(1 + 1 === 3) }
  * res1: Option[Throwable] = Some(org.scalatest.TestFailedException: 2 did not equal 3)
  * <pre>
