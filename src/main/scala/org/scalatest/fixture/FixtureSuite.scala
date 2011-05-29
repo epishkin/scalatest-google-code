@@ -124,7 +124,7 @@ import org.scalatest.Suite._
  *     test(resource) // if the test fails, test(...) will throw an exception
  *   }
  *   finally {
- *     // clean up the fixture no matter whether the test success or fails
+ *     // clean up the fixture no matter whether the test succeeds or fails
  *     resource.close()
  *   }
  * }
