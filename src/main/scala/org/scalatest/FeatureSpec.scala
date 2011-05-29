@@ -29,7 +29,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * tests, functional tests, and acceptance tests. You can use <code>FeatureSpec</code> for unit testing if you prefer, however.
  * Here's an example:
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  * import org.scalatest.GivenWhenThen
  * import scala.collection.mutable.Stack
@@ -172,7 +172,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * to <code>shared</code> is used by multiple test functions:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  *
  * class ArithmeticFeatureSpec extends FeatureSpec {
@@ -210,7 +210,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  * import scala.collection.mutable.ListBuffer
  *
@@ -260,7 +260,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * For example, you could create a temporary file before each test, and delete it afterwords, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
@@ -331,7 +331,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * implementation of <code>withFixture(NoArgTest)</code> simply invokes the function, like this:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre class="stHighlight">
  * // Default implementation
  * protected def withFixture(test: NoArgTest) {
  *   test()
@@ -343,7 +343,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Thus, the previous temp file example could also be implemented without mixing in <code>BeforeAndAfterEach</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
@@ -420,7 +420,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * by overriding the <code>withFixture(OneArgTest)</code> method of a <code>FixtureFeatureSpec</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFeatureSpec
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -515,7 +515,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * For example, given this stack class:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import scala.collection.mutable.ListBuffer
  * 
  * class Stack[T] {
@@ -570,7 +570,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * method containing shared scenarios for non-full stacks:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  * import org.scalatest.GivenWhenThen
  * import org.scalatestexamples.helpers.Stack
@@ -654,7 +654,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * which looks like this:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre class="stHighlight">
  * scenariosFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
  * scenariosFor(nonFullStack(stackWithOneItem))
  * </pre>
@@ -666,7 +666,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * in scope already inside the behavior function. In that case, your code would look like this:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre class="stHighlight">
  * scenariosFor(nonEmptyStack) // assuming lastValuePushed is also in scope inside nonEmptyStack
  * scenariosFor(nonFullStack)
  * </pre>
@@ -675,7 +675,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * The recommended style, however, is the functional, pass-all-the-needed-values-in style. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  * import org.scalatest.GivenWhenThen
  * import org.scalatestexamples.helpers.Stack
@@ -882,7 +882,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Given this <code>FeatureSpecStackBehaviors</code> trait, calling it with the <code>stackWithOneItem</code> fixture, like this:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre class="stHighlight">
  * scenariosFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
  * </pre>
  *
@@ -900,7 +900,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Whereas calling it with the <code>stackWithOneItemLessThanCapacity</code> fixture, like this:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre class="stHighlight">
  * scenariosFor(nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed))
  * </pre>
  *
@@ -930,7 +930,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * create matching groups for <code>FeatureSpec</code>s like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Tag
  *
  * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
@@ -941,7 +941,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Given these definitions, you could place <code>FeatureSpec</code> tests into groups like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  *
  * class ArithmeticFeatureSpec extends FeatureSpec {
@@ -988,7 +988,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * disable the test named <code>addition</code>, just change &#8220;<code>scenario</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  *
  * class ArithmeticFeatureSpec extends FeatureSpec {
@@ -1045,7 +1045,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  *
  * class ArithmeticFeatureSpec extends FeatureSpec {
@@ -1081,7 +1081,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * to pass such information to the reporter. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  * import org.scalatest.GivenWhenThen
  * 
@@ -1159,7 +1159,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * You can mark tests as pending in a <code>FeatureSpec</code> like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  *
  * class ArithmeticFeatureSpec extends FeatureSpec {
@@ -1222,7 +1222,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * that used the <code>GivenWhenThen</code> trait. For example, the following snippet in a <code>FeatureSpec</code>:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre class="stHighlight">
  *   feature("Integer arithmetic") {
  *&nbsp;
  *     scenario("addition") {
@@ -1438,7 +1438,7 @@ trait FeatureSpec extends Suite { thisSuite =>
    * example itself, with all components separated by a space. For example, consider this <code>FeatureSpec</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.scalatest.FeatureSpec
    *
    * class StackSpec extends FeatureSpec {
@@ -1478,7 +1478,7 @@ trait FeatureSpec extends Suite { thisSuite =>
    * This method enables the following syntax for shared scenarios in a <code>FeatureSpec</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * scenariosFor(nonEmptyStack(lastValuePushed))
    * </pre>
    *
