@@ -32,7 +32,7 @@ package org.scalatest
  * Here's an example of <code>OneInstancePerTest</code> being used in a <code>FunSuite</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  * import org.scalatest.OneInstancePerTest
  * import collection.mutable.ListBuffer
