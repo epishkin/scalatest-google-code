@@ -44,7 +44,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * easier. Here's an example <code>FlatSpec</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  * import scala.collection.mutable.Stack
  *
@@ -79,7 +79,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * the first <code>it</code> with the subject string, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  * import scala.collection.mutable.Stack
  *
@@ -123,7 +123,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * a stack that contains one item:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * behavior of "A Stack (with one item)"
  *
  * it should "be non-empty" in {}
@@ -139,7 +139,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * The same is true if the tests are written using the shorthand notation:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "A Stack (with one item)" should "be non-empty" in {}
  *
  * it should "return the top item on peek" in {}
@@ -193,7 +193,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * to <code>shared</code> is used by multiple test functions:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  *
  * class ArithmeticSpec extends FlatSpec {
@@ -228,7 +228,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  * import scala.collection.mutable.ListBuffer
  *
@@ -275,7 +275,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * For example, you could create a temporary file before each test, and delete it afterwords, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
@@ -343,7 +343,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * implementation of <code>withFixture(NoArgTest)</code> simply invokes the function, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * // Default implementation
  * protected def withFixture(test: NoArgTest) {
  *   test()
@@ -355,7 +355,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Thus, the previous temp file example could also be implemented without mixing in <code>BeforeAndAfterEach</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
@@ -429,7 +429,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * by overriding the <code>withFixture(OneArgTest)</code> method of a <code>FixtureFlatSpec</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFlatSpec
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -518,7 +518,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * contain will be registered as tests in that <code>FlatSpec</code>.  For example, given this stack class:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import scala.collection.mutable.ListBuffer
  * 
  * class Stack[T] {
@@ -572,7 +572,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * defined in a trait along with another method containing shared tests for non-full stacks:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * trait StackBehaviors { this: FlatSpec =>
  * 
  *   def nonEmptyStack(stack: Stack[Int], lastItemAdded: Int) {
@@ -620,7 +620,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * which looks like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * it should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
  * it should behave like nonFullStack(stackWithOneItem)
  * </pre>
@@ -632,7 +632,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * in scope already inside the behavior function. In that case, your code would look like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * it should behave like nonEmptyStack // assuming lastValuePushed is also in scope inside nonEmptyStack
  * it should behave like nonFullStack
  * </pre>
@@ -641,7 +641,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * The recommended style, however, is the functional, pass-all-the-needed-values-in style. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class SharedTestExampleSpec extends FlatSpec with StackBehaviors {
  * 
  *   // Stack fixture creation methods
@@ -751,7 +751,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * For example, the following code in a <code>WordSpec</code> would register a test with the name <code>"A Stack (when empty) should be empty"</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *   behavior of "A Stack (when empty)"
  *       
  *   it should "be empty" in {
@@ -764,7 +764,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Or, using the shorthand notation:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *   "A Stack" when {
  *     "empty" should {
  *       "be empty" in {
@@ -796,7 +796,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * create matching groups for <code>Spec</code>s like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Tag
  *
  * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
@@ -807,7 +807,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Given these definitions, you could place <code>FlatSpec</code> tests into groups like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  *
  * class MySuite extends FlatSpec {
@@ -850,7 +850,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  * import scala.collection.mutable.Stack
  *
@@ -898,7 +898,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * change &#8220;<code>in</code>&#8221; into &#8220;<code>ignore</code>&#8221; like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  * import scala.collection.mutable.Stack
  *
@@ -955,7 +955,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  *
  * class ArithmeticSpec extends FlatSpec {
@@ -992,7 +992,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * to pass such information to the reporter. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  * import org.scalatest.GivenWhenThen
  * 
@@ -1062,7 +1062,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * You can mark tests as pending in <code>FlatSpec</code> like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  *
  * class ArithmeticSpec extends FlatSpec {
@@ -1120,7 +1120,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * that used the <code>GivenWhenThen</code> trait. For example, the following snippet in a <code>FlatSpec</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *  "The Scala language" must "add correctly" in { 
  *     given("two integers")
  *     when("they are added")
@@ -1191,7 +1191,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This field enables syntax such as the following subject registration:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * behavior of "A Stack"
    * ^
    * </pre>
@@ -1211,7 +1211,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method enables syntax such as the following subject registration:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * behavior of "A Stack"
      *          ^
      * </pre>
@@ -1235,7 +1235,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This field enables syntax such as the following subject registration:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * behavior of "A Stack"
    * ^
    * </pre>
@@ -1255,7 +1255,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This class enables syntax such as the following tagged test registration:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
    *                                                                      ^
    * </pre>
@@ -1264,7 +1264,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * It also enables syntax such as the following registration of an ignored, tagged test:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { ... }
    *                                                                      ^
    * </pre>
@@ -1273,7 +1273,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * In addition, it enables syntax such as the following registration of a pending, tagged test:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
    *                                                                      ^
    * </pre>
@@ -1294,7 +1294,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
      *                                                                    ^
      * </pre>
@@ -1315,7 +1315,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
      *                                                                    ^
      * </pre>
@@ -1337,7 +1337,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { ... }
      *                                                                    ^
      * </pre>
@@ -1360,7 +1360,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This class enables syntax such as the following test registration:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" in { ... }
    *                                                   ^
    * </pre>
@@ -1369,7 +1369,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * It also enables syntax such as the following registration of an ignored test:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" ignore { ... }
    *                                                   ^
    * </pre>
@@ -1378,7 +1378,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * In addition, it enables syntax such as the following registration of a pending test:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" is (pending)
    *                                                   ^
    * </pre>
@@ -1387,7 +1387,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * And finally, it also enables syntax such as the following tagged test registration:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
    *                                                   ^
    * </pre>
@@ -1406,7 +1406,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" in { ... }
      *                                                 ^
      * </pre>
@@ -1427,7 +1427,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" is (pending)
      *                                                 ^
      * </pre>
@@ -1448,7 +1448,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" ignore { ... }
      *                                                 ^
      * </pre>
@@ -1469,7 +1469,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
      *                                                 ^
      * </pre>
@@ -1492,7 +1492,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This class enables syntax such as the following test registration:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" in { ... }
    * ^
    * </pre>
@@ -1501,7 +1501,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * It also enables syntax such as the following shared test registration:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should behave like nonEmptyStack(lastItemPushed)
    * ^
    * </pre>
@@ -1520,7 +1520,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it should "pop values in last-in-first-out order" in { ... }
      *    ^
      * </pre>
@@ -1539,7 +1539,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" in { ... }
      *    ^
      * </pre>
@@ -1558,7 +1558,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it can "pop values in last-in-first-out order" in { ... }
      *    ^
      * </pre>
@@ -1577,7 +1577,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it should behave like nonFullStack(stackWithOneItem)
      *    ^
      * </pre>
@@ -1596,7 +1596,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it must behave like nonFullStack(stackWithOneItem)
      *    ^
      * </pre>
@@ -1615,7 +1615,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * it can behave like nonFullStack(stackWithOneItem)
      *    ^
      * </pre>
@@ -1635,7 +1635,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This field enables syntax such as the following test registration:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" in { ... }
    * ^
    * </pre>
@@ -1644,7 +1644,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * It also enables syntax such as the following shared test registration:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should behave like nonEmptyStack(lastItemPushed)
    * ^
    * </pre>
@@ -1664,7 +1664,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This class enables syntax such as the following registration of an ignored, tagged test:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
    *                                                                          ^
    * </pre>
@@ -1673,7 +1673,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * In addition, it enables syntax such as the following registration of an ignored, tagged, pending test:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
    *                                                                          ^
    * </pre>
@@ -1699,7 +1699,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
      *                                                                        ^
      * </pre>
@@ -1721,7 +1721,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
      *                                                                        ^
      * </pre>
@@ -1754,7 +1754,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This class enables syntax such as the following registration of an ignored test:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" in { ... }
    *                                                       ^
    * </pre>
@@ -1763,7 +1763,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * In addition, it enables syntax such as the following registration of an ignored, pending test:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" is (pending)
    *                                                       ^
    * </pre>
@@ -1778,7 +1778,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * And finally, it also enables syntax such as the following ignored, tagged test registration:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
    *                                                       ^
    * </pre>
@@ -1797,7 +1797,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" in { ... }
      *                                                     ^
      * </pre>
@@ -1818,7 +1818,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" is (pending)
      *                                                     ^
      * </pre>
@@ -1847,7 +1847,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
      *                                                     ^
      * </pre>
@@ -1873,7 +1873,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This class enables syntax such as the following registration of an ignored test:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" in { ... }
    * ^
    * </pre>
@@ -1892,7 +1892,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * ignore should "pop values in last-in-first-out order" in { ... }
      *        ^
      * </pre>
@@ -1911,7 +1911,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" in { ... }
      *        ^
      * </pre>
@@ -1930,7 +1930,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * ignore can "pop values in last-in-first-out order" in { ... }
      *        ^
      * </pre>
@@ -1950,7 +1950,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This field enables syntax such as the following registration of an ignored test:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" in { ... }
    * ^
    * </pre>
@@ -1970,7 +1970,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * in shorthand form:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * "A Stack (when empty)" should "be empty" in { ... }
    *                                          ^
    * </pre>
@@ -1980,7 +1980,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * in shorthand form:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * "A Stack (when empty)" should "be empty" ignore { ... }
    *                                          ^
    * </pre>
@@ -2013,7 +2013,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" in { ... }
      *                                                        ^
      * </pre>
@@ -2034,7 +2034,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" ignore { ... }
      *                                                        ^
      * </pre>
@@ -2065,7 +2065,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * in shorthand form:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * "A Stack (when empty)" should "be empty" taggedAs() in { ... }
    *                                                     ^
    * </pre>
@@ -2075,7 +2075,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * in shorthand form:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * "A Stack (when empty)" should "be empty" taggedAs(SlowTest) ignore { ... }
    *                                                             ^
    * </pre>
@@ -2109,7 +2109,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
      *                                                                           ^
      * </pre>
@@ -2130,7 +2130,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { ... }
      *                                                                           ^
      * </pre>
@@ -2162,7 +2162,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * For example, this method enables syntax such as the following:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * "A Stack (when empty)" should "be empty" in { ... }
    *                        ^
    * </pre>
@@ -2208,7 +2208,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * For example, this method enables syntax such as the following in:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * "A Stack (with one item)" should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
    *                           ^
    * </pre>
@@ -2365,7 +2365,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * example itself, with all components separated by a space. For example, consider this <code>FlatSpec</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.scalatest.FlatSpec
    *
    * class StackSpec extends FlatSpec {
@@ -2408,7 +2408,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This field supports syntax such as the following:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * it should behave like nonFullStack(stackWithOneItem)
    *           ^
    * </pre>
