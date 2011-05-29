@@ -243,7 +243,7 @@ import Suite.checkRunTestParamsForNull
  * If you run this version of <code>MySuite</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new MathSpec).execute()
  * </pre>
  *
@@ -251,10 +251,10 @@ import Suite.checkRunTestParamsForNull
  * It will run only <code>subtraction</code> and report that <code>addition</code> was ignored:
  * </p>
  *
- * <pre>
- * MySuite:
- * - addition !!! IGNORED !!!
- * - subtraction
+ * <pre class="stREPL">
+ * <span class="stGreen">MySuite:</span>
+ * <span class="stYellow">- addition !!! IGNORED !!!</span>
+ * <span class="stGreen">- subtraction</span>
  * </pre>
  *
  * <h2>Pending tests</h2>
@@ -305,7 +305,7 @@ import Suite.checkRunTestParamsForNull
  * If you run this version of <code>MathSpec</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new MathSpec).execute()
  * </pre>
  *
@@ -313,10 +313,10 @@ import Suite.checkRunTestParamsForNull
  * It will run both tests, but report that <code>subtraction</code> is pending. You'll see:
  * </p>
  *
- * <pre>
- * MySuite:
- * - addition
- * - subtraction (pending)
+ * <pre class="stREPL">
+ * <span class="stGreen">MySuite:
+ * - addition</span>
+ * <span class="stYellow">- subtraction (pending)</span>
  * </pre>
  * 
  * <h2>Informers</h2>
@@ -356,10 +356,10 @@ import Suite.checkRunTestParamsForNull
  * If you run this <code>Suite</code> from the interpreter, you will see the following message
  * included in the printed report:
  *
- * <pre>
- * MySuite:
+ * <pre class="stREPL">
+ * <span class="stGreen">MySuite:
  * - addition
- *   + Addition seems to work 
+ *   + Addition seems to work</span> 
  * </pre>
  *
  * @author Bill Venners
