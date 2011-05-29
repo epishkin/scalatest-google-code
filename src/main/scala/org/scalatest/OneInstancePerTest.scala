@@ -28,6 +28,35 @@ package org.scalatest
  * for example, by the JUnit framework.
  * </p>
  *
+ * <p>
+ * Here's an example of <code>OneInstancePerTest</code> being used in a <code>FunSuite</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FunSuite
+ * import org.scalatest.OneInstancePerTest
+ * import collection.mutable.ListBuffer
+ * 
+ * class MySuite extends FunSuite with OneInstancePerTest {
+ * 
+ *   val builder = new StringBuilder("ScalaTest is ")
+ *   val buffer = new ListBuffer[String]
+ * 
+ *   test("easy") {
+ *     builder.append("easy!")
+ *     assert(builder.toString === "ScalaTest is easy!")
+ *     assert(buffer.isEmpty)
+ *     buffer += "sweet"
+ *   }
+ * 
+ *   test("fun") {
+ *     builder.append("fun!")
+ *     assert(builder.toString === "ScalaTest is fun!")
+ *     assert(buffer.isEmpty)
+ *   }
+ * }
+ * </pre>
+ *
  * @author Bill Venners
  */
 trait OneInstancePerTest extends AbstractSuite {
