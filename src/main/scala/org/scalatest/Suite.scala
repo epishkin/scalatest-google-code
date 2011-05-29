@@ -153,7 +153,7 @@ import Suite.reportInfoProvided
  * to run <code>MySuite</code> from within the Scala interpreter, you could write:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new MySuite).execute()
  * </pre>
  *
@@ -161,17 +161,17 @@ import Suite.reportInfoProvided
  * And you would see:
  * </p>
  *
- * <pre>
- * MySuite:
+ * <pre class="stREPL">
+ * <span class="stGreen">MySuite:
  * - testAddition
- * - testSubtraction
+ * - testSubtraction</span>
  * </pre>
  *
  * <p>
  * Or, to run just the <code>testAddition</code> method, you could write:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new MySuite).execute("testAddition")
  * </pre>
  *
@@ -179,9 +179,9 @@ import Suite.reportInfoProvided
  * And you would see:
  * </p>
  *
- * <pre>
- * MySuite:
- * - testAddition
+ * <pre class="stREPL">
+ * <span class="stGreen">MySuite:
+ * - testAddition</span>
  * </pre>
  *
  * <p>
@@ -439,7 +439,7 @@ import Suite.reportInfoProvided
  * If you now run <code>AlphabetSuite</code>, for example from the interpreter:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new AlphabetSuite).execute()
  * </pre>
  *
@@ -449,14 +449,14 @@ import Suite.reportInfoProvided
  * <code>CSuite</code>&#8212;were run:
  * </p>
  *
- * <pre>
- * AlphabetSuite:
+ * <pre class="stREPL">
+ * <span class="stGreen">AlphabetSuite:
  * ASuite:
  * - testA
  * BSuite:
  * - testB
  * CSuite:
- * - testC
+ * - testC</span>
  * </pre>
  *
  * <p>
@@ -1026,7 +1026,7 @@ import Suite.reportInfoProvided
  * If you run this version of <code>MySuite</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new MySuite).run()
  * </pre>
  *
@@ -1034,10 +1034,10 @@ import Suite.reportInfoProvided
  * It will run only <code>testAddition</code> and report that <code>testSubtraction</code> was ignored. You'll see:
  * </p>
  *
- * <pre>
- * MySuite:
- * - testAddition
- * - testSubtraction !!! IGNORED !!!
+ * <pre class="stREPL">
+ * <span class="stGreen">MySuite:
+ * - testAddition</span>
+ * <span class="stYellow">- testSubtraction !!! IGNORED !!!</span>
  * </pre>
  * 
  * <p>
@@ -1095,7 +1095,7 @@ import Suite.reportInfoProvided
  * If you run this version of <code>MySuite</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new MySuite).run()
  * </pre>
  *
@@ -1103,10 +1103,10 @@ import Suite.reportInfoProvided
  * It will run both tests but report that <code>testSubtraction</code> is pending. You'll see:
  * </p>
  *
- * <pre>
- * MySuite:
- * - testAddition
- * - testSubtraction (pending)
+ * <pre class="stREPL">
+ * <span class="stGreen">MySuite:
+ * - testAddition</span>
+ * <span class="stYellow">- testSubtraction (pending)</span>
  * </pre>
  * 
  * <h2>Informers</h2>
@@ -1138,11 +1138,11 @@ import Suite.reportInfoProvided
  * If you run this <code>Suite</code> from the interpreter, you will see the message
  * included in the printed report:
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new MySuite).run()
- * MySuite:
+ * <span class="stGreen">MySuite:
  * - testAddition(Informer)
- *   + Addition seems to work 
+ *   + Addition seems to work </span>
  * </pre>
  *
  * <h2>Executing suites in parallel</h2>
@@ -1433,7 +1433,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * will be run. Thus to run all tests in a suite from the Scala interpreter, you can write:
    * </p>
    *
-   * <pre>
+   * <pre class="stREPL">
    * scala> (new MySuite).execute()
    * </pre>
    *
@@ -1441,7 +1441,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * To run just the test named <code>"my favorite test"</code> in a suite from the Scala interpreter, you would write:
    * </p>
    *
-   * <pre>
+   * <pre class="stREPL">
    * scala> (new MySuite).execute("my favorite test")
    * </pre>
    *
@@ -1449,7 +1449,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * Or:
    * </p>
    *
-   * <pre>
+   * <pre class="stREPL">
    * scala> (new MySuite).execute(testName = "my favorite test")
    * </pre>
    *
@@ -1464,7 +1464,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * a run with the name of an input file:
    * </p>
    *
-   * <pre>
+   * <pre class="stREPL">
    * scala> (new MySuite).execute(configMap = Map("inputFileName" -> "in.txt")
    * </pre>
    *
@@ -1477,7 +1477,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * to the standard output in color (via ansi escape characters). If you don't want color output, specify false for <code>color</code>, like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stREPL">
    * scala> (new MySuite).execute(color = false)
    * </pre>
    *
@@ -1491,7 +1491,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stREPL">
    * scala> (new MySuite).execute(durations = true)
    * </pre>
    *
@@ -1506,7 +1506,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * <code>shortstacks</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stREPL">
    * scala> (new MySuite).execute(shortstacks = true)
    * </pre>
    *
@@ -1514,7 +1514,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * For full stack traces, set <code>fullstacks</code> to true:
    * </p>
    *
-   * <pre>
+   * <pre class="stREPL">
    * scala> (new MySuite).execute(fullstacks = true)
    * </pre>
    *
@@ -1534,7 +1534,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * succeeded, failed, were ignored or marked pending. Here's how you get the stats:
    * </p>
    *
-   * <pre>
+   * <pre class="stREPL">
    * scala> (new MySuite).execute(stats = true)
    * </pre>
    *
