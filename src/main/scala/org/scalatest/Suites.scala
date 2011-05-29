@@ -69,7 +69,7 @@ class Suites(suitesToNest: Suite*) extends Suite {
  * One use case for this object is to run multiple specification-style suites in the Scala interpreter, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> Suites(new MyFirstSuite, new MyNextSuite).execute()
  * </pre>
  */
