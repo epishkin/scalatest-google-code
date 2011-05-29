@@ -124,18 +124,18 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Running the above <code>StackSpec</code> in the interpreter would yield:
  * </p>
  * 
- * <pre>
+ * <pre class="stREPL">
  * scala> (new StackSpec).execute()
- * StackSpec:
+ * <span class="stGreen">StackSpec:
  * A Stack 
  *   whenever it is empty 
  *     certainly ought to 
- *     - be empty
- *     - complain on peek
- *     - complain on pop
- *   but when full, by contrast, must 
- *   - be full
- *   - complain on push
+ * &nbsp;   - be empty
+ * &nbsp;   - complain on peek
+ * &nbsp;   - complain on pop
+ * &nbsp; but when full, by contrast, must 
+ * &nbsp; - be full
+ * &nbsp; - complain on push</span>
  * </pre>
  *
  * <p>
@@ -184,20 +184,20 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Running the above <code>ComputerRoomRulesSpec</code> in the interpreter would yield:
  * </p>
  * 
- * <pre>
- * (new ComputerRoomRulesSpec).execute()
+ * <pre class="stREPL">
+ * <span class="stGreen">(new ComputerRoomRulesSpec).execute()
  * ComputerRoomRulesSpec:
  * Achtung! 
  *   Alle touristen und non-technischen lookenpeepers! 
- *   - Das machine is nicht fuer fingerpoken und mittengrabben.
- *     Is easy 
- *     - schnappen der springenwerk
- *     - blowenfusen
- *     - und poppencorken mit spitzen sparken.
- *   - Das machine is diggen by experten only.
- *   - Is nicht fuer gerwerken by das dummkopfen.
- *   - Das rubbernecken sightseeren keepen das cottenpicken hands in das pockets.
- *   - Relaxen und watchen das blinkenlights.
+ * &nbsp; - Das machine is nicht fuer fingerpoken und mittengrabben.
+ * &nbsp;   Is easy 
+ * &nbsp;   - schnappen der springenwerk
+ * &nbsp;   - blowenfusen
+ * &nbsp;   - und poppencorken mit spitzen sparken.
+ * &nbsp; - Das machine is diggen by experten only.
+ * &nbsp; - Is nicht fuer gerwerken by das dummkopfen.
+ * &nbsp; - Das rubbernecken sightseeren keepen das cottenpicken hands in das pockets.
+ * &nbsp; - Relaxen und watchen das blinkenlights.</span>
  * </pre>
  *
  * <p>
@@ -785,38 +785,38 @@ import Suite.anErrorThatShouldCauseAnAbort
  * you'll see:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new SharedTestExampleSpec).execute()
- * SharedTestExampleSpec:
+ * <span class="stGreen">SharedTestExampleSpec:
  * A Stack 
  *   when empty 
- *   - should be empty
- *   - should complain on peek
- *   - should complain on pop
- *   when it contains one item 
- *     should 
- *     - be non-empty
- *     - return the top item on peek
- *        - not remove the top item on peek
- *     - remove the top item on pop
- *     - not be full
- *     - add to the top on push
- *   when it contains one item less than capacity 
- *     should 
- *     - be non-empty
- *     - return the top item on peek
- *     - not remove the top item on peek
- *     - remove the top item on pop
- *     - not be full
- *     - add to the top on push
- *   when full 
- *   - should be full
- *     should 
- *     - be non-empty
- *     - return the top item on peek
- *     - not remove the top item on peek
- *     - remove the top item on pop
- *   - should complain on a push
+ * &nbsp; - should be empty
+ * &nbsp; - should complain on peek
+ * &nbsp; - should complain on pop
+ * &nbsp; when it contains one item 
+ * &nbsp;   should 
+ * &nbsp;   - be non-empty
+ * &nbsp;   - return the top item on peek
+ * &nbsp;   - not remove the top item on peek
+ * &nbsp;   - remove the top item on pop
+ * &nbsp;   - not be full
+ * &nbsp;   - add to the top on push
+ * &nbsp; when it contains one item less than capacity 
+ * &nbsp;   should 
+ * &nbsp;   - be non-empty
+ * &nbsp;   - return the top item on peek
+ * &nbsp;   - not remove the top item on peek
+ * &nbsp;   - remove the top item on pop
+ * &nbsp;   - not be full
+ * &nbsp;   - add to the top on push
+ * &nbsp; when full 
+ * &nbsp; - should be full
+ * &nbsp;   should 
+ * &nbsp;   - be non-empty
+ * &nbsp;   - return the top item on peek
+ * &nbsp;   - not remove the top item on peek
+ * &nbsp;   - remove the top item on pop
+ * &nbsp; - should complain on a push</span>
  * </pre>
  * 
  * <p>
@@ -946,7 +946,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * If you run this version of <code>StackSpec</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new StackSpec).execute()
  * </pre>
  *
@@ -954,11 +954,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * It will run only the second test and report that the first test was ignored:
  * </p>
  *
- * <pre>
- * StackSpec:
- * A Stack
- * - should pop values in last-in-first-out order !!! IGNORED !!!
- * - should throw NoSuchElementException if an empty stack is popped
+ * <pre class="stREPL">
+ * <span class="stGreen">StackSpec:
+ * A Stack</span>
+ * <span class="stYellow">- should pop values in last-in-first-out order !!! IGNORED !!!</span>
+ * <span class="stGreen">- should throw NoSuchElementException if an empty stack is popped</span>
  * </pre>
  *
  * <h2>Informers</h2>
@@ -1002,13 +1002,13 @@ import Suite.anErrorThatShouldCauseAnAbort
  * included in the printed report:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new ArithmeticSpec).execute()
- * ArithmeticSpec:
+ * <span class="stGreen">ArithmeticSpec:
  * The Scala language 
  * - should add correctly
  *   + addition seems to work 
- * - should subtract correctly
+ * - should subtract correctly</span>
  * </pre>
  *
  * <p>
@@ -1059,9 +1059,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * included in the printed report:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new ArithmeticSpec).execute()
- * ArithmeticSpec:
+ * <span class="stGreen">ArithmeticSpec:
  * The Scala language 
  * - should add correctly
  *   + Given two integers 
@@ -1070,7 +1070,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * - should subtract correctly
  *   + Given two integers 
  *   + When one is subtracted from the other 
- *   + Then the result is the difference of the two numbers 
+ *   + Then the result is the difference of the two numbers</span> 
  * </pre>
  *
  * <h2>Pending tests</h2>
@@ -1119,7 +1119,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * If you run this version of <code>ArithmeticSpec</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new ArithmeticSpec).execute()
  * </pre>
  *
@@ -1127,10 +1127,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  * It will run both tests but report that <code>The Scala language should subtract correctly</code> is pending. You'll see:
  * </p>
  *
- * <pre>
- * The Scala language
- * - should add correctly
- * - should subtract correctly (pending)
+ * <pre class="stREPL">
+ * <span class="stGreen">The Scala language
+ * - should add correctly</span>
+ * <span class="stYellow">- should subtract correctly (pending)</span>
  * </pre>
  * 
  * <p>
@@ -1171,12 +1171,12 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Would yield the following output when run in the interpreter:
  * </p>
  *
- * <pre>
- * The Scala language
- * - should add correctly (pending)
+ * <pre class="stREPL">
+ * <span class="stGreen">The Scala language</span>
+ * <span class="stYellow">- should add correctly (pending)
  *   + Given two integers 
  *   + When they are added 
- *   + Then the result is the sum of the two numbers 
+ *   + Then the result is the sum of the two numbers</span> 
  * </pre>
  *
  * @author Bill Venners
@@ -1262,7 +1262,7 @@ trait FreeSpec extends Suite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" taggedAs(SlowTest) in { ... }
      *                                       ^
      * </pre>
@@ -1282,7 +1282,7 @@ trait FreeSpec extends Suite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" taggedAs(SlowTest) is (pending)
      *                                       ^
      * </pre>
@@ -1302,7 +1302,7 @@ trait FreeSpec extends Suite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" taggedAs(SlowTest) ignore { ... }
      *                                       ^
      * </pre>
@@ -1343,7 +1343,7 @@ trait FreeSpec extends Suite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" in { ... }
      *                    ^
      * </pre>
@@ -1363,7 +1363,7 @@ trait FreeSpec extends Suite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples>
      * "complain on peek" ignore { ... }
      *                    ^
      * </pre>
@@ -1383,7 +1383,7 @@ trait FreeSpec extends Suite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" is (pending)
      *                    ^
      * </pre>
@@ -1403,7 +1403,7 @@ trait FreeSpec extends Suite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" taggedAs(SlowTest) in { ... }
      *                    ^
      * </pre>
@@ -1584,7 +1584,7 @@ trait FreeSpec extends Suite { thisSuite =>
    * This field enables syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * behave like nonFullStack(stackWithOneItem)
    * ^
    * </pre>
