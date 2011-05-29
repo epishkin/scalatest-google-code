@@ -55,7 +55,7 @@ import Suite.checkRunTestParamsForNull
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFunSuite
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -123,7 +123,7 @@ import Suite.checkRunTestParamsForNull
  * to encapsulate them in a case class. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFunSuite
  * import scala.collection.mutable.ListBuffer
  *
@@ -170,7 +170,7 @@ import Suite.checkRunTestParamsForNull
  * Here's an example in which the name of a temp file is taken from the passed <code>configMap</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFunSuite
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -237,7 +237,7 @@ import Suite.checkRunTestParamsForNull
  * example of how it looks:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *  import org.scalatest.fixture.FixtureFunSuite
  *  import org.scalatest.fixture.ConfigMapFixture
  *
@@ -381,7 +381,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * This method enables the following syntax for shared tests in a <code>FixtureFunSuite</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * testsFor(nonEmptyStack(lastValuePushed))
    * </pre>
    *

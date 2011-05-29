@@ -69,7 +69,7 @@ import org.scalatest.Suite._
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureSuite
  * import collection.mutable.Stack
  * import java.util.NoSuchElementException
@@ -117,7 +117,7 @@ import org.scalatest.Suite._
  * <code>finally</code> clause, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * def withFixture(test: OneArgTest) {
  *   val resource = someResource.open() // set up the fixture
  *   try {
@@ -143,7 +143,7 @@ import org.scalatest.Suite._
  * to encapsulate them in a case class. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureSuite
  * import scala.collection.mutable.ListBuffer
  *
@@ -190,7 +190,7 @@ import org.scalatest.Suite._
  * Here's an example in which the name of a temp file is taken from the passed <code>configMap</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureSuite
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -256,7 +256,7 @@ import org.scalatest.Suite._
  * example of how it looks:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *  import org.scalatest.fixture.FixtureSuite
  *  import org.scalatest.fixture.ConfigMapFixture
  *
@@ -292,7 +292,7 @@ import org.scalatest.Suite._
  * of supplying the <code>Stack[String]</code> fixture. Here's how it looks:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureSuite
  * import org.scalatest.fixture.ConfigMapFixture
  * import collection.mutable.Stack
@@ -355,7 +355,7 @@ import org.scalatest.Suite._
  * If you run the previous class in the Scala interpreter, you'll see:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> import org.scalatest._
  * import org.scalatest._
  *
@@ -384,7 +384,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * to <code>FixtureSuite</code>'s <code>withFixture</code> method, such as:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * def testSomething(fixture: Fixture) {
    *   // ...
    * }
@@ -435,7 +435,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
      * whose <code>FixtureParam</code> is <code>StringBuilder</code>:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * def withFixture(test: OneArgTest) {
      *   withFixture(test.toNoArgTest(new StringBuilder))
      * }

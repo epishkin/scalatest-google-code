@@ -127,7 +127,7 @@ import Suite.reportInfoProvided
  * can have any result type, but the most common result type is <code>Unit</code>. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  *
  * class MySuite extends Suite {
@@ -200,7 +200,7 @@ import Suite.reportInfoProvided
  * such as:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val left = 2
  * val right = 1
  * assert(left == right)
@@ -220,7 +220,7 @@ import Suite.reportInfoProvided
  * a second argument to <code>assert</code>, as in:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * val left = 2
  * val right = 1
  * assert(left == right, left + " did not equal " + right)
@@ -233,7 +233,7 @@ import Suite.reportInfoProvided
  * You use it like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val left = 2
  * val right = 1
  * assert(left === right)
@@ -265,7 +265,7 @@ import Suite.reportInfoProvided
  * the expected value in parentheses after <code>expect</code>, followed by curly braces containing code 
  * that should result in the expected value. For example:
  *
- * <pre>
+ * <pre class="stHighlight">
  * val a = 5
  * val b = 2
  * expect(2) {
@@ -285,7 +285,7 @@ import Suite.reportInfoProvided
  * as when invalid arguments are passed to the method. You can do this in the JUnit style, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val s = "hi"
  * try {
  *   s.charAt(-1)
@@ -308,7 +308,7 @@ import Suite.reportInfoProvided
  * method. You use it like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val s = "hi"
  * intercept[IndexOutOfBoundsException] {
  *   s.charAt(-1)
@@ -323,7 +323,7 @@ import Suite.reportInfoProvided
  * the exception has the expected values. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val s = "hi"
  * val caught =
  *   intercept[IndexOutOfBoundsException] {
@@ -561,7 +561,7 @@ import Suite.reportInfoProvided
  * each test with <code>after</code>, like this:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import org.scalatest.BeforeAndAfter
  * import collection.mutable.ListBuffer
@@ -604,7 +604,7 @@ import Suite.reportInfoProvided
  * invokes the function, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * // Default implementation
  * protected def withFixture(test: NoArgTest) {
  *   test()
@@ -618,7 +618,7 @@ import Suite.reportInfoProvided
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import collection.mutable.ListBuffer
  *
@@ -677,7 +677,7 @@ import Suite.reportInfoProvided
  * with-fixture method or methods in each test. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import collection.mutable.ListBuffer
  * 
@@ -753,7 +753,7 @@ import Suite.reportInfoProvided
  * method that takes a by-name parameter, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * def withDataInDatabase(test: => Any) {
  *   // initialize the database across the network
  *   try {
@@ -769,7 +769,7 @@ import Suite.reportInfoProvided
  * You can then use it like:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * def testUserLogsIn() {
  *   withDataInDatabase {
  *     // test user logging in scenario
@@ -794,7 +794,7 @@ import Suite.reportInfoProvided
  * factored out into two traits named <code>Builder</code> and <code>Buffer</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import org.scalatest.AbstractSuite
  * import collection.mutable.ListBuffer
@@ -853,7 +853,7 @@ import Suite.reportInfoProvided
  * to <code>Builder</code>, you need only switch the order you mix them together, like this: 
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends Suite with Buffer with Builder
  * </pre>
  *
@@ -867,7 +867,7 @@ import Suite.reportInfoProvided
  * were rewritten to use the <code>BeforeAndAfterEach</code> methods instead of <code>withFixture</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import org.scalatest.BeforeAndAfterEach
  * import collection.mutable.ListBuffer
@@ -978,7 +978,7 @@ import Suite.reportInfoProvided
  * (<em>i.e.</em>, tag it as being <code>SlowAsMolasses</code>) like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * @SlowAsMolasses
  * def testSleeping() = sleep(1000000)
  * </pre>
@@ -1001,7 +1001,7 @@ import Suite.reportInfoProvided
  * annotation for this purpose. You use it like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import org.scalatest.Ignore
  *
@@ -1076,7 +1076,7 @@ import Suite.reportInfoProvided
  * <code>org.scalatest.Spec</code>, you can also use it in <code>Suite</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Suite
  *
  * class MySuite extends Suite {
@@ -1124,7 +1124,7 @@ import Suite.reportInfoProvided
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest._
  * 
  * class MySuite extends Suite {
@@ -1712,7 +1712,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
   * method takes a <code>Informer</code>. Here are a few method signatures and the names that this trait's implementation assigns them:
   * </p>
   *
-  * <pre>
+  * <pre class="stHighlight">
   * def testCat() {}         // test name: "testCat"
   * def testCat(Informer) {} // test name: "testCat(Informer)"
   * def testDog() {}         // test name: "testDog"
@@ -2293,7 +2293,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * to be denoted by placing "<code>(pending)</code>" after the test name, as in:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * test("that style rules are not laws") (pending)
    * </pre>
    *
