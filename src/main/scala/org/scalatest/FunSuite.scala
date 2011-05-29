@@ -27,7 +27,7 @@ import Suite.checkRunTestParamsForNull
  * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands
  * for &#8220;function.&#8221; Here's an example <code>FunSuite</code>:
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  *
  * class MySuite extends FunSuite {
@@ -97,7 +97,7 @@ import Suite.checkRunTestParamsForNull
  * to <code>shared</code> is used by multiple test functions:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  *
  * class MySuite extends FunSuite {
@@ -132,7 +132,7 @@ import Suite.checkRunTestParamsForNull
  * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  * import scala.collection.mutable.ListBuffer
  *
@@ -179,7 +179,7 @@ import Suite.checkRunTestParamsForNull
  * For example, you could create a temporary file before each test, and delete it afterwords, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
@@ -247,7 +247,7 @@ import Suite.checkRunTestParamsForNull
  * implementation of <code>withFixture(NoArgTest)</code> simply invokes the function, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * // Default implementation
  * protected def withFixture(test: NoArgTest) {
  *   test()
@@ -259,7 +259,7 @@ import Suite.checkRunTestParamsForNull
  * Thus, the previous temp file example could also be implemented without mixing in <code>BeforeAndAfterEach</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
@@ -333,7 +333,7 @@ import Suite.checkRunTestParamsForNull
  * by overriding the <code>withFixture(OneArgTest)</code> method of a <code>FixtureFunSuite</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFunSuite
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -426,7 +426,7 @@ import Suite.checkRunTestParamsForNull
  * For example, given this stack class:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import scala.collection.mutable.ListBuffer
  * 
  * class Stack[T] {
@@ -481,7 +481,7 @@ import Suite.checkRunTestParamsForNull
  * method containing shared tests for non-full stacks:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  * 
  * trait FunSuiteStackBehaviors { this: FunSuite =>
@@ -531,7 +531,7 @@ import Suite.checkRunTestParamsForNull
  * which looks like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * testsFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
  * testsFor(nonFullStack(stackWithOneItem))
  * </pre>
@@ -543,7 +543,7 @@ import Suite.checkRunTestParamsForNull
  * in scope already inside the behavior function. In that case, your code would look like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * testsFor(nonEmptyStack) // assuming lastValuePushed is also in scope inside nonEmptyStack
  * testsFor(nonFullStack)
  * </pre>
@@ -552,7 +552,7 @@ import Suite.checkRunTestParamsForNull
  * The recommended style, however, is the functional, pass-all-the-needed-values-in style. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  * 
  * class StackFunSuite extends FunSuite with FunSuiteStackBehaviors {
@@ -667,7 +667,7 @@ import Suite.checkRunTestParamsForNull
  * Given this <code>FunSuiteStackBehaviors</code> trait, calling it with the <code>stackWithOneItem</code> fixture, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * testsFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
  * </pre>
  *
@@ -685,7 +685,7 @@ import Suite.checkRunTestParamsForNull
  * Whereas calling it with the <code>stackWithOneItemLessThanCapacity</code> fixture, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * testsFor(nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed))
  * </pre>
  *
@@ -715,7 +715,7 @@ import Suite.checkRunTestParamsForNull
  * create matching groups for <code>FunSuite</code>s like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Tag
  *
  * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
@@ -726,7 +726,7 @@ import Suite.checkRunTestParamsForNull
  * Given these definitions, you could place <code>FunSuite</code> tests into groups like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  *
  * class MySuite extends FunSuite {
@@ -769,7 +769,7 @@ import Suite.checkRunTestParamsForNull
  * disable the test named <code>addition</code>, just change &#8220;<code>test</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  *
  * class MySuite extends FunSuite {
@@ -833,7 +833,7 @@ import Suite.checkRunTestParamsForNull
  * <code>org.scalatest.Spec</code>, you can also use it in <code>FunSuite</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  *
  * class MySuite extends FunSuite {
@@ -884,7 +884,7 @@ import Suite.checkRunTestParamsForNull
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  *
  * class MySuite extends FunSuite {
@@ -1047,7 +1047,7 @@ trait FunSuite extends Suite { thisSuite =>
    * This method enables the following syntax for shared tests in a <code>FunSuite</code>:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * testsFor(nonEmptyStack(lastValuePushed))
    * </pre>
    *
