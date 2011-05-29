@@ -1,12 +1,12 @@
 
 pre.stExamples {
-  background-color: #2c415c;
+  background-color: #1b3449;
   padding: 10px;
   color: white;
 }
 
 pre.stREPL {
-  background-color: #2c415c;
+  background-color: #1b3449;
   padding: 10px;
   color: white;
 }
@@ -31,27 +31,26 @@ pre.stHighlighted {
   font-family: "Lucida Console", Monaco, monospace;
   font-size: 95%;
   line-height: 110%;
-  padding-left: 4%;
-  padding-top: 24px;
-  background-color: #2c415c;
-  color: white;
+  padding: 10px;
+  background-color: #ecedec;
+  color: black;
   text-align: left;
 }
 
 .stType {
-  color: #428bdd;
+  color: #418da7;
 }
 
 .stLiteral {
-  color: #00cc00;
+  color: #2b875e;
 }
 
 .stQuotedString {
-  color: #00cc00;
+  color: #2b875e;
 }
 
 .stReserved {
-  color: #0000cc;
+  color: #00008b;
 }
 
 .stBlockComment, .stLineComment {
@@ -62,3 +61,4 @@ pre.stHighlighted {
 pre.stHighlight {
   display: none;
 }
+
