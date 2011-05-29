@@ -41,7 +41,7 @@ val scaladocForTableFor1VerbatimString = """
  * singleton object provided by the <code>Tables</code> trait. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val examples =
  *   Table(
  *     "a",
@@ -81,7 +81,7 @@ val scaladocForTableFor1VerbatimString = """
  * the <code>TableFor1</code>, passing in the property check function. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll (examples) { (a) =>
  *   a should equal (a * 1)
  * }
@@ -93,7 +93,7 @@ val scaladocForTableFor1VerbatimString = """
  * on each row of the table:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * for (row <- examples) yield {
  *   failureOf { row._1 should not equal (7) }
  * }
@@ -106,7 +106,7 @@ val scaladocForTableFor1VerbatimString = """
  * a <code>Some</code> wrapping that exception. For example, the previous for expression would give you:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * Vector(None, None, None, None, None, None, None,
  *     Some(org.scalatest.TestFailedException: 7 equaled 7), None, None)
  * </pre>
@@ -128,7 +128,7 @@ val scaladocForTableFor1VerbatimString = """
  * the next value you expect.
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val first14FiboNums =
  *   Table("n", 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233)
  * </pre>
@@ -138,7 +138,7 @@ val scaladocForTableFor1VerbatimString = """
  * expected return value, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *  forAll (first14FiboNums) { n =>
  *    FiboGen.next should equal (n)
  *  }
@@ -192,7 +192,7 @@ import org.scalacheck.Test.Params
  * For an example of trait <code>GeneratorDrivenPropertyChecks</code> in action, imagine you want to test this <code>Fraction</code> class:
  * </p>
  *  
- * <pre>
+ * <pre class="stHighlight">
  * class Fraction(n: Int, d: Int) {
  *
  *   require(d != 0)
@@ -211,7 +211,7 @@ import org.scalacheck.Test.Params
  * (and <code>ShouldMatchers</code>) and check a property using a <code>forAll</code> method, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll { (n: Int, d: Int) =>
  *
  *   whenever (d != 0 && d != Integer.MIN_VALUE
@@ -266,7 +266,7 @@ import org.scalacheck.Test.Params
  * an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll ("a", "b") { (a: String, b: String) =>
  *   a.length + b.length should equal ((a + b).length + 1) // Should fail
  * }
@@ -288,7 +288,7 @@ import org.scalacheck.Test.Params
  * For example, this property check:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll { (a: String, b: String) =>
  *   a.length + b.length should equal ((a + b).length + 1) // Should fail
  * }
@@ -317,7 +317,7 @@ import org.scalacheck.Test.Params
  * For example, to create a generator of even integers between (and including) -2000 and 2000, you could write this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalacheck.Gen
  *
  * val evenInts = for (n <- Gen.choose(-1000, 1000)) yield 2 * n
@@ -327,7 +327,7 @@ import org.scalacheck.Test.Params
  * Given this generator, you could use it on a property check like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll (evenInts) { (n) => n % 2 should equal (0) }
  * </pre>
  *
@@ -339,7 +339,7 @@ import org.scalacheck.Test.Params
  * <code>whenever</code> clause like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *   whenever (d != 0 && d != Integer.MIN_VALUE
  *       && n != Integer.MIN_VALUE) { ...
  * </pre>
@@ -348,7 +348,7 @@ import org.scalacheck.Test.Params
  * You could in addition define generators for the numerator and denominator that only produce valid values, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val validNumers =
  *   for (n <- Gen.choose(Integer.MIN_VALUE + 1, Integer.MAX_VALUE)) yield n
  * val validDenoms =
@@ -359,7 +359,7 @@ import org.scalacheck.Test.Params
  * You could then use them in the property check like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll (validNumers, validDenoms) { (n: Int, d: Int) =>
  *
  *   whenever (d != 0 && d != Integer.MIN_VALUE
@@ -395,7 +395,7 @@ import org.scalacheck.Test.Params
  * in parentheses after <code>forAll</code>, before the property function. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll ((validNumers, "n"), (validDenoms, "d")) { (n: Int, d: Int) =>
  *
  *   whenever (d != 0 && d != Integer.MIN_VALUE
@@ -513,7 +513,7 @@ import org.scalacheck.Test.Params
  * you want all parameters at their defaults except for <code>minSize</code> and <code>maxSize</code>, you can override
  * <code>generatorDrivenConfig</code>, like this:
  *
- * <pre>
+ * <pre class="stHighlight">
  * implicit override val generatorDrivenConfig =
  *   PropertyCheckConfig(minSize = 10, maxSize = 20)
  * </pre>
@@ -522,7 +522,7 @@ import org.scalacheck.Test.Params
  * Or, if hide it by declaring a variable of the same name in whatever scope you want the changed values to be in effect:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * implicit val generatorDrivenConfig =
  *   PropertyCheckConfig(minSize = 10, maxSize = 20)
  * </pre>
@@ -535,7 +535,7 @@ import org.scalacheck.Test.Params
  * you can do so like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll (minSuccessful(500)) { (n: Int, d: Int) => ...
  * </pre>
  *
@@ -545,7 +545,7 @@ import org.scalacheck.Test.Params
  * If you want to set multiple configuration parameters in this way, just list them separated by commas:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * forAll (minSuccessful(500), maxDiscarded(300)) { (n: Int, d: Int) => ...
  * </pre>
  *
@@ -554,7 +554,7 @@ import org.scalacheck.Test.Params
  * add the configuration parameters after the list of generators, names, or generator/name pairs, as in:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * // If providing argument names
  * forAll ("n", "d", minSuccessful(500), maxDiscarded(300)) {
  *   (n: Int, d: Int) => ...
@@ -592,7 +592,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    * Here are some examples:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * forAll (minSize(1), maxSize(10)) { (a: String) =>
    *   a.length should equal ((a).length)
    * }
@@ -635,7 +635,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    * Here are some examples:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * forAll (minSize(1), maxSize(10)) { (a: String) =>
    *   a.length should equal ((a).length)
    * }
@@ -665,7 +665,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    * In the first example above, the <code>ConfiguredPropertyCheck</code> object is returned by:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * forAll (minSize(1), maxSize(10))
    * </pre>
    *
@@ -673,7 +673,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    * The code that follows is an invocation of one of the <code>ConfiguredPropertyCheck</code> <code>apply</code> methods:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * { (a: String) =>
    *   a.length should equal ((a).length)
    * }
@@ -695,7 +695,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    * Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * forAll (minSize(1), maxSize(10)) { (a: String) =>
    *   a.length should equal ((a).length)
    * }
@@ -736,7 +736,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    * Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * forAll (minSize(1), maxSize(10)) { (a: String, b: String) =>
    *   a.length + b.length should equal ((a + b).length)
    * }
@@ -778,7 +778,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    * Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String) =>
    *   a.length + b.length + c.length should equal ((a + b + c).length)
    * }
@@ -821,7 +821,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    * Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String) =>
    *   a.length + b.length + c.length + d.length should equal ((a + b + c + d).length)
    * }
@@ -865,7 +865,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    * Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String, e: String) =>
    *   a.length + b.length + c.length + d.length + e.length should equal ((a + b + c + d + e).length)
    * }
@@ -910,7 +910,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    * Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String, e: String, f: String) =>
    *   a.length + b.length + c.length + d.length + e.length + f.length should equal ((a + b + c + d + e + f).length)
    * }
@@ -958,7 +958,7 @@ val propertyCheckForAllTemplate = """
    * Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * forAll { ($namesAndTypes$) =>
    *   $sumOfArgLengths$ should equal (($sumOfArgs$).length)
    * }
@@ -998,7 +998,7 @@ $arbShrinks$
    * Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * forAll ($argNames$) { ($namesAndTypes$) =>
    *   $sumOfArgLengths$ should equal (($sumOfArgs$).length)
    * }
@@ -1038,7 +1038,7 @@ $arbShrinks$
    * Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.scalacheck.Gen
    *
    * // Define your own string generator:
@@ -1085,7 +1085,7 @@ $shrinks$
    * Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.scalacheck.Gen
    *
    * // Define your own string generator:

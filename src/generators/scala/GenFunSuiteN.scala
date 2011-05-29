@@ -52,7 +52,7 @@ $else$
  * is intended to serve as a fixture object for the suite's tests. Clients must parameterize <code>FunSuite1</code> with the type of the
  * fixture object. Most often this will be done explicitly by subclasses that have tests that need the fixture object. Here's an example:
 $endif$
- <pre>
+ <pre class="stHighlight">
  * class MySuite extends FunSuite$num$[$exampleParams$] {
  *
  *   testWithFixture("example test") {

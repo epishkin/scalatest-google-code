@@ -41,7 +41,7 @@ val scaladocForTableFor1VerbatimString = """
  * singleton object provided by the <code>Tables</code> trait. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val examples =
  *   Table(
  *     "a",
@@ -81,7 +81,7 @@ val scaladocForTableFor1VerbatimString = """
  * the <code>TableFor1</code>, passing in the property check function. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll (examples) { (a) =>
  *   a should equal (a * 1)
  * }
@@ -93,7 +93,7 @@ val scaladocForTableFor1VerbatimString = """
  * on each row of the table:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * for (row <- examples) yield {
  *   failureOf { row._1 should not equal (7) }
  * }
@@ -106,7 +106,7 @@ val scaladocForTableFor1VerbatimString = """
  * a <code>Some</code> wrapping that exception. For example, the previous for expression would give you:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * Vector(None, None, None, None, None, None, None,
  *     Some(org.scalatest.TestFailedException: 7 equaled 7), None, None)
  * </pre>
@@ -128,7 +128,7 @@ val scaladocForTableFor1VerbatimString = """
  * the next value you expect.
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val first14FiboNums =
  *   Table("n", 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233)
  * </pre>
@@ -138,7 +138,7 @@ val scaladocForTableFor1VerbatimString = """
  * expected return value, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *  forAll (first14FiboNums) { n =>
  *    FiboGen.next should equal (n)
  *  }
@@ -199,7 +199,7 @@ val tableScaladocTemplate = """
  * singleton object provided by the <code>Tables</code> trait. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val examples =
  *   Table(
  *     ($argNames$),
@@ -230,7 +230,7 @@ $columnsOfIndexes$
  * the <code>TableFor$n$</code>, passing in the property check function. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll (examples) { ($alphaLower$) =>
  *   $sumOfArgs$ should equal (a * $n$)
  * }
@@ -242,7 +242,7 @@ $columnsOfIndexes$
  * on each row of the table:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * for (row <- examples) yield {
  *   failureOf { row._1 should not equal (7) }
  * }
@@ -255,7 +255,7 @@ $columnsOfIndexes$
  * a <code>Some</code> wrapping that exception. For example, the previous for expression would give you:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * Vector(None, None, None, None, None, None, None,
  *     Some(org.scalatest.TestFailedException: 7 equaled 7), None, None)
  * </pre>
@@ -393,7 +393,7 @@ trait Tables {
    * For example, you could create a table of 5 rows and 2 colums like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.scalatest.prop.Tables._
    *
    * val examples =
@@ -412,7 +412,7 @@ trait Tables {
    * you wanted a table with just one column you could write this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val moreExamples =
    *   Table(
    *     "powerOfTwo",
@@ -428,7 +428,7 @@ trait Tables {
    * Or if you wanted a table with 10 columns and 10 rows, you could do this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val multiplicationTable =
    *   Table(
    *     ("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
@@ -510,7 +510,7 @@ val propertyCheckPreamble = """
  * For an example of trait <code>TableDrivenPropertyChecks</code> in action, imagine you want to test this <code>Fraction</code> class:
  * </p>
  *  
- * <pre>
+ * <pre class="stHighlight">
  * class Fraction(n: Int, d: Int) {
  *
  *   require(d != 0)
@@ -543,7 +543,7 @@ val propertyCheckPreamble = """
  * in <code>Table</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.prop.TableDrivenPropertyChecks._
  *
  * val fractions =
@@ -567,7 +567,7 @@ val propertyCheckPreamble = """
  * You could then check a property against each row of the table using a <code>forAll</code> method, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.matchers.ShouldMatchers._
  *
  * forAll (fractions) { (n: Int, d: Int) =>
@@ -622,7 +622,7 @@ val propertyCheckPreamble = """
  * the next value you expect.
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val first14FiboNums =
  *   Table("n", 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233)
  * </pre>
@@ -632,7 +632,7 @@ val propertyCheckPreamble = """
  * expected return value, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *  forAll (first14FiboNums) { n =>
  *    FiboGen.next should equal (n)
  *  }
@@ -645,7 +645,7 @@ val propertyCheckPreamble = """
  * state transitions in a table. For example, imagine you wanted to test this mutable
  * <code>Counter</code> class:
  *
- * <pre>
+ * <pre class="stHighlight">
       class Counter {
         private var c = 0
         def reset() { c = 0 }
@@ -663,7 +663,7 @@ val propertyCheckPreamble = """
  * zero. You could define the actions that initiate state transitions with case classes, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
       abstract class Action
       case object Start extends Action
       case object Click extends Action
@@ -674,7 +674,7 @@ val propertyCheckPreamble = """
  * Given these actions, you could define a state-transition table like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
       val stateTransitions =
         Table(
           ("action", "expectedCount"),
@@ -696,7 +696,7 @@ val propertyCheckPreamble = """
  * action when there's a match. Then check that the actual value equals the expected value:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
       val counter = new Counter
       forAll (stateTransitions) { (action, expectedCount) =>
         action match {
@@ -730,7 +730,7 @@ val propertyCheckPreamble = """
  * You can express these combinations in a table:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val invalidCombos =
  *   Table(
  *     ("n",               "d"),
@@ -746,7 +746,7 @@ val propertyCheckPreamble = """
  * Given this table, you could check that all invalid combinations produce <code>IllegalArgumentException</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll (invalidCombos) { (n: Int, d: Int) =>
  *   evaluating {
  *     new Fraction(n, d)
@@ -767,7 +767,7 @@ trait TableDrivenPropertyChecks extends Whenever with Tables {
    * data for which it is known the property would fail. For example, given the following <code>Fraction</code> class:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * class Fraction(n: Int, d: Int) {
    *
    *   require(d != 0)
@@ -786,7 +786,7 @@ trait TableDrivenPropertyChecks extends Whenever with Tables {
    * <code>Fraction</code> class like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.scalatest.prop.TableDrivenPropertyChecks._
    *
    * val fractions =
@@ -813,7 +813,7 @@ trait TableDrivenPropertyChecks extends Whenever with Tables {
    * to skip any rows in the <code>fraction</code> that represent illegal arguments, like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.scalatest.matchers.ShouldMatchers._
    *
    * forAll (fractions) { (n: Int, d: Int) =>
