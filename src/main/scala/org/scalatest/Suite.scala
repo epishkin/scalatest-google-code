@@ -663,7 +663,7 @@ import Suite.reportInfoProvided
  * <p>
  * The reason you should perform cleanup in a <code>finally</code> clause is that <code>withFixture</code> is called by
  * <code>runTest</code>, which expects an exception to be thrown to indicate a failed test. Thus when you invoke
- * the <code>test</code> function, it may complete abruptly with an exception. The <code>finally</code> clause will
+ * the <code>test</code> function inside <code>withFixture</code>, it may complete abruptly with an exception. The <code>finally</code> clause will
  * ensure the fixture cleanup happens as that exception propagates back up the call stack to <code>runTest</code>.
  * </p>
  *
@@ -673,7 +673,7 @@ import Suite.reportInfoProvided
  * If different tests in the same <code>Suite</code> need different shared fixtures, you can again use the <em>loan pattern</em> to supply to
  * each test just the fixture or fixtures it needs. 
  * For each fixture needed by multiple tests, create a <em>with-fixture</em>
- * method that takes a function you will use to pass the fixture to the test. Then call the appropriate
+ * method (<em>i.e.</em>, a method with a name such as <code>withBuilder</code>, <code>withBuffer</code>, or <code>withDatabase</code>) that takes a function you will use to pass the fixture to the test. Then call the appropriate
  * with-fixture method or methods in each test. Here's an example:
  * </p>
  *
