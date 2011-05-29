@@ -149,8 +149,8 @@ import org.scalatest.Suite._
  *
  * class MySuite extends FixtureSuite {
  *
- *   case class FixP(builder: StringBuilder, buffer: ListBuffer[String])
- *   type FixtureParam = FixP
+ *   case class F(builder: StringBuilder, buffer: ListBuffer[String])
+ *   type FixtureParam = F
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -162,14 +162,14 @@ import org.scalatest.Suite._
  *     test(F(stringBuilder, listBuffer))
  *   }
  *
- *   def testEasy(f: FixP) {
+ *   def testEasy(f: F) {
  *     f.builder.append("easy!")
  *     assert(f.builder.toString === "ScalaTest is easy!")
  *     assert(f.buffer.isEmpty)
  *     f.buffer += "sweet"
  *   }
  *
- *   def testFun(f: FixP) {
+ *   def testFun(f: F) {
  *     f.builder.append("fun!")
  *     assert(f.builder.toString === "ScalaTest is fun!")
  *     assert(f.buffer.isEmpty)
