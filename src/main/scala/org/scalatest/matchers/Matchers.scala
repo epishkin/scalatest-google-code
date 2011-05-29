@@ -266,7 +266,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (have length (2) and have length (3 - 1))
        *                                              ^
        * </pre>
@@ -276,7 +276,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (have size (2) and have size (3 - 1))
        *                                            ^ 
        * </pre>
@@ -287,7 +287,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Array(1, 2) should (have size (2) and have size (3 - 1))
      *                                   ^ 
      * </pre>
@@ -305,7 +305,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (contain (2) and contain (3 - 1))
        *                                             
        * </pre>
@@ -316,7 +316,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Map("one" -> 1, "two" -> 2) should (contain key ("two") and contain key ("one"))
        *                                                                     ^
        * </pre>
@@ -326,7 +326,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Map("one" -> 1, "two" -> 2) should (contain value (2) and contain value (1))
        *                                                                   ^
        * </pre>
@@ -337,7 +337,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Map("one" -> 1, "two" -> 2) should (contain key ("two") and contain key ("one"))
      *                                                         ^ 
      * </pre>
@@ -355,7 +355,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * isFileMock should (be a ('file) and be a ('file))
        *                                        ^
        * </pre>
@@ -365,7 +365,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * myFile should (be a (file) and be a (file))
        *                                        ^
        * </pre>
@@ -375,7 +375,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * isAppleMock should (be an ('apple) and be an ('apple))
        *                                           ^
        * </pre>
@@ -385,7 +385,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * isAppleMock should (be an (apple) and be an (apple))
        *                                           ^
        * </pre>
@@ -395,7 +395,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * obj should (be theSameInstanceAs (string) and be theSameInstanceAs (string))
        *                                                  ^
        * </pre>
@@ -406,7 +406,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * isFileMock should (be a ('file) and be a ('file))
      *                                 ^
      * </pre>
@@ -424,7 +424,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (fullyMatch regex (decimal) and fullyMatch regex (decimal))
        *                                                         ^
        * </pre>
@@ -434,7 +434,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (fullyMatch regex (decimalRegex) and fullyMatch regex (decimalRegex))
        *                                                              ^
        * </pre>
@@ -445,7 +445,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "1.7" should (fullyMatch regex (decimalRegex) and fullyMatch regex (decimalRegex))
      *                                               ^
      * </pre>
@@ -463,7 +463,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (include regex (decimal) and include regex (decimal))
        *                                                   ^
        * </pre>
@@ -473,7 +473,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (include regex (decimalRegex) and include regex (decimalRegex))
        *                                                        ^
        * </pre>
@@ -484,7 +484,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "hello, world" should (include regex ("hel*o") and include regex ("wor.d"))
      *                                           ^
      * </pre>
@@ -502,7 +502,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (startWith regex (decimal) and startWith regex (decimal))
        *                                                       ^
        * </pre>
@@ -512,7 +512,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (startWith regex (decimalRegex) and startWith regex (decimalRegex))
        *                                                            ^
        * </pre>
@@ -523,7 +523,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "1.78" should (have length (4) and startWith regex ("1.7"))
      *                                ^
      * </pre>
@@ -541,7 +541,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (endWith regex (decimal) and endWith regex (decimal))
        *                                                   ^
        * </pre>
@@ -551,7 +551,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (endWith regex (decimalRegex) and endWith regex (decimalRegex))
        *                                                        ^
        * </pre>
@@ -562,7 +562,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "1.7" should (endWith regex (decimalRegex) and endWith regex (decimalRegex))
      *                                            ^
      * </pre>
@@ -580,7 +580,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 1 should (not equal (2) and not equal (3 - 1))
        *                                 ^
        * </pre>
@@ -591,7 +591,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 1 should (not be (2) and not be (3 - 1))
        *                              ^
        * </pre>
@@ -602,7 +602,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (not have size (5) and not have length (3))
        *                                               ^
        * </pre>
@@ -613,7 +613,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (not have size (5) and not have size (3))
        *                                               ^
        * </pre>
@@ -624,7 +624,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * book should (not have (title ("Moby Dick")) and not have (author ("Melville")))
        *                                                     ^
        * </pre>
@@ -635,7 +635,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 5 should (not be < (2) and not be < (6))
        *                                ^
        * </pre>
@@ -646,7 +646,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * map should (contain key (7) and not be (null))
        *                                     ^
        * </pre>
@@ -656,7 +656,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 7 should (not be > (8) and not be > (6))
        *                                ^
        * </pre>
@@ -667,7 +667,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 2 should (not be <= (1) and not be <= (2))
        *                                 ^
        * </pre>
@@ -678,7 +678,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 7 should (not be >= (8) and not be >= (6))
        *                                 ^
        * </pre>
@@ -689,7 +689,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 5 should (not be === (2) and not be === (6))
        *                                  ^
        * </pre>
@@ -700,7 +700,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * notEmptyMock should (not be ('empty) and not be ('empty))
        *                                              ^
        * </pre>
@@ -710,7 +710,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 2 should (not be (odd) and not be (odd))
        *                                ^
        * </pre>
@@ -720,7 +720,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * myFile should (not be (directory) and not be (directory))
        *                                              ^
        * </pre>
@@ -730,7 +730,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * isNotFileMock should (not be a ('file) and not be a ('file))
        *                                                ^
        * </pre>
@@ -740,7 +740,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * myFile should (not be a (directory) and not be a (directory))
        *                                             ^
        * </pre>
@@ -750,7 +750,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * isNotAppleMock should (not be an ('apple) and not be an ('apple)) 
        *                                                   ^
        * </pre>
@@ -760,7 +760,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * myFile should (not be an (directory) and not be an (directory))
        *                                              ^
        * </pre>
@@ -770,7 +770,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * obj should (not be theSameInstanceAs (otherString) and not be theSameInstanceAs (otherString))
        *                                                            ^
        * </pre>
@@ -780,7 +780,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenDotOh should (not be (17.0 plusOrMinus 0.2) and not be (17.0 plusOrMinus 0.2))
        *                                                          ^
        * </pre>
@@ -790,7 +790,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenDotOhFloat should (not be (17.0f plusOrMinus 0.2f) and not be (17.0f plusOrMinus 0.2f))
        *                                                                 ^
        * </pre>
@@ -800,7 +800,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenLong should (not be (17L plusOrMinus 2L) and not be (17L plusOrMinus 2L))
        *                                                       ^
        * </pre>
@@ -810,7 +810,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenInt should (not be (17 plusOrMinus 2) and not be (17 plusOrMinus 2))
        *                                                    ^
        * </pre>
@@ -820,7 +820,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenShort should (not be (17.toShort plusOrMinus 2.toShort) and not be (17.toShort plusOrMinus 2.toShort))
        *                                                                      ^
        * </pre>
@@ -830,7 +830,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) and (not be (19.toByte plusOrMinus 2.toByte)))
        *                                                                      ^
        * </pre>
@@ -840,7 +840,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not fullyMatch regex ("bob") and not fullyMatch regex (decimal))
        *                                                     ^
        * </pre>
@@ -851,7 +851,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not include regex ("bob") and not include regex (decimal))
        *                                                     ^
        * </pre>
@@ -862,7 +862,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not include ("bob") and not include ("1.7"))
        *                                            ^
        * </pre>
@@ -873,7 +873,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not startWith regex ("bob") and not startWith regex (decimal))
        *                                                    ^
        * </pre>
@@ -884,7 +884,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not startWith ("red") and not startWith ("1.7"))
        *                                              ^
        * </pre>
@@ -895,7 +895,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not endWith regex ("bob") and not endWith regex (decimal))
        *                                                  ^
        * </pre>
@@ -906,7 +906,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not endWith ("fre") and not endWith ("1.7"))
        *                                            ^
        * </pre>
@@ -917,7 +917,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (not contain (5) and not contain (3))
        *                                                     ^
        * </pre>
@@ -928,7 +928,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Map("one" -> 1, "two" -> 2) should (not contain key ("five") and not contain key ("three"))
        *                                                                      ^
        * </pre>
@@ -939,7 +939,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Map("one" -> 1, "two" -> 2) should (not contain value (5) and not contain value (3))
        *                                                                   ^
        * </pre>
@@ -951,7 +951,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Map("one" -> 1, "two" -> 2) should (not contain value (5) and not contain value (3))
      *                                                           ^
      * </pre>
@@ -1017,7 +1017,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (have length (2) and have length (3 - 1))
        *                                              ^
        * </pre>
@@ -1027,7 +1027,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (have size (2) and have size (3 - 1))
        *                                       ^
        * </pre>
@@ -1038,7 +1038,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Array(1, 2) should (have size (2) and have size (3 - 1))
      *                                   ^
      * </pre>
@@ -1056,7 +1056,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (contain (2) or contain (3 - 1))
        *                                            ^
        * </pre>
@@ -1067,7 +1067,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Map("one" -> 1, "two" -> 2) should (contain key ("cat") or contain key ("one"))
        *                                                                    ^
        * </pre>
@@ -1077,7 +1077,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Map("one" -> 1, "two" -> 2) should (contain value (7) or contain value (1))
        *                                                                  ^
        * </pre>
@@ -1088,7 +1088,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Map("one" -> 1, "two" -> 2) should (contain value (7) or contain value (1))
      *                                                       ^
      * </pre>
@@ -1106,7 +1106,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * isFileMock should (be a ('file) or be a ('directory))
        *                                       ^
        * </pre>
@@ -1116,7 +1116,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * isFileMock should (be a (file) or be a (directory))
        *                                      ^
        * </pre>
@@ -1126,7 +1126,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * appleMock should (be an ('orange) or be an ('apple))
        *                                         ^
        * </pre>
@@ -1136,7 +1136,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * appleMock should (be an (orange) or be an (apple))
        *                                        ^
        * </pre>
@@ -1146,7 +1146,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * obj should (be theSameInstanceAs (string) or be theSameInstanceAs (otherString))
        *                                                 ^
        * </pre>
@@ -1157,7 +1157,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * isFileMock should (be a ('file) or be a ('directory))
      *                                 ^
      * </pre>
@@ -1175,7 +1175,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
        *                                                        ^
        * </pre>
@@ -1185,7 +1185,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
        *                                                        ^
        * </pre>
@@ -1196,7 +1196,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
      *                                          ^
      * </pre>
@@ -1214,7 +1214,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (include regex ("hello") or include regex (decimal))
        *                                                  ^
        * </pre>
@@ -1224,7 +1224,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (include regex ("hello") or include regex (decimal))
        *                                                  ^
        * </pre>
@@ -1235,7 +1235,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "a1.7b" should (include regex ("1.7") or include regex ("1.7"))
      *                                          ^
      * </pre>
@@ -1253,7 +1253,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (startWith regex ("hello") or startWith regex (decimal))
        *                                                      ^
        * </pre>
@@ -1263,7 +1263,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (startWith regex ("hello") or startWith regex (decimal))
        *                                                      ^
        * </pre>
@@ -1274,7 +1274,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "1.7" should (startWith regex ("hello") or startWith regex ("1.7"))
      *                                            ^
      * </pre>
@@ -1292,7 +1292,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (endWith regex ("hello") or endWith regex (decimal))
        *                                                  ^
        * </pre>
@@ -1302,7 +1302,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "1.7" should (endWith regex ("hello") or endWith regex (decimal))
        *                                                  ^
        * </pre>
@@ -1313,7 +1313,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "1.7b" should (endWith regex ("hello") or endWith regex ("7b"))
      *                                           ^
      * </pre>
@@ -1331,7 +1331,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 1 should (not equal (1) or not equal (2))
        *                                ^
        * </pre>
@@ -1342,7 +1342,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 1 should (not be (1) or not be (2))
        *                             ^
        * </pre>
@@ -1353,7 +1353,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (not have length (2) or not have length (3))
        *                                                ^
        * </pre>
@@ -1364,7 +1364,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (not have size (2) or not have size (3))
        *                                              ^
        * </pre>
@@ -1375,7 +1375,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * book should (not have (title ("Moby Dick")) or not have (author ("Melville")))
        *                                                    ^
        * </pre>
@@ -1386,7 +1386,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * map should (contain key (7) or not be (null))
        *                                    ^
        * </pre>
@@ -1396,7 +1396,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 5 should (not be < (7) or not be < (8))
        *                               ^
        * </pre>
@@ -1407,7 +1407,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 7 should (not be > (5) or not be > (6))
        *                               ^
        * </pre>
@@ -1418,7 +1418,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 2 should (not be <= (3) or not be <= (2))
        *                                ^
        * </pre>
@@ -1429,7 +1429,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 8 should (not be >= (7) or not be >= (6))
        *                                ^
        * </pre>
@@ -1440,7 +1440,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 5 should (not be === (7) or not be === (8))
        *                                 ^
        * </pre>
@@ -1451,7 +1451,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * notEmptyMock should (not be ('full) or not be ('empty))
        *                                            ^
        * </pre>
@@ -1461,7 +1461,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * 2 should (not be (even) or not be (odd))
        *                                ^
        * </pre>
@@ -1471,7 +1471,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * myFile should (not be (directory) or not be (file))
        *                                          ^
        * </pre>
@@ -1481,7 +1481,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * isNotFileMock should (not be a ('directory) or not be a ('file))
        *                                                    ^
        * </pre>
@@ -1491,7 +1491,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * myFile should (not be a (directory) or not be a (file))
        *                                            ^
        * </pre>
@@ -1501,7 +1501,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * notAppleMock should (not be an ('apple) or not be an ('apple))
        *                                                ^
        * </pre>
@@ -1511,7 +1511,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * myFile should (not be an (directory) or not be an (file))
        *                                             ^
        * </pre>
@@ -1521,7 +1521,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * obj should (not be theSameInstanceAs (otherString) or not be theSameInstanceAs (string))
        *                                                           ^
        * </pre>
@@ -1531,7 +1531,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenDotOh should (not be (17.0 plusOrMinus 0.2) or not be (17.0 plusOrMinus 0.2))
        *                                                         ^
        * </pre>
@@ -1541,7 +1541,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenDotOhFloat should (not be (17.0f plusOrMinus 0.2f) or not be (17.0f plusOrMinus 0.2f))
        *                                                                ^
        * </pre>
@@ -1551,7 +1551,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenLong should (not be (17L plusOrMinus 2L) or not be (17L plusOrMinus 2L))
        *                                                      ^
        * </pre>
@@ -1561,7 +1561,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenInt should (not be (17 plusOrMinus 2) or not be (17 plusOrMinus 2))
        *                                                   ^
        * </pre>
@@ -1571,7 +1571,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenShort should (not be (17.toShort plusOrMinus 2.toShort) or not be (17.toShort plusOrMinus 2.toShort))
        *                                                                     ^
        * </pre>
@@ -1581,7 +1581,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) or (not be (19.toByte plusOrMinus 2.toByte)))
        *                                                                     ^
        * </pre>
@@ -1591,7 +1591,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not fullyMatch regex ("fred") or not fullyMatch regex (decimal))
        *                                                     ^
        * </pre>
@@ -1602,7 +1602,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not include regex ("fred") or not include regex (decimal))
        *                                                  ^
        * </pre>
@@ -1613,7 +1613,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not include ("bob") or not include ("1.7"))
        *                                           ^
        * </pre>
@@ -1624,7 +1624,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not startWith regex ("bob") or not startWith regex (decimal))
        *                                                   ^
        * </pre>
@@ -1635,7 +1635,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not startWith ("fred") or not startWith ("1.7"))
        *                                              ^
        * </pre>
@@ -1646,7 +1646,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not endWith regex ("bob") or not endWith regex (decimal))
        *                                                 ^
        * </pre>
@@ -1657,7 +1657,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * "fred" should (not endWith ("fred") or not endWith ("1.7"))
        *                                            ^
        * </pre>
@@ -1668,7 +1668,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Array(1, 2) should (not contain (1) or not contain (3))
        *                                            ^
        * </pre>
@@ -1679,7 +1679,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Map("one" -> 1, "two" -> 2) should (not contain key ("two") or not contain key ("three"))
        *                                                                    ^
        * </pre>
@@ -1690,7 +1690,7 @@ trait Matchers extends Assertions { matchers =>
       /**
        * This method enables the following syntax:
        *
-       * <pre class="stExamples">
+       * <pre class="stHighlight">
        * Map("one" -> 1, "two" -> 2) should (not contain value (2) or not contain value (3))
        *                                                                  ^
        * </pre>
@@ -1702,7 +1702,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Map("one" -> 1, "two" -> 2) should (not contain value (2) or not contain value (3))
      *                                                           ^
      * </pre>
@@ -1741,7 +1741,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * map should contain key ("one")
      *                    ^
      * </pre>
@@ -1759,7 +1759,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * map should contain value (1)
      *                    ^
      * </pre>
@@ -1787,7 +1787,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax (<code>javaMap</code> is a <code>java.util.Map</code>):
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * javaMap should contain key ("two")
      *                        ^
      * </pre>
@@ -1805,7 +1805,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax (<code>javaMap</code> is a <code>java.util.Map</code>):
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * javaMap should contain value ("2")
      *                        ^
      * </pre>
@@ -1824,7 +1824,7 @@ trait Matchers extends Assertions { matchers =>
   /** 
    * This implicit conversion method enables the following syntax (<code>javaColl</code> is a <code>java.util.Collection</code>):
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * javaColl should contain ("two")
    * </pre>
    *
@@ -1849,7 +1849,7 @@ trait Matchers extends Assertions { matchers =>
   /**
    * This implicit conversion method enables the following syntax:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * Array(1, 2) should (not contain (3) and not contain (2))
    * </pre>
    *
@@ -1878,7 +1878,7 @@ trait Matchers extends Assertions { matchers =>
   /**
    * This implicit conversion method enables the following syntax (<code>javaMap</code> is a <code>java.util.Map</code>):
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * javaMap should (contain key ("two"))
    * </pre>
    *
@@ -1937,7 +1937,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Array(1, 2) should (contain (2) and contain (1))
      *                             ^
      * </pre>
@@ -1966,7 +1966,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * map should (contain key ("fifty five") or contain key ("twenty two"))
      *                     ^
      * </pre>
@@ -2000,7 +2000,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Map("one" -> 1, "two" -> 2) should (not contain value (5) and not contain value (3))
      *                                                 ^
      * </pre>
@@ -2040,7 +2040,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "1.7" should (include ("1.7") and include ("1.8"))
      *                       ^
      * </pre>
@@ -2058,7 +2058,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * val decimal = """(-)?(\d+)(\.\d*)?"""
      * "a1.7b" should (include regex (decimal) and include regex (decimal))
      *                         ^
@@ -2069,7 +2069,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
      * "a1.7" should (include regex (decimalRegex) and include regex (decimalRegex))
      *                        ^
@@ -2097,7 +2097,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "1.7b" should (startWith ("1.7") and startWith ("1.7b"))
      *                          ^
      * </pre>
@@ -2115,7 +2115,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * val decimal = """(-)?(\d+)(\.\d*)?"""
      * "1.7b" should (startWith regex (decimal) and startWith regex (decimal))
      *                          ^
@@ -2126,7 +2126,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
      * "1.7" should (startWith regex (decimalRegex) and startWith regex (decimalRegex))
      *                         ^
@@ -2154,7 +2154,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "1.7b" should (endWith ("1.7b") and endWith ("7b"))
      *                        ^
      * </pre>
@@ -2172,7 +2172,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * val decimal = """(-)?(\d+)(\.\d*)?"""
      * "b1.7" should (endWith regex (decimal) and endWith regex (decimal))
      *                        ^
@@ -2183,7 +2183,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
      * "b1.7" should (endWith regex (decimalRegex) and endWith regex (decimalRegex))
      *                        ^
@@ -2213,7 +2213,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * val decimal = """(-)?(\d+)(\.\d*)?"""
      * "1.7" should (fullyMatch regex (decimal) and fullyMatch regex (decimal))
      *                          ^
@@ -2232,7 +2232,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
      * "1.7" should (fullyMatch regex (decimalRegex) and fullyMatch regex (decimalRegex))
      *                          ^
@@ -2501,7 +2501,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * book should have ('title ("A Tale of Two Cities"))
      *                          ^
      * </pre>
@@ -2512,7 +2512,7 @@ trait Matchers extends Assertions { matchers =>
      * above line of code to be eventually transformed into:
      * </p>
      * 
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * book should have (convertSymbolToHavePropertyMatcherGenerator('title).apply("A Tale of Two Cities"))
      * </pre>
      */
@@ -2522,7 +2522,7 @@ trait Matchers extends Assertions { matchers =>
         /**
          * This method enables the following syntax:
          *
-         * <pre class="stExamples">
+         * <pre class="stHighlight">
          * book should have ('title ("A Tale of Two Cities"))
          * </pre>
          * 
@@ -2604,7 +2604,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * book should have length (9)
      *                  ^
      * </pre>
@@ -2667,7 +2667,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * book should have size (9)
      *                  ^
      * </pre>
@@ -2723,7 +2723,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * book should have (title ("A Tale of Two Cities"))
      *                  ^
      * </pre>
@@ -2824,7 +2824,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * collection should have size (10)
      *                        ^
      * </pre>
@@ -2851,7 +2851,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * javaCollection should have size (10)
      *                       ^
      * </pre>
@@ -2878,7 +2878,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * javaMap should have size (10)
      *                     ^
      * </pre>
@@ -2905,7 +2905,7 @@ trait Matchers extends Assertions { matchers =>
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * seq should have length (20)
      *                 ^
      * </pre>
@@ -2933,7 +2933,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * array should have size (10)
      *                   ^
      * </pre>
@@ -2951,7 +2951,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * array should have length (20)
      *                   ^
      * </pre>
@@ -2978,7 +2978,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * iterable should not contain ("one")
      *                     ^
      * </pre>
@@ -2999,7 +2999,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * collection should not have size (3)
      *                       ^
      * </pre>
@@ -3030,7 +3030,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * javaCollection should not have size (3)
      *                           ^
      * </pre>
@@ -3051,7 +3051,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * javaCollection should not contain ("elephant")
      *                           ^
      * </pre>
@@ -3083,7 +3083,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * map should not contain key ("three")
      *                ^
      * </pre>
@@ -3104,7 +3104,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Map("one" -> 1, "two" -> 2) should not contain value (3)
      *                                        ^
      * </pre>
@@ -3135,7 +3135,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * javaMap should not contain key ("three")
      *                    ^
      * </pre>
@@ -3156,7 +3156,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * javaMap should not contain value (3)
      *                            ^
      * </pre>
@@ -3187,7 +3187,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * List(1, 2) should not have length (12)
      *                       ^
      * </pre>
@@ -3219,7 +3219,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Array("two", "three") should not contain ("one")
      *                                  ^
      * </pre>
@@ -3240,7 +3240,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Array(1, 2) should not have size (3)
      *                        ^
      * </pre>
@@ -3261,7 +3261,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Array(1, 2) should not have length (12)
      *                        ^
      * </pre>
@@ -3291,7 +3291,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * javaList should have length (12)
      *                      ^
      * </pre>
@@ -3324,7 +3324,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * javaList should not have length (12)
      *                     ^
      * </pre>
@@ -3359,7 +3359,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * object should be theSameInstanceAs anotherObject
      *                  ^
      * </pre>
@@ -3378,7 +3378,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * fileMock should be a ('file)
      *                    ^
      * </pre>
@@ -3397,7 +3397,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>badBook</code> is, for example, of type <code>Book</code> and
      * <code>goodRead</code> refers to a <code>BePropertyMatcher[Book]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * badBook should be a (goodRead)
      *                   ^
      * </pre>
@@ -3418,7 +3418,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * fruit should be an ('orange)
      *                 ^
      * </pre>
@@ -3436,7 +3436,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>badBook</code> is, for example, of type <code>Book</code> and
      * <code>excellentRead</code> refers to a <code>BePropertyMatcher[Book]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * book should be an (excellentRead)
      *                ^
      * </pre>
@@ -3465,7 +3465,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not equal (7)
      *                   ^
      * </pre>
@@ -3484,7 +3484,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not be (7)
      *                   ^
      * </pre>
@@ -3503,7 +3503,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not be <= (7)
      *                   ^
      * </pre>
@@ -3523,7 +3523,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not be >= (7)
      *                   ^
      * </pre>
@@ -3543,7 +3543,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not be < (7)
      *                   ^
      * </pre>
@@ -3563,7 +3563,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not be > (7)
      *                   ^
      * </pre>
@@ -3583,7 +3583,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not be === (7)
      *                   ^
      * </pre>
@@ -3604,7 +3604,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>odd</code> refers to
      * a <code>BeMatcher[Int]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * 2 should not be (odd)
      *              ^
      * </pre>
@@ -3634,7 +3634,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * map should not be (null)
      *                ^
      * </pre>
@@ -3653,7 +3653,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * stack should not be ('empty)
      *                  ^
      * </pre>
@@ -3671,7 +3671,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>stack</code> is, for example, of type <code>Stack</code> and
      * <code>empty</code> refers to a <code>BePropertyMatcher[Stack]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * stack should not be (empty)
      *                      ^
      * </pre>
@@ -3691,7 +3691,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * notFileMock should not be a ('file)
      *                        ^
      * </pre>
@@ -3709,7 +3709,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>notFileMock</code> is, for example, of type <code>File</code> and
      * <code>file</code> refers to a <code>BePropertyMatcher[File]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * notFileMock should not be a (file)
      *                        ^
      * </pre>
@@ -3729,7 +3729,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * keyEvent should not be an ('actionKey)
      *                     ^
      * </pre>
@@ -3747,7 +3747,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>keyEvent</code> is, for example, of type <code>KeyEvent</code> and
      * <code>actionKey</code> refers to a <code>BePropertyMatcher[KeyEvent]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * keyEvent should not be an (actionKey)
      *                     ^
      * </pre>
@@ -3767,7 +3767,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * otherString should not be theSameInstanceAs (string)
      *                        ^
      * </pre>
@@ -3801,7 +3801,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>badBook</code> is, for example, of type <code>Book</code> and
      * <code>title ("One Hundred Years of Solitude")</code> results in a <code>HavePropertyMatcher[Book]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * book should not have (title ("One Hundred Years of Solitude"))
      *                 ^
      * </pre>
@@ -3867,7 +3867,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should not have length (12)
      *                   ^
      * </pre>
@@ -3888,7 +3888,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""")
      *                   ^
      * </pre>
@@ -3913,7 +3913,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should not include regex ("wo.ld")
      *                   ^
      * </pre>
@@ -3938,7 +3938,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should not include ("world")
      *                   ^
      * </pre>
@@ -3957,7 +3957,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should not startWith regex ("Hel*o")
      *                   ^
      * </pre>
@@ -3982,7 +3982,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "eight" should not startWith ("1.7")
      *                    ^
      * </pre>
@@ -4001,7 +4001,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * greeting should not endWith regex ("wor.d")
      *                     ^
      * </pre>
@@ -4022,7 +4022,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "eight" should not endWith ("1.7")
      *                    ^
      * </pre>
@@ -4051,7 +4051,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOh should not be (6.5 plusOrMinus 0.2)
      *                       ^
      * </pre>
@@ -4083,7 +4083,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOhFloat should not be (6.5f plusOrMinus 0.2f)
      *                            ^
      * </pre>
@@ -4115,7 +4115,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOhLong should not be (4L plusOrMinus 2L)
      *                           ^
      * </pre>
@@ -4147,7 +4147,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOhInt should not be (4 plusOrMinus 2)
      *                          ^
      * </pre>
@@ -4179,7 +4179,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOhShort should not be (4.toShort plusOrMinus 2.toShort)
      *                            ^
      * </pre>
@@ -4211,7 +4211,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOhByte should not be (4.toByte plusOrMinus 2.toByte)
      *                            ^
      * </pre>
@@ -4242,7 +4242,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "eight" should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""".r)
      *                                     ^
      * </pre>
@@ -4252,7 +4252,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "eight" should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""")
      *                                     ^
      * </pre>
@@ -4268,7 +4268,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
    * The primary constructor enables the following syntax (with a passed <code>scala.util.matching.Regex</code>): 
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * "eight" should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""".r)
    *                               ^
    * </pre>
@@ -4280,7 +4280,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This auxiliary constructor enables the following syntax (with a passed <code>java.lang.String</code>): 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "eight" should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""")
      *                               ^
      * </pre>
@@ -4299,7 +4299,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should have length (12)
      *                    ^
      * </pre>
@@ -4327,7 +4327,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should include regex ("world")
      *                       ^
      * </pre>
@@ -4337,7 +4337,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should include regex ("wo.ld".r)
      *                       ^
      * </pre>
@@ -4365,7 +4365,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should startWith regex ("Hel*o")
      *                         ^
      * </pre>
@@ -4375,7 +4375,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should startWith regex ("Hel*o".r)
      *                         ^
      * </pre>
@@ -4403,7 +4403,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should endWith regex ("wor.d")
      *                       ^
      * </pre>
@@ -4413,7 +4413,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should endWith regex ("wor.d".r)
      *                       ^
      * </pre>
@@ -4442,7 +4442,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should fullMatch regex ("Hel*o world")
      *                         ^
      * </pre>
@@ -4452,7 +4452,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should fullymatch regex ("Hel*o world".r)
      *                          ^
      * </pre>
@@ -4472,7 +4472,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * result should equal (7)
    *               ^
    * </pre>
@@ -4484,7 +4484,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
    * will yield false, because <code>Array</code>'s <code>equals</code> method compares object identity:
    * </p>
    * 
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * Array(1, 2) == Array(1, 2) // yields false
    * </pre>
    *
@@ -4493,7 +4493,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
    * the two arrays structurally, taking into consideration the equality of the array's contents:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * Array(1, 2) should equal (Array(1, 2)) // succeeds (i.e., does not throw TestFailedException)
    * </pre>
    *
@@ -4597,7 +4597,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should be &lt; (7)
      *                  ^
      * </pre>
@@ -4614,7 +4614,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method also enables the following syntax:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not (be &lt; (7))
      *                       ^
      * </pre>
@@ -4632,7 +4632,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should be &gt; (7)
      *                  ^
      * </pre>
@@ -4649,7 +4649,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method also enables the following syntax:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not (be &gt; (7))
      *                       ^
      * </pre>
@@ -4667,7 +4667,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should be &lt;= (7)
      *                  ^
      * </pre>
@@ -4684,7 +4684,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method also enables the following syntax:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not (be &lt;= (7))
      *                       ^
      * </pre>
@@ -4702,7 +4702,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should be &gt;= (7)
      *                  ^
      * </pre>
@@ -4719,7 +4719,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method also enables the following syntax:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not (be &gt;= (7))
      *                       ^
      * </pre>
@@ -4738,7 +4738,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should be === (7)
      *                  ^
      * </pre>
@@ -4755,7 +4755,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method also enables the following syntax:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not (be === (7))
      *                       ^
      * </pre>
@@ -4773,7 +4773,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * fileMock should not { be a ('file) }
      *                          ^
      * </pre>
@@ -4787,7 +4787,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>fileMock</code> is, for example, of type <code>File</code> and
      * <code>file</code> refers to a <code>BePropertyMatcher[File]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * fileMock should not { be a (file) }
      *                          ^
      * </pre>
@@ -4807,7 +4807,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * animal should not { be an ('elephant) }
      *                        ^
      * </pre>
@@ -4821,7 +4821,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>keyEvent</code> is, for example, of type <code>KeyEvent</code> and
      * <code>actionKey</code> refers to a <code>BePropertyMatcher[KeyEvent]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * keyEvent should not { be an (actionKey) }
      *                          ^
      * </pre>
@@ -4841,7 +4841,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOh should be (7.1 plusOrMinus 0.2)
      *                      ^
      * </pre>
@@ -4861,7 +4861,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOhFloat should be (7.1f plusOrMinus 0.2f)
      *                           ^
      * </pre>
@@ -4881,7 +4881,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenLong should be (7L plusOrMinus 2L)
      *                     ^
      * </pre>
@@ -4901,7 +4901,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenInt should be (7 plusOrMinus 2)
      *                     ^
      * </pre>
@@ -4921,7 +4921,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenShort should be (7.toShort plusOrMinus 2.toShort)
      *                     ^
      * </pre>
@@ -4941,7 +4941,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenByte should be (7.toByte plusOrMinus 2.toByte)
      *                     ^
      * </pre>
@@ -4961,7 +4961,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * object should be theSameInstancreAs (anotherObject)
      *                  ^
      * </pre>
@@ -4979,7 +4979,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should be (true)
      *                  ^
      * </pre>
@@ -5005,7 +5005,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * object should be (null)
      *                  ^
      * </pre>
@@ -5026,7 +5026,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * set should be ('empty)
      *               ^
      * </pre>
@@ -5040,7 +5040,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>num</code> is, for example, of type <code>Int</code> and
      * <code>odd</code> refers to a <code>BeMatcher[Int]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should be (odd)
      *               ^
      * </pre>
@@ -5053,7 +5053,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax, where <code>open</code> refers to a <code>BePropertyMatcher</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * door should be (open)
      *                ^
      * </pre>
@@ -5073,7 +5073,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables <code>be</code> to be used for equality comparison. Here are some examples: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * object should be (None)
      *                  ^
      * object should be (Some(1))
@@ -5120,7 +5120,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>tempFile</code>, for example, refers to a <code>java.io.File</code>
      * and <code>exist</code> is a <code>Matcher[java.io.File]</code>: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * tempFile should not (exist)
      *                     ^
      * </pre>
@@ -5139,7 +5139,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * <code>Int</code>s that are odd, you can negate it to get a <code>BeMatcher[Int]</code> that matches
      * even <code>Int</code>s, like this:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * val even = not (odd)
      *                ^
      * </pre>
@@ -5148,7 +5148,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * In addition, this method enables you to negate a <code>BeMatcher</code> at its point of use, like this:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should be (not (odd))
      * </pre>
      *
@@ -5156,7 +5156,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * Nevertheless, in such as case it would be more idiomatic to write:
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should not be (odd)
      * </pre>
      */
@@ -5171,7 +5171,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not equal (7) and be < (9))
      *                 ^
      * </pre>
@@ -5181,7 +5181,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Array(1, 2) should (not have length (5) and not have length (3))
      *                         ^
      * </pre>
@@ -5193,7 +5193,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Array(1, 2) should (not have size (5) and not have size (3))
      *                         ^
      * </pre>
@@ -5205,7 +5205,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where, for example, <code>book</code> is of type <code>Book</code> and <code>title</code> and <code>author</code>
      * are both of type <code>HavePropertyMatcher[Book, String]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * book should (not have (title ("Moby Dick")) and (not have (author ("Melville"))))
      *                  ^
      * </pre>
@@ -5217,7 +5217,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where, for example, <code>num</code> is an <code>Int</code> and <code>odd</code>
      * of type <code>BeMatcher[Int]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not be (odd) and be <= (8))
      *                 ^
      * </pre>
@@ -5234,7 +5234,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * map should (not be (null))
      *                 ^
      * </pre>
@@ -5256,7 +5256,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not be < (7) and not be > (10))
      *                 ^
      * </pre>
@@ -5275,7 +5275,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not be > (10) and not be < (7))
      *                 ^
      * </pre>
@@ -5294,7 +5294,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not be <= (7) and not be > (10))
      *                 ^
      * </pre>
@@ -5313,7 +5313,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not be >= (10) and not be < (7))
      *                 ^
      * </pre>
@@ -5332,7 +5332,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not be === (7) and not be === (10))
      *                 ^
      * </pre>
@@ -5351,7 +5351,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * myFile should (not be ('hidden) and have (name ("temp.txt")))
      *                    ^
      * </pre>
@@ -5373,7 +5373,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>tempFile</code>, for example, refers to a <code>java.io.File</code>
      * and <code>hidden</code> is a <code>BePropertyMatcher[java.io.File]</code>: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * tempFile should (not be (hidden) and have ('name ("temp.txt")))
      *                    ^
      * </pre>
@@ -5394,7 +5394,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * isNotFileMock should (not be a ('file) and have ('name ("temp.txt"))))
      *                           ^
      * </pre>
@@ -5416,7 +5416,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where <code>notSoSecretFile</code>, for example, refers to a <code>java.io.File</code>
      * and <code>directory</code> is a <code>BePropertyMatcher[java.io.File]</code>: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * notSoSecretFile should (not be a (directory) and have ('name ("passwords.txt")))
      *                             ^
      * </pre>
@@ -5437,7 +5437,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * isNotAppleMock should (not be an ('apple) and not be ('rotten))
      *                            ^
      * </pre>
@@ -5458,7 +5458,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * myFile should (not be an (directory) and not be an (directory))
      *                    ^
      * </pre>
@@ -5479,7 +5479,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * myFish should (not be theSameInstanceAs (redFish) and not be theSameInstanceAs (blueFish))
      *                    ^
      * </pre>
@@ -5499,7 +5499,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOh should ((not be (17.1 plusOrMinus 0.2)) and (not be (27.1 plusOrMinus 0.2)))
      *                         ^
      * </pre>
@@ -5520,7 +5520,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOhFloat should ((not be (17.1f plusOrMinus 0.2f)) and (not be (27.1f plusOrMinus 0.2f)))
      *                         ^
      * </pre>
@@ -5541,7 +5541,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenLong should ((not be (19L plusOrMinus 2L)) and (not be (29L plusOrMinus 2L)))
      *                        ^
      * </pre>
@@ -5562,7 +5562,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenInt should ((not be (19 plusOrMinus 2)) and (not be (29 plusOrMinus 2)))
      *                       ^
      * </pre>
@@ -5583,7 +5583,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenShort should ((not be (19.toShort plusOrMinus 2.toShort)) and (not be (29.toShort plusOrMinus 2.toShort)))
      *                         ^
      * </pre>
@@ -5604,7 +5604,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) and (not be (29.toByte plusOrMinus 2.toByte)))
      *                        ^
      * </pre>
@@ -5625,7 +5625,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables <code>be</code> to be used for inequality comparison. Here are some examples:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * object should not be (None)
      *                      ^
      * object should not be (Some(1))
@@ -5664,7 +5664,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should (not fullyMatch regex ("Hel*o) and not include ("orld"))
      *                    ^
      * </pre>
@@ -5684,7 +5684,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should (not include regex ("Hel.o") and not include regex ("""(-)?(\d+)(\.\d*)?"""))
      *                    ^
      * </pre>
@@ -5704,7 +5704,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should (not include ("cat") and not include ("1.7"))
      *                    ^
      * </pre>
@@ -5723,7 +5723,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should (not startWith regex ("hel*o") and not endWith regex ("wor.d))
      *                    ^
      * </pre>
@@ -5743,7 +5743,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should ((not startWith ("red")) and (not startWith ("1.7")))
      *                     ^
      * </pre>
@@ -5762,7 +5762,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should (not endWith regex ("wor.d") and not startWith regex ("Hel*o"))
      *                    ^
      * </pre>
@@ -5784,7 +5784,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * string should (not endWith ("blue") and not endWith ("1.7"))
      *                    ^
      * </pre>
@@ -5804,7 +5804,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Array(1, 2) should (not contain (5) and not contain (3))
      *                         ^
      * </pre>
@@ -5824,7 +5824,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Map("one" -> 1, "two" -> 2) should (not contain key ("three"))
      *                                         ^
      * </pre>
@@ -5845,7 +5845,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * Map("one" -> 1, "two" -> 2) should (not contain value (3))
      *                                         ^
      * </pre>
@@ -5867,7 +5867,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This field enables syntax like the following: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * myFile should (not be an (directory) and not have ('name ("foo.bar")))
    *                ^
    * </pre>
@@ -5877,7 +5877,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables syntax such as the following:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * obj should (be theSameInstanceAs (string) and be theSameInstanceAs (string))
    *             ^
    * </pre>
@@ -5907,7 +5907,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables syntax such as the following:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * list should (have length (3) and not contain ('a'))
    *              ^
    * </pre>
@@ -5917,7 +5917,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables syntax such as the following:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * list should (contain ('a') and have length (7))
    *              ^
    * </pre>
@@ -5927,7 +5927,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables syntax such as the following:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * string should (include ("hope") and not startWith ("no"))
    *                ^
    * </pre>
@@ -5937,7 +5937,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables syntax such as the following:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * string should (fullyMatch regex ("Hel*o, wor.d") and not have length (99))
    *                ^
    * </pre>
@@ -5947,7 +5947,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables syntax such as the following:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * string should (startWith ("Four") and include ("year"))
    *                ^
    * </pre>
@@ -5957,7 +5957,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables syntax such as the following:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * string should (endWith ("ago") and include ("score"))
    *                ^
    * </pre>
@@ -5975,7 +5975,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "hi" should not have (length (3))
      *                      ^
      * </pre>
@@ -6027,7 +6027,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * "hi" should not have length (3)
      *                             ^
      * </pre>
@@ -6038,7 +6038,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This field enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * "hi" should not have length (3)
    *                      ^
    * </pre>
@@ -6056,7 +6056,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * set should not have (size (3))
      *                     ^
      * </pre>
@@ -6109,7 +6109,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * set should not have size (3)
      *                          ^
      * </pre>
@@ -6120,7 +6120,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This field enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * set should not have size (3)
    *                     ^
    * </pre>
@@ -6154,7 +6154,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * map should not contain key (10)
      *                            ^
      * </pre>
@@ -6165,7 +6165,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This field enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * map should not contain key (10)
    *                        ^
    * </pre>
@@ -6191,7 +6191,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * map should not contain value (10)
      *                              ^
      * </pre>
@@ -6202,7 +6202,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This field enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * map should not contain value (10)
    *                        ^
    * </pre>
@@ -6236,7 +6236,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax: 
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * badBook should not be a ('goodRead)
      *                         ^
      * </pre>
@@ -6247,7 +6247,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where, for example, <code>badBook</code> is of type <code>Book</code> and <code>goodRead</code>
      * is a <code>BePropertyMatcher[Book]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * badBook should not be a (goodRead)
      *                         ^
      * </pre>
@@ -6258,7 +6258,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This field enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * badBook should not be a ('goodRead)
    *                       ^
    * </pre>
@@ -6292,7 +6292,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * badBook should not be an ('excellentRead)
      *                          ^
      * </pre>
@@ -6303,7 +6303,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax, where, for example, <code>badBook</code> is of type <code>Book</code> and <code>excellentRead</code>
      * is a <code>BePropertyMatcher[Book]</code>:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * badBook should not be an (excellentRead)
      *                          ^
      * </pre>
@@ -6314,7 +6314,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This field enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * badBook should not be an (excellentRead)
    *                       ^
    * </pre>
@@ -6340,7 +6340,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * oneString should not be theSameInstanceAs (anotherString)
      *                                           ^
      * </pre>
@@ -6351,7 +6351,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This field enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * oneString should not be theSameInstanceAs (anotherString)
    *                         ^
    * </pre>
@@ -6361,7 +6361,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This field enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * "eight" should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""".r)
    *                               ^
    * </pre>
@@ -6371,7 +6371,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * "eight" should not include substring ("seven")
    *                            ^
    * </pre>
@@ -6397,7 +6397,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOh should be (17.0 plusOrMinus 0.2)
      *                            ^
      * </pre>
@@ -6434,7 +6434,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * sevenDotOh should be (17.0f plusOrMinus 0.2f)
      *                             ^
      * </pre>
@@ -6471,7 +6471,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * seven should be (17L plusOrMinus 2)
      *                      ^
      * </pre>
@@ -6508,7 +6508,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * seven should be (17 plusOrMinus 2)
      *                     ^
      * </pre>
@@ -6545,7 +6545,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * seven should be (17.toShort plusOrMinus 2.toShort)
      *                             ^
      * </pre>
@@ -6582,7 +6582,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * seven should be (17.toByte plusOrMinus 2.toByte)
      *                            ^
      * </pre>
@@ -6663,7 +6663,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * obj should have length (2)
      *                      ^
      * </pre>
@@ -6688,7 +6688,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * obj should have length (2L)
      *                      ^
      * </pre>
@@ -6722,7 +6722,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * obj should have size (2)
      *                 ^
      * </pre>
@@ -6747,7 +6747,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     /**
      * This method enables the following syntax:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * obj should have size (2L)
      *                 ^
      * </pre>
@@ -6782,7 +6782,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
      * enables syntax such as:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not be < (7)
      *                   ^  ... invoked by this be method
      * </pre>
@@ -6791,7 +6791,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * or
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not be < (10) and not be > (17))
      *                 ^  ... invoked by this be method
      * </pre>
@@ -6811,7 +6811,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
      * enables syntax such as:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not be > (7)
      *                   ^  ... invoked by this be method
      * </pre>
@@ -6820,7 +6820,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * or
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not be > (10) and not be < (7))
      *                 ^  ... invoked by this be method
      * </pre>
@@ -6840,7 +6840,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
      * enables syntax such as:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not be <= (7)
      *                   ^  ... invoked by this be method
      * </pre>
@@ -6849,7 +6849,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * or
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not be <= (10) and not be > (17))
      *                 ^  ... invoked by this be method
      * </pre>
@@ -6869,7 +6869,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
      * enables syntax such as:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not be >= (7)
      *                   ^  ... invoked by this be method
      * </pre>
@@ -6878,7 +6878,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * or
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not be >= (10) and not be < (7))
      *                 ^  ... invoked by this be method
      * </pre>
@@ -6898,7 +6898,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
      * enables syntax such as:
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * result should not be === (7)
      *                   ^  ... invoked by this be method
      * </pre>
@@ -6907,7 +6907,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * or
      * </p>
      *
-     * <pre class="stExamples">
+     * <pre class="stHighlight">
      * num should (not be === (10) and not be > (17))
      *                 ^  ... invoked by this be method
      * </pre>
@@ -6918,7 +6918,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * num should (not be < (10) and not be > (17))
    *                    ^
    * </pre>
@@ -6929,7 +6929,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * num should (not be > (10) and not be < (7))
    *                    ^
    * </pre>
@@ -6940,7 +6940,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * num should (not be <= (10) and not be > (17))
    *                    ^
    * </pre>
@@ -6951,7 +6951,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables the following syntax: 
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * num should (not be >= (10) and not be < (7))
    *                    ^
    * </pre>
@@ -6962,7 +6962,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables the following syntax:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * num should not be === (10)
    *                   ^
    * </pre>
@@ -6981,7 +6981,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables syntax such as the following:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * evaluating { "hi".charAt(-1) } should produce [StringIndexOutOfBoundsException]
    * ^
    * </pre>
@@ -7000,7 +7000,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   /**
    * This method enables the following syntax:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * evaluating { "hi".charAt(-1) } should produce [StringIndexOutOfBoundsException]
    * ^
    * </pre>

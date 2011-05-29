@@ -36,7 +36,7 @@ import org.scalatest._
  * Given this pair of <code>BeMatcher</code>s, you could check whether an <code>Int</code> was odd or even with expressions like:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre class="stHighlight">
  * num should be (odd)
  * num should not be (even)
  * </pre>
@@ -99,7 +99,7 @@ import org.scalatest._
  * The last assertion in the above test will fail with this failure message:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre class="stHighlight">
  * 6 was even
  * </pre>
  *
@@ -120,7 +120,7 @@ trait BeMatcher[-T] extends Function1[T, MatchResult] { thisBeMatcher =>
    * usually the value to the left of a <code>should</code> or <code>must</code> invocation. For example,
    * in:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * num should be (odd)
    * </pre>
    *
@@ -161,7 +161,7 @@ trait BeMatcher[-T] extends Function1[T, MatchResult] { thisBeMatcher =>
    * You could use <code>odd</code> like this:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * 3 should be (odd)
    * 4 should not be (odd)
    * </pre>
@@ -184,7 +184,7 @@ trait BeMatcher[-T] extends Function1[T, MatchResult] { thisBeMatcher =>
    * <code>oddAsInt</code> like this:
    * </p>
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * "3" should be (oddAsInt)
    * "4" should not be (oddAsInt)
    * </pre>

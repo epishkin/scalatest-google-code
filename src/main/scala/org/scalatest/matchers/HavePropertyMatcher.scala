@@ -42,7 +42,7 @@ import org.scalatest._
  * property assertions similar to the dynamic ones that use symbols:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre class="stHighlight">
  * book should have ('title ("Moby Dick")) // dynamic: uses reflection
  * book should have (title ("Moby Dick"))  // type safe: only works on Books; no reflection used
  * </pre>
@@ -142,7 +142,7 @@ trait HavePropertyMatcher[-T, P] extends Function1[T, HavePropertyMatchResult[P]
    * usually the value to the left of a <code>should</code> or <code>must</code> invocation. For example, <code>book</code>
    * would be passed as the <code>objectWithProperty</code> in:
    *
-   * <pre class="stExamples">
+   * <pre class="stHighlight">
    * book should have (title ("Moby Dick"))
    * </pre>
    *
