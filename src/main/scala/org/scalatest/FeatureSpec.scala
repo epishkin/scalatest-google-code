@@ -124,7 +124,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * For example, if you ran <code>StackFeatureSpec</code> from within the Scala interpreter:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new StackFeatureSpec).execute()
  * </pre>
  *
@@ -132,8 +132,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * You would see:
  * </p>
  *
- * <pre>
- * Feature: The user can pop an element off the top of the stack 
+ * <pre class="stREPL">
+ * <span class="stGreen">Feature: The user can pop an element off the top of the stack 
  *   As a programmer 
  *   I want to be able to pop items off the stack 
  *   So that I can get them in last-in-first-out order 
@@ -146,7 +146,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     Given an empty stack 
  *     When when pop is invoked on the stack 
  *     Then NoSuchElementException should be thrown 
- *     And the stack should still be empty 
+ *     And the stack should still be empty</span> 
  * </pre>
  *
  * <p>
@@ -331,7 +331,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * implementation of <code>withFixture(NoArgTest)</code> simply invokes the function, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * // Default implementation
  * protected def withFixture(test: NoArgTest) {
  *   test()
@@ -654,7 +654,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * which looks like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * scenariosFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
  * scenariosFor(nonFullStack(stackWithOneItem))
  * </pre>
@@ -666,7 +666,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * in scope already inside the behavior function. In that case, your code would look like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * scenariosFor(nonEmptyStack) // assuming lastValuePushed is also in scope inside nonEmptyStack
  * scenariosFor(nonFullStack)
  * </pre>
@@ -781,9 +781,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * you'll see:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new StackFeatureSpec).execute()
- * Feature: A Stack is pushed and popped 
+ * <span class="stGreen">Feature: A Stack is pushed and popped 
  *   Scenario: empty is invoked on an empty stack
  *     Given an empty stack 
  *     When empty is invoked on the stack 
@@ -863,7 +863,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   Scenario: push is invoked on a full stack
  *     Given an full stack 
  *     When push is invoked on the stack 
- *     Then push throws IllegalStateException 
+ *     Then push throws IllegalStateException</span> 
  * </pre>
  * 
  * <p>
@@ -882,7 +882,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Given this <code>FeatureSpecStackBehaviors</code> trait, calling it with the <code>stackWithOneItem</code> fixture, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * scenariosFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
  * </pre>
  *
@@ -900,7 +900,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Whereas calling it with the <code>stackWithOneItemLessThanCapacity</code> fixture, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * scenariosFor(nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed))
  * </pre>
  *
@@ -1015,7 +1015,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * If you run this version of <code>ArithmeticFeatureSpec</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new ArithmeticFeatureSpec).execute()
  * </pre>
  *
@@ -1023,10 +1023,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  * It will run only <code>subtraction</code> and report that <code>addition</code> was ignored:
  * </p>
  *
- * <pre>
- * Feature: Integer arithmetic 
- *   Scenario: addition !!! IGNORED !!!
- *   Scenario: subtraction
+ * <pre class="stREPL">
+ * <span class="stGreen">Feature: Integer arithmetic </span>
+ *   <span class="stYellow">Scenario: addition !!! IGNORED !!!</span>
+ *   <span class="stGreen">Scenario: subtraction</span>
  * </pre>
  *
  * <h2>Informers</h2>
@@ -1069,10 +1069,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  * If you run this <code>ArithmeticFeatureSpec</code> from the interpreter, you will see the following message
  * included in the printed report:
  *
- * <pre>
- * Feature: Integer arithmetic 
+ * <pre class="stREPL">
+ * <span class="stGreen">Feature: Integer arithmetic 
  *   Scenario: addition
- *     Addition seems to work 
+ *     Addition seems to work</span> 
  * </pre>
  *
  * <p>
@@ -1123,9 +1123,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * included in the printed report:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new ArithmeticFeatureSpec).execute()
- * Feature: Integer arithmetic 
+ * <span class="stGreen">Feature: Integer arithmetic 
  *   Scenario: addition
  *     Given two integers 
  *     When they are added 
@@ -1133,7 +1133,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   Scenario: subtraction
  *     Given two integers 
  *     When one is subtracted from the other 
- *     Then the result is the difference of the two numbers 
+ *     Then the result is the difference of the two numbers</span> 
  * </pre>
  *
  * <h2>Pending tests</h2>
@@ -1185,7 +1185,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * If you run this version of <code>ArithmeticFeatureSpec</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new ArithmeticFeatureSpec).execute()
  * </pre>
  *
@@ -1193,10 +1193,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  * It will run both tests, but report that <code>subtraction</code> is pending. You'll see:
  * </p>
  *
- * <pre>
- * Feature: Integer arithmetic 
- *   Scenario: addition
- *   Scenario: subtraction (pending)
+ * <pre class="stREPL">
+ * <span class="stGreen">Feature: Integer arithmetic 
+ *   Scenario: addition</span>
+ *   <span class="stYellow">Scenario: subtraction (pending)</span>
  * </pre>
  * 
  * <p>
@@ -1222,9 +1222,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * that used the <code>GivenWhenThen</code> trait. For example, the following snippet in a <code>FeatureSpec</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  *   feature("Integer arithmetic") {
- *
+ *&nbsp;
  *     scenario("addition") {
  *       given("two integers")
  *       when("they are added")
@@ -1238,12 +1238,12 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Would yield the following output when run in the interpreter:
  * </p>
  *
- * <pre>
- * Feature: Integer arithmetic 
- *   Scenario: addition (pending)
+ * <pre class="stREPL">
+ * <span class="stGreen">Feature: Integer arithmetic</span> 
+ *   <span class="stYellow">Scenario: addition (pending)
  *     Given two integers 
  *     When they are added 
- *     Then the result is the sum of the two numbers 
+ *     Then the result is the sum of the two numbers</span> 
  * </pre>
  *
  * @author Bill Venners
