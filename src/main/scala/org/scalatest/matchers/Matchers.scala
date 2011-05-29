@@ -3360,7 +3360,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax:
      *
      * <pre class="stHighlight">
-     * object should be theSameInstanceAs anotherObject
+     * result should be theSameInstanceAs anotherObject
      *                  ^
      * </pre>
      */
@@ -4962,7 +4962,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax: 
      *
      * <pre class="stHighlight">
-     * object should be theSameInstancreAs (anotherObject)
+     * result should be theSameInstancreAs (anotherObject)
      *                  ^
      * </pre>
      */
@@ -5006,7 +5006,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax: 
      *
      * <pre class="stHighlight">
-     * object should be (null)
+     * result should be (null)
      *                  ^
      * </pre>
      */
@@ -5074,9 +5074,9 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables <code>be</code> to be used for equality comparison. Here are some examples: 
      *
      * <pre class="stHighlight">
-     * object should be (None)
+     * result should be (None)
      *                  ^
-     * object should be (Some(1))
+     * result should be (Some(1))
      *                  ^
      * result should be (true)
      *                  ^
@@ -5626,9 +5626,9 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables <code>be</code> to be used for inequality comparison. Here are some examples:
      *
      * <pre class="stHighlight">
-     * object should not be (None)
+     * result should not be (None)
      *                      ^
-     * object should not be (Some(1))
+     * result should not be (Some(1))
      *                      ^
      * result should not be (true)
      *                      ^

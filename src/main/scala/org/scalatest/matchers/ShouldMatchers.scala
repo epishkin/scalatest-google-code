@@ -27,11 +27,11 @@ import scala.collection.Traversable
  * a suite class, you can write an equality assertion in that suite like this:
  * 
  * <pre class="stHighlight">
- * object should equal (3)
+ * result should equal (3)
  * </pre>
  * 
  * <p>
- * Here <code>object</code> is a variable, and can be of any type. If the object is an
+ * Here <code>result</code> is a variable, and can be of any type. If the object is an
  * <code>Int</code> with the value 3, execution will continue (<em>i.e.</em>, the expression will result
  * in the unit value, <code>()</code>). Otherwise, a <code>TestFailedException</code>
  * will be thrown with a detail message that explains the problem, such as <code>"7 did not equal 3"</code>.
@@ -70,7 +70,7 @@ import scala.collection.Traversable
  * would make sense. Here's how checking for length looks:
  * </p>
  * <pre class="stHighlight">
- * object should have length (3)
+ * result should have length (3)
  * </pre>
  * 
  * <p>
@@ -78,7 +78,7 @@ import scala.collection.Traversable
  * </p>
  * 
  * <pre class="stHighlight">
- * object should have size (10)
+ * result should have size (10)
  * </pre>
  * 
  * <p>
@@ -146,11 +146,11 @@ import scala.collection.Traversable
  * </p>
  *
  * <pre class="stHighlight">
- * object should be === (3)
+ * result should be === (3)
  * </pre>
  *
  * <p>
- * Here <code>object</code> is a variable, and can be of any type. If the object is an
+ * Here <code>result</code> is a variable, and can be of any type. If the object is an
  * <code>Int</code> with the value 3, execution will continue (<em>i.e.</em>, the expression will result
  * in the unit value, <code>()</code>). Otherwise, a <code>TestFailedException</code>
  * will be thrown with a detail message that explains the problem, such as <code>"7 was not equal to 3"</code>.
@@ -493,7 +493,7 @@ import scala.collection.Traversable
  * </p>
  * 
  * <pre class="stHighlight">
- * object should not be (null)
+ * result should not be (null)
  * sum should not be <= (10)
  * mylist should not equal (yourList)
  * string should not startWith ("Hello")
@@ -893,7 +893,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre class="stHighlight">
-     * object should equal (3)
+     * result should equal (3)
      *        ^
      * </pre>
      */
@@ -945,7 +945,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre class="stHighlight">
-     * object should have length (3)
+     * result should have length (3)
      *        ^
      * </pre>
      */
@@ -956,7 +956,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre class="stHighlight">
-     * object should not have length (3)
+     * result should not have length (3)
      *        ^
      * </pre>
      */
@@ -967,7 +967,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre class="stHighlight">
-     * object should be theSameInstanceAs anotherObject
+     * result should be theSameInstanceAs anotherObject
      *        ^
      * </pre>
      */
@@ -1004,7 +1004,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre class="stHighlight">
-     * object should not have size (3)
+     * result should not have size (3)
      *        ^
      * </pre>
      */
@@ -1015,7 +1015,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre class="stHighlight">
-     * object should have size (3)
+     * result should have size (3)
      *        ^
      * </pre>
      */
@@ -1027,7 +1027,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre class="stHighlight">
-     * object should be theSameInstanceAs anotherObject
+     * result should be theSameInstanceAs anotherObject
      *        ^
      * </pre>
      */
@@ -1495,7 +1495,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre class="stHighlight">
-     * object should not have length (3)
+     * result should not have length (3)
      *        ^
      * </pre>
      */
@@ -1506,7 +1506,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre class="stHighlight">
-     * object should be theSameInstanceAs anotherObject
+     * result should be theSameInstanceAs anotherObject
      *        ^
      * </pre>
      */
