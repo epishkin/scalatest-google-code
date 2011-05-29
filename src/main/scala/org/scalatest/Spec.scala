@@ -99,7 +99,7 @@ import Suite.reportTestIgnored
  * For example, if you ran <code>StackSpec</code> from within the Scala interpreter:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new StackSpec).execute()
  * </pre>
  *
@@ -107,10 +107,10 @@ import Suite.reportTestIgnored
  * You would see:
  * </p>
  *
- * <pre>
- * A Stack
+ * <pre class="stREPL">
+ * <span class="stGreen">A Stack
  * - should pop values in last-in-first-out order
- * - should throw NoSuchElementException if an empty stack is popped
+ * - should throw NoSuchElementException if an empty stack is popped</span>
  * </pre>
  *
  * <p>
@@ -567,7 +567,7 @@ import Suite.reportTestIgnored
  * which looks like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * it should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
  * it should behave like nonFullStack(stackWithOneItem)
  * </pre>
@@ -579,7 +579,7 @@ import Suite.reportTestIgnored
  * in scope already inside the behavior function. In that case, your code would look like this:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * it should behave like nonEmptyStack // assuming lastValuePushed is also in scope inside nonEmptyStack
  * it should behave like nonFullStack
  * </pre>
@@ -670,9 +670,9 @@ import Suite.reportTestIgnored
  * you'll see:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new StackSpec).execute()
- * A Stack (when empty) 
+ * <span class="stGreen">A Stack (when empty) 
  * - should be empty
  * - should complain on peek
  * - should complain on pop
@@ -696,7 +696,7 @@ import Suite.reportTestIgnored
  * - should return the top item on peek
  * - should not remove the top item on peek
  * - should remove the top item on pop
- * - should complain on a push
+ * - should complain on a push</span>
  * </pre>
  * 
  * <p>
@@ -822,7 +822,7 @@ import Suite.reportTestIgnored
  * If you run this version of <code>StackSpec</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new StackSpec).execute()
  * </pre>
  *
@@ -830,10 +830,10 @@ import Suite.reportTestIgnored
  * It will run only the second test and report that the first test was ignored:
  * </p>
  *
- * <pre>
- * A Stack
- * - should pop values in last-in-first-out order !!! IGNORED !!!
- * - should throw NoSuchElementException if an empty stack is popped
+ * <pre class="stREPL">
+ * <span class="stGreen">A Stack</span>
+ * <span class="stYellow">- should pop values in last-in-first-out order !!! IGNORED !!!</span>
+ * <span class="stGreen">- should throw NoSuchElementException if an empty stack is popped</span>
  * </pre>
  *
  * <h2>Pending tests</h2>
@@ -890,7 +890,7 @@ import Suite.reportTestIgnored
  * If you run this version of <code>StackSpec</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new StackSpec).execute()
  * </pre>
  *
@@ -898,10 +898,10 @@ import Suite.reportTestIgnored
  * It will run both tests, but report that the test named "<code>A stack should pop values in last-in-first-out order</code>" is pending. You'll see:
  * </p>
  *
- * <pre>
- * A Stack 
- * - should pop values in last-in-first-out order
- * - should throw NoSuchElementException if an empty stack is popped (pending)
+ * <pre class="stREPL">
+ * <span class="stGreen">A Stack 
+ * - should pop values in last-in-first-out order</span>
+ * <span class="stYellow">- should throw NoSuchElementException if an empty stack is popped (pending)</span>
  * </pre>
  * 
  * @author Bill Venners
@@ -929,7 +929,7 @@ trait Spec extends Suite { thisSuite =>
    * This class supports syntax such as the following test registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * it("should be empty")
    * ^
    * </pre>
@@ -938,7 +938,7 @@ trait Spec extends Suite { thisSuite =>
    * and the following shared test registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * it should behave like nonFullStack(stackWithOneItem)
    * ^
    * </pre>
@@ -978,7 +978,7 @@ trait Spec extends Suite { thisSuite =>
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * it should behave like nonFullStack(stackWithOneItem)
      *    ^
      * </pre>
@@ -997,7 +997,7 @@ trait Spec extends Suite { thisSuite =>
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * it must behave like nonFullStack(stackWithOneItem)
      *    ^
      * </pre>
@@ -1017,12 +1017,12 @@ trait Spec extends Suite { thisSuite =>
    * This field supports syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * it("should be empty")
    * ^
    * </pre>
    *
-   * <pre>
+   * <pre> class="stExamples"
    * it should behave like nonFullStack(stackWithOneItem)
    * ^
    * </pre>
@@ -1097,7 +1097,7 @@ trait Spec extends Suite { thisSuite =>
    * two test name strings:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * "A Stack (when not empty) must allow me to pop"
    * "A Stack (when not full) must allow me to push"
    * </pre>
@@ -1182,7 +1182,7 @@ trait Spec extends Suite { thisSuite =>
    * This field supports syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * it should behave like nonFullStack(stackWithOneItem)
    *           ^
    * </pre>
