@@ -1117,7 +1117,9 @@ $columnsOfIndexes$
       bw.write(st.toString)
       bw.write(tableSuitePreamble)
       val alpha = "abcdefghijklmnopqrstuv"
-      for (i <- 1 to 22) {
+      // for (i <- 1 to 22) {
+      for (i <- 1 to 20) { // TODO: To avoid 2.9.0 compiler bug at arities 21 and 22
+
         val st = new org.antlr.stringtemplate.StringTemplate(tableSuiteTemplate)
         val rowOfMinusOnes = List.fill(i)(" -1").mkString(", ")
         val rowOfOnes = List.fill(i)("  1").mkString(", ")
