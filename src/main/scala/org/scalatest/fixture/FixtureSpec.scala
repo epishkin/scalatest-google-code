@@ -56,7 +56,7 @@ import FunSuite.IgnoreTagName
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureSpec
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -124,7 +124,7 @@ import FunSuite.IgnoreTagName
  * to encapsulate them in a tuple. Here's an example that takes the tuple approach:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureSpec
  * import scala.collection.mutable.ListBuffer
  *
@@ -165,7 +165,7 @@ import FunSuite.IgnoreTagName
  * of each test here with:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val (builder, buffer) = fixture
  * </pre>
  *
@@ -174,7 +174,7 @@ import FunSuite.IgnoreTagName
  * to encapsulate them in a case class. Here's an example that takes the case class approach:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureSpec
  * import scala.collection.mutable.ListBuffer
  *
@@ -217,7 +217,7 @@ import FunSuite.IgnoreTagName
  * of the fixture object, the test code can just use them as unqualified identifiers:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * it("should mutate shared fixture objects") { fixture =>
  *   import fixture._
  *   builder.append("easy!")
@@ -234,7 +234,7 @@ import FunSuite.IgnoreTagName
  * are part of the passed-in fixture:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * it("should mutate shared fixture objects") { fixture =>
  *   fixture.builder.append("fun!")
  *   assert(fixture.builder.toString === "ScalaTest is fun!")
@@ -255,7 +255,7 @@ import FunSuite.IgnoreTagName
  * Here's an example in which the name of a temp file is taken from the passed <code>configMap</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureSpec
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -322,7 +322,7 @@ import FunSuite.IgnoreTagName
  * example of how it looks:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *  import org.scalatest.fixture.FixtureSpec
  *  import org.scalatest.fixture.ConfigMapFixture
  *
@@ -369,12 +369,12 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
    * This class supports syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it("should be empty")
    * ^
    * </pre>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should behave like nonFullStack(stackWithOneItem)
    * ^
    * </pre>
@@ -414,7 +414,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it should behave like nonFullStack(stackWithOneItem)
      *    ^
      * </pre>
@@ -433,7 +433,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must behave like nonFullStack(stackWithOneItem)
      *    ^
      * </pre>
@@ -453,12 +453,12 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
    * This field supports syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it("should be empty")
    * ^
    * </pre>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should behave like nonFullStack(stackWithOneItem)
    * ^
    * </pre>
@@ -655,7 +655,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
    * This field supports syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should behave like nonFullStack(stackWithOneItem)
    *           ^
    * </pre>

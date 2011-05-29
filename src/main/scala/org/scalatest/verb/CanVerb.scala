@@ -27,7 +27,7 @@ import org.scalatest._
  * and <code>FixtureFlatSpec</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "A Stack (when empty)" can "be empty" in { ... }
  *                        ^
  * </pre>
@@ -37,7 +37,7 @@ import org.scalatest._
  * and <code>FixtureFlatSpec</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "A Stack (with one item)" can behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
  *                           ^
  * </pre>
@@ -47,7 +47,7 @@ import org.scalatest._
  * and <code>FixtureWordSpec</code>, such as:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "A Stack (when empty)" can { ...
  *                        ^
  * </pre>
@@ -57,7 +57,7 @@ import org.scalatest._
  * in <code>WordSpec</code> and <code>FixtureWordSpec</code>. For example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *    def provide = afterWord("provide")
  *
  *   "The ScalaTest Matchers DSL" can provide {
@@ -100,7 +100,7 @@ trait CanVerb {
      * and <code>FixtureFlatSpec</code>:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack (when empty)" can "be empty" in { ... }
      *                        ^
      * </pre>
@@ -124,7 +124,7 @@ trait CanVerb {
      * and <code>FixtureFlatSpec</code>:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack (with one item)" can behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
      *                           ^
      * </pre>
@@ -148,7 +148,7 @@ trait CanVerb {
      * and <code>FixtureWordSpec</code>:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack (when empty)" can { ...
      *                        ^
      * </pre>
@@ -174,7 +174,7 @@ trait CanVerb {
      * and <code>FixtureWordSpec</code>:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      *    def provide = afterWord("provide")
      *
      *   "The ScalaTest Matchers DSL" can provide {

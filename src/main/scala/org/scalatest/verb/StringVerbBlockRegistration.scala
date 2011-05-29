@@ -30,7 +30,7 @@ import org.scalatest._
  * and <code>FixtureWordSpec</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "A Stack (when empty)" should { ...
  *                        ^
  * </pre>
@@ -53,7 +53,7 @@ abstract class StringVerbBlockRegistration extends ((String, String, () => Unit)
    * and <code>FixtureWordSpec</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * "A Stack (when empty)" should { ...
    *                        ^
    * </pre>

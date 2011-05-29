@@ -63,7 +63,7 @@ import org.scalatest._
  * traits that you can then mix into the suites or specs that need them. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * trait CustomMatchers {
  * 
  *   class FileExistsMatcher extends Matcher[java.io.File] {
@@ -117,7 +117,7 @@ import org.scalatest._
  * does this in the first argument passed to the <code>MatchResult</code> factory method:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *         left.exists,
  * </pre>
  *
@@ -126,7 +126,7 @@ import org.scalatest._
  * The next argument to <code>MatchResult</code>'s factory method produces the failure message string:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *         "The " + failureMessageSuffix,
  * </pre>
  *
@@ -149,7 +149,7 @@ import org.scalatest._
  * which you mix in the trait:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class ExampleSpec extends Spec with ShouldMatchers with CustomMatchers {
  * 
  *   describe("A temp file") {
@@ -193,7 +193,7 @@ import org.scalatest._
  * If you wanted to get rid of the tick mark, you could simply define <code>defined</code> like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val defined = 'defined
  * </pre>
  *
@@ -210,7 +210,7 @@ import org.scalatest._
  * get rid of them with another one-liner:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val beDefined = be (defined)
  * </pre>
  *
@@ -226,7 +226,7 @@ import org.scalatest._
  * You can also use ScalaTest matchers' logical operators to combine existing matchers into new ones, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val beWithinTolerance = be >= 0 and be <= 10
  * </pre>
  *
@@ -243,7 +243,7 @@ import org.scalatest._
  * object. For example, instead of writing this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val beOdd =
  *   new Matcher[Int] {
  *     def apply(left: Int) =
@@ -259,7 +259,7 @@ import org.scalatest._
  * You could alternately write this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val beOdd =
  *   Matcher { (left: Int) =>
  *     MatchResult(
@@ -286,7 +286,7 @@ import org.scalatest._
  * a function that converts a string to an <code>Int</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val beOddAsInt = beOdd compose { (s: String) => s.toInt }
  * </pre>
  *
@@ -309,7 +309,7 @@ import org.scalatest._
  * As an example, consider the hierarchy:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class Fruit
  * class Orange extends Fruit
  * class ValenciaOrange extends Orange
@@ -319,7 +319,7 @@ import org.scalatest._
  * Given an orange:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val orange = Orange
  * </pre>
  *
@@ -376,7 +376,7 @@ trait Matcher[-T] extends Function1[T, MatchResult] { thisMatcher =>
    * a <code>beOdd</code> matcher defined like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val beOdd =
    *   new Matcher[Int] {
    *     def apply(left: Int) =
@@ -404,7 +404,7 @@ trait Matcher[-T] extends Function1[T, MatchResult] { thisMatcher =>
    * a function that converts a string to an <code>Int</code>, like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val beOddAsInt = beOdd compose { (s: String) => s.toInt }
    * </pre>
    *

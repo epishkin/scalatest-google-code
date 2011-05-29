@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference
  * fixture objects held in instance variables are replaced or reinitialized before each test or
  * suite. Here's an example:
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest._
  * import scala.collection.mutable.ListBuffer
  *
@@ -58,13 +58,13 @@ import java.util.concurrent.atomic.AtomicReference
  * run each test, you may need to mix this trait in last to get the desired behavior. For example, this won't
  * work, because <code>BeforeAndAfterEachFunctions</code> is "super" to </code>FunSuite</code>:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends BeforeAndAfterEachFunctions with FunSuite 
  * </pre>
  * <p>
  * You'd need to turn it around, so that <code>FunSuite</code> is "super" to <code>BeforeAndAfterEachFunctions</code>, like this:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends FunSuite with BeforeAndAfterEachFunctions
  * </pre>
  *

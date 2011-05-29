@@ -21,7 +21,7 @@ package org.scalatest
  * fixture objects held in instance variables are replaced or reinitialized before each test or
  * suite. Here's an example:
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest._
  * import scala.collection.mutable.ListBuffer
  *
@@ -56,13 +56,13 @@ package org.scalatest
  * run each test, you may need to mix this trait in last to get the desired behavior. For example, this won't
  * work, because <code>BeforeAndAfterEach</code> is "super" to </code>FunSuite</code>:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends BeforeAndAfterEach with FunSuite 
  * </pre>
  * <p>
  * You'd need to turn it around, so that <code>FunSuite</code> is "super" to <code>BeforeAndAfterEach</code>, like this:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends FunSuite with BeforeAndAfterEach
  * </pre>
  *

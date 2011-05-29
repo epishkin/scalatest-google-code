@@ -29,7 +29,7 @@ import _root_.java.util.concurrent.Callable
  * concurrency abstraction from <code>java.util.concurrent</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  * import org.scalatest.concurrent.ConductorMethods
  * import org.scalatest.matchers.ShouldMatchers

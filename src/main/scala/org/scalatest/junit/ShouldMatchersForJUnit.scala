@@ -52,7 +52,7 @@ import org.scalatest.matchers.ShouldMatchers
  * To use this trait in a JUnit 3 <code>TestCase</code>, you can mix it into your <code>TestCase</code> class, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import junit.framework.TestCase
  * import org.scalatest.junit.ShouldMatchersForJUnit
  *
@@ -70,7 +70,7 @@ import org.scalatest.matchers.ShouldMatchers
  * You can alternatively import the methods defined in this trait.
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import junit.framework.TestCase
  * import org.scalatest.junit.ShouldMatchersForJUnit._
  *
@@ -136,7 +136,7 @@ trait ShouldMatchersForJUnit extends ShouldMatchers with AssertionsForJUnit {
  * 	at org.scalatest.junit.ShouldMatchersForJUnit$class.newTestFailedException(ShouldMatchersForJUnit.scala:22)
  * 	at org.scalatest.junit.ShouldMatchersForJUnit$.newTestFailedException(ShouldMatchersForJUnit.scala:63)
  * 	at org.scalatest.matchers.ShouldMatchers$ShouldMethodHelper$.sh...
- * <pre>
+ * </pre>
  *
  * @author Bill Venners
  */

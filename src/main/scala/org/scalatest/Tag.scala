@@ -20,12 +20,12 @@ package org.scalatest
  * <code>Spec</code>, <code>FlatSpec</code>, <code>WordSpec</code>, <code>FeatureSpec</code>, and their
  * sister traits in the <code>org.scalatest.fixture</code> package. For example, if you define:
  *
- * <pre>
+ * <pre class="stHighlight">
  * object SlowTest extends Tag("SlowTest")
  * </pre>
  *
  * then you can tag a test as a <code>SlowTest</code> in a <code>FunSuite</code> or <code>FixtureFunSuite</code> like this:
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  *
  * class MySuite extends FunSuite {
@@ -40,7 +40,7 @@ package org.scalatest
  * or in a <code>Spec</code> or <code>FixtureSpec</code> like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Spec
  *
  * class MySpec extends Spec {
@@ -55,7 +55,7 @@ package org.scalatest
  * or in a <code>FlatSpec</code> or <code>FixtureFlatSpec</code> like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  *
  * class MySpec extends FlatSpec {
@@ -70,7 +70,7 @@ package org.scalatest
  * or in a <code>WordSpec</code> or <code>FixtureWordSpec</code> like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.WordSpec
  *
  * class MySpec extends WordSpec {
@@ -85,7 +85,7 @@ package org.scalatest
  * or in a <code>FeatureSpec</code> or <code>FixtureFeatureSpec</code> like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  *
  * class MySpec extends FeatureSpec {
@@ -101,7 +101,7 @@ package org.scalatest
  * using the example scenario from above:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *   scenario("should sleep for a second", new Tag("SlowTest"))
  * </pre>
  *
@@ -109,7 +109,7 @@ package org.scalatest
  * or just:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *   scenario("should sleep for a second", Tag("SlowTest"))
  * </pre>
  *
@@ -119,7 +119,7 @@ package org.scalatest
  * defined a Java annotation interface with fully qualified name, <code>com.mycompany.testtags.SlowTest</code>, then you could
  * create a matching group for <code>FunSuite</code>s like this:
  *
- * <pre>
+ * <pre class="stHighlight">
  * object SlowTest extends Tag("com.mycompany.testtags.SlowTest")
  * </pre>
  *

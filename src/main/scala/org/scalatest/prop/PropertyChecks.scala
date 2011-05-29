@@ -31,7 +31,7 @@ package prop
  * imagine you want to test this <code>Fraction,</code> class:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class Fraction(n: Int, d: Int) {
  *
  *   require(d != 0)
@@ -50,7 +50,7 @@ package prop
  * denominator are properly normalized, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * forAll { (n: Int, d: Int) =>
  *
  *   whenever (d != 0 && d != Integer.MIN_VALUE
@@ -75,7 +75,7 @@ package prop
  * produce the expected <code>IllegalArgumentException</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val invalidCombos =
  *   Table(
  *     ("n",               "d"),

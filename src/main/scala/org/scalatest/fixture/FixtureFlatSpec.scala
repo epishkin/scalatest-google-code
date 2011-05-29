@@ -55,7 +55,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFlatSpec
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -123,7 +123,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * to encapsulate them in a tuple. Here's an example that takes the tuple approach:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFlatSpec
  * import scala.collection.mutable.ListBuffer
  *
@@ -164,7 +164,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * of each test here with:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val (builder, buffer) = fixture
  * </pre>
  *
@@ -173,7 +173,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * to encapsulate them in a case class. Here's an example that takes the case class approach:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFlatSpec
  * import scala.collection.mutable.ListBuffer
  *
@@ -216,7 +216,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * of the fixture object, the test code can just use them as unqualified identifiers:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * it should "mutate shared fixture objects" in { fixture =>
  *   import fixture._
  *   builder.append("easy!")
@@ -233,7 +233,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * are part of the passed-in fixture:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * it should "get a fresh set of mutable fixture objects" in { fixture =>
  *   fixture.builder.append("fun!")
  *   assert(fixture.builder.toString === "ScalaTest is fun!")
@@ -254,7 +254,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Here's an example in which the name of a temp file is taken from the passed <code>configMap</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFlatSpec
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -321,7 +321,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * example of how it looks:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *  import org.scalatest.fixture.FixtureFlatSpec
  *  import org.scalatest.fixture.ConfigMapFixture
  *
@@ -392,7 +392,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This field enables syntax such as the following subject registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * behavior of "A Stack"
    * ^
    * </pre>
@@ -412,7 +412,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method enables syntax such as the following subject registration:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * behavior of "A Stack"
      *          ^
      * </pre>
@@ -435,7 +435,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This field enables syntax such as the following subject registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * behavior of "A Stack"
    * ^
    * </pre>
@@ -457,7 +457,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This class enables syntax such as the following tagged test registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
    *                                                                      ^
    * </pre>
@@ -466,7 +466,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * It also enables syntax such as the following registration of an ignored, tagged test:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { ... }
    *                                                                      ^
    * </pre>
@@ -475,7 +475,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * In addition, it enables syntax such as the following registration of a pending, tagged test:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
    *                                                                      ^
    * </pre>
@@ -494,7 +494,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" taggedAs(SlowTest) in { () => ... }
      *                                                                    ^
      * </pre>
@@ -515,7 +515,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" taggedAs(SlowTest) in { fixture => ... }
      *                                                                    ^
      * </pre>
@@ -536,7 +536,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
      *                                                                    ^
      * </pre>
@@ -558,7 +558,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { () => ... }
      *                                                                    ^
      * </pre>
@@ -581,7 +581,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { fixture => ... }
      *                                                                    ^
      * </pre>
@@ -604,7 +604,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This class enables syntax such as the following test registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" in { ... }
    *                                                   ^
    * </pre>
@@ -613,7 +613,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * It also enables syntax such as the following registration of an ignored test:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" ignore { ... }
    *                                                   ^
    * </pre>
@@ -622,7 +622,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * In addition, it enables syntax such as the following registration of a pending test:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" is (pending)
    *                                                   ^
    * </pre>
@@ -631,7 +631,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * And finally, it also enables syntax such as the following tagged test registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
    *                                                   ^
    * </pre>
@@ -650,7 +650,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" in { () => ... }
      *                                                 ^
      * </pre>
@@ -671,7 +671,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" in { fixture => ... }
      *                                                 ^
      * </pre>
@@ -692,7 +692,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" is (pending)
      *                                                 ^
      * </pre>
@@ -713,7 +713,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" ignore { () => ... }
      *                                                 ^
      * </pre>
@@ -734,7 +734,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" ignore { fixture => ... }
      *                                                 ^
      * </pre>
@@ -755,7 +755,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
      *                                                 ^
      * </pre>
@@ -778,7 +778,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This class enables syntax such as the following test registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" in { ... }
    * ^
    * </pre>
@@ -787,7 +787,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * It also enables syntax such as the following shared test registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should behave like nonEmptyStack(lastItemPushed)
    * ^
    * </pre>
@@ -806,7 +806,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it should "pop values in last-in-first-out order" in { ... }
      *    ^
      * </pre>
@@ -825,7 +825,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must "pop values in last-in-first-out order" in { ... }
      *    ^
      * </pre>
@@ -844,7 +844,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it can "pop values in last-in-first-out order" in { ... }
      *    ^
      * </pre>
@@ -863,7 +863,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it should behave like nonFullStack(stackWithOneItem)
      *    ^
      * </pre>
@@ -882,7 +882,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it must behave like nonFullStack(stackWithOneItem)
      *    ^
      * </pre>
@@ -901,7 +901,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * it can behave like nonFullStack(stackWithOneItem)
      *    ^
      * </pre>
@@ -921,7 +921,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This field enables syntax such as the following test registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should "pop values in last-in-first-out order" in { ... }
    * ^
    * </pre>
@@ -930,7 +930,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * It also enables syntax such as the following shared test registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should behave like nonEmptyStack(lastItemPushed)
    * ^
    * </pre>
@@ -950,7 +950,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This class enables syntax such as the following registration of an ignored, tagged test:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
    *                                                                          ^
    * </pre>
@@ -959,7 +959,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * In addition, it enables syntax such as the following registration of an ignored, tagged, pending test:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
    *                                                                          ^
    * </pre>
@@ -986,7 +986,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" taggedAs(SlowTest) in { () => ... }
      *                                                                        ^
      * </pre>
@@ -1009,7 +1009,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" taggedAs(SlowTest) in { fixture => ... }
      *                                                                        ^
      * </pre>
@@ -1031,7 +1031,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
      *                                                                        ^
      * </pre>
@@ -1063,7 +1063,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This class enables syntax such as the following registration of an ignored test:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" in { ... }
    *                                                       ^
    * </pre>
@@ -1072,7 +1072,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * In addition, it enables syntax such as the following registration of an ignored, pending test:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" is (pending)
    *                                                       ^
    * </pre>
@@ -1086,7 +1086,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * And finally, it also enables syntax such as the following ignored, tagged test registration:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
    *                                                       ^
    * </pre>
@@ -1106,7 +1106,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" in { () => ... }
      *                                                     ^
      * </pre>
@@ -1128,7 +1128,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" in { fixture => ... }
      *                                                     ^
      * </pre>
@@ -1149,7 +1149,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" is (pending)
      *                                                     ^
      * </pre>
@@ -1178,7 +1178,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
      *                                                     ^
      * </pre>
@@ -1203,7 +1203,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This class enables syntax such as the following registration of an ignored test:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" in { ... }
    * ^
    * </pre>
@@ -1222,7 +1222,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * ignore should "pop values in last-in-first-out order" in { ... }
      *        ^
      * </pre>
@@ -1241,7 +1241,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * ignore must "pop values in last-in-first-out order" in { ... }
      *        ^
      * </pre>
@@ -1260,7 +1260,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * ignore can "pop values in last-in-first-out order" in { ... }
      *        ^
      * </pre>
@@ -1280,7 +1280,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This field enables syntax such as the following registration of an ignored test:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * ignore should "pop values in last-in-first-out order" in { ... }
    * ^
    * </pre>
@@ -1300,7 +1300,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * in shorthand form:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * "A Stack (when empty)" should "be empty" in { ... }
    *                                          ^
    * </pre>
@@ -1310,7 +1310,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * in shorthand form:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * "A Stack (when empty)" should "be empty" ignore { ... }
    *                                          ^
    * </pre>
@@ -1343,7 +1343,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" in { () => ... }
      *                                                        ^
      * </pre>
@@ -1364,7 +1364,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" ignore { () => ... }
      *                                                        ^
      * </pre>
@@ -1385,7 +1385,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" in { fixture => ... }
      *                                                        ^
      * </pre>
@@ -1406,7 +1406,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" ignore { fixture => ... }
      *                                                        ^
      * </pre>
@@ -1437,7 +1437,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * in shorthand form:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * "A Stack (when empty)" should "be empty" taggedAs() in { ... }
    *                                                     ^
    * </pre>
@@ -1447,7 +1447,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * in shorthand form:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * "A Stack (when empty)" should "be empty" taggedAs(SlowTest) ignore { ... }
    *                                                             ^
    * </pre>
@@ -1481,7 +1481,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" taggedAs(SlowTest) in { () => ... }
      *                                                                           ^
      * </pre>
@@ -1502,7 +1502,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { () => ... }
      *                                                                           ^
      * </pre>
@@ -1525,7 +1525,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" taggedAs(SlowTest) in { fixture => ... }
      *                                                                           ^
      * </pre>
@@ -1546,7 +1546,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * This method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack" must "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { fixture => ... }
      *                                                                           ^
      * </pre>
@@ -1578,7 +1578,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * For example, this method enables syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * "A Stack (when empty)" should "be empty" in { ... }
    *                        ^
    * </pre>
@@ -1623,7 +1623,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * For example, this method enables syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * "A Stack (with one item)" should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
    *                           ^
    * </pre>
@@ -1799,7 +1799,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This field supports syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should behave like nonFullStack(stackWithOneItem)
    *           ^
    * </pre>

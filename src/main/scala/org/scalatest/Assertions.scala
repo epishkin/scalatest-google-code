@@ -33,7 +33,7 @@ import Assertions.areEqualComparingArraysStructurally
  * such as:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val left = 2
  * val right = 1
  * assert(left == right)
@@ -56,7 +56,7 @@ import Assertions.areEqualComparingArraysStructurally
  * a second argument to <code>assert</code>, like this:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * val left = 2
  * val right = 1
  * assert(left == right, left + " did not equal " + right)
@@ -68,7 +68,7 @@ import Assertions.areEqualComparingArraysStructurally
  * You use it like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val left = 2
  * val right = 1
  * assert(left === right)
@@ -100,7 +100,7 @@ import Assertions.areEqualComparingArraysStructurally
  * the expected value in parentheses after <code>expect</code>, followed by curly braces containing code 
  * that should result in the expected value. For example:
  *
- * <pre>
+ * <pre class="stHighlight">
  * val a = 5
  * val b = 2
  * expect(2) {
@@ -120,7 +120,7 @@ import Assertions.areEqualComparingArraysStructurally
  * as when invalid arguments are passed to the method. You can do this in the JUnit 3 style, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val s = "hi"
  * try {
  *   s.charAt(-1)
@@ -143,7 +143,7 @@ import Assertions.areEqualComparingArraysStructurally
  * method. You use it like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val s = "hi"
  * intercept[IndexOutOfBoundsException] {
  *   s.charAt(-1)
@@ -170,7 +170,7 @@ import Assertions.areEqualComparingArraysStructurally
  * Here's an example of clues provided directly in <code>assert</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * assert(1 + 1 === 3, "this is a clue")
  * </pre>
  *
@@ -178,7 +178,7 @@ import Assertions.areEqualComparingArraysStructurally
  * and in <code>expect</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * expect(3, "this is a clue") { 1 + 1 }
  * </pre>
  *
@@ -189,7 +189,7 @@ import Assertions.areEqualComparingArraysStructurally
  * by a failed <code>intercept</code> call requires using <code>withClue</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * withClue("this is a clue") {
  *   intercept[IndexOutOfBoundsException] {
  *     "hi".charAt(-1)
@@ -209,7 +209,7 @@ trait Assertions {
    * Class used via an implicit conversion to enable any two objects to be compared with
    * <code>===</code> in assertions in tests. For example:
    *
-   * <pre>
+   * <pre class="stHighlight">
    * assert(a === b)
    * </pre>
    *
@@ -229,7 +229,7 @@ trait Assertions {
    * on them. Take two Strings, for example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * assert("hello" === "world")
    * </pre>
    *
@@ -240,7 +240,7 @@ trait Assertions {
    * then rewrites the code to this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * assert(convertToEqualizer("hello").===("world"))
    * </pre>
    *
@@ -351,7 +351,7 @@ trait Assertions {
    * implicit conversion to <code>Equalizer</code>, using a <code>===</code> comparison, as in:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * assert(a === b, "extra info reported if assertion fails")
    * </pre>
    *
@@ -384,7 +384,7 @@ trait Assertions {
    * implicit conversion to <code>Equalizer</code>, using a <code>===</code> comparison, as in:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * assert(a === b)
    * </pre>
    *
@@ -426,7 +426,7 @@ trait Assertions {
    * <code>Suite</code> subclass, but not marking it as implicit:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * // In your Suite subclass
    * override def convertToEqualizer(left: Any) = new Equalizer(left)
    * </pre>
@@ -630,7 +630,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * <code>thread</code> method:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * def thread[T](fun: => T): Thread
    *
    * def thread[T](name: String)(fun: => T): Thread
@@ -642,7 +642,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * <code>Nothing</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * thread { fail() }
    * </pre>
    *
@@ -726,7 +726,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * reported when a test fails. Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * withClue("(Employee's name was: " + employee.name + ")") {
    *   intercept[IllegalArgumentException] {
    *     employee.getTask(-1)
@@ -809,7 +809,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
  *&nbsp;
  * scala> val caught = intercept[StringIndexOutOfBoundsException] { "hi".charAt(-1) }
  * caught: StringIndexOutOfBoundsException = java.lang.StringIndexOutOfBoundsException: String index out of range: -1
- * <pre>
+ * </pre>
  *
  * @author Bill Venners
  */

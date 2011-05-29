@@ -45,7 +45,7 @@ import org.scalatest._
  * Here's is how you might define the odd and even <code>BeMatchers</code>:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * trait CustomMatchers {
  *
  *   class OddMatcher extends BeMatcher[Int] {
@@ -77,7 +77,7 @@ import org.scalatest._
  * Here's an rather contrived example of how you might use <code>odd</code> and <code>even</code>: 
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class DoubleYourPleasureSuite extends FunSuite with MustMatchers with CustomMatchers {
  *
  *   def doubleYourPleasure(i: Int): Int = i * 2
@@ -145,7 +145,7 @@ trait BeMatcher[-T] extends Function1[T, MatchResult] { thisBeMatcher =>
    * an <code>odd</code> matcher defined like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val odd =
    *   new BeMatcher[Int] {
    *     def apply(left: Int) =
@@ -173,7 +173,7 @@ trait BeMatcher[-T] extends Function1[T, MatchResult] { thisBeMatcher =>
    * a function that converts a string to an <code>Int</code>, like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val oddAsInt = odd compose { (s: String) => s.toInt }
    * </pre>
    *

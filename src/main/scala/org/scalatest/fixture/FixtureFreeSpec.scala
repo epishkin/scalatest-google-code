@@ -56,7 +56,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFreeSpec
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -126,7 +126,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * to encapsulate them in a tuple. Here's an example that takes the tuple approach:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFreeSpec
  * import scala.collection.mutable.ListBuffer
  *
@@ -169,7 +169,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * of each test here with:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val (builder, buffer) = fixture
  * </pre>
  *
@@ -178,7 +178,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * to encapsulate them in a case class. Here's an example that takes the case class approach:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFreeSpec
  * import scala.collection.mutable.ListBuffer
  *
@@ -223,7 +223,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * of the fixture object, the test code can just use them as unqualified identifiers:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "mutate shared fixture objects" in { fixture =>
  *   import fixture._
  *   builder.append("easy!")
@@ -240,7 +240,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * are part of the passed-in fixture:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "get a fresh set of mutable fixture objects" in { fixture =>
  *   fixture.builder.append("fun!")
  *   assert(fixture.builder.toString === "ScalaTest is fun!")
@@ -261,7 +261,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Here's an example in which the name of a temp file is taken from the passed <code>configMap</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureFreeSpec
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -330,7 +330,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * example of how it looks:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *  import org.scalatest.fixture.FixtureFreeSpec
  *  import org.scalatest.fixture.ConfigMapFixture
  *
@@ -442,7 +442,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "complain on peek" taggedAs(SlowTest) in { fixture => ... }
      *                                       ^
      * </pre>
@@ -462,7 +462,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "complain on peek" taggedAs(SlowTest) in { () => ... }
      *                                       ^
      * </pre>
@@ -482,7 +482,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "complain on peek" taggedAs(SlowTest) is (pending)
      *                                       ^
      * </pre>
@@ -502,7 +502,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "complain on peek" taggedAs(SlowTest) ignore { fixture => ... }
      *                                       ^
      * </pre>
@@ -522,7 +522,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "complain on peek" taggedAs(SlowTest) ignore { () => ... }
      *                                       ^
      * </pre>
@@ -567,7 +567,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "complain on peek" in { fixture => ... }
      *                    ^
      * </pre>
@@ -587,7 +587,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "complain on peek" in { () => ... }
      *                    ^
      * </pre>
@@ -607,7 +607,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "complain on peek" is (pending)
      *                    ^
      * </pre>
@@ -627,7 +627,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "complain on peek" ignore { fixture => ... }
      *                    ^
      * </pre>
@@ -647,7 +647,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "complain on peek" ignore { () => ... }
      *                    ^
      * </pre>
@@ -668,7 +668,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "complain on peek" taggedAs(SlowTest) in { fixture => ... }
      *                    ^
      * </pre>
@@ -820,7 +820,7 @@ trait FixtureFreeSpec extends FixtureSuite { thisSuite =>
    * This field enables syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * behave like nonFullStack(stackWithOneItem)
    * ^
    * </pre>

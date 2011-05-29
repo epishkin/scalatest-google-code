@@ -30,7 +30,7 @@ import scala.reflect.Manifest
  * Using the JMock API directly, you first need a <code>Mockery</code> context object:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val context = new Mockery
  * </pre>
  *
@@ -39,7 +39,7 @@ import scala.reflect.Manifest
  * would also be needed if you wanted that functionality as well:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * context.setImposteriser(ClassImposteriser.INSTANCE)
  * </pre>
  *
@@ -48,7 +48,7 @@ import scala.reflect.Manifest
  * wrap a <code>Mockery</code> object) and import its members, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val cycle = new JMockCycle
  * import cycle._
  * </pre>
@@ -57,7 +57,7 @@ import scala.reflect.Manifest
  * Using the JMock API directly, you would create a mock object like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val mockCollaborator = context.mock(classOf[Collaborator])
  * </pre>
  *
@@ -65,7 +65,7 @@ import scala.reflect.Manifest
  * Having imported the members of an instance of this class, you can shorten that to:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val mockCollaborator = mock[Collaborator]
  * </pre>
  *
@@ -73,7 +73,7 @@ import scala.reflect.Manifest
  * After creating mocks, you set expectations on them, using syntax like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * context.checking(
  *   new Expectations() {
  *     oneOf (mockCollaborator).documentAdded("Document")
@@ -86,7 +86,7 @@ import scala.reflect.Manifest
  * Having imported the members of an instance of this class, you can shorten this step to:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * expecting { e => import e._
  *   oneOf (mockCollaborator).documentAdded("Document")
  *   exactly(3).of (mockCollaborator).documentChanged("Document")
@@ -109,7 +109,7 @@ import scala.reflect.Manifest
  * a keyword in Scala, to invoke these directly you must surround them in back ticks, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * oneOf (mockCollaborator).documentAdded(`with`("Document"))
  * </pre>
  *
@@ -118,7 +118,7 @@ import scala.reflect.Manifest
  * instead call <code>withArg</code> with no back ticks needed:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * oneOf (mockCollaborator).documentAdded(withArg("Document"))
  * </pre>
  *
@@ -128,7 +128,7 @@ import scala.reflect.Manifest
  * was used in accordance with the expectations you set on it. Here's how that looks:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * classUnderTest.addDocument("Document", new Array[Byte](0))
  * classUnderTest.addDocument("Document", new Array[Byte](0))
  * classUnderTest.addDocument("Document", new Array[Byte](0))
@@ -140,7 +140,7 @@ import scala.reflect.Manifest
  * This class enables you to use the following, more declarative syntax instead:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * whenExecuting {
  *   classUnderTest.addDocument("Document", new Array[Byte](0))
  *   classUnderTest.addDocument("Document", new Array[Byte](0))
@@ -159,7 +159,7 @@ import scala.reflect.Manifest
  * To summarize, here's what a typical test using <code>JMockCycle</code> looks like:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val cycle = new JMockCycle
  * import cycle._
  *
@@ -199,7 +199,7 @@ final class JMockCycle {
    * Using the JMock API directly, you create a mock with:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val mockCollaborator = context.mock(classOf[Collaborator])
    * </pre>
    *
@@ -207,7 +207,7 @@ final class JMockCycle {
    * Having imported the members of an instance of this class, you can shorten that to:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val mockCollaborator = mock[Collaborator]
    * </pre>
    */
@@ -222,7 +222,7 @@ final class JMockCycle {
    * After creating mocks, you set expectations on them, using syntax like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * context.checking(
    *   new Expectations() {
    *     oneOf (mockCollaborator).documentAdded("Document")
@@ -235,7 +235,7 @@ final class JMockCycle {
    * Having imported the members of an instance of this class, you can shorten this step to:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * expecting { e => import e._
    *   oneOf (mockCollaborator).documentAdded("Document")
    *   exactly(3).of (mockCollaborator).documentChanged("Document")
@@ -257,7 +257,7 @@ final class JMockCycle {
    * a keyword in Scala, to invoke these directly you must surround them in back ticks, like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * oneOf (mockCollaborator).documentAdded(`with`("Document"))
    * </pre>
    *
@@ -266,7 +266,7 @@ final class JMockCycle {
    * instead call <code>withArg</code> with no back ticks needed:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * oneOf (mockCollaborator).documentAdded(withArg("Document"))
    * </pre>
    *
@@ -288,7 +288,7 @@ final class JMockCycle {
    * was used in accordance with the expectations you set on it. Here's how that looks:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * classUnderTest.addDocument("Document", new Array[Byte](0))
    * classUnderTest.addDocument("Document", new Array[Byte](0))
    * classUnderTest.addDocument("Document", new Array[Byte](0))
@@ -300,7 +300,7 @@ final class JMockCycle {
    * This class enables you to use the following, more declarative syntax instead:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * whenExecuting {
    *   classUnderTest.addDocument("Document", new Array[Byte](0))
    *   classUnderTest.addDocument("Document", new Array[Byte](0))

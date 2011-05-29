@@ -84,7 +84,7 @@ sealed abstract class Event extends Ordered[Event] {
  * report function named <code>report</code>, you could fire a <code>TestStarting</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(TestStarting(ordinal, userFriendlyName, suiteName, Some(thisSuite.getClass.getName), testName))
  * </pre>
  *
@@ -283,7 +283,7 @@ object TestStarting {
  * report function named <code>report</code>, you could fire a <code>TestSucceeded</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(TestSucceeded(ordinal, userFriendlyName, suiteName, Some(thisSuite.getClass.getName), testName))
  * </pre>
  *
@@ -516,7 +516,7 @@ object TestSucceeded {
  * report function named <code>report</code>, you could fire a <code>TestFailed</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(TestFailed(ordinal, userFriendlyName, message, suiteName, Some(thisSuite.getClass.getName), testName))
  * </pre>
  *
@@ -784,7 +784,7 @@ object TestFailed {
  * report function named <code>report</code>, you could fire a <code>TestIgnored</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(TestIgnored(ordinal, userFriendlyName, suiteName, Some(thisSuite.getClass.getName), testName))
  * </pre>
  *
@@ -938,7 +938,7 @@ object TestIgnored {
  * report function named <code>report</code>, you could fire a <code>TestPending</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(TestPending(ordinal, userFriendlyName, suiteName, Some(thisSuite.getClass.getName), testName))
  * </pre>
  *
@@ -1097,7 +1097,7 @@ object TestPending {
  * report function named <code>report</code>, you could fire a <code>SuiteStarting</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(SuiteStarting(ordinal, userFriendlyName, suiteName, Some(thisSuite.getClass.getName)))
  * </pre>
  *
@@ -1288,7 +1288,7 @@ object SuiteStarting {
  * report function named <code>report</code>, you could fire a <code>SuiteCompleted</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(SuiteCompleted(ordinal, userFriendlyName, suiteName, Some(thisSuite.getClass.getName)))
  * </pre>
  *
@@ -1511,7 +1511,7 @@ object SuiteCompleted {
  * report function named <code>report</code>, you could fire a <code>SuiteAborted</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(SuiteAborted(ordinal, userFriendlyName, message, suiteName, Some(thisSuite.getClass.getName)))
  * </pre>
  *
@@ -1769,7 +1769,7 @@ object SuiteAborted {
  * report function named <code>report</code>, you could fire a <code>RunStarting</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(RunStarting(ordinal, testCount))
  * </pre>
  *
@@ -1931,7 +1931,7 @@ object RunStarting {
  * report function named <code>report</code>, you could fire a <code>RunCompleted</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(RunCompleted(ordinal))
  * </pre>
  *
@@ -2128,7 +2128,7 @@ object RunCompleted {
  * report function named <code>report</code>, you could fire a <code>RunStopped</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(RunStopped(ordinal))
  * </pre>
  *
@@ -2315,7 +2315,7 @@ object RunStopped {
  * report function named <code>report</code>, you could fire a <code>RunAborted</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(RunAborted(ordinal, message, Some(exception)))
  * </pre>
  *
@@ -2523,7 +2523,7 @@ object RunAborted {
  * report function named <code>report</code>, you could fire a <code>InfoProvided</code> event like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * report(InfoProvided(ordinal, message, Some(NameInfo(suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
  * </pre>
  *

@@ -61,7 +61,7 @@ import java.util.Arrays
  * can be produced be passing a run stamp to <code>Ordinal</code>'s lone public constructor:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * val firstOrdinal = new Ordinal(99)
  * </pre>
  *
@@ -83,7 +83,7 @@ import java.util.Arrays
  * result in:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * firstOrdinal.toList // results in: List(99, 0)
  * </pre>
  *
@@ -91,7 +91,7 @@ import java.util.Arrays
  * Each time <code>next</code> is invoked, the rightmost integer returned by <code>toList</code> will increment: 
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * val secondOrdinal = firstOrdinal.next
  * secondOrdinal.toList // results in: List(99, 1)
  * 
@@ -105,7 +105,7 @@ import java.util.Arrays
  * second element is the next <code>Ordinal</code> for the currently executing <code>Suite</code> or other entity:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val (nextForNewSuite, nextForThisRunner) = thirdOrdinal.nextNewOldPair
  * nextForNewSuite.toList   // results in: (99, 2, 0)
  * nextForThisRunner.toList // results in: (99, 3)
@@ -117,7 +117,7 @@ import java.util.Arrays
  * increment that last element:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val newSuiteOrdinal2 = nextForNewSuite.next
  * newSuiteOrdinal2.toList // results in: List(99, 2, 1)
  * 
@@ -193,7 +193,7 @@ final class Ordinal private (val runStamp: Int, private val stamps: Array[Int]) 
    * one for the current <code>Suite</code> or other entity, such as a runner. The <code>Ordinal</code>
    * for the new <code>Suite</code> is the first (<code>_1</code>) element in the tuple:
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val (nextOrdinalForNewSuite, nextOrdinalForThisSuite) currentOrdinal.nextNewOldPair
    * </pre>
    *

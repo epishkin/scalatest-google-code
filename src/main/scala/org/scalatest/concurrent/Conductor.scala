@@ -60,7 +60,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
  * class from <code>java.util.concurrent</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FunSuite
  * import org.scalatest.matchers.ShouldMatchers
  * import java.util.concurrent.ArrayBlockingQueue
@@ -99,7 +99,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
  * parameter to <code>thread("producer")</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * buf put 42
  * buf put 17
  * beat should be (1)
@@ -109,7 +109,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
  * to <code>thread("consumer")</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * waitForBeat(1)
  * buf.take should be (42)
  * buf.take should be (17)
@@ -183,7 +183,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
  * attempt to write to a full queue. To make sure the other scenario is tested, you'd need a different test:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * test("calling take on an empty queue blocks the consumer thread") {
  *
  *   val conductor = new Conductor

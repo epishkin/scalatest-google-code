@@ -33,7 +33,7 @@ package org.scalatest
  * subclass:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest._
  * 
  * class MySuite extends Suite {
@@ -62,7 +62,7 @@ package org.scalatest
  * Here's an example of a <code>FeatureSpec</code> that mixes in <code>GivenWhenThen</code>:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  * import org.scalatest.GivenWhenThen
  * 

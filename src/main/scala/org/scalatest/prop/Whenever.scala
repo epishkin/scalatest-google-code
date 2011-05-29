@@ -30,7 +30,7 @@ trait Whenever {
    * data for which it is known the property would fail. For example, given the following <code>Fraction</code> class:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * class Fraction(n: Int, d: Int) {
    *
    *   require(d != 0)
@@ -44,7 +44,7 @@ trait Whenever {
    * }
    * </pre>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.scalatest.prop.TableDrivenPropertyChecks._
    *
    * val fractions =
@@ -71,7 +71,7 @@ trait Whenever {
    * to discard any rows in the <code>fraction</code> that represent illegal arguments, like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.scalatest.matchers.ShouldMatchers._
    *
    * forAll (fractions) { (n: Int, d: Int) =>

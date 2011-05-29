@@ -26,7 +26,7 @@ import reflect.Manifest
  * Using the Mockito API directly, you create a mock with:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val mockCollaborator = mock(classOf[Collaborator])
  * </pre>
  *
@@ -34,7 +34,7 @@ import reflect.Manifest
  * Using this trait, you can shorten that to:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val mockCollaborator = mock[Collaborator]
  * </pre>
  *
@@ -50,7 +50,7 @@ trait MockitoSugar {
    * Using the Mockito API directly, you create a mock with:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val mockCollaborator = mock(classOf[Collaborator])
    * </pre>
    *
@@ -58,7 +58,7 @@ trait MockitoSugar {
    * Using this method, you can shorten that to:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val mockCollaborator = mock[Collaborator]
    * </pre>
    */

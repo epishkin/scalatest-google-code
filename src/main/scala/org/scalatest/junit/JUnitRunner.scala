@@ -32,7 +32,7 @@ import org.junit.runner.Description
  * This enables you to provide a JUnit <code>RunWith</code> annotation on any
  * ScalaTest <code>Suite</code>. Here's an example:
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.junit.runner.RunWith
  * import org.scalatest.junit.JUnitRunner
  * import org.scalatest.FunSuite

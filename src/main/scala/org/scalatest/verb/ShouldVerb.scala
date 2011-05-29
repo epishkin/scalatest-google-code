@@ -27,7 +27,7 @@ import org.scalatest._
  * and <code>FixtureFlatSpec</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "A Stack (when empty)" should "be empty" in { ... }
  *                        ^
  * </pre>
@@ -37,7 +37,7 @@ import org.scalatest._
  * and <code>FixtureFlatSpec</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "A Stack (with one item)" should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
  *                           ^
  * </pre>
@@ -47,7 +47,7 @@ import org.scalatest._
  * and <code>FixtureWordSpec</code>, such as:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "A Stack (when empty)" should { ...
  *                        ^
  * </pre>
@@ -57,7 +57,7 @@ import org.scalatest._
  * in <code>WordSpec</code> and <code>FixtureWordSpec</code>. For example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *    def provide = afterWord("provide")
  *
  *   "The ScalaTest Matchers DSL" should provide {
@@ -124,7 +124,7 @@ trait ShouldVerb {
      * and <code>FixtureFlatSpec</code>:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack (when empty)" should "be empty" in { ... }
      *                        ^
      * </pre>
@@ -148,7 +148,7 @@ trait ShouldVerb {
      * and <code>FixtureFlatSpec</code>:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack (with one item)" should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
      *                           ^
      * </pre>
@@ -172,7 +172,7 @@ trait ShouldVerb {
      * and <code>FixtureWordSpec</code>:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      * "A Stack (when empty)" should { ...
      *                        ^
      * </pre>
@@ -198,7 +198,7 @@ trait ShouldVerb {
      * and <code>FixtureWordSpec</code>:
      * </p>
      *
-     * <pre>
+     * <pre class="stHighlight">
      *    def provide = afterWord("provide")
      *
      *   "The ScalaTest Matchers DSL" should provide {

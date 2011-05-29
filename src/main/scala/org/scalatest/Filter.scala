@@ -76,7 +76,7 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
    * a list that does not include the test name.
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * for ((testName, ignoreTest) <- filter(testNames, tags))
    *   if (ignoreTest)
    *     // ignore the test
@@ -123,7 +123,7 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
    * (true, false). 
    * </p>
    * 
-   * <pre>
+   * <pre class="stHighlight">
    * val (filterTest, ignoreTest) = filter(testName, tags)
    * if (!filterTest)
    *   if (ignoreTest)

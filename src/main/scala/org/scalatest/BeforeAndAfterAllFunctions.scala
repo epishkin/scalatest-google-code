@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicReference
  * deletes the file:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.SuperSuite
  * import org.scalatest.BeforeAndAfterAllFunctions
  * import java.io.FileReader
@@ -76,13 +76,13 @@ import java.util.concurrent.atomic.AtomicReference
  * mix this trait in last to get the desired behavior. For example, this won't
  * work, because <code>BeforeAndAfterAllFunctions</code> is "super" to </code>FunSuite</code>:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends BeforeAndAfterAllFunctions with FunSuite
  * </pre>
  * <p>
  * You'd need to turn it around, so that <code>FunSuite</code> is "super" to <code>BeforeAndAfterAllFunctions</code>, like this:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends FunSuite with BeforeAndAfterAllFunctions
  * </pre>
  *

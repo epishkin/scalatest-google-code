@@ -43,7 +43,7 @@ import org.scalatest._
  * Here's an example that has two fixture types, <code>String</code> and <code>List[Int]</code>:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.MultipleFixtureFreeSpec
  * 
  * class MyFreeSpec extends MultipleFixtureFreeSpec {
@@ -81,7 +81,7 @@ import org.scalatest._
  * of type <code>String</code>.  In this contrived example, the hard-coded string <code>"howdy"</code> is passed into the test:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * implicit def withStringFixture(testFun: String => Unit): FixtureParam => Unit =
  *   configMap => testFun("howdy")
  * </pre>
@@ -101,7 +101,7 @@ import org.scalatest._
  * Following the implicit conversion methods are the test declarations. One test is written to take the <code>String</code> fixture:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "take a string fixture" in { (s: String) =>
  *   assert(s === "howdy")
  * }
@@ -115,7 +115,7 @@ import org.scalatest._
  * conversion that fixes the type error, it will apply it, effectively generating this code:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * // after the implicit withStringFixture method is applied by the compiler
  * "should take a string fixture" in {
  *   withStringFixture { (s: String) =>
@@ -133,7 +133,7 @@ import org.scalatest._
  * The next test is written to take the <code>List[Int]</code> fixture:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "should take a list fixture" in { (list: List[Int]) =>
  *   assert(list.size === 1)
  * }
@@ -144,7 +144,7 @@ import org.scalatest._
  * code:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "should take a list fixture" in {
  *   withListFixture { (list: List[Int]) =>
  *     assert(list.size === 1)
@@ -157,7 +157,7 @@ import org.scalatest._
  * the type to convert from. So you must, for example, write:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "should take a list fixture" in { (list: List[Int]) =>
  *   assert(list.size === 1)
  * }
@@ -167,7 +167,7 @@ import org.scalatest._
  * The following attempt will fail to compile:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * // won't compile, because list is inferred to be of type FixtureParam
  * "should take a list fixture" in { list =>
  *   assert(list.size === 1)

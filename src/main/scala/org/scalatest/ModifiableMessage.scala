@@ -27,7 +27,7 @@ package org.scalatest
  * do not. Here's an example of clues provided directly in <code>assert</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * assert(1 + 1 === 3, "this is a clue")
  * </pre>
  *
@@ -35,7 +35,7 @@ package org.scalatest
  * and in <code>expect</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * expect(3, "this is a clue") { 1 + 1 }
  * </pre>
  *
@@ -46,7 +46,7 @@ package org.scalatest
  * by a failed <code>intercept</code> call requires using <code>withClue</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * withClue("this is a clue") {
  *   intercept[IndexOutOfBoundsException] {
  *     "hi".charAt(-1)
@@ -60,7 +60,7 @@ package org.scalatest
  * an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * withClue("this is a clue") {
  *   1 + 1 should be === 3
  * }

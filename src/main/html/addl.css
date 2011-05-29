@@ -26,3 +26,39 @@ pre.stREPL {
 .stRed {
   color: #dd2233;
 }
+
+pre.stHighlighted {
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 95%;
+  line-height: 110%;
+  padding-left: 4%;
+  padding-top: 24px;
+  background-color: #2c415c;
+  color: white;
+  text-align: left;
+}
+
+.stType {
+  color: #428bdd;
+}
+
+.stLiteral {
+  color: #00cc00;
+}
+
+.stQuotedString {
+  color: #00cc00;
+}
+
+.stReserved {
+  color: #0000cc;
+}
+
+.stBlockComment, .stLineComment {
+  color: gray;
+  font-style: italic;
+}
+
+pre.stHighlight {
+  display: none;
+}

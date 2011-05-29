@@ -34,7 +34,7 @@ import org.scalatest.events._
  * WANT TO COPY AND PASTE FROM THESE EXAMPLES, YOU'LL NEED TO REMOVE THE SPACE BY HAND, OR COPY FROM
  * THE <a href="http://www.scalatest.org/scaladoc/doc-1.1/org/scalatest/junit/JUnitSuite.html">JUNITSUITE SCALADOC FOR VERSION 1.1</a> INSTEAD, WHICH IS ALSO VALID FOR 1.3. - Bill Venners</b></p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.junit.JUnitSuite
  * import scala.collection.mutable.ListBuffer
  * import _root_.org.junit.Test

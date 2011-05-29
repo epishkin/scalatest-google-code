@@ -140,7 +140,7 @@ trait Configuration {
    * evaluates to false. For example, consider this ScalaTest property check:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * // forAll defined in <code>GeneratorDrivenPropertyChecks</code>
    * forAll { (n: Int) => 
    *   whenever (n > 0) {
@@ -160,7 +160,7 @@ trait Configuration {
    * of ScalaCheck's <code>==></code> operator is false. Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * // forAll defined in <code>Checkers</code>
    * forAll { (n: Int) => 
    *   (n > 0) ==> doubleIt(n) == (n * 2)

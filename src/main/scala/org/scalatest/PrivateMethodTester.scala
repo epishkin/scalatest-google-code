@@ -23,7 +23,7 @@ import java.lang.reflect.{InvocationTargetException, Method, Modifier}
  * To test a private method, mix in trait <code>PrivateMethodTester</code> and
  * create a <code>PrivateMethod</code> object, like this: 
  *
- * <pre>
+ * <pre class="stHighlight">
  * val decorateToStringValue = PrivateMethod[String]('decorateToStringValue)
  * </pre>
  *
@@ -34,7 +34,7 @@ import java.lang.reflect.{InvocationTargetException, Method, Modifier}
  * the private method, use the <code>invokePrivate</code> operator, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * targetObject invokePrivate decorateToStringValue(1)
  * </pre>
  *

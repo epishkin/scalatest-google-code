@@ -43,7 +43,7 @@ import org.scalatest._
  * Here's an example that has two fixture types, <code>String</code> and <code>List[Int]</code>:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.MultipleFixturePropSpec
  * import org.scalatest.prop.PropertyChecks
  * import org.scalatest.matchers.ShouldMatchers
@@ -88,7 +88,7 @@ import org.scalatest._
  * of type <code>String</code>.  In this contrived example, the hard-coded string <code>"howdy"</code> is passed into the test:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * implicit def withStringFixture(testFun: String => Unit): FixtureParam => Unit =
  *   configMap => testFun("howdy")
  * </pre>
@@ -108,7 +108,7 @@ import org.scalatest._
  * Following the implicit conversion methods are the test declarations. One test is written to take the <code>String</code> fixture:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * property("takes a string fixture") { (s: String) =>
  *   forAll { (c: Char) =>
  *     whenever (c != 'h') {
@@ -126,7 +126,7 @@ import org.scalatest._
  * conversion that fixes the type error, it will apply it, effectively generating this code:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * // after the implicit withStringFixture method is applied by the compiler
  * property("takes a string fixture") {
  *   withStringFixture { (s: String) =>
@@ -148,7 +148,7 @@ import org.scalatest._
  * The next test is written to take the <code>List[Int]</code> fixture:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * property("takes a list fixture") { (list: List[Int]) =>
  *   forAll { (i: Int) =>
  *     whenever (i != 1) {
@@ -163,7 +163,7 @@ import org.scalatest._
  * code:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * property("takes a list fixture") {
  *   withListFixture { (list: List[Int]) =>
  *     forAll { (i: Int) =>
@@ -180,7 +180,7 @@ import org.scalatest._
  * the type to convert from. So you must, for example, write:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * property("takes a list fixture") { (list: List[Int]) =>
  *   forAll { (i: Int) =>
  *     whenever (i != 1) {
@@ -194,7 +194,7 @@ import org.scalatest._
  * The following attempt will fail to compile:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * // won't compile, because list is inferred to be of type FixtureParam
  * property("takes a list fixture") { list =>
  *   forAll { (i: Int) =>

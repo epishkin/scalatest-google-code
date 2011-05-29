@@ -27,7 +27,7 @@ package org.scalatest
  * instead of <code>Suite</code>, you can't define a suite by simply extending one of the stackable traits:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends BeforeAndAfterEach // Won't compile
  * </pre>
  *
@@ -36,7 +36,7 @@ package org.scalatest
  * into that, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends FunSuite with BeforeAndAfterEach // Compiles fine
  * </pre>
  *

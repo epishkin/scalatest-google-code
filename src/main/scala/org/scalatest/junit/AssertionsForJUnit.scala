@@ -51,7 +51,7 @@ import _root_.junit.framework.AssertionFailedError
  * To use this trait in a JUnit 3 <code>TestCase</code>, you can mix it into your <code>TestCase</code> class, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import junit.framework.TestCase
  * import org.scalatest.junit.AssertionsForJUnit
  *
@@ -69,7 +69,7 @@ import _root_.junit.framework.AssertionFailedError
  * You can alternatively import the methods defined in this trait.
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import junit.framework.TestCase
  * import org.scalatest.junit.AssertionsForJUnit._
  *
@@ -151,7 +151,7 @@ trait AssertionsForJUnit extends Assertions {
  * 	at RequestResult$result(<co...
  * scala> val caught = intercept[StringIndexOutOfBoundsException] { "hi".charAt(-1) }
  * caught: StringIndexOutOfBoundsException = java.lang.StringIndexOutOfBoundsException: String index out of range: -1
- * <pre>
+ * </pre>
  *
  * @author Bill Venners
  */

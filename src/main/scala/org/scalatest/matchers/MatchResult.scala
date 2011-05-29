@@ -39,7 +39,7 @@ import org.scalatest._
  * which happens, for instance, if it is passed to <code>not</code>. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val equalSeven = equal (7)
  * val notEqualSeven = not (equalSeven)
  * </pre>

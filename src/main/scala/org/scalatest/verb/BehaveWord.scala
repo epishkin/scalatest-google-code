@@ -27,7 +27,7 @@ import org.scalatest._
  * <code>FixtureSpec</code>s, and <code>FixtureFlatSpecs</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * it should behave like nonFullStack(stackWithOneItem)
  *           ^
  * </pre>
@@ -36,7 +36,7 @@ import org.scalatest._
  * It also enables syntax such as the following syntax in <code>WordSpec</code>s and <code>FixtureWordSpec</code>s:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * behave like nonEmptyStack(lastValuePushed)
  * ^
  * </pre>
@@ -57,7 +57,7 @@ final class BehaveWord {
    * <code>FixtureSpec</code>s, and <code>FixtureFlatSpecs</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * it should behave like nonFullStack(stackWithOneItem)
    *                  ^
    * </pre>
@@ -66,7 +66,7 @@ final class BehaveWord {
    * It also enables syntax such as the following syntax in <code>WordSpec</code>s and <code>FixtureWordSpec</code>s:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * behave like nonEmptyStack(lastValuePushed)
    * ^
    * </pre>

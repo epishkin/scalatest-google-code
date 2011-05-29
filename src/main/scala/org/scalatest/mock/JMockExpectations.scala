@@ -32,7 +32,7 @@ import org.hamcrest.Matcher
  * a keyword in Scala, to invoke these directly you must surround them in back ticks, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * oneOf (mockCollaborator).documentAdded(`with`("Document"))
  * </pre>
  *
@@ -42,7 +42,7 @@ import org.hamcrest.Matcher
  * instead call <code>withArg</code> with no back ticks needed:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * oneOf (mockCollaborator).documentAdded(withArg("Document"))
  * </pre>
  *

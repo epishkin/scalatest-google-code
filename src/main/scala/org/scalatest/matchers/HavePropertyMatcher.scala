@@ -53,7 +53,7 @@ import org.scalatest._
  * includes two methods that produce <code>HavePropertyMatcher</code>s:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * case class Book(val title: String, val author: String)
  *
  * trait CustomMatchers {
@@ -95,7 +95,7 @@ import org.scalatest._
  * Here's an example that uses these <code>HavePropertyMatchers</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class ExampleSpec extends Spec with ShouldMatchers with CustomMatchers {
  * 
  *   describe("A book") {
@@ -183,7 +183,7 @@ object HavePropertyMatcher {
    * more concise way, for example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    *  case class Person(name: String)
    *  def name(expectedName: String) = {
    *    HavePropertyMatcher { 

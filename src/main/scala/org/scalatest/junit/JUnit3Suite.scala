@@ -41,7 +41,7 @@ import Suite.getIndentedText
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.junit.JUnit3Suite
  * import scala.collection.mutable.ListBuffer
  *
@@ -76,7 +76,7 @@ import Suite.getIndentedText
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.junit.JUnit3Suite
  * import org.scalatest.junit.MustMatchersForJUnit
  * import scala.collection.mutable.ListBuffer
@@ -117,7 +117,7 @@ import Suite.getIndentedText
  * <code>Unit</code>. Thus it is best to leave off the equals sign before the curly braces of the body of the test, like this:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * def testGoodIdea() { // result type will be Unit
  *   // ...
  * }
@@ -127,7 +127,7 @@ import Suite.getIndentedText
  * Instead of this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * def testBadIdea() = { // result type will be inferred
  *   // ...
  * }

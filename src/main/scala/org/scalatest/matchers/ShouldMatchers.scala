@@ -2324,7 +2324,7 @@ LATER: Well, I'm wondering if now that I've removed the be method in ShouldMetho
  * 	at org.scalatest.matchers.ShouldMatchers$ShouldMethodHelper$.shouldMatcher(ShouldMatchers.scala:826)
  * 	at org.scalatest.matchers.ShouldMatchers$IntShouldWrapper.should(ShouldMatchers.scala:1123)
  * 	at .<init>(...
- * <pre>
+ * </pre>
  *
  * @author Bill Venners
  */

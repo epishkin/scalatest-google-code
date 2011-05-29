@@ -126,7 +126,7 @@ trait OneInstancePerTest extends AbstractSuite {
    * a new instance of an inner class:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.scalatest.Suite
    *
    * class Outer {

@@ -30,7 +30,7 @@ import org.testng.TestListenerAdapter
  * names of TestNG XML config file names to run. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class MyWrapperSuite extends TestNGWrapperSuite(
  *   List("oneTest.xml", "twoTest.xml", "redTest.xml", "blueTest.xml")
  * )

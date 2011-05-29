@@ -28,7 +28,7 @@ import scala.reflect.Manifest
  * Using the EasyMock API directly, you create a mock with:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val mockCollaborator = createMock(classOf[Collaborator])
  * </pre>
  *
@@ -36,7 +36,7 @@ import scala.reflect.Manifest
  * With this trait, you can shorten that to:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val mockCollaborator = mock[Collaborator]
  * </pre>
  *
@@ -44,7 +44,7 @@ import scala.reflect.Manifest
  * After creating mocks, you set expectations on them, using syntax like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * mockCollaborator.documentAdded("Document")
  * mockCollaborator.documentChanged("Document")
  * expectLastCall().times(3)
@@ -56,7 +56,7 @@ import scala.reflect.Manifest
  * clause, provided by this trait, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * expecting {
  *   mockCollaborator.documentAdded("Document")
  *   mockCollaborator.documentChanged("Document")
@@ -78,7 +78,7 @@ import scala.reflect.Manifest
  * use the EasyMock API directly:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * replay(mockCollaborator)
  * classUnderTest.addDocument("Document", new Array[Byte](0))
  * classUnderTest.addDocument("Document", new Array[Byte](0))
@@ -91,7 +91,7 @@ import scala.reflect.Manifest
  * This trait enables you to use the following, more declarative syntax instead:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * whenExecuting(mockCollaborator) {
  *   classUnderTest.addDocument("Document", new Array[Byte](0))
  *   classUnderTest.addDocument("Document", new Array[Byte](0))
@@ -111,7 +111,7 @@ import scala.reflect.Manifest
  * To summarize, here's what a typical test using <code>EasyMockSugar</code> looks like:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val mockCollaborator = mock[Collaborator]
  *
  * expecting {
@@ -134,7 +134,7 @@ import scala.reflect.Manifest
  * takes an implicit <code>MockObjects</code> parameter. Here's how that would look:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * implicit val mocks = MockObjects(mock[Collaborator])
  *
  * expecting {
@@ -169,7 +169,7 @@ trait EasyMockSugar {
    * interferes with the <code>expect</code> method if imported from <code>EasyMock</code>. You can invoke it by qualifying it, <em>i.e.</em>,
    * <code>EasyMock.expect</code>, or by changing its name on import, like this:
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.easymock.EasyMock.{expect => easyMockExpect, _}
    * </pre>
    *
@@ -181,7 +181,7 @@ trait EasyMockSugar {
    * You can use this method, for example, to chain expectations like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * expecting {
    *   call(mock.getName).andReturn("Ben Franklin")
    * }
@@ -200,7 +200,7 @@ trait EasyMockSugar {
    * implicitly. Here's how that looks:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * expecting {
    *   mock.getName.andReturn("Ben Franklin")
    * }
@@ -221,7 +221,7 @@ trait EasyMockSugar {
    * on a mock, each time returning <code>"Ben Franklin"</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * expecting {
    *   mock.getName.andReturn("Ben Franklin")
    *   expectLastCall.times(3)
@@ -232,7 +232,7 @@ trait EasyMockSugar {
    * Using this method, you can compress this to:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * expecting {
    *   mock.getName.andReturn("Ben Franklin")
    *   lastCall.times(3)
@@ -249,7 +249,7 @@ trait EasyMockSugar {
    * Using the EasyMock API directly, you create a mock with:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val mockCollaborator = createMock(classOf[Collaborator])
    * </pre>
    *
@@ -257,7 +257,7 @@ trait EasyMockSugar {
    * Using this method, you can shorten that to:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val mockCollaborator = mock[Collaborator]
    * </pre>
    */
@@ -273,7 +273,7 @@ trait EasyMockSugar {
    * Using the EasyMock API directly, you create a strict mock with:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val mockCollaborator = createStrictMock(classOf[Collaborator])
    * </pre>
    *
@@ -281,7 +281,7 @@ trait EasyMockSugar {
    * Using this trait, you can shorten that to:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val mockCollaborator = strictMock[Collaborator]
    * </pre>
    */
@@ -297,7 +297,7 @@ trait EasyMockSugar {
    * Using the EasyMock API directly, you create a nice mock with:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val mockCollaborator = createNiceMock(classOf[Collaborator])
    * </pre>
    *
@@ -305,7 +305,7 @@ trait EasyMockSugar {
    * Using this trait, you can shorten that to:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val mockCollaborator = niceMock[Collaborator]
    * </pre>
    */
@@ -321,7 +321,7 @@ trait EasyMockSugar {
    * Using the EasyMock API directly, you set expectations on a mock object with syntax like:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * mockCollaborator.documentAdded("Document")
    * mockCollaborator.documentChanged("Document")
    * expectLastCall().times(3)
@@ -332,7 +332,7 @@ trait EasyMockSugar {
    * is devoted to setting expectations on mock objects. For example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * expecting {
    *   mockCollaborator.documentAdded("Document")
    *   mockCollaborator.documentChanged("Document")
@@ -367,7 +367,7 @@ trait EasyMockSugar {
    * </p>
    *
    *
-   * <pre>
+   * <pre class="stHighlight">
    * replay(mock)
    * classUnderTest.addDocument("Document", new Array[Byte](0))
    * classUnderTest.addDocument("Document", new Array[Byte](0))
@@ -380,7 +380,7 @@ trait EasyMockSugar {
    * This method enables you to use the following, more declarative syntax instead:
    * </p>
    * 
-   * <pre>
+   * <pre class="stHighlight">
    * whenExecuting(mockCollaborator) {
    *   classUnderTest.addDocument("Document", new Array[Byte](0))
    *   classUnderTest.addDocument("Document", new Array[Byte](0))
@@ -394,7 +394,7 @@ trait EasyMockSugar {
    * them all to <code>whenExecuting</code>, like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * whenExecuting(mock1, mock2, mock3) {
    *   // ...
    * }
@@ -450,7 +450,7 @@ trait EasyMockSugar {
    * </p>
    *
    *
-   * <pre>
+   * <pre class="stHighlight">
    * replay(mock)
    * classUnderTest.addDocument("Document", new Array[Byte](0))
    * classUnderTest.addDocument("Document", new Array[Byte](0))
@@ -463,7 +463,7 @@ trait EasyMockSugar {
    * This method enables you to use the following, more declarative syntax instead:
    * </p>
    * 
-   * <pre>
+   * <pre class="stHighlight">
    * implicit val mocks = MockObjects(mockCollaborator)
    *
    * whenExecuting {
@@ -479,7 +479,7 @@ trait EasyMockSugar {
    * them all to <code>MockObjects</code>, like this:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * implicit val mocks = MockObjects(mock1, mock2, mock3)
    * </pre>
    *

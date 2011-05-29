@@ -45,7 +45,7 @@ package org.scalatest
  * again grabs the file name from the <code>configMap</code> and deletes the file:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.SuperSuite
  * import org.scalatest.BeforeAndAfterAll
  * import java.io.FileReader
@@ -95,13 +95,13 @@ package org.scalatest
  * mix this trait in last to get the desired behavior. For example, this won't
  * work, because <code>BeforeAndAfterAll</code> is "super" to </code>FunSuite</code>:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends BeforeAndAfterAll with FunSuite
  * </pre>
  * <p>
  * You'd need to turn it around, so that <code>FunSuite</code> is "super" to <code>BeforeAndAfterAll</code>, like this:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends FunSuite with BeforeAndAfterAll
  * </pre>
  *

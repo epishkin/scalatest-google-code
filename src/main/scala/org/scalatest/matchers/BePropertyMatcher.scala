@@ -52,7 +52,7 @@ import org.scalatest._
  * includes two <code>BePropertyMatcher</code>s:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * trait CustomMatchers {
  * 
  *   class FileBePropertyMatcher extends BePropertyMatcher[java.io.File] {
@@ -77,7 +77,7 @@ import org.scalatest._
  * matcher expressions that test whether a <code>java.io.File</code> is a file or a directory. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class ExampleSpec extends Spec with ShouldMatchers with CustomMatchers {
  * 
  *   describe("A temp file") {

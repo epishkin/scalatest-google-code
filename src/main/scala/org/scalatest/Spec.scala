@@ -35,7 +35,7 @@ import Suite.reportTestIgnored
  * the word <em>test</em> will be used, for clarity and to be consistent with the rest of ScalaTest.)
  * Here's an example <code>Spec</code>:
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Spec
  * import scala.collection.mutable.Stack
  *
@@ -140,7 +140,7 @@ import Suite.reportTestIgnored
  * to <code>shared</code> is used by multiple test functions:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Spec
  *
  * class ArithmeticSpec extends Spec {
@@ -175,7 +175,7 @@ import Suite.reportTestIgnored
  * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Spec
  * import scala.collection.mutable.ListBuffer
  *
@@ -222,7 +222,7 @@ import Suite.reportTestIgnored
  * For example, you could create a temporary file before each test, and delete it afterwords, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Spec
  * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
@@ -290,7 +290,7 @@ import Suite.reportTestIgnored
  * implementation of <code>withFixture(NoArgTest)</code> simply invokes the function, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * // Default implementation
  * protected def withFixture(test: NoArgTest) {
  *   test()
@@ -302,7 +302,7 @@ import Suite.reportTestIgnored
  * Thus, the previous temp file example could also be implemented without mixing in <code>BeforeAndAfterEach</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Spec
  * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
@@ -376,7 +376,7 @@ import Suite.reportTestIgnored
  * by overriding the <code>withFixture(OneArgTest)</code> method of a <code>FixtureSpec</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.FixtureSpec
  * import java.io.FileReader
  * import java.io.FileWriter
@@ -467,7 +467,7 @@ import Suite.reportTestIgnored
  * For example, given this stack class:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import scala.collection.mutable.ListBuffer
  * 
  * class Stack[T] {
@@ -520,7 +520,7 @@ import Suite.reportTestIgnored
  * method containing shared tests for non-full stacks:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * trait StackBehaviors { this: Spec =>
  * 
  *   def nonEmptyStack(stack: Stack[Int], lastItemAdded: Int) {
@@ -588,7 +588,7 @@ import Suite.reportTestIgnored
  * The recommended style, however, is the functional, pass-all-the-needed-values-in style. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class SharedTestExampleSpec extends Spec with StackBehaviors {
  * 
  *   // Stack fixture creation methods
@@ -707,7 +707,7 @@ import Suite.reportTestIgnored
  * For example, the following code in a <code>Spec</code> would register a test with the name <code>"A Stack (when empty) should be empty"</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  *   describe("A Stack") {
  * 
  *     describe("(when empty)") {
@@ -738,7 +738,7 @@ import Suite.reportTestIgnored
  * create matching groups for <code>Spec</code>s like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Tag
  *
  * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
@@ -749,7 +749,7 @@ import Suite.reportTestIgnored
  * Given these definitions, you could place <code>Spec</code> tests into groups like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Spec
  *
  * class MySuite extends Spec {
@@ -792,7 +792,7 @@ import Suite.reportTestIgnored
  * disable the test with the name <code>"should pop values in last-in-first-out order"</code>, just change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Spec
  * import scala.collection.mutable.Stack
  *
@@ -863,7 +863,7 @@ import Suite.reportTestIgnored
  * test name, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Spec
  * import scala.collection.mutable.Stack
  *
@@ -1077,7 +1077,7 @@ trait Spec extends Suite { thisSuite =>
    * example itself, with all components separated by a space. For example, consider this <code>Spec</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * import org.scalatest.Spec
    *
    * class StackSpec extends Spec{

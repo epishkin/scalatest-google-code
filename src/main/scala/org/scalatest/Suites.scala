@@ -24,7 +24,7 @@ package org.scalatest
  * nested suites like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class StepsSuite extends Suites {
  *   new Step1Suite,
  *   new Step2Suite,

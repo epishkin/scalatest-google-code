@@ -28,7 +28,7 @@ import fixture.{ConfigMapFixture, FixtureSuite}
  * concurrency abstraction from <code>java.util.concurrent</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.fixture.MultipleFixtureFunSuite
  * import org.scalatest.concurrent.ConductorMultiFixture
  * import org.scalatest.matchers.ShouldMatchers

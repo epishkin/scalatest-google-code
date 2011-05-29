@@ -37,7 +37,7 @@ import org.testng.TestListenerAdapter
  * WANT TO COPY AND PASTE FROM THESE EXAMPLES, YOU'LL NEED TO REMOVE THE SPACE BY HAND, OR COPY FROM
  * THE <a href="http://www.scalatest.org/scaladoc/doc-1.1/org/scalatest/testng/TestNGSuite.html">TESTNGSUITE SCALADOC FOR VERSION 1.1</a> INSTEAD, WHICH IS ALSO VALID FOR 1.3. - Bill Venners</b></p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.testng.TestNGSuite
  * import org.testng.annotations.Test
  * import org.testng.annotations.Configuration

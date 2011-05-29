@@ -26,7 +26,7 @@ import org.scalatest._
  * in shorthand form:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "A Stack (when empty)" should "be empty" taggedAs() is (pending)
  *                                                     ^
  * </pre>
@@ -36,7 +36,7 @@ import org.scalatest._
  * in shorthand form:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * "A Stack (when empty)" should "be empty" taggedAs() in { ... }
  *                                                     ^
  * </pre>
@@ -67,7 +67,7 @@ abstract class ResultOfTaggedAsInvocation(val verb: String, val rest: String, va
    * This method supports syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * "A Stack" must "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
    *                                                                           ^
    * </pre>

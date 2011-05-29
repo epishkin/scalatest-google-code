@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
  * named <code>setUp</code> and <code>tearDown</code>. <code>JUnit3ComfortSuite</code> is intended for people who are
  * familiar with JUnit 3 and want to get started quickly writing tests with ScalaTest. Here's an example:
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.junit.JUnit3ComfortSuite
  * import scala.collection.mutable.ListBuffer
  *
@@ -69,7 +69,7 @@ import org.junit.runner.RunWith
  * a <code>JUnit3ComfortSuite</code> like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * @Ignore
  * def testSubtraction() {
  *   val diff = 4 - 1

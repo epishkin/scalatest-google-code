@@ -36,7 +36,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthForPropCheck
  * Property-based tests can, therefore, give you a lot more testing for a lot less code than assertion-based tests.
  * Here's an example of using ScalaCheck from a <code>JUnitSuite</code>:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.junit.JUnitSuite
  * import org.scalatest.prop.Checkers
  * import org.scalacheck.Arbitrary._
@@ -57,7 +57,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthForPropCheck
 repeatedly pass generated data to the function. In this case, the test data is composed of integer lists named <code>a</code> and <code>b</code>.
  * Inside the body of the function, you see:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * a.size + b.size == (a ::: b).size
  * </pre>
  * <p>
@@ -165,7 +165,7 @@ repeatedly pass generated data to the function. In this case, the test data is c
  * you want all parameters at their defaults except for <code>minSize</code> and <code>maxSize</code>, you can override
  * <code>generatorDrivenConfig</code>, like this:
  *
- * <pre>
+ * <pre class="stHighlight">
  * implicit override val generatorDrivenConfig =
  *   PropertyCheckConfig(minSize = 10, maxSize = 20)
  * </pre>
@@ -174,7 +174,7 @@ repeatedly pass generated data to the function. In this case, the test data is c
  * Or, if hide it by declaring a variable of the same name in whatever scope you want the changed values to be in effect:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * implicit val generatorDrivenConfig =
  *   PropertyCheckConfig(minSize = 10, maxSize = 20)
  * </pre>
@@ -188,7 +188,7 @@ repeatedly pass generated data to the function. In this case, the test data is c
  * you can do so like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * check((n: Int) => n + 0 == n, minSuccessful(500))
  * </pre>
  *
@@ -198,7 +198,7 @@ repeatedly pass generated data to the function. In this case, the test data is c
  * If you want to set multiple configuration parameters in this way, just list them separated by commas:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * check((n: Int) => n + 0 == n, minSuccessful(500), maxDiscarded(300))
  * </pre>
  *
@@ -208,7 +208,7 @@ repeatedly pass generated data to the function. In this case, the test data is c
  * in case you want to configure ScalaCheck that way.
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalacheck.Prop
  * import org.scalacheck.Test.Params
  * import org.scalatest.prop.Checkers._
@@ -520,7 +520,7 @@ object Checkers extends Checkers {
    * in property checks. Here's an example:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * check((s: String, t: String) => successOf(s + t should endWith (s)))
    * </pre>
    *
@@ -531,7 +531,7 @@ object Checkers extends Checkers {
    * check might fail with an exception like:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * org.scalatest.prop.GeneratorDrivenPropertyCheckFailedException: TestFailedException (included as this exception's cause) was thrown during property evaluation.
    * Label of failing property: "ab" did not end with substring "a" (script.scala:24)
    * > arg0 = "?" (1 shrinks)
@@ -547,7 +547,7 @@ object Checkers extends Checkers {
    * instead of:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val complexProp = forAll { (m: Int, n: Int) =>
    *   val res = n * m
    *   (res >= m)    :| "result > #1" &&
@@ -560,7 +560,7 @@ object Checkers extends Checkers {
    * You could write:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * val complexProp = forAll { (m: Int, n: Int) =>
    *   successOf {
    *     val res = n * m

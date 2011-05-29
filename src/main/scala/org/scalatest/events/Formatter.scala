@@ -83,7 +83,7 @@ final case object MotionToSuppress extends Formatter
  *
  * <ul>
  * <li><code>InfoProvided</code> reported with an:
- * <pre>
+ * <pre class="stHighlight">
  *   IndentedText(
  *     formattedText = "A Stack (when newly created)",
  *     rawText = "A Stack (when newly created)",
@@ -92,7 +92,7 @@ final case object MotionToSuppress extends Formatter
  * </pre>
  * </li>
  * <li><code>TestSucceeded</code> reported with an:
- * <pre>
+ * <pre class="stHighlight">
  *   IndentedText(
  *     formattedText = "- should be empty",
  *     rawText = "should be empty",
@@ -101,7 +101,7 @@ final case object MotionToSuppress extends Formatter
  * </pre>
  * </li>
  * <li><code>TestSucceeded</code> reported with an:
- * <pre>
+ * <pre class="stHighlight">
  *   IndentedText(
  *     formattedText = "- should complain when popped",
  *     rawText = "should complain when popped",

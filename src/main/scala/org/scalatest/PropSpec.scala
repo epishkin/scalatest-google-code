@@ -39,7 +39,7 @@ import Suite.checkRunTestParamsForNull
  * For example, given this <code>Fraction</code> class:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * class Fraction(n: Int, d: Int) {
  *   require(d != 0)
  *   require(d != Integer.MIN_VALUE)
@@ -56,7 +56,7 @@ import Suite.checkRunTestParamsForNull
  * You could write a <code>PropSpec</code> in the ScalaTest property style that specifies the <code>Fraction</code> behavior like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.PropSpec
  * import org.scalatest.prop.PropertyChecks
  * import org.scalatest.matchers.ShouldMatchers
@@ -170,7 +170,7 @@ import Suite.checkRunTestParamsForNull
  * create matching groups for <code>PropSpec</code>s like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.Tag
  *
  * object SlowTest extends Tag("com.mycompany.tags.SlowTest")
@@ -181,7 +181,7 @@ import Suite.checkRunTestParamsForNull
  * Given these definitions, you could tag a <code>PropSpec</code>'s tests like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.PropSpec
  * import org.scalatest.prop.PropertyChecks
  * import org.scalatest.matchers.ShouldMatchers
@@ -222,7 +222,7 @@ import Suite.checkRunTestParamsForNull
  * disable the test named <code>addition</code>, just change &#8220;<code>property</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.PropSpec
  * import org.scalatest.prop.PropertyChecks
  * import org.scalatest.matchers.ShouldMatchers
@@ -284,7 +284,7 @@ import Suite.checkRunTestParamsForNull
  * <code>org.scalatest.Spec</code>, you can also use it in <code>PropSpec</code>, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.PropSpec
  * import org.scalatest.prop.PropertyChecks
  * import org.scalatest.matchers.ShouldMatchers
@@ -335,7 +335,7 @@ import Suite.checkRunTestParamsForNull
  * Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest.PropSpec
  * import org.scalatest.prop.PropertyChecks
  * import org.scalatest.matchers.ShouldMatchers
@@ -502,7 +502,7 @@ trait PropSpec extends Suite { thisSuite =>
    * This method enables the following syntax for shared tests in a <code>PropSpec</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stHighlight">
    * propertiesFor(nonEmptyStack(lastValuePushed))
    * </pre>
    *
