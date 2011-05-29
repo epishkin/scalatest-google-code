@@ -169,7 +169,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * of each test here with:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * val (builder, buffer) = fixture
  * </pre>
  *
@@ -223,7 +223,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * of the fixture object, the test code can just use them as unqualified identifiers:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * "mutate shared fixture objects" in { fixture =>
  *   import fixture._
  *   builder.append("easy!")
@@ -240,7 +240,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * are part of the passed-in fixture:
  * </p>
  *
- * <pre>
+ * <pre class="stExamples">
  * "get a fresh set of mutable fixture objects" in { fixture =>
  *   fixture.builder.append("fun!")
  *   assert(fixture.builder.toString === "ScalaTest is fun!")
@@ -442,7 +442,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" taggedAs(SlowTest) in { fixture => ... }
      *                                       ^
      * </pre>
@@ -462,7 +462,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" taggedAs(SlowTest) in { () => ... }
      *                                       ^
      * </pre>
@@ -482,7 +482,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" taggedAs(SlowTest) is (pending)
      *                                       ^
      * </pre>
@@ -502,7 +502,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" taggedAs(SlowTest) ignore { fixture => ... }
      *                                       ^
      * </pre>
@@ -522,7 +522,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" taggedAs(SlowTest) ignore { () => ... }
      *                                       ^
      * </pre>
@@ -560,7 +560,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" in { fixture => ... }
      *                    ^
      * </pre>
@@ -580,7 +580,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" in { () => ... }
      *                    ^
      * </pre>
@@ -600,7 +600,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" is (pending)
      *                    ^
      * </pre>
@@ -620,7 +620,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" ignore { fixture => ... }
      *                    ^
      * </pre>
@@ -640,7 +640,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" ignore { () => ... }
      *                    ^
      * </pre>
@@ -661,7 +661,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "complain on peek" taggedAs(SlowTest) in { fixture => ... }
      *                    ^
      * </pre>
@@ -682,7 +682,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "A Stack" when { ... }
      *           ^
      * </pre>
@@ -702,7 +702,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * val theUser = afterWord("the user")
      *
      * "A Stack" when theUser { ... }
@@ -724,7 +724,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "a rerun button" that {
      *                  ^
      * </pre>
@@ -744,7 +744,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For example, this method supports syntax such as the following:
      * </p>
      *
-     * <pre>
+     * <pre class="stExamples">
      * "a rerun button" that {
      *                  ^
      * </pre>
@@ -798,13 +798,13 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * Running the previous <code>WordSpec</code> in the Scala interpreter would yield:
    * </p>
    *
-   * <pre>
+   * <pre class="stREPL">
    * scala> (new ScalaTestGUISpec).run()
-   * The ScalaTest GUI (when the user clicks on an event report in the list box) 
+   * <span class="stGreen">The ScalaTest GUI (when the user clicks on an event report in the list box) 
    * - should display a blue background in the clicked-on row in the list box
    * - should display the details for the event in the details area
    * - should display a rerun button that is enabled if the clicked-on event is rerunnable
-   * - should display a rerun button that is disabled if the clicked-on event is not rerunnable
+   * - should display a rerun button that is disabled if the clicked-on event is not rerunnable</span>
    * </pre>
    */
   protected final class AfterWord(text: String) {
@@ -861,13 +861,13 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * Running the previous <code>WordSpec</code> in the Scala interpreter would yield:
    * </p>
    *
-   * <pre>
+   * <pre class="stREPL">
    * scala> (new ScalaTestGUISpec).run()
-   * The ScalaTest GUI (when the user clicks on an event report in the list box) 
+   * <span class="stGreen">The ScalaTest GUI (when the user clicks on an event report in the list box) 
    * - should display a blue background in the clicked-on row in the list box
    * - should display the details for the event in the details area
    * - should display a rerun button that is enabled if the clicked-on event is rerunnable
-   * - should display a rerun button that is disabled if the clicked-on event is not rerunnable
+   * - should display a rerun button that is disabled if the clicked-on event is not rerunnable</span>
    * </pre>
    */
   protected def afterWord(text: String) = new AfterWord(text)
@@ -886,7 +886,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * For example, this method enables syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * "A Stack" should { ...
    *           ^
    * </pre>
@@ -911,7 +911,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * For example, this method enables syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * def provide = afterWord("provide")
    *
    * "The ScalaTest Matchers DSL" can provide { ... }
@@ -1066,7 +1066,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * This field enables syntax such as the following:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * behave like nonFullStack(stackWithOneItem)
    * ^
    * </pre>
