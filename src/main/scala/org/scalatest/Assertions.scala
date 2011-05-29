@@ -776,15 +776,15 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
  * an alternative to mixing it in. One use case is to import <code>Assertions</code> members so you can use
  * them in the Scala interpreter:
  *
- * <pre>
+ * <pre class="stREPL">
  * $scala -classpath scalatest.jar
  * Welcome to Scala version 2.7.3.final (Java HotSpot(TM) Client VM, Java 1.5.0_16).
  * Type in expressions to have them evaluated.
  * Type :help for more information.
- * 
+ * &nbsp;
  * scala> import org.scalatest.Assertions._
  * import org.scalatest.Assertions._
- * 
+ * &nbsp;
  * scala> assert(1 === 2)
  * org.scalatest.TestFailedException: 1 did not equal 2
  * 	at org.scalatest.Assertions$class.assert(Assertions.scala:211)
@@ -795,7 +795,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
  * 	at RequestResult$.<clinit>(<console>)
  * 	at RequestResult$result(<console>)
  * 	at sun.reflect.NativeMethodAccessorImpl.invoke...
- *
+ *&nbsp;
  * scala> expect(3) { 1 + 3 }
  * org.scalatest.TestFailedException: Expected 3, but got 4
  * 	at org.scalatest.Assertions$class.expect(Assertions.scala:447)
@@ -806,7 +806,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
  * 	at RequestResult$.<clinit>(<console>)
  * 	at RequestResult$result(<console>)
  * 	at sun.reflect.NativeMethodAccessorImpl.in...
- *
+ *&nbsp;
  * scala> val caught = intercept[StringIndexOutOfBoundsException] { "hi".charAt(-1) }
  * caught: StringIndexOutOfBoundsException = java.lang.StringIndexOutOfBoundsException: String index out of range: -1
  * <pre>
