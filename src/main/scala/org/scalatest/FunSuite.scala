@@ -628,9 +628,9 @@ import Suite.checkRunTestParamsForNull
  * you'll see:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new StackFunSuite).execute()
- * StackFunSuite:
+ * <span class="stGreen">StackFunSuite:
  * - empty is invoked on an empty stack
  * - peek is invoked on an empty stack
  * - pop is invoked on an empty stack
@@ -648,7 +648,7 @@ import Suite.checkRunTestParamsForNull
  * - empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
  * - peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
  * - pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
- * - push is invoked on a full stack
+ * - push is invoked on a full stack</span>
  * </pre>
  * 
  * <p>
@@ -792,7 +792,7 @@ import Suite.checkRunTestParamsForNull
  * If you run this version of <code>MySuite</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new MySuite).execute()
  * </pre>
  *
@@ -800,10 +800,10 @@ import Suite.checkRunTestParamsForNull
  * It will run only <code>subtraction</code> and report that <code>addition</code> was ignored:
  * </p>
  *
- * <pre>
- * MySuite:
- * - addition !!! IGNORED !!!
- * - subtraction
+ * <pre class="stREPL">
+ * <span class="stGreen">MySuite:</span>
+ * <span class="stYellow">- addition !!! IGNORED !!!</span>
+ * <span class="stGreen">- subtraction</span>
  * </pre>
  *
  * <h2>Pending tests</h2>
@@ -854,7 +854,7 @@ import Suite.checkRunTestParamsForNull
  * If you run this version of <code>MySuite</code> with:
  * </p>
  *
- * <pre>
+ * <pre class="stREPL">
  * scala> (new MySuite).execute()
  * </pre>
  *
@@ -862,10 +862,10 @@ import Suite.checkRunTestParamsForNull
  * It will run both tests, but report that <code>subtraction</code> is pending. You'll see:
  * </p>
  *
- * <pre>
- * MySuite:
- * - addition
- * - subtraction (pending)
+ * <pre class="stREPL">
+ * <span class="stGreen">MySuite:
+ * - addition</span>
+ * <span class="stYellow">- subtraction (pending)</span>
  * </pre>
  * 
  * <h2>Informers</h2>
@@ -901,10 +901,10 @@ import Suite.checkRunTestParamsForNull
  * If you run this <code>Suite</code> from the interpreter, you will see the following message
  * included in the printed report:
  *
- * <pre>
- * MySuite:
+ * <pre class="stREPL">
+ * <span class="stGreen">MySuite:
  * - addition
- *   + Addition seems to work 
+ *   + Addition seems to work</span> 
  * </pre>
  *
  * @author Bill Venners
@@ -1047,7 +1047,7 @@ trait FunSuite extends Suite { thisSuite =>
    * This method enables the following syntax for shared tests in a <code>FunSuite</code>:
    * </p>
    *
-   * <pre>
+   * <pre class="stExamples">
    * testsFor(nonEmptyStack(lastValuePushed))
    * </pre>
    *
