@@ -808,18 +808,18 @@ import scala.collection.Traversable
  * around right-hand values, such as the <code>7</code> in <code>num should equal (7)</code>:
  * </p>
  *
- * <pre class="stHighlight">
- * result should equal <span style="color: #CC3300; font-weight: bold">(</span>4<span style="color: #CC3300; font-weight: bold">)</span>
- * array should have length <span style="color: #CC3300; font-weight: bold">(</span>3<span style="color: #CC3300; font-weight: bold">)</span>
+ * <pre>
+ * result should equal <span style="stRed">(</span>4<span style="stRed">)</span>
+ * array should have length <span style="stRed">(</span>3<span style="stRed">)</span>
  * book should have (
- *   'title <span style="color: #CC3300; font-weight: bold">(</span>"Programming in Scala"<span style="color: #CC3300; font-weight: bold">)</span>,
- *   'author <span style="color: #CC3300; font-weight: bold">(</span>List("Odersky", "Spoon", "Venners")<span style="color: #CC3300; font-weight: bold">)</span>,
- *   'pubYear <span style="color: #CC3300; font-weight: bold">(</span>2008<span style="color: #CC3300; font-weight: bold">)</span>
+ *   'title <span style="stRed">(</span>"Programming in Scala"<span style="stRed">)</span>,
+ *   'author <span style="stRed">(</span>List("Odersky", "Spoon", "Venners")<span style="stRed">)</span>,
+ *   'pubYear <span style="stRed">(</span>2008<span style="stRed">)</span>
  * )
- * option should be <span style="color: #CC3300; font-weight: bold">(</span>'defined<span style="color: #CC3300; font-weight: bold">)</span>
- * catMap should (contain key <span style="color: #CC3300; font-weight: bold">(</span>9<span style="color: #CC3300; font-weight: bold">)</span> and contain value <span style="color: #CC3300; font-weight: bold">(</span>"lives"<span style="color: #CC3300; font-weight: bold">)</span>)</span>
- * keyEvent should be an <span style="color: #CC3300; font-weight: bold">(</span>'actionKey<span style="color: #CC3300; font-weight: bold">)</span>
- * javaSet should have size <span style="color: #CC3300; font-weight: bold">(</span>90<span style="color: #CC3300; font-weight: bold">)</span>
+ * option should be <span style="stRed">(</span>'defined<span style="stRed">)</span>
+ * catMap should (contain key <span style="stRed">(</span>9<span style="stRed">)</span> and contain value <span style="stRed">(</span>"lives"<span style="stRed">)</span>)</span>
+ * keyEvent should be an <span style="stRed">(</span>'actionKey<span style="stRed">)</span>
+ * javaSet should have size <span style="stRed">(</span>90<span style="stRed">)</span>
  * </pre>
  *
  * <p>
@@ -827,13 +827,13 @@ import scala.collection.Traversable
  * the list of one or more property values following a <code>have</code>:
  * </p>
  *
- * <pre class="stHighlight">
- * file should (exist and have <span style="color: #CC3300; font-weight: bold">(</span>'name ("temp.txt")<span style="color: #CC3300; font-weight: bold">)</span>)
- * book should have <span style="color: #CC3300; font-weight: bold">(</span>
+ * <pre>
+ * file should (exist and have <span style="stRed">(</span>'name ("temp.txt")<span style="stRed">)</span>)
+ * book should have <span style="stRed">(</span>
  *   title ("Programming in Scala"),
  *   author (List("Odersky", "Spoon", "Venners")),
  *   pubYear (2008)
- * <span style="color: #CC3300; font-weight: bold">)</span>
+ * <span style="stRed">)</span>
  * javaList should have length (9) // parens optional for length and size
  * </pre>
  *
@@ -841,9 +841,9 @@ import scala.collection.Traversable
  * 3. You must always put parentheses around <code>and</code> and <code>or</code> expressions, as in:
  * </p>
  *
- * <pre class="stHighlight">
- * catMap should <span style="color: #CC3300; font-weight: bold">(</span>contain key (9) and contain value ("lives")<span style="color: #CC3300; font-weight: bold">)</span>
- * number should <span style="color: #CC3300; font-weight: bold">(</span>equal (2) or equal (4) or equal (8)<span style="color: #CC3300; font-weight: bold">)</span>
+ * <pre>
+ * catMap should <span style="stRed">(</span>contain key (9) and contain value ("lives")<span style="stRed">)</span>
+ * number should <span style="stRed">(</span>equal (2) or equal (4) or equal (8)<span style="stRed">)</span>
  * </pre>
  * 
  * <p>
@@ -851,13 +851,13 @@ import scala.collection.Traversable
  * around custom <code>Matcher</code>s when they appear directly after <code>not</code>:
  * </p>
  * 
- * <pre class="stHighlight">
+ * <pre>
  * file should exist
- * file should not <span style="color: #CC3300; font-weight: bold">(</span>exist<span style="color: #CC3300; font-weight: bold">)</span>
+ * file should not <span style="stRed">(</span>exist<span style="stRed">)</span>
  * file should (exist and have ('name ("temp.txt")))
- * file should (not <span style="color: #CC3300; font-weight: bold">(</span>exist<span style="color: #CC3300; font-weight: bold">)</span> and have ('name ("temp.txt"))
+ * file should (not <span style="stRed">(</span>exist<span style="stRed">)</span> and have ('name ("temp.txt"))
  * file should (have ('name ("temp.txt") or exist)
- * file should (have ('name ("temp.txt") or not <span style="color: #CC3300; font-weight: bold">(</span>exist<span style="color: #CC3300; font-weight: bold">)</span>)
+ * file should (have ('name ("temp.txt") or not <span style="stRed">(</span>exist<span style="stRed">)</span>)
  * </pre>
  *
  * <p>
