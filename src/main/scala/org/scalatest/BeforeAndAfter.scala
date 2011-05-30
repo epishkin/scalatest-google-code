@@ -58,13 +58,13 @@ import java.util.concurrent.atomic.AtomicReference
  * run each test, you may need to mix this trait in last to get the desired behavior. For example, this won't
  * work, because <code>BeforeAndAfter</code> is "super" to </code>FunSuite</code>:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends BeforeAndAfter with FunSuite 
  * </pre>
  * <p>
  * You'd need to turn it around, so that <code>FunSuite</code> is "super" to <code>BeforeAndAfter</code>, like this:
  * </p>
- * <pre>
+ * <pre class="stHighlight">
  * class MySuite extends FunSuite with BeforeAndAfter
  * </pre>
  *
