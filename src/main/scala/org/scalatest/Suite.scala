@@ -523,7 +523,7 @@ import Suite.reportInfoProvided
  * <p>
  * The <code>f.</code> in front of each use of a fixture object provides a visual indication of which objects used in
  * each test are part of the fixture. If you'd like to avoid the <code>f.</code>, however, another technique is to place
- * the fixture objects in a trait and run your test code in the context of a new anonymous class instance that mixes in
+ * the fixture objects in a <em>fixture trait</em> and run your test code in the context of a new anonymous class instance that mixes in
  * the fixture trait, like this:
  * </p>
  *
@@ -559,8 +559,10 @@ import Suite.reportInfoProvided
  *
  * <p>
  * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple create-fixture methods and
- * call the method (or methods) needed by each test at the begining of the test. If every test method requires the same set of
- * mutable fixture objects, one other approach you can take is make them simply <code>val</code>s and mix in trait
+ * call the method (or methods) needed by each test at the beginning of the test. 
+ * Or, you could create multiple fixture traits and instantiate an anonymous class mixing in the trait (or traits) needed by each test.
+ * If every test method requires the same set of
+ * mutable fixture objects, however, one other approach you can take is make them simply <code>val</code>s and mix in trait
  * <a href="OneInstancePerTest.html"><code>OneInstancePerTest</code></a>.  If you mix in <code>OneInstancePerTest</code>, each test
  * will be run in its own instance of the <code>Suite</code>, similar to the way JUnit tests are executed. Here's an example:
  * </p>
