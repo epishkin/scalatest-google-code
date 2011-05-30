@@ -5665,7 +5665,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax: 
      *
      * <pre class="stHighlight">
-     * string should (not fullyMatch regex ("Hel*o) and not include ("orld"))
+     * string should (not fullyMatch regex ("Hel*o") and not include ("orld"))
      *                    ^
      * </pre>
      */
@@ -5724,7 +5724,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      * This method enables the following syntax: 
      *
      * <pre class="stHighlight">
-     * string should (not startWith regex ("hel*o") and not endWith regex ("wor.d))
+     * string should (not startWith regex ("hel*o") and not endWith regex ("wor.d"))
      *                    ^
      * </pre>
      */
