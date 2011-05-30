@@ -32,7 +32,7 @@ import org.scalatest._
  * </p>
  *
  * <p>
- * If none of the built-in matcher syntax  satisfy a particular need you have, you can create
+ * If none of the built-in matcher syntax satisfies a particular need you have, you can create
  * custom <code>Matcher</code>s that allow
  * you to place your own syntax directly after <code>should</code> or <code>must</code>. For example, class <code>java.io.File</code> has a method <code>exists</code>, which
  * indicates whether a file of a certain path and name exists. Because the <code>exists</code> method takes no parameters and returns <code>Boolean</code>,
@@ -135,7 +135,7 @@ import org.scalatest._
  * message would be:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre>
  * The file named temp.txt did not exist
  * </pre>
  *
