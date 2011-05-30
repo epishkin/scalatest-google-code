@@ -233,7 +233,7 @@ class BeforeNAfterSuite extends FunSuite {
   }
 }
 
-class BeforeAndAfterExtendingSuite extends Suite with BeforeAndAfter {
+class BeforeNAfterExtendingSuite extends Suite with BeforeAndAfter {
 
   var sb: StringBuilder = _
   val lb = new ListBuffer[String]
@@ -257,7 +257,7 @@ class BeforeAndAfterExtendingSuite extends Suite with BeforeAndAfter {
   }
 }
 
-class BeforeAndAfterExtendingFunSuite extends FunSuite with BeforeAndAfter {
+class BeforeNAfterExtendingFunSuite extends FunSuite with BeforeAndAfter {
 
   var sb: StringBuilder = _
   val lb = new ListBuffer[String]
