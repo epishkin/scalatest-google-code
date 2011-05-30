@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference
  * fixture objects held in instance variables are replaced or reinitialized before each test or
  * suite. Here's an example:
  *
- * <pre>
+ * <pre class="stHighlight">
  * import org.scalatest._
  * import scala.collection.mutable.ListBuffer
  *
@@ -56,16 +56,16 @@ import java.util.concurrent.atomic.AtomicReference
  * <p>
  * Because this trait invokes <code>super.runTest</code> to
  * run each test, you may need to mix this trait in last to get the desired behavior. For example, this won't
- * work, because <code>BeforeAndAfterEachFunctions</code> is "super" to </code>FunSuite</code>:
+ * work, because <code>BeforeAndAfter</code> is "super" to </code>FunSuite</code>:
  * </p>
  * <pre>
- * class MySuite extends BeforeAndAfterEachFunctions with FunSuite 
+ * class MySuite extends BeforeAndAfter with FunSuite 
  * </pre>
  * <p>
- * You'd need to turn it around, so that <code>FunSuite</code> is "super" to <code>BeforeAndAfterEachFunctions</code>, like this:
+ * You'd need to turn it around, so that <code>FunSuite</code> is "super" to <code>BeforeAndAfter</code>, like this:
  * </p>
  * <pre>
- * class MySuite extends FunSuite with BeforeAndAfterEachFunctions
+ * class MySuite extends FunSuite with BeforeAndAfter
  * </pre>
  *
  * <p>
@@ -112,7 +112,7 @@ trait BeforeAndAfter extends AbstractSuite {
       throw new NotAllowedException("You cannot call before after run has been invoked (such as, from within a test). It is probably best to move it to the top level of the Suite class so it is executed during object construction.", 0)
     val success = beforeFunctionAtomic.compareAndSet(None, Some(() => fun))
     if (!success)
-      throw new NotAllowedException("You are only allowed to call before once in each Suite that mixes in BeforeAndAfterEachFunctions.", 0)
+      throw new NotAllowedException("You are only allowed to call before once in each Suite that mixes in BeforeAndAfter.", 0)
   }
 
   /**
@@ -132,7 +132,7 @@ trait BeforeAndAfter extends AbstractSuite {
       throw new NotAllowedException("You cannot call after after run has been invoked (such as, from within a test. It is probably best to move it to the top level of the Suite class so it is executed during object construction.", 0)
     val success = afterFunctionAtomic.compareAndSet(None, Some(() => fun))
     if (!success)
-      throw new NotAllowedException("You are only allowed to call after once in each Suite that mixes in BeforeAndAfterEachFunctions.", 0)
+      throw new NotAllowedException("You are only allowed to call after once in each Suite that mixes in BeforeAndAfter.", 0)
   }
 
   /**
