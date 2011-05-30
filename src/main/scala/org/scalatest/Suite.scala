@@ -521,6 +521,43 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
+ * The <code>f.</code> in front of each use of a fixture object provides a visual indication of which objects used in
+ * each test are part of the fixture. If you'd like to avoid the <code>f.</code>, however, another technique is to place
+ * the fixture objects in a trait and run your test code in the context of a new anonymous class instance that mixes in
+ * the fixture trait, like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Suite
+ * import collection.mutable.ListBuffer
+ * 
+ * class MySuite extends Suite {
+ * 
+ *   trait Fixture {
+ *     val builder = new StringBuilder("ScalaTest is ")
+ *     val buffer = new ListBuffer[String]
+ *   }
+ * 
+ *   def testEasy() {
+ *     new Fixture {
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
+ *   }
+ * 
+ *   def testFun() {
+ *     new Fixture {
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
  * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple create-fixture methods and
  * call the method (or methods) needed by each test at the begining of the test. If every test method requires the same set of
  * mutable fixture objects, one other approach you can take is make them simply <code>val</code>s and mix in trait
