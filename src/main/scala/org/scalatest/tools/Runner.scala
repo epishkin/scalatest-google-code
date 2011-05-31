@@ -328,7 +328,9 @@ path&gt; [...]]
  * so client software can count on them being available.
  * </p>
  *
+ * <a name="membersOnlyWildcard">
  * <h2>Specifying "members-only" and "wildcard" <code>Suite</code> paths</h2>
+ * </a>
  *
  * <p>
  * If you specify <code>Suite</code> path names with <code>-m</code> or <code>-w</code>, <code>Runner</code> will automatically
