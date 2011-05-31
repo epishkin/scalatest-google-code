@@ -521,7 +521,7 @@ import Suite.reportInfoProvided
  *
  * <pre class="stHighlight">
  * @SlowAsMolasses
- * def testSleeping() = sleep(1000000)
+ * def testSleeping() { sleep(1000000) }
  * </pre>
  *
  * <p>
@@ -669,6 +669,7 @@ import Suite.reportInfoProvided
  * import org.scalatest._
  * 
  * class ExampleSuite extends Suite {
+ *
  *   def testAddition(info: Informer) {
  *     assert(1 + 1 === 2)
  *     info("Addition seems to work")
