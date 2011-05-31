@@ -801,10 +801,10 @@ import Suite.reportInfoProvided
  *     val buffer = ListBuffer("ScalaTest", "is")
  *   }
  * 
- *   def withWriter(test: FileWriter => Any) {
+ *   def withWriter(testCode: FileWriter => Any) {
  *     val writer = new FileWriter(tmpFile) // set up the fixture
  *     try {
- *       test(writer) // "loan" the fixture to the test
+ *       testCode(writer) // "loan" the fixture to the test
  *     }
  *     finally {
  *       writer.close() // clean up the fixture
@@ -859,22 +859,32 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
- * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple create-fixture methods and
- * call the method (or methods) needed by each test at the beginning of the test. 
- * Or, you could create multiple fixture traits and instantiate an anonymous class mixing in the trait (or traits) needed by each test.
- * If different tests in the same <code>Suite</code> need different shared fixtures, you can again use the <em>loan pattern</em> to supply to
- * each test just the fixture or fixtures it needs. 
- * For each fixture needed by multiple tests, create a <em>with-fixture</em>
- * method (<em>i.e.</em>, a method with a name such as <code>withBuilder</code>, <code>withBuffer</code>, or <code>withDatabase</code>) that takes a function you will use to pass the fixture to the test. Then call the appropriate
- * with-fixture method or methods in each test. Here's an example:
+ * In the previous example, <code>testProductive</code> uses only the <code>StringBuilder</code> fixture, so it just instantiates
+ * a <code>new Builder</code>, whereas <code>testReadable</code> uses only the <code>ListBuffer</code> fixture, so it just intantiates
+ * a <code>new Buffer</code>. <code>testFriendly</code> needs just the <code>FileWriter</code> fixture, so it invokes
+ * <code>withWriter</code>, which prepares and passes a <code>FileWriter</code> to the test (and takes care of closing it afterwords).
  * </p>
  *
  * <p>
- * In the previous example, both with-fixture methods passed a mutable object into
+ * Two tests need multiple fixtures: <code>testClearAndConcise</code> needs both the <code>StringBuilder</code> and the
+ * <code>ListBuffer</code>, so it instantiates a class that mixes in both fixture traits with <code>new Builder with Buffer</code>.
+ * <code>testComposable</code> needs all three fixtures, so in addition to <code>new Builder with Buffer</code> it also invokes
+ * <code>withWriter</code>, wrapping just the of the test code that needs the fixture.
+ * </p>
+ *
+ * <p>
+ * Note that in this case, the loan pattern is being implemented via the <code>withWriter</code> method that takes a function, not
+ * by overriding <code>FixtureSuite</code>'s <code>withFixture(OneArgTest)</code> method. <code>FixtureSuite</code> makes the most sense
+ * if all (or at least most) tests need the same fixture, whereas in this <code>Suite</code> only two tests need the
+ * <code>FileWriter</code>.
+ * </p>
+ *
+ * <p>
+ * In the previous example, the <code>withWriter</code> method passed an object into
  * the tests. Passing fixture objects into tests is generally a good idea when possible, but sometimes a side affect is unavoidable.
  * For example, if you need to initialize a database running on a server across a network, your with-fixture 
- * method that does this will by definition have a side affect. In such cases, simply create a with-fixture 
- * method that takes a by-name parameter, like this:
+ * method will likely have nothing to pass. In such cases, simply create a with-fixture method that takes a by-name parameter and
+ * performs setup and cleanup via side effects, like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -901,12 +911,6 @@ import Suite.reportInfoProvided
  * }
  * </pre>
  * 
- * <p>
- * If you have one fixture object (or one set of fixture objects) needed by all or most tests, you can also consider using
- * a <a href="fixture/FixtureSuite.html"><code>FixtureSuite</code></a>, which declares a <code>withFixture</code> method that
- * takes a <em>one-arg</em> test. See its documentation for the details.
- * </p>
- *
  * <h2>Composing stackable fixture traits</h2>
  *
  * <p>
