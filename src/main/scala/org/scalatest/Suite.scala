@@ -113,7 +113,8 @@ import Suite.reportInfoProvided
  * If you prefer a behavior-driven development (BDD) style, in which tests are combined with text that
  * specifies the behavior being tested, look at
  * <a href="Spec.html"><code>Spec</code></a>, 
- * <a href="FlatSpec.html"><code>FlatSpec</code></a>, and
+ * <a href="FlatSpec.html"><code>FlatSpec</code></a>,
+ * <a href="FreeSpec.html"><code>FreeSpec</code></a>, and
  * <a href="WordSpec.html"><code>WordSpec</code></a>. Otherwise, if you just want to write tests
  * and don't want to combine testing with specifying, look at 
  * <a href="FunSuite.html"><code>FunSuite</code></a> or read on to learn how to write
@@ -130,31 +131,29 @@ import Suite.reportInfoProvided
  * <pre class="stHighlight">
  * import org.scalatest.Suite
  *
- * class MySuite extends Suite {
+ * class ExampleSuite extends Suite {
  *
  *   def testAddition() {
  *     val sum = 1 + 1
  *     assert(sum === 2)
- *     assert(sum + 2 === 4)
  *   }
  *
  *   def testSubtraction() {
  *     val diff = 4 - 1
  *     assert(diff === 3)
- *     assert(diff - 2 === 1)
  *   }
  * }
  * </pre>
  *
  * <p>
  * You can run a <code>Suite</code> by invoking <code>execute</code> on it.
- * This method, which prints test results to the standard output, are intended to serve as a
+ * This method, which prints test results to the standard output, is intended to serve as a
  * convenient way to run tests from within the Scala interpreter. For example,
- * to run <code>MySuite</code> from within the Scala interpreter, you could write:
+ * to run <code>ExampleSuite</code> from within the Scala interpreter, you could write:
  * </p>
  *
  * <pre class="stREPL">
- * scala> (new MySuite).execute()
+ * scala> (new ExampleSuite).execute()
  * </pre>
  *
  * <p>
@@ -162,7 +161,7 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <pre class="stREPL">
- * <span class="stGreen">MySuite:
+ * <span class="stGreen">ExampleSuite:
  * - testAddition
  * - testSubtraction</span>
  * </pre>
@@ -172,7 +171,7 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <pre class="stREPL">
- * scala> (new MySuite).execute("testAddition")
+ * scala> (new ExampleSuite).execute("testAddition")
  * </pre>
  *
  * <p>
@@ -180,20 +179,25 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <pre class="stREPL">
- * <span class="stGreen">MySuite:
+ * <span class="stGreen">ExampleSuite:
  * - testAddition</span>
  * </pre>
  *
  * <p>
- * You can also pass to <code>execute</code> a "config" map of key-value
- * pairs (see <a href="#configMapSection">Config map</a>, below), which will be passed down into suites and tests. The
- * <code>execute</code> method invokes a <code>run</code> method takes seven
+ * You can also pass to <code>execute</code> a <a href="#configMapSection"><em>config map</em></a> of key-value
+ * pairs, which will be passed down into suites and tests, as well as other parameters that configure the run itself.
+ * For more information on running in the Scala interpreter, see the documentation for <code>execute</code> (below) and the
+ * <a href="Shell.html">ScalaTest shell</a>.</code>
+ * </p>
+ *
+ * <p>
+ * The <code>execute</code> method invokes a <code>run</code> method takes seven
  * parameters. This <code>run</code> method, which actually executes the suite, will usually be invoked by a test runner, such
  * as <code>org.scalatest.tools.Runner</code> or an IDE. See the <a href="tools/Runner$.html">documentation
  * for <code>Runner</code></a> for more details.
  * </p>
  *
- * <h2>Assertions and ===</h2>
+ * <h2>Assertions and <code>=</code><code>=</code><code>=</code></h2>
  *
  * <p>
  * Inside test methods in a <code>Suite</code>, you can write assertions by invoking <code>assert</code> and passing in a <code>Boolean</code> expression,
@@ -210,7 +214,7 @@ import Suite.reportInfoProvided
  * If the passed expression is <code>true</code>, <code>assert</code> will return normally. If <code>false</code>,
  * <code>assert</code> will complete abruptly with a <code>TestFailedException</code>. This exception is usually not caught
  * by the test method, which means the test method itself will complete abruptly by throwing the <code>TestFailedException</code>. Any
- * test method that completes abruptly with a <code>TestFailedException</code> or any <code>Exception</code> is considered a failed
+ * test method that completes abruptly with an exception is considered a failed
  * test. A test method that returns normally is considered a successful test.
  * </p>
  *
@@ -227,7 +231,7 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
- * Using this form of <code>assert</code>, the failure report will include the left and right values, thereby
+ * Using this form of <code>assert</code>, the failure report will include the left and right values, 
  * helping you debug the problem. However, ScalaTest provides the <code>===</code> operator to make this easier.
  * (The <code>===</code> operator is defined in trait <a href="Assertions.html"><code>Assertions</code></a> which trait <code>Suite</code> extends.)
  * You use it like this:
@@ -344,18 +348,16 @@ import Suite.reportInfoProvided
  * import org.scalatest.Suite
  * import org.scalatest.matchers.ShouldMatchers
  *
- * class MySuite extends Suite with ShouldMatchers {
+ * class ExampleSuite extends Suite with ShouldMatchers {
  *
  *   def testAddition() {
  *     val sum = 1 + 1
  *     sum should equal (2)
- *     sum + 2 should equal (4)
  *   }
  *
  *   def testSubtraction() {
  *     val diff = 4 - 1
  *     diff should equal (3)
- *     diff - 2 should equal (1)
  *   }
  * }
  * </pre>
@@ -378,18 +380,16 @@ import Suite.reportInfoProvided
  * import org.scalatest.Suite
  * import org.junit.Assert._
  *
- * class MySuite extends Suite {
+ * class ExampleSuite extends Suite {
  *
  *   def testAddition() {
  *     val sum = 1 + 1
  *     assertEquals(2, sum)
- *     assertEquals(4, sum + 2)
  *   }
  *
  *   def testSubtraction() {
  *     val diff = 4 - 1
  *     assertEquals(3, diff)
- *     assertEquals(1, diff - 2)
  *   }
  * }
  * </pre>
@@ -436,7 +436,7 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
- * If you now run <code>AlphabetSuite</code>, for example from the interpreter:
+ * If you now run <code>AlphabetSuite</code>:
  * </p>
  *
  * <pre class="stREPL">
@@ -444,7 +444,7 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
- * You will see reports printed to the standard output that indicate nested
+ * You will see reports printed to the standard output that indicate the nested
  * suites&#8212;<code>ASuite</code>, <code>BSuite</code>, and
  * <code>CSuite</code>&#8212;were run:
  * </p>
@@ -461,7 +461,7 @@ import Suite.reportInfoProvided
  *
  * <p>
  * Note that <code>Runner</code> can discover <code>Suite</code>s automatically, so you need not
- * necessarily define nested <code>Suites</code> explicitly. See the <a href="tools/Runner$.html">documentation
+ * necessarily define nested <code>Suites</code> explicitly. See the <a href="tools/Runner$.html$membersOnlyWildcard">documentation
  * for <code>Runner</code></a> for more information.
  * </p>
  *
@@ -472,7 +472,7 @@ import Suite.reportInfoProvided
  * connections, <em>etc.</em>) used by tests to do their work.
  * If a fixture is used by only one test method, then the definitions of the fixture objects can
  * be local to the method, such as the objects assigned to <code>sum</code> and <code>diff</code> in the
- * previous <code>MySuite</code> examples. If multiple methods need to share an immutable fixture, one approach
+ * previous <code>ExampleSuite</code> examples. If multiple methods need to share an immutable fixture, one approach
  * is to assign them to instance variables.
  * </p>
  *
@@ -480,22 +480,28 @@ import Suite.reportInfoProvided
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
  * they need to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to 
- * be created and initialized before, and cleaned up after, each test. JUnit 3 offers methods <code>setUp</code> and
+ * be created and initialized before, and cleaned up after, each test. JUnit 3 offered methods <code>setUp</code> and
  * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
  * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
- * and <code>tearDown</code>, however, this approach usually involves reassigning <code>var</code>s
- * between tests. Before going that route, you may wish to consider some approaches that
- * avoid <code>var</code>s. One approach is to write one or more <em>create-fixture</em> methods
- * that return a new instance of a needed object (or a tuple or case class holding new instances of
- * multiple objects) each time it is called. You can then call a create-fixture method at the beginning of each
- * test method that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
+ * and <code>tearDown</code>, however, this approach usually involves reassigning <code>var</code>s or mutating objects
+ * between tests. Before going that route, you may wish to consider some more functional approaches that
+ * avoid side effects.
+ * </p>
+ *
+ * <h4>Calling create-fixture methods</h4>
+ *
+ * <p>
+ * One approach is to write one or more <em>create-fixture</em> methods
+ * that return a new instance of a needed fixture object (or an holder object containing multiple needed fixture objects) each time it
+ * is called. You can then call a create-fixture method at the beginning of each
+ * test method that needs the fixture, storing the returned object or objects in local variables. Here's an example:
  * </p>
  *
  * <pre class="stHighlight">
  * import org.scalatest.Suite
  * import collection.mutable.ListBuffer
  *
- * class MySuite extends Suite {
+ * class ExampleSuite extends Suite {
  * 
  *   def fixture =
  *     new {
@@ -521,8 +527,14 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
- * The <code>f.</code> in front of each use of a fixture object provides a visual indication of which objects used in
- * each test are part of the fixture. If you'd like to avoid the <code>f.</code>, however, another technique is to place
+ * The &ldquo;<code>f.</code>&rdquo; in front of each use of a fixture object provides a visual indication of which objects 
+ * are part of the fixture, but if you prefer, you can import the the members with &ldquo;<code>import f._</code>&rdquo; and use the names directly.
+ * </p>
+ *
+ * <h4>Instantiating fixture traits</h4>
+ *
+ * <p>
+ * A related technique is to place
  * the fixture objects in a <em>fixture trait</em> and run your test code in the context of a new anonymous class instance that mixes in
  * the fixture trait, like this:
  * </p>
@@ -531,7 +543,7 @@ import Suite.reportInfoProvided
  * import org.scalatest.Suite
  * import collection.mutable.ListBuffer
  * 
- * class MySuite extends Suite {
+ * class ExampleSuite extends Suite {
  * 
  *   trait Fixture {
  *     val builder = new StringBuilder("ScalaTest is ")
@@ -557,12 +569,11 @@ import Suite.reportInfoProvided
  * }
  * </pre>
  *
+ * <h4>Mixing in <code>OneInstancePerTest</code></h4>
+ *
  * <p>
- * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple create-fixture methods and
- * call the method (or methods) needed by each test at the beginning of the test. 
- * Or, you could create multiple fixture traits and instantiate an anonymous class mixing in the trait (or traits) needed by each test.
  * If every test method requires the same set of
- * mutable fixture objects, however, one other approach you can take is make them simply <code>val</code>s and mix in trait
+ * mutable fixture objects, one other approach you can take is make them simply <code>val</code>s and mix in trait
  * <a href="OneInstancePerTest.html"><code>OneInstancePerTest</code></a>.  If you mix in <code>OneInstancePerTest</code>, each test
  * will be run in its own instance of the <code>Suite</code>, similar to the way JUnit tests are executed. Here's an example:
  * </p>
@@ -572,7 +583,7 @@ import Suite.reportInfoProvided
  * import org.scalatest.OneInstancePerTest
  * import collection.mutable.ListBuffer
  * 
- * class MySuite extends Suite with OneInstancePerTest {
+ * class ExampleSuite extends Suite with OneInstancePerTest {
  * 
  *   val builder = new StringBuilder("ScalaTest is ")
  *   val buffer = new ListBuffer[String]
@@ -593,10 +604,16 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
- * Although the create-fixture and <code>OneInstancePerTest</code> approaches take care of setting up a fixture before each
- * test, they don't address the problem of cleaning up a fixture after the test completes. In this situation,
- * one option is to mix in the <a href="BeforeAndAfter.html"><code>BeforeAndAfter</code></a> trait.
- * With this trait you can mark off a bit of code to run before each test with <code>before</code> and/or after each test
+ * Although the create-fixture, fixture-trait, and <code>OneInstancePerTest</code> approaches take care of setting up a fixture before each
+ * test, they don't address the problem of cleaning up a fixture after the test completes. In this situation, you'll need to either
+ * use side effects or the <em>loan pattern</em>.
+ * </p>
+ *
+ * <h4>Mixing in <code>BeforeAndAfter</code></h4>
+ *
+ * <p>
+ * One way to use side effects is to mix in the <a href="BeforeAndAfter.html"><code>BeforeAndAfter</code></a> trait.
+ * With this trait you can denote a bit of code to run before each test with <code>before</code> and/or after each test
  * each test with <code>after</code>, like this:
  * </p>
  * 
@@ -605,7 +622,7 @@ import Suite.reportInfoProvided
  * import org.scalatest.BeforeAndAfter
  * import collection.mutable.ListBuffer
  * 
- * class MySuite extends Suite with BeforeAndAfter {
+ * class ExampleSuite extends Suite with BeforeAndAfter {
  * 
  *   val builder = new StringBuilder
  *   val buffer = new ListBuffer[String]
@@ -634,10 +651,11 @@ import Suite.reportInfoProvided
  * }
  * </pre>
  * 
+ * <h4>Overriding <code>withFixture(NoArgTest)</code></h4>
+ *
  * <p>
- * An alternate way to take care of setup and cleanup of shared fixtures is to to use the <em>loan pattern</em>. If you have just
- * one set of fixtures shared by all tests, the best way to implement this
- * pattern is to override <code>withFixture</code>. Trait <code>Suite</code>'s implementation of
+ * An alternate way to take care of setup and cleanup via side effects
+ * is to override <code>withFixture</code>. Trait <code>Suite</code>'s implementation of
  * <code>runTest</code> passes a no-arg test function to <code>withFixture</code>. It is <code>withFixture</code>'s
  * responsibility to invoke that test function.  <code>Suite</code>'s implementation of <code>withFixture</code> simply
  * invokes the function, like this:
@@ -661,7 +679,7 @@ import Suite.reportInfoProvided
  * import org.scalatest.Suite
  * import collection.mutable.ListBuffer
  *
- * class MySuite extends Suite {
+ * class ExampleSuite extends Suite {
  *
  *   val builder = new StringBuilder
  *   val buffer = new ListBuffer[String]
@@ -702,87 +720,154 @@ import Suite.reportInfoProvided
  * <p>
  * The reason you should perform cleanup in a <code>finally</code> clause is that <code>withFixture</code> is called by
  * <code>runTest</code>, which expects an exception to be thrown to indicate a failed test. Thus when you invoke
- * the <code>test</code> function inside <code>withFixture</code>, it may complete abruptly with an exception. The <code>finally</code> clause will
- * ensure the fixture cleanup happens as that exception propagates back up the call stack to <code>runTest</code>.
+ * the <code>test</code> function inside <code>withFixture</code>, it may complete abruptly with an exception. The <code>finally</code>
+ * clause will ensure the fixture cleanup happens as that exception propagates back up the call stack to <code>runTest</code>.
+ * </p>
+ *
+ * <h4>Overriding <code>withFixture(OneArgTest)</code></h4>
+ *
+ * <p>
+ * To use the loan pattern, you can extend <code>FixtureSuite</code> (from the <code>org.scalatest.fixture</code> package) instead of
+ * <code>Suite</code>. Each test in a <code>FixtureSuite</code> takes a fixture as a parameter, allowing you to pass the fixture into
+ * the test. You must indicate the type of the fixture parameter by specifying <code>FixtureParam</code>, and implement a
+ * <code>withFixture</code> method that takes a <code>OneArgTest</code>. This <code>withFixture</code> method is responsible for
+ * invoking the one-arg test function, so you can perform fixture set up before, and clean up after, invoking and passing
+ * the fixture into the test function. Here's an example:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.fixture.FixtureSuite
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class ExampleSuite extends FixtureSuite {
+ * 
+ *   final val tmpFile = "temp.txt"
+ * 
+ *   type FixtureParam = FileWriter
+ * 
+ *   def withFixture(test: OneArgTest) {
+ * 
+ *     val writer = new FileWriter(tmpFile) // set up the fixture
+ *     try {
+ *       test(writer) // "loan" the fixture to the test
+ *     }
+ *     finally {
+ *       writer.close() // clean up the fixture
+ *     }
+ *   }
+ * 
+ *   def testEasy(writer: FileWriter) {
+ *     writer.write("Hello, test!")
+ *     writer.flush()
+ *     assert(new File(tmpFile).length === 12)
+ *   }
+ * 
+ *   def testFun(writer: FileWriter) {
+ *     writer.write("Hi, test!")
+ *     writer.flush()
+ *     assert(new File(tmpFile).length === 9)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * For more information, see the <a href="fixture/FixtureSuite.html">documentation for <code>FixtureSuite</code></a>.
  * </p>
  *
  * <h2>Providing different fixtures to different tests</h2>
  * 
  * <p>
+ * If different tests in the same <code>Suite</code> require different fixtures, you can combine the previous techniques and
+ * provide each test with just the fixture or fixtures it needs. Here's an example in which a <code>StringBuilder</code> and a
+ * <code>ListBuffer</code> are provided via fixture traits, and file writer (that requires cleanup) is provided via the loan pattern:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import java.io.FileWriter
+ * import java.io.File
+ * import collection.mutable.ListBuffer
+ * import org.scalatest.Suite
+ * 
+ * class ExampleSuite extends Suite {
+ * 
+ *   final val tmpFile = "temp.txt"
+ * 
+ *   trait Builder {
+ *     val builder = new StringBuilder("ScalaTest is ")
+ *   }
+ * 
+ *   trait Buffer {
+ *     val buffer = ListBuffer("ScalaTest", "is")
+ *   }
+ * 
+ *   def withWriter(test: FileWriter => Any) {
+ *     val writer = new FileWriter(tmpFile) // set up the fixture
+ *     try {
+ *       test(writer) // "loan" the fixture to the test
+ *     }
+ *     finally {
+ *       writer.close() // clean up the fixture
+ *     }
+ *   }
+ * 
+ *   def testProductive() { // This test needs the StringBuilder fixture
+ *     new Builder {
+ *       builder.append("productive!")
+ *       assert(builder.toString === "ScalaTest is productive!")
+ *     }
+ *   }
+ * 
+ *   def testReadable() { // This test needs the ListBuffer[String] fixture
+ *     new Buffer {
+ *       buffer += ("readable!")
+ *       assert(buffer === List("ScalaTest", "is", "readable!"))
+ *     }
+ *   }
+ * 
+ *   def testFriendly() { // This test needs the FileWriter fixture
+ *     withWriter { writer =>
+ *       writer.write("Hello, user!")
+ *       writer.flush()
+ *       assert(new File(tmpFile).length === 12)
+ *     }
+ *   }
+ * 
+ *   def testClearAndConcise() { // This test needs the StringBuilder and ListBuffer
+ *     new Builder with Buffer {
+ *       builder.append("clear!")
+ *       buffer += ("concise!")
+ *       assert(builder.toString === "ScalaTest is clear!")
+ *       assert(buffer === List("ScalaTest", "is", "concise!"))
+ *     }
+ *   }
+ * 
+ *   def testComposable() { // This test needs all three fixtures
+ *     new Builder with Buffer {
+ *       builder.append("clear!")
+ *       buffer += ("concise!")
+ *       assert(builder.toString === "ScalaTest is clear!")
+ *       assert(buffer === List("ScalaTest", "is", "concise!"))
+ *       withWriter { writer =>
+ *         writer.write(builder.toString)
+ *         writer.flush()
+ *         assert(new File(tmpFile).length === 19)
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple create-fixture methods and
+ * call the method (or methods) needed by each test at the beginning of the test. 
+ * Or, you could create multiple fixture traits and instantiate an anonymous class mixing in the trait (or traits) needed by each test.
  * If different tests in the same <code>Suite</code> need different shared fixtures, you can again use the <em>loan pattern</em> to supply to
  * each test just the fixture or fixtures it needs. 
  * For each fixture needed by multiple tests, create a <em>with-fixture</em>
  * method (<em>i.e.</em>, a method with a name such as <code>withBuilder</code>, <code>withBuffer</code>, or <code>withDatabase</code>) that takes a function you will use to pass the fixture to the test. Then call the appropriate
  * with-fixture method or methods in each test. Here's an example:
  * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.Suite
- * import collection.mutable.ListBuffer
- * 
- * class MySuite extends Suite {
- * 
- *   def withBuilder(test: StringBuilder => Any) {
- *     val builder = new StringBuilder
- *     builder.append("ScalaTest is ")
- *     try {
- *       test(builder) // "loan" the StringBuilder to the test
- *     }
- *     finally {
- *       builder.clear()
- *     }
- *   }
- * 
- *   def withBuffer(test: ListBuffer[String] => Any) {
- *     val buffer = ListBuffer("ScalaTest", "is")
- *     try {
- *       test(buffer) // "loan" the ListBuffer[String] to the test
- *     }
- *     finally {
- *       buffer.clear()
- *     }
- *   }
- * 
- *   def testEasy() { // This test needs the StringBuilder fixture
- *     withBuilder { builder =>
- *       builder.append("easy!")
- *       assert(builder.toString === "ScalaTest is easy!")
- *     }
- *   }
- * 
- *   def testReadable() { // This test needs the ListBuffer[String] fixture
- *     withBuffer { buffer =>
- *       buffer += ("readable!")
- *       assert(buffer === List("ScalaTest", "is", "readable!"))
- *     }
- *   }
- * 
- *   def testFun() { // This test needs the StringBuilder fixture
- *     withBuilder { builder =>
- *       builder.append("fun!")
- *       assert(builder.toString === "ScalaTest is fun!")
- *     }
- *   }
- * 
- *   def testProductive() { // This test needs the ListBuffer[String] fixture
- *     withBuffer { buffer =>
- *       buffer += ("productive!")
- *       assert(buffer === List("ScalaTest", "is", "productive!"))
- *     }
- *   }
- * 
- *   def testClearAndConcise() { // This test needs both fixtures
- *     withBuilder { builder =>
- *       withBuffer { buffer =>
- *         builder.append("clear!")
- *         buffer += ("concise!")
- *         assert(builder.toString === "ScalaTest is clear!")
- *         assert(buffer === List("ScalaTest", "is", "concise!"))
- *       }
- *     }
- *   }
- * }
- * </pre>
  *
  * <p>
  * In the previous example, both with-fixture methods passed a mutable object into
@@ -822,7 +907,7 @@ import Suite.reportInfoProvided
  * takes a <em>one-arg</em> test. See its documentation for the details.
  * </p>
  *
- * <h2>Composing fixture traits</h2>
+ * <h2>Composing stackable fixture traits</h2>
  *
  * <p>
  * In larger projects, teams often end up with several different fixtures that test classes need in different combinations,
@@ -830,7 +915,7 @@ import Suite.reportInfoProvided
  * fixtures into traits that can be composed using the <em>stackable trait</em> pattern. This can be done, for example, by placing
  * <code>withFixture</code> methods in several traits, each of which call <code>super.withFixture</code>. Here's an example in
  * which the <code>StringBuilder</code> and <code>ListBuffer[String]</code> fixtures used in the previous examples have been
- * factored out into two traits named <code>Builder</code> and <code>Buffer</code>:
+ * factored out into two <em>stackable fixture traits</em> named <code>Builder</code> and <code>Buffer</code>:
  * </p>
  *
  * <pre class="stHighlight">
@@ -867,7 +952,7 @@ import Suite.reportInfoProvided
  *   }
  * }
  * 
- * class MySuite extends Suite with Builder with Buffer {
+ * class ExampleSuite extends Suite with Builder with Buffer {
  * 
  *   def testEasy() {
  *     builder.append("easy!")
@@ -886,23 +971,31 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
- * By mixing in both the <code>Builder</code> and <code>Buffer</code> traits, <code>MySuite</code> gets both fixtures, which will be
+ * By mixing in both the <code>Builder</code> and <code>Buffer</code> traits, <code>ExampleSuite</code> gets both fixtures, which will be
  * initialized before each test and cleaned up after. The order the traits are mixed together determines the order of execution.
  * In this case, <code>Builder</code> is "super" to </code>Buffer</code>. If you wanted <code>Buffer</code> to be "super"
  * to <code>Builder</code>, you need only switch the order you mix them together, like this: 
  * </p>
  *
  * <pre class="stHighlight">
- * class MySuite extends Suite with Buffer with Builder
+ * class Example2Suite extends Suite with Buffer with Builder
  * </pre>
  *
  * <p>
- * Another way to create composable fixture traits is by extending the <a href="BeforeAndAfterEach.html"><code>BeforeAndAfterEach</code></a>
+ * And if you only need one fixture you mix in only that trait:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * class Example3Suite extends Suite with Builder
+ * </pre>
+ *
+ * <p>
+ * Another way to create stackable fixture traits is by extending the <a href="BeforeAndAfterEach.html"><code>BeforeAndAfterEach</code></a>
  * and/or <a href="BeforeAndAfterAll.html"><code>BeforeAndAfterAll</code></a> traits.
- * <code>BeforeAndAfterEach</code>'s <code>beforeEach</code> method will be run before each test (like JUnit's <code>setUp</code>),
- * and its <code>afterEach</code> method after (like JUnit's <code>tearDown</code>).
- * Similarly, <code>BeforeAndAfterAll</code>'s <code>beforeAll</code> method will be run once before all tests,
- * and its <code>afterAll</code> method once after all tests. Here's what the previously shown example would look like if it
+ * <code>BeforeAndAfterEach</code> has a <code>beforeEach</code> method that will be run before each test (like JUnit's <code>setUp</code>),
+ * and an <code>afterEach</code> method that will be run after (like JUnit's <code>tearDown</code>).
+ * Similarly, <code>BeforeAndAfterAll</code> has a <code>beforeAll</code> method that will be run before all tests,
+ * and an <code>afterAll</code> method that will be run after all tests. Here's what the previously shown example would look like if it
  * were rewritten to use the <code>BeforeAndAfterEach</code> methods instead of <code>withFixture</code>:
  * </p>
  *
@@ -916,16 +1009,16 @@ import Suite.reportInfoProvided
  *   val builder = new StringBuilder
  * 
  *   override def beforeEach() {
- *     super.beforeEach() // To be stackable, must call super.beforeEach
  *     builder.append("ScalaTest is ")
+ *     super.beforeEach() // To be stackable, must call super.beforeEach
  *   }
  * 
  *   override def afterEach() {
  *     try {
- *       builder.clear()
+ *       super.afterEach() // To be stackable, must call super.afterEach
  *     }
  *     finally {
- *       super.afterEach() // To be stackable, must call super.afterEach
+ *       builder.clear()
  *     }
  *   }
  * }
@@ -936,15 +1029,15 @@ import Suite.reportInfoProvided
  * 
  *   override def afterEach() {
  *     try {
- *       buffer.clear()
+ *       super.afterEach() // To be stackable, must call super.afterEach
  *     }
  *     finally {
- *       super.afterEach() // To be stackable, must call super.afterEach
+ *       buffer.clear()
  *     }
  *   }
  * }
  * 
- * class MySuite extends Suite with Builder with Buffer {
+ * class ExampleSuite extends Suite with Builder with Buffer {
  * 
  *   def testEasy() {
  *     builder.append("easy!")
@@ -962,6 +1055,23 @@ import Suite.reportInfoProvided
  * }
  * </pre>
  *
+ * <p>
+ * To get the same ordering as <code>withFixture</code>, place your <code>super.beforeEach</code> call at the end of each
+ * <code>beforeEach</code> method, and the <code>super.afterEach</code> call at the beginning of each <code>afterEach</code>
+ * method, as shown in the previous example. It is a good idea to invoke <code>super.afterEach</code> in a <code>try</code>
+ * block and perform cleanup in a <code>finally</code> clause, as shown in the previous example, because this ensures the
+ * cleanup code is performed even if <code>super.afterAll</code> throws an exception.
+ * </p>
+ *
+ * <p>
+ * One difference to bear in mind between the before-and-after traits and the <code>withFixture</code> methods, is that if
+ * a <code>withFixture</code> method completes abruptly with an exception, it is considered a failed test. By contrast, if any of the
+ * methods on the before-and-after traits (<em>i.e.</em>, <code>before</code>  and <code>after</code> of <code>BeforeAndAfter</code>,
+ * <code>beforeEach</code> and <code>afterEach</code> of <code>BeforeAndAfterEach</code>,
+ * and <code>beforeAll</code> and <code>afterAll</code> of <code>BeforeAndAfterAll</code>) complete abruptly, it is considered a
+ * failed suite, which will result in a <a href="events/SuiteAborted.html"><code>SuiteAborted</code></a> event.
+ * </p>
+ * 
  * <a name="configMapSection"></a><h2>The config map</h2>
  *
  * <p>
@@ -999,8 +1109,7 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <p><b>BECAUSE OF A SCALADOC BUG IN SCALA 2.8, I HAD TO PUT A SPACE AFTER THE AT SIGN IN ONE THE TARGET ANNOTATION EXAMPLE BELOW. IF YOU
- * WANT TO COPY AND PASTE FROM THIS EXAMPLE, YOU'LL NEED TO REMOVE THE SPACE BY HAND, OR COPY FROM
- * THE <a href="http://www.scalatest.org/scaladoc/doc-1.1/org/scalatest/Suite.html">SUITE SCALADOC FOR VERSION 1.1</a> INSTEAD, WHICH IS ALSO VALID FOR 1.3. - Bill Venners</b></p>
+ * WANT TO COPY AND PASTE FROM THIS EXAMPLE, YOU'LL NEED TO REMOVE THE SPACE BY HAND.  - Bill Venners</b></p>
  *
  * <pre>
  * import java.lang.annotation.*; 
@@ -1044,7 +1153,7 @@ import Suite.reportInfoProvided
  * import org.scalatest.Suite
  * import org.scalatest.Ignore
  *
- * class MySuite extends Suite {
+ * class ExampleSuite extends Suite {
  *
  *   def testAddition() {
  *     val sum = 1 + 1
@@ -1062,11 +1171,11 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
- * If you run this version of <code>MySuite</code> with:
+ * If you run this version of <code>ExampleSuite</code> with:
  * </p>
  *
  * <pre class="stREPL">
- * scala> (new MySuite).run()
+ * scala> (new ExampleSuite).run()
  * </pre>
  *
  * <p>
@@ -1074,7 +1183,7 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <pre class="stREPL">
- * <span class="stGreen">MySuite:
+ * <span class="stGreen">ExampleSuite:
  * - testAddition</span>
  * <span class="stYellow">- testSubtraction !!! IGNORED !!!</span>
  * </pre>
@@ -1118,7 +1227,7 @@ import Suite.reportInfoProvided
  * <pre class="stHighlight">
  * import org.scalatest.Suite
  *
- * class MySuite extends Suite {
+ * class ExampleSuite extends Suite {
  *
  *   def testAddition() {
  *     val sum = 1 + 1
@@ -1131,11 +1240,11 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
- * If you run this version of <code>MySuite</code> with:
+ * If you run this version of <code>ExampleSuite</code> with:
  * </p>
  *
  * <pre class="stREPL">
- * scala> (new MySuite).run()
+ * scala> (new ExampleSuite).run()
  * </pre>
  *
  * <p>
@@ -1143,7 +1252,7 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <pre class="stREPL">
- * <span class="stGreen">MySuite:
+ * <span class="stGreen">ExampleSuite:
  * - testAddition</span>
  * <span class="stYellow">- testSubtraction (pending)</span>
  * </pre>
@@ -1166,7 +1275,7 @@ import Suite.reportInfoProvided
  * <pre class="stHighlight">
  * import org.scalatest._
  * 
- * class MySuite extends Suite {
+ * class ExampleSuite extends Suite {
  *   def testAddition(info: Informer) {
  *     assert(1 + 1 === 2)
  *     info("Addition seems to work")
@@ -1178,8 +1287,8 @@ import Suite.reportInfoProvided
  * included in the printed report:
  *
  * <pre class="stREPL">
- * scala> (new MySuite).run()
- * <span class="stGreen">MySuite:
+ * scala> (new ExampleSuite).run()
+ * <span class="stGreen">ExampleSuite:
  * - testAddition(Informer)
  *   + Addition seems to work </span>
  * </pre>
@@ -1473,7 +1582,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * </p>
    *
    * <pre class="stREPL">
-   * scala> (new MySuite).execute()
+   * scala> (new ExampleSuite).execute()
    * </pre>
    *
    * <p>
@@ -1481,7 +1590,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * </p>
    *
    * <pre class="stREPL">
-   * scala> (new MySuite).execute("my favorite test")
+   * scala> (new ExampleSuite).execute("my favorite test")
    * </pre>
    *
    * <p>
@@ -1489,7 +1598,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * </p>
    *
    * <pre class="stREPL">
-   * scala> (new MySuite).execute(testName = "my favorite test")
+   * scala> (new ExampleSuite).execute(testName = "my favorite test")
    * </pre>
    *
    * <p>
@@ -1504,7 +1613,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * </p>
    *
    * <pre class="stREPL">
-   * scala> (new MySuite).execute(configMap = Map("inputFileName" -> "in.txt")
+   * scala> (new ExampleSuite).execute(configMap = Map("inputFileName" -> "in.txt")
    * </pre>
    *
    * <p>
@@ -1517,7 +1626,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * </p>
    *
    * <pre class="stREPL">
-   * scala> (new MySuite).execute(color = false)
+   * scala> (new ExampleSuite).execute(color = false)
    * </pre>
    *
    * <p>
@@ -1531,7 +1640,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * </p>
    *
    * <pre class="stREPL">
-   * scala> (new MySuite).execute(durations = true)
+   * scala> (new ExampleSuite).execute(durations = true)
    * </pre>
    *
    * <p>
@@ -1546,7 +1655,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * </p>
    *
    * <pre class="stREPL">
-   * scala> (new MySuite).execute(shortstacks = true)
+   * scala> (new ExampleSuite).execute(shortstacks = true)
    * </pre>
    *
    * <p>
@@ -1554,7 +1663,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * </p>
    *
    * <pre class="stREPL">
-   * scala> (new MySuite).execute(fullstacks = true)
+   * scala> (new ExampleSuite).execute(fullstacks = true)
    * </pre>
    *
    * <p>
@@ -1574,7 +1683,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * </p>
    *
    * <pre class="stREPL">
-   * scala> (new MySuite).execute(stats = true)
+   * scala> (new ExampleSuite).execute(stats = true)
    * </pre>
    *
    *
