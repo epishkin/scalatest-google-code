@@ -465,6 +465,238 @@ import Suite.reportInfoProvided
  * for <code>Runner</code></a> for more information.
  * </p>
  *
+ * <a name="configMapSection"></a><h2>The config map</h2>
+ *
+ * <p>
+ * In some cases you may need to pass information to a suite of tests.
+ * For example, perhaps a suite of tests needs to grab information from a file, and you want
+ * to be able to specify a different filename during different runs.  You can accomplish this in ScalaTest by passing
+ * the filename in the <em>config</em> map of key-value pairs, which is passed to <code>run</code> as a <code>Map[String, Any]</code>.
+ * The values in the config map are called "config objects," because they can be used to <em>configure</em>
+ * suites, reporters, and tests.
+ * </p>
+ *
+ * <p>
+ * You can specify a string config object is via the ScalaTest <code>Runner</code>, either via the command line
+ * or ScalaTest's ant task.
+ * (See the <a href="tools/Runner$.html#configMapSection">documentation for Runner</a> for information on how to specify 
+ * config objects on the command line.)
+ * The config map is passed to <code>run</code>, <code>runNestedSuites</code>, <code>runTests</code>, and <code>runTest</code>,
+ * so one way to access it in your suite is to override one of those methods. If you need to use the config map inside your tests, you
+ * can use one of the traits in the <code>org.scalatest.fixture</code>  package. (See the
+ * <a href="fixture/FixtureSuite.html">documentation for <code>FixtureSuite</code></a>
+ * for instructions on how to access the config map in tests.)
+ * </p>
+ *
+ * <a name="TaggingTests"></a><h2>Tagging tests</h2>
+ *
+ * <p>
+ * A <code>Suite</code>'s tests may be classified into groups by <em>tagging</em> them with string names. When executing
+ * a <code>Suite</code>, groups of tests can optionally be included and/or excluded. In this
+ * trait's implementation, tags are indicated by annotations attached to the test method. To
+ * create a new tag type to use in <code>Suite</code>s, simply define a new Java annotation that itself is annotated with the <code>org.scalatest.TagAnnotation</code> annotation.
+ * (Currently, for annotations to be
+ * visible in Scala programs via Java reflection, the annotations themselves must be written in Java.) For example,
+ * to create a tag named <code>SlowAsMolasses</code>, to use to mark slow tests, you would
+ * write in Java:
+ * </p>
+ *
+ * <p><b>BECAUSE OF A SCALADOC BUG IN SCALA 2.8, I HAD TO PUT A SPACE AFTER THE AT SIGN IN ONE THE TARGET ANNOTATION EXAMPLE BELOW. IF YOU
+ * WANT TO COPY AND PASTE FROM THIS EXAMPLE, YOU'LL NEED TO REMOVE THE SPACE BY HAND.  - Bill Venners</b></p>
+ *
+ * <pre>
+ * import java.lang.annotation.*; 
+ * import org.scalatest.TagAnnotation
+ * 
+ * @TagAnnotation
+ * @Retention(RetentionPolicy.RUNTIME)
+ * @ Target({ElementType.METHOD, ElementType.TYPE})
+ * public @interface SlowAsMolasses {}
+ * </pre>
+ *
+ * <p>
+ * Given this new annotation, you could place a <code>Suite</code> test method into the <code>SlowAsMolasses</code> group
+ * (<em>i.e.</em>, tag it as being <code>SlowAsMolasses</code>) like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * @SlowAsMolasses
+ * def testSleeping() = sleep(1000000)
+ * </pre>
+ *
+ * <p>
+ * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
+ * <code>Set[String]</code>s called <code>tagsToInclude</code> and a <code>Set[String]</code> called
+ * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
+ * except those those belonging to tags listed in the
+ * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
+ * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
+ * will be run.
+ * </p>
+ *
+ * <h2>Ignored tests</h2>
+ *
+ * <p>
+ * Another common use case is that tests must be &#8220;temporarily&#8221; disabled, with the
+ * good intention of resurrecting the test at a later time. ScalaTest provides an <code>Ignore</code>
+ * annotation for this purpose. You use it like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Suite
+ * import org.scalatest.Ignore
+ *
+ * class ExampleSuite extends Suite {
+ *
+ *   def testAddition() {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *   }
+ *
+ *   @Ignore
+ *   def testSubtraction() {
+ *     val diff = 4 - 1
+ *     assert(diff === 3)
+ *     assert(diff - 2 === 1)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>ExampleSuite</code> with:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * scala> (new ExampleSuite).run()
+ * </pre>
+ *
+ * <p>
+ * It will run only <code>testAddition</code> and report that <code>testSubtraction</code> was ignored. You'll see:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">ExampleSuite:
+ * - testAddition</span>
+ * <span class="stYellow">- testSubtraction !!! IGNORED !!!</span>
+ * </pre>
+ * 
+ * <p>
+ * <code>Ignore</code> is implemented as a tag. The <code>Filter</code> class effectively 
+ * adds <code>org.scalatest.Ignore</code> to the <code>tagsToExclude</code> <code>Set</code> if it not already
+ * in the <code>tagsToExclude</code> set passed to its primary constructor.  The only difference between
+ * <code>org.scalatest.Ignore</code> and the tags you may define and exclude is that ScalaTest reports
+ * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
+ * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
+ * </p>
+ *
+ * <h2>Pending tests</h2>
+ *
+ * <p>
+ * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
+ * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
+ * out before tests are written to verify that behavior (and often, the before the behavior of
+ * the system being tested is itself implemented). Such sketches form a kind of specification of
+ * what tests and functionality to implement later.
+ * </p>
+ *
+ * <p>
+ * To support this style of testing, a test can be given a name that specifies one
+ * bit of behavior required by the system being tested. The test can also include some code that
+ * sends more information about the behavior to the reporter when the tests run. At the end of the test,
+ * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+ * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
+ * sent to the reporter when running the test can appear in the report of a test run. (In other words,
+ * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
+ * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
+ * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
+ * </p>
+ *
+ * <p>
+ * Although pending tests may be used more often in specification-style suites, such as
+ * <code>org.scalatest.Spec</code>, you can also use it in <code>Suite</code>, like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Suite
+ *
+ * class ExampleSuite extends Suite {
+ *
+ *   def testAddition() {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *   }
+ *
+ *   def testSubtraction() { pending }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>ExampleSuite</code> with:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * scala> (new ExampleSuite).run()
+ * </pre>
+ *
+ * <p>
+ * It will run both tests but report that <code>testSubtraction</code> is pending. You'll see:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">ExampleSuite:
+ * - testAddition</span>
+ * <span class="stYellow">- testSubtraction (pending)</span>
+ * </pre>
+ * 
+ * <h2>Informers</h2>
+ *
+ * <p>
+ * One of the parameters to the primary <code>run</code> method is an <code>Reporter</code>, which
+ * will collect and report information about the running suite of tests.
+ * Information about suites and tests that were run, whether tests succeeded or failed, 
+ * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
+ * Most often the reporting done by default by <code>Suite</code>'s methods will be sufficient, but
+ * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test method.
+ * For this purpose, you can optionally include an <code>Informer</code> parameter in a test method, and then
+ * pass the extra information to the <code>Informer</code> via its <code>apply</code> method. The <code>Informer</code>
+ * will then pass the information to the <code>Reporter</code> by sending an <code>InfoProvided</code> event.
+ * Here's an example:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest._
+ * 
+ * class ExampleSuite extends Suite {
+ *   def testAddition(info: Informer) {
+ *     assert(1 + 1 === 2)
+ *     info("Addition seems to work")
+ *   }
+ * }
+ * </pre>
+ *
+ * If you run this <code>Suite</code> from the interpreter, you will see the message
+ * included in the printed report:
+ *
+ * <pre class="stREPL">
+ * scala> (new ExampleSuite).run()
+ * <span class="stGreen">ExampleSuite:
+ * - testAddition(Informer)
+ *   + Addition seems to work </span>
+ * </pre>
+ *
+ * <h2>Executing suites in parallel</h2>
+ *
+ * <p>
+ * The primary <code>run</code> method takes as its last parameter an optional <code>Distributor</code>. If 
+ * a <code>Distributor</code> is passed in, this trait's implementation of <code>run</code> puts its nested
+ * <code>Suite</code>s into the distributor rather than executing them directly. The caller of <code>run</code>
+ * is responsible for ensuring that some entity runs the <code>Suite</code>s placed into the 
+ * distributor. The <code>-c</code> command line parameter to <code>Runner</code>, for example, will cause
+ * <code>Suite</code>s put into the <code>Distributor</code> to be run in parallel via a pool of threads.
+ * </p>
+ *
  * <h2>Shared fixtures</h2>
  *
  * <p>
@@ -1076,238 +1308,6 @@ import Suite.reportInfoProvided
  * failed suite, which will result in a <a href="events/SuiteAborted.html"><code>SuiteAborted</code></a> event.
  * </p>
  * 
- * <a name="configMapSection"></a><h2>The config map</h2>
- *
- * <p>
- * In some cases you may need to pass information to a suite of tests.
- * For example, perhaps a suite of tests needs to grab information from a file, and you want
- * to be able to specify a different filename during different runs.  You can accomplish this in ScalaTest by passing
- * the filename in the <em>config</em> map of key-value pairs, which is passed to <code>run</code> as a <code>Map[String, Any]</code>.
- * The values in the config map are called "config objects," because they can be used to <em>configure</em>
- * suites, reporters, and tests.
- * </p>
- *
- * <p>
- * You can specify a string config object is via the ScalaTest <code>Runner</code>, either via the command line
- * or ScalaTest's ant task.
- * (See the <a href="tools/Runner$.html#configMapSection">documentation for Runner</a> for information on how to specify 
- * config objects on the command line.)
- * The config map is passed to <code>run</code>, <code>runNestedSuites</code>, <code>runTests</code>, and <code>runTest</code>,
- * so one way to access it in your suite is to override one of those methods. If you need to use the config map inside your tests, you
- * can use one of the traits in the <code>org.scalatest.fixture</code>  package. (See the
- * <a href="fixture/FixtureSuite.html">documentation for <code>FixtureSuite</code></a>
- * for instructions on how to access the config map in tests.)
- * </p>
- *
- * <a name="TaggingTests"></a><h2>Tagging tests</h2>
- *
- * <p>
- * A <code>Suite</code>'s tests may be classified into groups by <em>tagging</em> them with string names. When executing
- * a <code>Suite</code>, groups of tests can optionally be included and/or excluded. In this
- * trait's implementation, tags are indicated by annotations attached to the test method. To
- * create a new tag type to use in <code>Suite</code>s, simply define a new Java annotation that itself is annotated with the <code>org.scalatest.TagAnnotation</code> annotation.
- * (Currently, for annotations to be
- * visible in Scala programs via Java reflection, the annotations themselves must be written in Java.) For example,
- * to create a tag named <code>SlowAsMolasses</code>, to use to mark slow tests, you would
- * write in Java:
- * </p>
- *
- * <p><b>BECAUSE OF A SCALADOC BUG IN SCALA 2.8, I HAD TO PUT A SPACE AFTER THE AT SIGN IN ONE THE TARGET ANNOTATION EXAMPLE BELOW. IF YOU
- * WANT TO COPY AND PASTE FROM THIS EXAMPLE, YOU'LL NEED TO REMOVE THE SPACE BY HAND.  - Bill Venners</b></p>
- *
- * <pre>
- * import java.lang.annotation.*; 
- * import org.scalatest.TagAnnotation
- * 
- * @TagAnnotation
- * @Retention(RetentionPolicy.RUNTIME)
- * @ Target({ElementType.METHOD, ElementType.TYPE})
- * public @interface SlowAsMolasses {}
- * </pre>
- *
- * <p>
- * Given this new annotation, you could place a <code>Suite</code> test method into the <code>SlowAsMolasses</code> group
- * (<em>i.e.</em>, tag it as being <code>SlowAsMolasses</code>) like this:
- * </p>
- *
- * <pre class="stHighlight">
- * @SlowAsMolasses
- * def testSleeping() = sleep(1000000)
- * </pre>
- *
- * <p>
- * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
- * <code>Set[String]</code>s called <code>tagsToInclude</code> and a <code>Set[String]</code> called
- * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
- * except those those belonging to tags listed in the
- * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
- * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
- * will be run.
- * </p>
- *
- * <h2>Ignored tests</h2>
- *
- * <p>
- * Another common use case is that tests must be &#8220;temporarily&#8221; disabled, with the
- * good intention of resurrecting the test at a later time. ScalaTest provides an <code>Ignore</code>
- * annotation for this purpose. You use it like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.Suite
- * import org.scalatest.Ignore
- *
- * class ExampleSuite extends Suite {
- *
- *   def testAddition() {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *   }
- *
- *   @Ignore
- *   def testSubtraction() {
- *     val diff = 4 - 1
- *     assert(diff === 3)
- *     assert(diff - 2 === 1)
- *   }
- * }
- * </pre>
- *
- * <p>
- * If you run this version of <code>ExampleSuite</code> with:
- * </p>
- *
- * <pre class="stREPL">
- * scala> (new ExampleSuite).run()
- * </pre>
- *
- * <p>
- * It will run only <code>testAddition</code> and report that <code>testSubtraction</code> was ignored. You'll see:
- * </p>
- *
- * <pre class="stREPL">
- * <span class="stGreen">ExampleSuite:
- * - testAddition</span>
- * <span class="stYellow">- testSubtraction !!! IGNORED !!!</span>
- * </pre>
- * 
- * <p>
- * <code>Ignore</code> is implemented as a tag. The <code>Filter</code> class effectively 
- * adds <code>org.scalatest.Ignore</code> to the <code>tagsToExclude</code> <code>Set</code> if it not already
- * in the <code>tagsToExclude</code> set passed to its primary constructor.  The only difference between
- * <code>org.scalatest.Ignore</code> and the tags you may define and exclude is that ScalaTest reports
- * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
- * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
- * </p>
- *
- * <h2>Pending tests</h2>
- *
- * <p>
- * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
- * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
- * out before tests are written to verify that behavior (and often, the before the behavior of
- * the system being tested is itself implemented). Such sketches form a kind of specification of
- * what tests and functionality to implement later.
- * </p>
- *
- * <p>
- * To support this style of testing, a test can be given a name that specifies one
- * bit of behavior required by the system being tested. The test can also include some code that
- * sends more information about the behavior to the reporter when the tests run. At the end of the test,
- * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
- * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
- * sent to the reporter when running the test can appear in the report of a test run. (In other words,
- * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
- * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
- * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
- * </p>
- *
- * <p>
- * Although pending tests may be used more often in specification-style suites, such as
- * <code>org.scalatest.Spec</code>, you can also use it in <code>Suite</code>, like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.Suite
- *
- * class ExampleSuite extends Suite {
- *
- *   def testAddition() {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *   }
- *
- *   def testSubtraction() { pending }
- * }
- * </pre>
- *
- * <p>
- * If you run this version of <code>ExampleSuite</code> with:
- * </p>
- *
- * <pre class="stREPL">
- * scala> (new ExampleSuite).run()
- * </pre>
- *
- * <p>
- * It will run both tests but report that <code>testSubtraction</code> is pending. You'll see:
- * </p>
- *
- * <pre class="stREPL">
- * <span class="stGreen">ExampleSuite:
- * - testAddition</span>
- * <span class="stYellow">- testSubtraction (pending)</span>
- * </pre>
- * 
- * <h2>Informers</h2>
- *
- * <p>
- * One of the parameters to the primary <code>run</code> method is an <code>Reporter</code>, which
- * will collect and report information about the running suite of tests.
- * Information about suites and tests that were run, whether tests succeeded or failed, 
- * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
- * Most often the reporting done by default by <code>Suite</code>'s methods will be sufficient, but
- * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test method.
- * For this purpose, you can optionally include an <code>Informer</code> parameter in a test method, and then
- * pass the extra information to the <code>Informer</code> via its <code>apply</code> method. The <code>Informer</code>
- * will then pass the information to the <code>Reporter</code> by sending an <code>InfoProvided</code> event.
- * Here's an example:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest._
- * 
- * class ExampleSuite extends Suite {
- *   def testAddition(info: Informer) {
- *     assert(1 + 1 === 2)
- *     info("Addition seems to work")
- *   }
- * }
- * </pre>
- *
- * If you run this <code>Suite</code> from the interpreter, you will see the message
- * included in the printed report:
- *
- * <pre class="stREPL">
- * scala> (new ExampleSuite).run()
- * <span class="stGreen">ExampleSuite:
- * - testAddition(Informer)
- *   + Addition seems to work </span>
- * </pre>
- *
- * <h2>Executing suites in parallel</h2>
- *
- * <p>
- * The primary <code>run</code> method takes as its last parameter an optional <code>Distributor</code>. If 
- * a <code>Distributor</code> is passed in, this trait's implementation of <code>run</code> puts its nested
- * <code>Suite</code>s into the distributor rather than executing them directly. The caller of <code>run</code>
- * is responsible for ensuring that some entity runs the <code>Suite</code>s placed into the 
- * distributor. The <code>-c</code> command line parameter to <code>Runner</code>, for example, will cause
- * <code>Suite</code>s put into the <code>Distributor</code> to be run in parallel via a pool of threads.
- * </p>
- *
  * <a name="errorHandling"></a>
  * <h2>Treatment of <code>java.lang.Error</code>s</h2>
  *
