@@ -573,13 +573,13 @@ import Suite.checkRunTestParamsForNull
  *     }
  *   }
  * 
- *   test("easy")(writer: FileWriter) {
+ *   test("easy") { writer =>
  *     writer.write("Hello, test!")
  *     writer.flush()
  *     assert(new File(tmpFile).length === 12)
  *   }
  * 
- *   test("fun")(writer: FileWriter) {
+ *   test("fun") { writer =>
  *     writer.write("Hi, test!")
  *     writer.flush()
  *     assert(new File(tmpFile).length === 9)

@@ -659,13 +659,13 @@ import Suite.reportTestIgnored
  * 
  *   describe("ScalaTest") {
  *
- *     it("should be easy")(writer: FileWriter) {
+ *     it("should be easy") { writer =>
  *       writer.write("Hello, test!")
  *       writer.flush()
  *       assert(new File(tmpFile).length === 12)
  *     }
  * 
- *     it("should be fun")(writer: FileWriter) {
+ *     it("should be fun") { writer =>
  *       writer.write("Hi, test!")
  *       writer.flush()
  *       assert(new File(tmpFile).length === 9)

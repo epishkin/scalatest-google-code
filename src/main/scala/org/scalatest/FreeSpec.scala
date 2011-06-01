@@ -867,13 +867,13 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  *   "ScalaTest" - {
  * 
- *     "should be easy" in(writer: FileWriter) {
+ *     "should be easy" in { writer =>
  *       writer.write("Hello, test!")
  *       writer.flush()
  *       assert(new File(tmpFile).length === 12)
  *     }
  * 
- *     "should be fun" in(writer: FileWriter) {
+ *     "should be fun" in { writer =>
  *       writer.write("Hi, test!")
  *       writer.flush()
  *       assert(new File(tmpFile).length === 9)

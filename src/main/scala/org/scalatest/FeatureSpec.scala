@@ -797,13 +797,13 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  *   feature("Fixtures can be shared") {
  * 
- *     scenario("user learns how to share fixtures")(writer: FileWriter) {
+ *     scenario("user learns how to share fixtures") { writer =>
  *       writer.write("Hello, test!")
  *       writer.flush()
  *       assert(new File(tmpFile).length === 12)
  *     }
  * 
- *     scenario("user enjoys writing tests with shared fixtures")(writer: FileWriter) {
+ *     scenario("user enjoys writing tests with shared fixtures") { writer =>
  *       writer.write("Hi, test!")
  *       writer.flush()
  *       assert(new File(tmpFile).length === 9)
