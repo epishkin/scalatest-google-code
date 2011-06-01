@@ -699,176 +699,208 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
- * connections, etc.) used by tests to do their work. You can use fixtures in
- * <code>WordSpec</code>s with the same approaches suggested for <code>Suite</code> in
- * its documentation. The same text that appears in the test fixture
- * section of <code>Suite</code>'s documentation is repeated here, with examples changed from
- * <code>Suite</code> to <code>WordSpec</code>.
+ * connections, <em>etc.</em>) used by tests to do their work.
+ * If a fixture is used by only one test method, then the definitions of the fixture objects can
+ * be local to the method, such as the objects assigned to <code>sum</code> and <code>diff</code> in the
+ * previous <code>ExampleSpec</code> examples. If multiple methods need to share an immutable fixture, one approach
+ * is to assign them to instance variables.
  * </p>
  *
  * <p>
- * If a fixture is used by only one test, then the definitions of the fixture objects can
- * be local to the test function, such as the objects assigned to <code>stack</code> and <code>emptyStack</code> in the
- * previous <code>StackSpec</code> examples. If multiple tests need to share an immutable fixture, one approach
- * is to assign them to instance variables. Here's a (very contrived) example, in which the object assigned
- * to <code>shared</code> is used by multiple test functions:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.WordSpec
- *
- * class ArithmeticSpec extends WordSpec {
- *
- *   // Sharing immutable fixture objects via instance variables
- *   val shared = 5
- *
- *  "The Scala language" should {
- *     "add correctly" in {
- *       val sum = 2 + 3
- *       assert(sum === shared)
- *     }
- *
- *     "subtract correctly" in {
- *       val diff = 7 - 2
- *       assert(diff === shared)
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * In some cases, however, shared <em>mutable</em> fixture objects may be changed by tests such that
+ * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
  * they need to be recreated or reinitialized before each test. Shared resources such
- * as files or database connections may also need to be created and initialized before, and
- * cleaned up after, each test. JUnit offers methods <code>setUp</code> and
+ * as files or database connections may also need to 
+ * be created and initialized before, and cleaned up after, each test. JUnit 3 offered methods <code>setUp</code> and
  * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
  * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
- * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
- * between tests. Before going that route, you should consider some approaches that
- * avoid <code>var</code>s. One approach is to write one or more <em>create-fixture</em> methods
- * that return a new instance of a needed object (or a tuple or case class holding new instances of
- * multiple objects) each time it is called. You can then call a create-fixture method at the beginning of each
- * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
+ * and <code>tearDown</code>, however, this approach usually involves reassigning <code>var</code>s or mutating objects
+ * between tests. Before going that route, you may wish to consider some more functional approaches that
+ * avoid side effects.
+ * </p>
+ *
+ * <h4>Calling create-fixture methods</h4>
+ *
+ * <p>
+ * One approach is to write one or more <em>create-fixture</em> methods
+ * that return a new instance of a needed fixture object (or an holder object containing multiple needed fixture objects) each time it
+ * is called. You can then call a create-fixture method at the beginning of each
+ * test method that needs the fixture, storing the returned object or objects in local variables. Here's an example:
  * </p>
  *
  * <pre class="stHighlight">
  * import org.scalatest.WordSpec
- * import scala.collection.mutable.ListBuffer
+ * import collection.mutable.ListBuffer
  *
  * class ExampleSpec extends WordSpec {
- *
- *   // create objects needed by tests and return as a tuple
- *   def createFixture = (
- *     new StringBuilder("ScalaTest is "),
- *     new ListBuffer[String]
- *   )
- *
- *  "ScalaTest" should {
- *
- *     "be easy " in {
- *       val (builder, lbuf) = createFixture
- *       builder.append("easy!")
- *       assert(builder.toString === "ScalaTest is easy!")
- *       assert(lbuf.isEmpty)
- *       lbuf += "sweet"
+ * 
+ *   def fixture =
+ *     new {
+ *       val builder = new StringBuilder("ScalaTest is ")
+ *       val buffer = new ListBuffer[String]
  *     }
+ * 
+ *   "ScalaTest" should {
  *
+ *     "be easy" in {
+ *       val f = fixture
+ *       f.builder.append("easy!")
+ *       assert(f.builder.toString === "ScalaTest is easy!")
+ *       assert(f.buffer.isEmpty)
+ *       f.buffer += "sweet"
+ *     }
+ * 
  *     "be fun" in {
- *       val (builder, lbuf) = createFixture
- *       builder.append("fun!")
- *       assert(builder.toString === "ScalaTest is fun!")
- *       assert(lbuf.isEmpty)
+ *       val f = fixture
+ *       f.builder.append("fun!")
+ *       assert(f.builder.toString === "ScalaTest is fun!")
+ *       assert(f.buffer.isEmpty)
  *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * If different tests in the same <code>WordSpec</code> require different fixtures, you can create multiple create-fixture methods and
- * call the method (or methods) needed by each test at the begining of the test. If every test requires the same set of
- * mutable fixture objects, one other approach you can take is make them simply <code>val</code>s and mix in trait
- * <a href="OneInstancePerTest.html"><code>OneInstancePerTest</code></a>.  If you mix in <code>OneInstancePerTest</code>, each test
- * will be run in its own instance of the <code>WordSpec</code>, similar to the way JUnit tests are executed.
+ * The &ldquo;<code>f.</code>&rdquo; in front of each use of a fixture object provides a visual indication of which objects 
+ * are part of the fixture, but if you prefer, you can import the the members with &ldquo;<code>import f._</code>&rdquo; and use the names directly.
  * </p>
  *
+ * <h4>Instantiating fixture traits</h4>
+ *
  * <p>
- * Although the create-fixture and <code>OneInstancePerTest</code> approaches take care of setting up a fixture before each
- * test, they don't address the problem of cleaning up a fixture after the test completes. In this situation,
- * one option is to mix in the <a href="BeforeAndAfterEach.html"><code>BeforeAndAfterEach</code></a> trait.
- * <code>BeforeAndAfterEach</code>'s <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
- * method after, each test (like JUnit's <code>setUp</code>  and <code>tearDown</code>
- * methods, respectively). 
- * For example, you could create a temporary file before each test, and delete it afterwords, like this:
+ * A related technique is to place
+ * the fixture objects in a <em>fixture trait</em> and run your test code in the context of a new anonymous class instance that mixes in
+ * the fixture trait, like this:
  * </p>
  *
  * <pre class="stHighlight">
  * import org.scalatest.WordSpec
- * import org.scalatest.BeforeAndAfterEach
- * import java.io.FileReader
- * import java.io.FileWriter
- * import java.io.File
- *
- * class ExampleSpec extends WordSpec with BeforeAndAfterEach {
- *
- *   private val FileName = "TempFile.txt"
- *   private var reader: FileReader = _
- *
- *   // Set up the temp file needed by the test
- *   override def beforeEach() {
- *     val writer = new FileWriter(FileName)
- *     try {
- *       writer.write("Hello, test!")
- *     }
- *     finally {
- *       writer.close()
- *     }
- *
- *     // Create the reader needed by the test
- *     reader = new FileReader(FileName)
+ * import collection.mutable.ListBuffer
+ * 
+ * class ExampleSpec extends WordSpec {
+ * 
+ *   trait Fixture {
+ *     val builder = new StringBuilder("ScalaTest is ")
+ *     val buffer = new ListBuffer[String]
  *   }
+ * 
+ *   "ScalaTest" should {
  *
- *   // Close and delete the temp file
- *   override def afterEach() {
- *     reader.close()
- *     val file = new File(FileName)
- *     file.delete()
- *   }
- *
- *  "A FileReader" must {
- *     "read in the contents of a file correctly" in {
- *       var builder = new StringBuilder
- *       var c = reader.read()
- *       while (c != -1) {
- *         builder.append(c.toChar)
- *         c = reader.read()
+ *     "be easy" in {
+ *       new Fixture {
+ *         builder.append("easy!")
+ *         assert(builder.toString === "ScalaTest is easy!")
+ *         assert(buffer.isEmpty)
+ *         buffer += "sweet"
  *       }
- *       assert(builder.toString === "Hello, test!")
  *     }
  * 
- *     "read in the first character of a file correctly" in {
- *       assert(reader.read() === 'H')
+ *     "be fun" in {
+ *       new Fixture {
+ *         builder.append("fun!")
+ *         assert(builder.toString === "ScalaTest is fun!")
+ *         assert(buffer.isEmpty)
+ *       }
  *     }
+ *   }
+ * }
+ * </pre>
  *
- *     "not be required" in {
- *       assert(1 + 1 === 2)
+ * <h4>Mixing in <code>OneInstancePerTest</code></h4>
+ *
+ * <p>
+ * If every test method requires the same set of
+ * mutable fixture objects, one other approach you can take is make them simply <code>val</code>s and mix in trait
+ * <a href="OneInstancePerTest.html"><code>OneInstancePerTest</code></a>.  If you mix in <code>OneInstancePerTest</code>, each test
+ * will be run in its own instance of the <code>Suite</code>, similar to the way JUnit tests are executed. Here's an example:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.WordSpec
+ * import org.scalatest.OneInstancePerTest
+ * import collection.mutable.ListBuffer
+ * 
+ * class ExampleSpec extends WordSpec with OneInstancePerTest {
+ * 
+ *   val builder = new StringBuilder("ScalaTest is ")
+ *   val buffer = new ListBuffer[String]
+ * 
+ *   "ScalaTest" should {
+ *
+ *     "be easy" in {
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
+ * 
+ *     "be fun" in {
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
  *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
- * it can be reinitialized between tests by the <code>beforeEach</code> method.
+ * Although the create-fixture, fixture-trait, and <code>OneInstancePerTest</code> approaches take care of setting up a fixture before each
+ * test, they don't address the problem of cleaning up a fixture after the test completes. In this situation, you'll need to either
+ * use side effects or the <em>loan pattern</em>.
+ * </p>
+ *
+ * <h4>Mixing in <code>BeforeAndAfter</code></h4>
+ *
+ * <p>
+ * One way to use side effects is to mix in the <a href="BeforeAndAfter.html"><code>BeforeAndAfter</code></a> trait.
+ * With this trait you can denote a bit of code to run before each test with <code>before</code> and/or after each test
+ * each test with <code>after</code>, like this:
  * </p>
  * 
+ * <pre class="stHighlight">
+ * import org.scalatest.WordSpec
+ * import org.scalatest.BeforeAndAfter
+ * import collection.mutable.ListBuffer
+ * 
+ * class ExampleSpec extends WordSpec with BeforeAndAfter {
+ * 
+ *   val builder = new StringBuilder
+ *   val buffer = new ListBuffer[String]
+ * 
+ *   before {
+ *     builder.append("ScalaTest is ")
+ *   }
+ * 
+ *   after {
+ *     builder.clear()
+ *     buffer.clear()
+ *   }
+ * 
+ *   "ScalaTest" should {
+ *
+ *     "be easy" in {
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
+ * 
+ *     "be fun" in {
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
+ *     }
+ *   }
+ * }
+ * </pre>
+ * 
+ * <h4>Overriding <code>withFixture(NoArgTest)</code></h4>
+ *
  * <p>
- * Although the <code>BeforeAndAfterEach</code> approach should be familiar to the users of most
- * test other frameworks, ScalaTest provides another alternative that also allows you to perform cleanup
- * after each test: overriding <code>withFixture(NoArgTest)</code>.
- * To execute each test, <code>Suite</code>'s implementation of the <code>runTest</code> method wraps an invocation
- * of the appropriate test method in a no-arg function. <code>runTest</code> passes that test function to the <code>withFixture(NoArgTest)</code>
- * method, which is responsible for actually running the test by invoking the function. <code>Suite</code>'s
- * implementation of <code>withFixture(NoArgTest)</code> simply invokes the function, like this:
+ * An alternate way to take care of setup and cleanup via side effects
+ * is to override <code>withFixture</code>. Trait <code>Suite</code>'s implementation of
+ * <code>runTest</code>, which is inherited by this trait, passes a no-arg test function to <code>withFixture</code>. It is <code>withFixture</code>'s
+ * responsibility to invoke that test function.  <code>Suite</code>'s implementation of <code>withFixture</code> simply
+ * invokes the function, like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -879,168 +911,430 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * The <code>withFixture(NoArgTest)</code> method exists so that you can override it and set a fixture up before, and clean it up after, each test.
- * Thus, the previous temp file example could also be implemented without mixing in <code>BeforeAndAfterEach</code>, like this:
+ * You can, therefore, override <code>withFixture</code> to perform setup before, and cleanup after, invoking the test function. If
+ * you have cleanup to perform, you should invoke the test function
+ * inside a <code>try</code> block and perform the cleanup in a <code>finally</code> clause.
+ * Here's an example:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.WordSpec
+ * import collection.mutable.ListBuffer
+ *
+ * class ExampleSpec extends WordSpec {
+ *
+ *   val builder = new StringBuilder
+ *   val buffer = new ListBuffer[String]
+ *
+ *   override def withFixture(test: NoArgTest) {
+ *     builder.append("ScalaTest is ") // perform setup
+ *     try {
+ *       test() // invoke the test function
+ *     }
+ *     finally {
+ *       builder.clear() // perform cleanup
+ *       buffer.clear()
+ *     }
+ *   }
+ *
+ *   "ScalaTest" should {
+ *
+ *     "be easy" in {
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
+ *
+ *     "be fun" in {
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "clear"
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Note that the <a href="Suite$NoArgTest.html"><code>NoArgTest</code></a> passed to <code>withFixture</code>, in addition to
+ * an <code>apply</code> method that executes the test, also includes the test name as well as the <a href="Suite.html#configMapSection">config
+ * map</a> passed to <code>runTest</code>. Thus you can also use the test name and configuration objects in <code>withFixture</code>.
+ * </p>
+ *
+ * <p>
+ * The reason you should perform cleanup in a <code>finally</code> clause is that <code>withFixture</code> is called by
+ * <code>runTest</code>, which expects an exception to be thrown to indicate a failed test. Thus when you invoke
+ * the <code>test</code> function inside <code>withFixture</code>, it may complete abruptly with an exception. The <code>finally</code>
+ * clause will ensure the fixture cleanup happens as that exception propagates back up the call stack to <code>runTest</code>.
+ * </p>
+ *
+ * <h4>Overriding <code>withFixture(OneArgTest)</code></h4>
+ *
+ * <p>
+ * To use the loan pattern, you can extend <code>FixtureWordSpec</code> (from the <code>org.scalatest.fixture</code> package) instead of
+ * <code>WordSpec</code>. Each test in a <code>FixtureWordSpec</code> takes a fixture as a parameter, allowing you to pass the fixture into
+ * the test. You must indicate the type of the fixture parameter by specifying <code>FixtureParam</code>, and implement a
+ * <code>withFixture</code> method that takes a <code>OneArgTest</code>. This <code>withFixture</code> method is responsible for
+ * invoking the one-arg test function, so you can perform fixture set up before, and clean up after, invoking and passing
+ * the fixture into the test function. Here's an example:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.fixture.FixtureWordSpec
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class ExampleSpec extends FixtureWordSpec {
+ * 
+ *   final val tmpFile = "temp.txt"
+ * 
+ *   type FixtureParam = FileWriter
+ * 
+ *   def withFixture(test: OneArgTest) {
+ * 
+ *     val writer = new FileWriter(tmpFile) // set up the fixture
+ *     try {
+ *       test(writer) // "loan" the fixture to the test
+ *     }
+ *     finally {
+ *       writer.close() // clean up the fixture
+ *     }
+ *   }
+ * 
+ *   "ScalaTest" should {
+ *
+ *     "be easy" in(writer: FileWriter) {
+ *       writer.write("Hello, test!")
+ *       writer.flush()
+ *       assert(new File(tmpFile).length === 12)
+ *     }
+ * 
+ *     "be fun" in(writer: FileWriter) {
+ *       writer.write("Hi, test!")
+ *       writer.flush()
+ *       assert(new File(tmpFile).length === 9)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * For more information, see the <a href="fixture/FixtureWordSpec.html">documentation for <code>FixtureWordSpec</code></a>.
+ * </p>
+ *
+ * <h2>Providing different fixtures to different tests</h2>
+ * 
+ * <p>
+ * If different tests in the same <code>WordSpec</code> require different fixtures, you can combine the previous techniques and
+ * provide each test with just the fixture or fixtures it needs. Here's an example in which a <code>StringBuilder</code> and a
+ * <code>ListBuffer</code> are provided via fixture traits, and file writer (that requires cleanup) is provided via the loan pattern:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import java.io.FileWriter
+ * import java.io.File
+ * import collection.mutable.ListBuffer
+ * import org.scalatest.WordSpec
+ * 
+ * class ExampleSpec extends WordSpec {
+ * 
+ *   final val tmpFile = "temp.txt"
+ * 
+ *   trait Builder {
+ *     val builder = new StringBuilder("ScalaTest is ")
+ *   }
+ * 
+ *   trait Buffer {
+ *     val buffer = ListBuffer("ScalaTest", "is")
+ *   }
+ * 
+ *   def withWriter(testCode: FileWriter => Any) {
+ *     val writer = new FileWriter(tmpFile) // set up the fixture
+ *     try {
+ *       testCode(writer) // "loan" the fixture to the test
+ *     }
+ *     finally {
+ *       writer.close() // clean up the fixture
+ *     }
+ *   }
+ * 
+ *   "ScalaTest" should {
+ *
+ *     "be productive" in { // This test needs the StringBuilder fixture
+ *       new Builder {
+ *         builder.append("productive!")
+ *         assert(builder.toString === "ScalaTest is productive!")
+ *       }
+ *     }
+ * 
+ *     "be readable" in { // This test needs the ListBuffer[String] fixture
+ *       new Buffer {
+ *         buffer += ("readable!")
+ *         assert(buffer === List("ScalaTest", "is", "readable!"))
+ *       }
+ *     }
+ * 
+ *     "be user-friendly" in { // This test needs the FileWriter fixture
+ *       withWriter { writer =>
+ *         writer.write("Hello, user!")
+ *         writer.flush()
+ *         assert(new File(tmpFile).length === 12)
+ *       }
+ *     }
+ * 
+ *     "be clear and concise" in { // This test needs the StringBuilder and ListBuffer
+ *       new Builder with Buffer {
+ *         builder.append("clear!")
+ *         buffer += ("concise!")
+ *         assert(builder.toString === "ScalaTest is clear!")
+ *         assert(buffer === List("ScalaTest", "is", "concise!"))
+ *       }
+ *     }
+ * 
+ *     "be composable" in { // This test needs all three fixtures
+ *       new Builder with Buffer {
+ *         builder.append("clear!")
+ *         buffer += ("concise!")
+ *         assert(builder.toString === "ScalaTest is clear!")
+ *         assert(buffer === List("ScalaTest", "is", "concise!"))
+ *         withWriter { writer =>
+ *           writer.write(builder.toString)
+ *           writer.flush()
+ *           assert(new File(tmpFile).length === 19)
+ *         }
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * In the previous example, <code>be productive</code> uses only the <code>StringBuilder</code> fixture, so it just instantiates
+ * a <code>new Builder</code>, whereas <code>be readable</code> uses only the <code>ListBuffer</code> fixture, so it just intantiates
+ * a <code>new Buffer</code>. <code>be friendly</code> needs just the <code>FileWriter</code> fixture, so it invokes
+ * <code>withWriter</code>, which prepares and passes a <code>FileWriter</code> to the test (and takes care of closing it afterwords).
+ * </p>
+ *
+ * <p>
+ * Two tests need multiple fixtures: <code>be clear and concise</code> needs both the <code>StringBuilder</code> and the
+ * <code>ListBuffer</code>, so it instantiates a class that mixes in both fixture traits with <code>new Builder with Buffer</code>.
+ * <code>be composable</code> needs all three fixtures, so in addition to <code>new Builder with Buffer</code> it also invokes
+ * <code>withWriter</code>, wrapping just the of the test code that needs the fixture.
+ * </p>
+ *
+ * <p>
+ * Note that in this case, the loan pattern is being implemented via the <code>withWriter</code> method that takes a function, not
+ * by overriding <code>FixtureWordSpec</code>'s <code>withFixture(OneArgTest)</code> method. <code>FixtureWordSpec</code> makes the most sense
+ * if all (or at least most) tests need the same fixture, whereas in this <code>Suite</code> only two tests need the
+ * <code>FileWriter</code>.
+ * </p>
+ *
+ * <p>
+ * In the previous example, the <code>withWriter</code> method passed an object into
+ * the tests. Passing fixture objects into tests is generally a good idea when possible, but sometimes a side affect is unavoidable.
+ * For example, if you need to initialize a database running on a server across a network, your with-fixture 
+ * method will likely have nothing to pass. In such cases, simply create a with-fixture method that takes a by-name parameter and
+ * performs setup and cleanup via side effects, like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * def withDataInDatabase(test: => Any) {
+ *   // initialize the database across the network
+ *   try {
+ *     test // "loan" the initialized database to the test
+ *   }
+ *   finally {
+ *     // clean up the database
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * You can then use it like:
+ * </p>
+ * 
+ * <pre class="stHighlight">
+ * "A user" can {
+ *   "log onto the system" in {
+ *     withDataInDatabase {
+ *       // test user logging in scenario
+ *     }
+ *   }
+ * }
+ * </pre>
+ * 
+ * <h2>Composing stackable fixture traits</h2>
+ *
+ * <p>
+ * In larger projects, teams often end up with several different fixtures that test classes need in different combinations,
+ * and possibly initialized (and cleaned up) in different orders. A good way to accomplish this in ScalaTest is to factor the individual
+ * fixtures into traits that can be composed using the <em>stackable trait</em> pattern. This can be done, for example, by placing
+ * <code>withFixture</code> methods in several traits, each of which call <code>super.withFixture</code>. Here's an example in
+ * which the <code>StringBuilder</code> and <code>ListBuffer[String]</code> fixtures used in the previous examples have been
+ * factored out into two <em>stackable fixture traits</em> named <code>Builder</code> and <code>Buffer</code>:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.WordSpec
+ * import org.scalatest.AbstractSuite
+ * import collection.mutable.ListBuffer
+ * 
+ * trait Builder extends AbstractSuite { this: Suite =>
+ *
+ *   val builder = new StringBuilder
+ *
+ *   abstract override def withFixture(test: NoArgTest) {
+ *     builder.append("ScalaTest is ")
+ *     try {
+ *       super.withFixture(test) // To be stackable, must call super.withFixture
+ *     }
+ *     finally {
+ *       builder.clear()
+ *     }
+ *   }
+ * }
+ *
+ * trait Buffer extends AbstractSuite { this: Suite =>
+ *
+ *   val buffer = new ListBuffer[String]
+ *
+ *   abstract override def withFixture(test: NoArgTest) {
+ *     try {
+ *       super.withFixture(test) // To be stackable, must call super.withFixture
+ *     }
+ *     finally {
+ *       buffer.clear()
+ *     }
+ *   }
+ * }
+ * 
+ * class ExampleSpec extends WordSpec with Builder with Buffer {
+ * 
+ *   "ScalaTest" should {
+ *
+ *     "be easy" in {
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
+ * 
+ *     "be fun" in {
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "clear"
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * By mixing in both the <code>Builder</code> and <code>Buffer</code> traits, <code>ExampleSpec</code> gets both fixtures, which will be
+ * initialized before each test and cleaned up after. The order the traits are mixed together determines the order of execution.
+ * In this case, <code>Builder</code> is "super" to </code>Buffer</code>. If you wanted <code>Buffer</code> to be "super"
+ * to <code>Builder</code>, you need only switch the order you mix them together, like this: 
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * class Example2Spec extends WordSpec with Buffer with Builder
+ * </pre>
+ *
+ * <p>
+ * And if you only need one fixture you mix in only that trait:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * class Example3Spec extends WordSpec with Builder
+ * </pre>
+ *
+ * <p>
+ * Another way to create stackable fixture traits is by extending the <a href="BeforeAndAfterEach.html"><code>BeforeAndAfterEach</code></a>
+ * and/or <a href="BeforeAndAfterAll.html"><code>BeforeAndAfterAll</code></a> traits.
+ * <code>BeforeAndAfterEach</code> has a <code>beforeEach</code> method that will be run before each test (like JUnit's <code>setUp</code>),
+ * and an <code>afterEach</code> method that will be run after (like JUnit's <code>tearDown</code>).
+ * Similarly, <code>BeforeAndAfterAll</code> has a <code>beforeAll</code> method that will be run before all tests,
+ * and an <code>afterAll</code> method that will be run after all tests. Here's what the previously shown example would look like if it
+ * were rewritten to use the <code>BeforeAndAfterEach</code> methods instead of <code>withFixture</code>:
  * </p>
  *
  * <pre class="stHighlight">
  * import org.scalatest.WordSpec
  * import org.scalatest.BeforeAndAfterEach
- * import java.io.FileReader
- * import java.io.FileWriter
- * import java.io.File
- *
- * class ExampleSpec extends WordSpec {
- *
- *   private var reader: FileReader = _
- *
- *   override def withFixture(test: NoArgTest) {
- *
- *     val FileName = "TempFile.txt"
- *
- *     // Set up the temp file needed by the test
- *     val writer = new FileWriter(FileName)
+ * import collection.mutable.ListBuffer
+ * 
+ * trait Builder extends BeforeAndAfterEach { this: Suite =>
+ * 
+ *   val builder = new StringBuilder
+ * 
+ *   override def beforeEach() {
+ *     builder.append("ScalaTest is ")
+ *     super.beforeEach() // To be stackable, must call super.beforeEach
+ *   }
+ * 
+ *   override def afterEach() {
  *     try {
- *       writer.write("Hello, test!")
+ *       super.afterEach() // To be stackable, must call super.afterEach
  *     }
  *     finally {
- *       writer.close()
- *     }
- *
- *     // Create the reader needed by the test
- *     reader = new FileReader(FileName)
- *
- *     try {
- *       test() // Invoke the test function
- *     }
- *     finally {
- *       // Close and delete the temp file
- *       reader.close()
- *       val file = new File(FileName)
- *       file.delete()
+ *       builder.clear()
  *     }
  *   }
+ * }
+ * 
+ * trait Buffer extends BeforeAndAfterEach { this: Suite =>
+ * 
+ *   val buffer = new ListBuffer[String]
+ * 
+ *   override def afterEach() {
+ *     try {
+ *       super.afterEach() // To be stackable, must call super.afterEach
+ *     }
+ *     finally {
+ *       buffer.clear()
+ *     }
+ *   }
+ * }
+ * 
+ * class ExampleSpec extends WordSpec with Builder with Buffer {
+ * 
+ *   "ScalaTest" should {
  *
- *  "A FileReader" must {
- *     "read in the contents of a file correctly" in {
- *       var builder = new StringBuilder
- *       var c = reader.read()
- *       while (c != -1) {
- *         builder.append(c.toChar)
- *         c = reader.read()
- *       }
- *       assert(builder.toString === "Hello, test!")
+ *     "be easy" in {
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
  *     }
  * 
- *     "read in the first character of a file correctly" in {
- *       assert(reader.read() === 'H')
- *     }
- *
- *     "not be required" in {
- *       assert(1 + 1 === 2)
+ *     "be fun" in {
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "clear"
  *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * If you prefer to keep your test classes immutable, one final variation is to use the
- * <a href="fixture/FixtureWordSpec.html"><code>FixtureWordSpec</code></a> trait from the
- * <code>org.scalatest.fixture</code> package.  Tests in an <code>org.scalatest.fixture.FixtureWordSpec</code> can have a fixture
- * object passed in as a parameter. You must indicate the type of the fixture object
- * by defining the <code>Fixture</code> type member and define a <code>withFixture</code> method that takes a <em>one-arg</em> test function.
- * (A <code>FixtureWordSpec</code> has two overloaded <code>withFixture</code> methods, therefore, one that takes a <code>OneArgTest</code>
- * and the other, inherited from <code>Suite</code>, that takes a <code>NoArgTest</code>.)
- * Inside the <code>withFixture(OneArgTest)</code> method, you create the fixture, pass it into the test function, then perform any
- * necessary cleanup after the test function returns. Instead of invoking each test directly, a <code>FixtureWordSpec</code> will
- * pass a function that invokes the code of a test to <code>withFixture(OneArgTest)</code>. Your <code>withFixture(OneArgTest)</code> method, therefore,
- * is responsible for actually running the code of the test by invoking the test function.
- * For example, you could pass the temp file reader fixture to each test that needs it
- * by overriding the <code>withFixture(OneArgTest)</code> method of a <code>FixtureWordSpec</code>, like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.fixture.FixtureWordSpec
- * import java.io.FileReader
- * import java.io.FileWriter
- * import java.io.File
- * 
- * class ExampleSpec extends FixtureWordSpec {
- *
- *   type FixtureParam = FileReader
- *
- *   def withFixture(test: OneArgTest) {
- *
- *     val FileName = "TempFile.txt"
- *
- *     // Set up the temp file needed by the test
- *     val writer = new FileWriter(FileName)
- *     try {
- *       writer.write("Hello, test!")
- *     }
- *     finally {
- *       writer.close()
- *     }
- *
- *     // Create the reader needed by the test
- *     val reader = new FileReader(FileName)
- *  
- *     try {
- *       // Run the test using the temp file
- *       test(reader)
- *     }
- *     finally {
- *       // Close and delete the temp file
- *       reader.close()
- *       val file = new File(FileName)
- *       file.delete()
- *     }
- *   }
- * 
- *  "A FileReader" must {
- *     "read in the contents of a file correctly" in { reader =>
- *       var builder = new StringBuilder
- *       var c = reader.read()
- *       while (c != -1) {
- *         builder.append(c.toChar)
- *         c = reader.read()
- *       }
- *       assert(builder.toString === "Hello, test!")
- *     }
- * 
- *     "read in the first character of a file correctly" in { reader =>
- *       assert(reader.read() === 'H')
- *     }
- *
- *     "not be required" in { () =>
- *       assert(1 + 1 === 2)
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * It is worth noting that the only difference in the test code between the mutable
- * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureWordSpec</code>
- * approach shown previously is that two of the <code>FixtureWordSpec</code>'s test functions take a <code>FileReader</code> as
- * a parameter via the "<code>reader =></code>" at the beginning of the function. Otherwise the test code is identical.
- * One benefit of the explicit parameter is that, as demonstrated
- * by the "<code>A FileReader must not be required</code>" test, a <code>FixtureWordSpec</code>
- * test need not take the fixture. So you can have some tests that take a fixture, and others that don't.
- * In this case, the <code>FixtureWordSpec</code> provides documentation indicating which
- * tests use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
- * (If you have want to combine tests that take different fixture types in the same <code>WordSpec</code>, you can
- * use <a href="fixture/MultipleFixtureWordSpec.html">MultipleFixtureWordSpec</a>.)
+ * To get the same ordering as <code>withFixture</code>, place your <code>super.beforeEach</code> call at the end of each
+ * <code>beforeEach</code> method, and the <code>super.afterEach</code> call at the beginning of each <code>afterEach</code>
+ * method, as shown in the previous example. It is a good idea to invoke <code>super.afterEach</code> in a <code>try</code>
+ * block and perform cleanup in a <code>finally</code> clause, as shown in the previous example, because this ensures the
+ * cleanup code is performed even if <code>super.afterAll</code> throws an exception.
  * </p>
  *
  * <p>
- * If you want to execute code before and after all tests (and nested suites) in a suite, such
- * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
- * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
- * methods of <code>BeforeAndAfterAll</code>. See the documentation for <code>BeforeAndAfterAll</code> for
- * an example.
+ * One difference to bear in mind between the before-and-after traits and the <code>withFixture</code> methods, is that if
+ * a <code>withFixture</code> method completes abruptly with an exception, it is considered a failed test. By contrast, if any of the
+ * methods on the before-and-after traits (<em>i.e.</em>, <code>before</code>  and <code>after</code> of <code>BeforeAndAfter</code>,
+ * <code>beforeEach</code> and <code>afterEach</code> of <code>BeforeAndAfterEach</code>,
+ * and <code>beforeAll</code> and <code>afterAll</code> of <code>BeforeAndAfterAll</code>) complete abruptly, it is considered a
+ * failed suite, which will result in a <a href="events/SuiteAborted.html"><code>SuiteAborted</code></a> event.
  * </p>
- *
+ * 
  * <a name="SharedTests"></a><h2>Shared tests</h2>
  *
  * <p>
