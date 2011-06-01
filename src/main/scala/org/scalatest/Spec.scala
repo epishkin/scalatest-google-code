@@ -121,65 +121,6 @@ import Suite.reportTestIgnored
  * See also: <a href="http://www.scalatest.org/getting_started_with_spec" target="_blank">Getting started with <code>Spec</code>.</a>
  * </p>
  *
- * <h2>Tagging tests</h2>
- *
- * <p>
- * A <code>Spec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
- * As with any suite, when executing a <code>Spec</code>, groups of tests can
- * optionally be included and/or excluded. To tag a <code>Spec</code>'s tests,
- * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
- * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
- * a string name.  If you have
- * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
- * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
- * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DbTest</code>, then you could
- * create matching groups for <code>Spec</code>s like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.Tag
- *
- * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
- * object DbTest extends Tag("com.mycompany.groups.DbTest")
- * </pre>
- *
- * <p>
- * Given these definitions, you could place <code>Spec</code> tests into groups like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.Spec
- *
- * class MySuite extends Spec {
- *
- *   it("should add correctly", SlowTest) {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *   }
- *
- *   it("should subtract correctly", SlowTest, DbTest) {
- *     val diff = 4 - 1
- *     assert(diff === 3)
- *   }
- * }
- * </pre>
- *
- * <p>
- * This code marks both tests with the <code>com.mycompany.groups.SlowTest</code> tag, 
- * and test <code>"should subtract correctly"</code> with the <code>com.mycompany.groups.DbTest</code> tag.
- * </p>
- *
- * <p>
- * The <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
- * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
- * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
- * except those those belonging to tags listed in the
- * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
- * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
- * will be run.
- * </p>
- *
  * <h2>Ignored tests</h2>
  *
  * <p>
@@ -350,6 +291,65 @@ import Suite.reportTestIgnored
  * <span class="stYellow">- should throw NoSuchElementException if an empty stack is popped (pending)</span>
  * </pre>
  * 
+ * <h2>Tagging tests</h2>
+ *
+ * <p>
+ * A <code>Spec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
+ * As with any suite, when executing a <code>Spec</code>, groups of tests can
+ * optionally be included and/or excluded. To tag a <code>Spec</code>'s tests,
+ * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
+ * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
+ * a string name.  If you have
+ * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
+ * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
+ * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DbTest</code>, then you could
+ * create matching groups for <code>Spec</code>s like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Tag
+ *
+ * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
+ * object DbTest extends Tag("com.mycompany.groups.DbTest")
+ * </pre>
+ *
+ * <p>
+ * Given these definitions, you could place <code>Spec</code> tests into groups like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Spec
+ *
+ * class MySuite extends Spec {
+ *
+ *   it("should add correctly", SlowTest) {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *   }
+ *
+ *   it("should subtract correctly", SlowTest, DbTest) {
+ *     val diff = 4 - 1
+ *     assert(diff === 3)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * This code marks both tests with the <code>com.mycompany.groups.SlowTest</code> tag, 
+ * and test <code>"should subtract correctly"</code> with the <code>com.mycompany.groups.DbTest</code> tag.
+ * </p>
+ *
+ * <p>
+ * The <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
+ * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
+ * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
+ * except those those belonging to tags listed in the
+ * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
+ * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
+ * will be run.
+ * </p>
+ *
  * <h2>Shared fixtures</h2>
  *
  * <p>

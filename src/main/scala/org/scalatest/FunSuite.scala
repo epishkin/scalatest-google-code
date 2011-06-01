@@ -74,65 +74,6 @@ import Suite.checkRunTestParamsForNull
  * See also: <a href="http://www.scalatest.org/getting_started_with_fun_suite" target="_blank">Getting started with <code>FunSuite</code>.</a>
  * </p>
  * 
- * <h2>Tagging tests</h2>
- *
- * <p>
- * A <code>FunSuite</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
- * As with any suite, when executing a <code>FunSuite</code>, groups of tests can
- * optionally be included and/or excluded. To tag a <code>FunSuite</code>'s tests,
- * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to methods
- * that register tests, <code>test</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter, a string name.  If you have
- * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
- * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
- * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and
- * <code>com.mycompany.groups.DbTest</code>, then you could
- * create matching groups for <code>FunSuite</code>s like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.Tag
- *
- * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
- * object DbTest extends Tag("com.mycompany.groups.DbTest")
- * </pre>
- *
- * <p>
- * Given these definitions, you could place <code>FunSuite</code> tests into groups like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.FunSuite
- *
- * class ExampleSuite extends FunSuite {
- *
- *   test("addition", SlowTest) {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *   }
- *
- *   test("subtraction", SlowTest, DbTest) {
- *     val diff = 4 - 1
- *     assert(diff === 3)
- *   }
- * }
- * </pre>
- *
- * <p>
- * This code marks both tests, "addition" and "subtraction," with the <code>com.mycompany.groups.SlowTest</code> tag, 
- * and test "subtraction" with the <code>com.mycompany.groups.DbTest</code> tag.
- * </p>
- *
- * <p>
- * The <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
- * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
- * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
- * except those those belonging to tags listed in the
- * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
- * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
- * will be run.
- * </p>
- *
  * <h2>Ignored tests</h2>
  *
  * <p>
@@ -281,6 +222,65 @@ import Suite.checkRunTestParamsForNull
  * <span class="stYellow">- subtraction (pending)</span>
  * </pre>
  * 
+ * <h2>Tagging tests</h2>
+ *
+ * <p>
+ * A <code>FunSuite</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
+ * As with any suite, when executing a <code>FunSuite</code>, groups of tests can
+ * optionally be included and/or excluded. To tag a <code>FunSuite</code>'s tests,
+ * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to methods
+ * that register tests, <code>test</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter, a string name.  If you have
+ * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
+ * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
+ * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and
+ * <code>com.mycompany.groups.DbTest</code>, then you could
+ * create matching groups for <code>FunSuite</code>s like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Tag
+ *
+ * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
+ * object DbTest extends Tag("com.mycompany.groups.DbTest")
+ * </pre>
+ *
+ * <p>
+ * Given these definitions, you could place <code>FunSuite</code> tests into groups like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.FunSuite
+ *
+ * class ExampleSuite extends FunSuite {
+ *
+ *   test("addition", SlowTest) {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *   }
+ *
+ *   test("subtraction", SlowTest, DbTest) {
+ *     val diff = 4 - 1
+ *     assert(diff === 3)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * This code marks both tests, "addition" and "subtraction," with the <code>com.mycompany.groups.SlowTest</code> tag, 
+ * and test "subtraction" with the <code>com.mycompany.groups.DbTest</code> tag.
+ * </p>
+ *
+ * <p>
+ * The <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
+ * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
+ * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
+ * except those those belonging to tags listed in the
+ * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
+ * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
+ * will be run.
+ * </p>
+ *
  * <a name="SharedTests"></a><h2>Shared tests</h2>
  *
  * <p>

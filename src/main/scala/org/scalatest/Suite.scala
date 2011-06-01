@@ -489,52 +489,6 @@ import Suite.reportInfoProvided
  * for instructions on how to access the config map in tests.)
  * </p>
  *
- * <a name="TaggingTests"></a><h2>Tagging tests</h2>
- *
- * <p>
- * A <code>Suite</code>'s tests may be classified into groups by <em>tagging</em> them with string names. When executing
- * a <code>Suite</code>, groups of tests can optionally be included and/or excluded. In this
- * trait's implementation, tags are indicated by annotations attached to the test method. To
- * create a new tag type to use in <code>Suite</code>s, simply define a new Java annotation that itself is annotated with the <code>org.scalatest.TagAnnotation</code> annotation.
- * (Currently, for annotations to be
- * visible in Scala programs via Java reflection, the annotations themselves must be written in Java.) For example,
- * to create a tag named <code>SlowAsMolasses</code>, to use to mark slow tests, you would
- * write in Java:
- * </p>
- *
- * <p><b>Because of a Scaladoc bug in Scala 2.8, I had to put a space after the at sign in one the target annotation example below. If you
- * want to copy and paste from this example, you'll need to remove the space by hand.  - Bill Venners</b></p>
- *
- * <pre>
- * import java.lang.annotation.*; 
- * import org.scalatest.TagAnnotation
- * 
- * @TagAnnotation
- * @Retention(RetentionPolicy.RUNTIME)
- * @ Target({ElementType.METHOD, ElementType.TYPE})
- * public @interface SlowAsMolasses {}
- * </pre>
- *
- * <p>
- * Given this new annotation, you could place a <code>Suite</code> test method into the <code>SlowAsMolasses</code> group
- * (<em>i.e.</em>, tag it as being <code>SlowAsMolasses</code>) like this:
- * </p>
- *
- * <pre class="stHighlight">
- * @SlowAsMolasses
- * def testSleeping { sleep(1000000) }
- * </pre>
- *
- * <p>
- * The <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
- * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
- * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
- * except those those belonging to tags listed in the
- * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
- * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
- * will be run.
- * </p>
- *
  * <h2>Ignored tests</h2>
  *
  * <p>
@@ -697,6 +651,52 @@ import Suite.reportInfoProvided
  * is responsible for ensuring that some entity runs the <code>Suite</code>s placed into the 
  * distributor. The <code>-c</code> command line parameter to <code>Runner</code>, for example, will cause
  * <code>Suite</code>s put into the <code>Distributor</code> to be run in parallel via a pool of threads.
+ * </p>
+ *
+ * <a name="TaggingTests"></a><h2>Tagging tests</h2>
+ *
+ * <p>
+ * A <code>Suite</code>'s tests may be classified into groups by <em>tagging</em> them with string names. When executing
+ * a <code>Suite</code>, groups of tests can optionally be included and/or excluded. In this
+ * trait's implementation, tags are indicated by annotations attached to the test method. To
+ * create a new tag type to use in <code>Suite</code>s, simply define a new Java annotation that itself is annotated with the <code>org.scalatest.TagAnnotation</code> annotation.
+ * (Currently, for annotations to be
+ * visible in Scala programs via Java reflection, the annotations themselves must be written in Java.) For example,
+ * to create a tag named <code>SlowAsMolasses</code>, to use to mark slow tests, you would
+ * write in Java:
+ * </p>
+ *
+ * <p><b>Because of a Scaladoc bug in Scala 2.8, I had to put a space after the at sign in one the target annotation example below. If you
+ * want to copy and paste from this example, you'll need to remove the space by hand.  - Bill Venners</b></p>
+ *
+ * <pre>
+ * import java.lang.annotation.*; 
+ * import org.scalatest.TagAnnotation
+ * 
+ * @TagAnnotation
+ * @Retention(RetentionPolicy.RUNTIME)
+ * @ Target({ElementType.METHOD, ElementType.TYPE})
+ * public @interface SlowAsMolasses {}
+ * </pre>
+ *
+ * <p>
+ * Given this new annotation, you could place a <code>Suite</code> test method into the <code>SlowAsMolasses</code> group
+ * (<em>i.e.</em>, tag it as being <code>SlowAsMolasses</code>) like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * @SlowAsMolasses
+ * def testSleeping { sleep(1000000) }
+ * </pre>
+ *
+ * <p>
+ * The <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
+ * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
+ * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
+ * except those those belonging to tags listed in the
+ * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
+ * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
+ * will be run.
  * </p>
  *
  * <h2>Shared fixtures</h2>
