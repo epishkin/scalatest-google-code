@@ -663,7 +663,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <pre class="stHighlight">
  * import org.scalatest.WordSpec
  *
- * class MySuite extends WordSpec {
+ * class ExampleSpec extends WordSpec {
  *
  *   "The Scala language" should {
  *
@@ -755,7 +755,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import org.scalatest.WordSpec
  * import scala.collection.mutable.ListBuffer
  *
- * class MySuite extends WordSpec {
+ * class ExampleSpec extends WordSpec {
  *
  *   // create objects needed by tests and return as a tuple
  *   def createFixture = (
@@ -808,7 +808,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySuite extends WordSpec with BeforeAndAfterEach {
+ * class ExampleSpec extends WordSpec with BeforeAndAfterEach {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -890,7 +890,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySuite extends WordSpec {
+ * class ExampleSpec extends WordSpec {
  *
  *   private var reader: FileReader = _
  *
@@ -965,7 +965,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends FixtureWordSpec {
+ * class ExampleSpec extends FixtureWordSpec {
  *
  *   type FixtureParam = FileReader
  *

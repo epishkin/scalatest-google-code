@@ -321,7 +321,7 @@ import Suite.reportTestIgnored
  * <pre class="stHighlight">
  * import org.scalatest.Spec
  *
- * class MySuite extends Spec {
+ * class ExampleSpec extends Spec {
  *
  *   it("should add correctly", SlowTest) {
  *     val sum = 1 + 1
@@ -408,7 +408,7 @@ import Suite.reportTestIgnored
  * import org.scalatest.Spec
  * import scala.collection.mutable.ListBuffer
  *
- * class MySpec extends Spec {
+ * class ExampleSpec extends Spec {
  *
  *   // create objects needed by tests and return as a tuple
  *   def createFixture = (
@@ -458,7 +458,7 @@ import Suite.reportTestIgnored
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySpec extends Spec with BeforeAndAfterEach {
+ * class ExampleSpec extends Spec with BeforeAndAfterEach {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -538,7 +538,7 @@ import Suite.reportTestIgnored
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySpec extends Spec {
+ * class ExampleSpec extends Spec {
  *
  *   private var reader: FileReader = _
  *
@@ -611,7 +611,7 @@ import Suite.reportTestIgnored
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends FixtureSpec {
+ * class ExampleSpec extends FixtureSpec {
  *
  *   type FixtureParam = FileReader
  *

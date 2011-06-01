@@ -165,7 +165,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  *
- * class ArithmeticFeatureSpec extends FeatureSpec {
+ * class ArithmeticSpec extends FeatureSpec {
  *
  *   // Sharing fixture objects via instance variables
  *   val shared = 5
@@ -186,11 +186,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * If you run this version of <code>ArithmeticFeatureSpec</code> with:
+ * If you run this version of <code>ArithmeticSpec</code> with:
  * </p>
  *
  * <pre class="stREPL">
- * scala> (new ArithmeticFeatureSpec).execute()
+ * scala> (new ArithmeticSpec).execute()
  * </pre>
  *
  * <p>
@@ -222,7 +222,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  *
- * class ArithmeticFeatureSpec extends FeatureSpec {
+ * class ArithmeticSpec extends FeatureSpec {
  *
  *   feature("Integer arithmetic") {
  *
@@ -240,7 +240,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * }
  * </pre>
  *
- * If you run this <code>ArithmeticFeatureSpec</code> from the interpreter, you will see the following message
+ * If you run this <code>ArithmeticSpec</code> from the interpreter, you will see the following message
  * included in the printed report:
  *
  * <pre class="stREPL">
@@ -298,7 +298,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre class="stREPL">
- * scala> (new ArithmeticFeatureSpec).execute()
+ * scala> (new ArithmeticSpec).execute()
  * <span class="stGreen">Feature: Integer arithmetic 
  *   Scenario: addition
  *     Given two integers 
@@ -339,7 +339,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  *
- * class ArithmeticFeatureSpec extends FeatureSpec {
+ * class ArithmeticSpec extends FeatureSpec {
  *
  *   // Sharing fixture objects via instance variables
  *   val shared = 5
@@ -359,11 +359,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <p>
  * (Note: "<code>(pending)</code>" is the body of the test. Thus the test contains just one statement, an invocation
  * of the <code>pending</code> method, which throws <code>TestPendingException</code>.)
- * If you run this version of <code>ArithmeticFeatureSpec</code> with:
+ * If you run this version of <code>ArithmeticSpec</code> with:
  * </p>
  *
  * <pre class="stREPL">
- * scala> (new ArithmeticFeatureSpec).execute()
+ * scala> (new ArithmeticSpec).execute()
  * </pre>
  *
  * <p>
@@ -453,7 +453,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  *
- * class ArithmeticFeatureSpec extends FeatureSpec {
+ * class ArithmeticSpec extends FeatureSpec {
  *
  *   // Sharing fixture objects via instance variables
  *   val shared = 5
@@ -510,7 +510,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <pre class="stHighlight">
  * import org.scalatest.FeatureSpec
  *
- * class ArithmeticFeatureSpec extends FeatureSpec {
+ * class ArithmeticSpec extends FeatureSpec {
  *
  *   // Sharing immutable fixture objects via instance variables
  *   val shared = 5
@@ -549,7 +549,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import org.scalatest.FeatureSpec
  * import scala.collection.mutable.ListBuffer
  *
- * class MyFeatureSpec extends FeatureSpec {
+ * class ExampleSpec extends FeatureSpec {
  *
  *   // create objects needed by tests and return as a tuple
  *   def createFixture = (
@@ -761,7 +761,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends FixtureFeatureSpec {
+ * class ExampleSpec extends FixtureFeatureSpec {
  *
  *   type FixtureParam = FileReader
  *

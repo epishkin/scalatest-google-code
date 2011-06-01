@@ -148,7 +148,7 @@ import Suite.checkRunTestParamsForNull
  * }
  * </pre>
  *
- * If you run this <code>Suite</code> from the interpreter, you will see the following message
+ * If you run this <code>FunSuite</code> from the interpreter, you will see the following message
  * included in the printed report:
  *
  * <pre class="stREPL">

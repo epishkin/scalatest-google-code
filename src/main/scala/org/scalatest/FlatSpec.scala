@@ -507,7 +507,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <pre class="stHighlight">
  * import org.scalatest.FlatSpec
  *
- * class MySuite extends FlatSpec {
+ * class ExampleSpec extends FlatSpec {
  *
  *   "The Scala language" must "add correctly" taggedAs(SlowTest) in {
  *       val sum = 1 + 1
@@ -594,7 +594,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import org.scalatest.FlatSpec
  * import scala.collection.mutable.ListBuffer
  *
- * class MySuite extends FlatSpec {
+ * class ExampleSpec extends FlatSpec {
  *
  *   // create objects needed by tests and return as a tuple
  *   def createFixture = (
@@ -644,7 +644,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySuite extends FlatSpec with BeforeAndAfterEach {
+ * class ExampleSpec extends FlatSpec with BeforeAndAfterEach {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -724,7 +724,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySuite extends FlatSpec {
+ * class ExampleSpec extends FlatSpec {
  *
  *   private var reader: FileReader = _
  *
@@ -797,7 +797,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends FixtureFlatSpec {
+ * class ExampleSpec extends FixtureFlatSpec {
  *
  *   type FixtureParam = FileReader
  *

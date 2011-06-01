@@ -526,7 +526,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <pre class="stHighlight">
  * import org.scalatest.FreeSpec
  *
- * class MySuite extends FreeSpec {
+ * class ExampleSpec extends FreeSpec {
  *
  *   "The Scala language" - {
  *
@@ -618,7 +618,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import org.scalatest.FreeSpec
  * import scala.collection.mutable.ListBuffer
  *
- * class MySuite extends FreeSpec {
+ * class ExampleSpec extends FreeSpec {
  *
  *   // create objects needed by tests and return as a tuple
  *   def createFixture = (
@@ -671,7 +671,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySuite extends FreeSpec with BeforeAndAfterEach {
+ * class ExampleSpec extends FreeSpec with BeforeAndAfterEach {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -753,7 +753,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySuite extends FreeSpec {
+ * class ExampleSpec extends FreeSpec {
  *
  *   private var reader: FileReader = _
  *
@@ -828,7 +828,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends FixtureFreeSpec {
+ * class ExampleSpec extends FixtureFreeSpec {
  *
  *   type FixtureParam = FileReader
  *

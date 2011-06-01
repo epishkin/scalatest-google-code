@@ -160,7 +160,7 @@ import Suite.checkRunTestParamsForNull
  * </pre>
  *
  * <p>
- * If you run this version of <code>MySuite</code> with:
+ * If you run this version of <code>MathSpec</code> with:
  * </p>
  *
  * <pre class="stREPL">
@@ -172,7 +172,7 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stREPL">
- * <span class="stGreen">MySuite:</span>
+ * <span class="stGreen">MathSpec:</span>
  * <span class="stYellow">- addition !!! IGNORED !!!</span>
  * <span class="stGreen">- subtraction</span>
  * </pre>
@@ -211,11 +211,11 @@ import Suite.checkRunTestParamsForNull
  * }
  * </pre>
  *
- * If you run this <code>Suite</code> from the interpreter, you will see the following message
+ * If you run this <code>PropSpec</code> from the interpreter, you will see the following message
  * included in the printed report:
  *
  * <pre class="stREPL">
- * <span class="stGreen">MySuite:
+ * <span class="stGreen">MathSpec:
  * - addition
  *   + Addition seems to work</span> 
  * </pre>
@@ -280,7 +280,7 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stREPL">
- * <span class="stGreen">MySuite:
+ * <span class="stGreen">MathSpec:
  * - addition</span>
  * <span class="stYellow">- subtraction (pending)</span>
  * </pre>
