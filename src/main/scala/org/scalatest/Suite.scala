@@ -526,7 +526,7 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
- * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
+ * The <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
  * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
  * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
  * except those those belonging to tags listed in the
