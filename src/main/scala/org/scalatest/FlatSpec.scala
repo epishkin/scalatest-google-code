@@ -940,7 +940,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <h2>Informers</h2>
  *
  * <p>
- * One of the parameters to the primary <code>run</code> method is a <code>Reporter</code>, which
+ * One of the parameters to the <code>run</code> method is a <code>Reporter</code>, which
  * will collect and report information about the running suite of tests.
  * Information about suites and tests that were run, whether tests succeeded or failed, 
  * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
@@ -1042,7 +1042,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <p>
  * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
  * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
- * out before tests are written to verify that behavior (and often, the before the behavior of
+ * out before tests are written to verify that behavior (and often, before the behavior of
  * the system being tested is itself implemented). Such sketches form a kind of specification of
  * what tests and functionality to implement later.
  * </p>
@@ -1052,6 +1052,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * bit of behavior required by the system being tested. The test can also include some code that
  * sends more information about the behavior to the reporter when the tests run. At the end of the test,
  * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+ * </p>
+ *
+ * <p>
  * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
  * sent to the reporter when running the test can appear in the report of a test run. (In other words,
  * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
