@@ -133,12 +133,12 @@ import Suite.reportInfoProvided
  *
  * class ExampleSuite extends Suite {
  *
- *   def testAddition() {
+ *   def testAddition {
  *     val sum = 1 + 1
  *     assert(sum === 2)
  *   }
  *
- *   def testSubtraction() {
+ *   def testSubtraction {
  *     val diff = 4 - 1
  *     assert(diff === 3)
  *   }
@@ -350,12 +350,12 @@ import Suite.reportInfoProvided
  *
  * class ExampleSuite extends Suite with ShouldMatchers {
  *
- *   def testAddition() {
+ *   def testAddition {
  *     val sum = 1 + 1
  *     sum should equal (2)
  *   }
  *
- *   def testSubtraction() {
+ *   def testSubtraction {
  *     val diff = 4 - 1
  *     diff should equal (3)
  *   }
@@ -382,12 +382,12 @@ import Suite.reportInfoProvided
  *
  * class ExampleSuite extends Suite {
  *
- *   def testAddition() {
+ *   def testAddition {
  *     val sum = 1 + 1
  *     assertEquals(2, sum)
  *   }
  *
- *   def testSubtraction() {
+ *   def testSubtraction {
  *     val diff = 4 - 1
  *     assertEquals(3, diff)
  *   }
@@ -419,13 +419,13 @@ import Suite.reportInfoProvided
  * import org.scalatest.Suites
  *
  * class ASuite extends Suite {
- *   def testA() {}
+ *   def testA {}
  * }
  * class BSuite extends Suite {
- *   def testB() {}
+ *   def testB {}
  * }
  * class CSuite extends Suite {
- *   def testC() {}
+ *   def testC {}
  * }
  *
  * class AlphabetSuite extends Suites(
@@ -471,7 +471,7 @@ import Suite.reportInfoProvided
  * In some cases you may need to pass information to a suite of tests.
  * For example, perhaps a suite of tests needs to grab information from a file, and you want
  * to be able to specify a different filename during different runs.  You can accomplish this in ScalaTest by passing
- * the filename in the <em>config</em> map of key-value pairs, which is passed to <code>run</code> as a <code>Map[String, Any]</code>.
+ * the filename in a <em>config map</em> of key-value pairs, which is passed to <code>run</code> as a <code>Map[String, Any]</code>.
  * The values in the config map are called "config objects," because they can be used to <em>configure</em>
  * suites, reporters, and tests.
  * </p>
@@ -483,7 +483,8 @@ import Suite.reportInfoProvided
  * config objects on the command line.)
  * The config map is passed to <code>run</code>, <code>runNestedSuites</code>, <code>runTests</code>, and <code>runTest</code>,
  * so one way to access it in your suite is to override one of those methods. If you need to use the config map inside your tests, you
- * can use one of the traits in the <code>org.scalatest.fixture</code>  package. (See the
+ * can access it from the <code>NoArgTest</code> passed to <code>withFixture</code>, or the <code>OneArgTest</code> passed to
+ * <code>withFixture</code> in the traits in the <code>org.scalatest.fixture</code> package. (See the
  * <a href="fixture/FixtureSuite.html">documentation for <code>FixtureSuite</code></a>
  * for instructions on how to access the config map in tests.)
  * </p>
@@ -501,8 +502,8 @@ import Suite.reportInfoProvided
  * write in Java:
  * </p>
  *
- * <p><b>BECAUSE OF A SCALADOC BUG IN SCALA 2.8, I HAD TO PUT A SPACE AFTER THE AT SIGN IN ONE THE TARGET ANNOTATION EXAMPLE BELOW. IF YOU
- * WANT TO COPY AND PASTE FROM THIS EXAMPLE, YOU'LL NEED TO REMOVE THE SPACE BY HAND.  - Bill Venners</b></p>
+ * <p><b>Because of a Scaladoc bug in Scala 2.8, I had to put a space after the at sign in one the target annotation example below. If you
+ * want to copy and paste from this example, you'll need to remove the space by hand.  - Bill Venners</b></p>
  *
  * <pre>
  * import java.lang.annotation.*; 
@@ -521,12 +522,12 @@ import Suite.reportInfoProvided
  *
  * <pre class="stHighlight">
  * @SlowAsMolasses
- * def testSleeping() { sleep(1000000) }
+ * def testSleeping { sleep(1000000) }
  * </pre>
  *
  * <p>
  * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
- * <code>Set[String]</code>s called <code>tagsToInclude</code> and a <code>Set[String]</code> called
+ * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
  * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
  * except those those belonging to tags listed in the
  * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
@@ -548,13 +549,13 @@ import Suite.reportInfoProvided
  *
  * class ExampleSuite extends Suite {
  *
- *   def testAddition() {
+ *   def testAddition {
  *     val sum = 1 + 1
  *     assert(sum === 2)
  *   }
  *
  *   @Ignore
- *   def testSubtraction() {
+ *   def testSubtraction {
  *     val diff = 4 - 1
  *     assert(diff === 3)
  *   }
@@ -584,8 +585,8 @@ import Suite.reportInfoProvided
  * adds <code>org.scalatest.Ignore</code> to the <code>tagsToExclude</code> <code>Set</code> if it not already
  * in the <code>tagsToExclude</code> set passed to its primary constructor.  The only difference between
  * <code>org.scalatest.Ignore</code> and the tags you may define and exclude is that ScalaTest reports
- * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
- * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
+ * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is 
+ * to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
  * </p>
  *
  * <h2>Pending tests</h2>
@@ -593,7 +594,7 @@ import Suite.reportInfoProvided
  * <p>
  * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
  * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
- * out before tests are written to verify that behavior (and often, the before the behavior of
+ * out before tests are written to verify that behavior (and often, before the behavior of
  * the system being tested is itself implemented). Such sketches form a kind of specification of
  * what tests and functionality to implement later.
  * </p>
@@ -603,6 +604,9 @@ import Suite.reportInfoProvided
  * bit of behavior required by the system being tested. The test can also include some code that
  * sends more information about the behavior to the reporter when the tests run. At the end of the test,
  * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+ * </p>
+ *
+ * <p>
  * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
  * sent to the reporter when running the test can appear in the report of a test run. (In other words,
  * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
@@ -620,12 +624,12 @@ import Suite.reportInfoProvided
  *
  * class ExampleSuite extends Suite {
  *
- *   def testAddition() {
+ *   def testAddition {
  *     val sum = 1 + 1
  *     assert(sum === 2)
  *   }
  *
- *   def testSubtraction() { pending }
+ *   def testSubtraction { pending }
  * }
  * </pre>
  *
@@ -650,7 +654,7 @@ import Suite.reportInfoProvided
  * <h2>Informers</h2>
  *
  * <p>
- * One of the parameters to the primary <code>run</code> method is an <code>Reporter</code>, which
+ * One of the parameters to <code>run</code> is a <code>Reporter</code>, which
  * will collect and report information about the running suite of tests.
  * Information about suites and tests that were run, whether tests succeeded or failed, 
  * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
@@ -687,7 +691,7 @@ import Suite.reportInfoProvided
  * <h2>Executing suites in parallel</h2>
  *
  * <p>
- * The primary <code>run</code> method takes as its last parameter an optional <code>Distributor</code>. If 
+ * The <code>run</code> method takes as one of its parameters an optional <code>Distributor</code>. If 
  * a <code>Distributor</code> is passed in, this trait's implementation of <code>run</code> puts its nested
  * <code>Suite</code>s into the distributor rather than executing them directly. The caller of <code>run</code>
  * is responsible for ensuring that some entity runs the <code>Suite</code>s placed into the 
@@ -739,7 +743,7 @@ import Suite.reportInfoProvided
  *       val buffer = new ListBuffer[String]
  *     }
  * 
- *   def testEasy() {
+ *   def testEasy {
  *     val f = fixture
  *     f.builder.append("easy!")
  *     assert(f.builder.toString === "ScalaTest is easy!")
@@ -747,7 +751,7 @@ import Suite.reportInfoProvided
  *     f.buffer += "sweet"
  *   }
  * 
- *   def testFun() {
+ *   def testFun {
  *     val f = fixture
  *     f.builder.append("fun!")
  *     assert(f.builder.toString === "ScalaTest is fun!")
@@ -780,7 +784,7 @@ import Suite.reportInfoProvided
  *     val buffer = new ListBuffer[String]
  *   }
  * 
- *   def testEasy() {
+ *   def testEasy {
  *     new Fixture {
  *       builder.append("easy!")
  *       assert(builder.toString === "ScalaTest is easy!")
@@ -789,7 +793,7 @@ import Suite.reportInfoProvided
  *     }
  *   }
  * 
- *   def testFun() {
+ *   def testFun {
  *     new Fixture {
  *       builder.append("fun!")
  *       assert(builder.toString === "ScalaTest is fun!")
@@ -818,14 +822,14 @@ import Suite.reportInfoProvided
  *   val builder = new StringBuilder("ScalaTest is ")
  *   val buffer = new ListBuffer[String]
  * 
- *   def testEasy() {
+ *   def testEasy {
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
  *     assert(buffer.isEmpty)
  *     buffer += "sweet"
  *   }
  * 
- *   def testFun() {
+ *   def testFun {
  *     builder.append("fun!")
  *     assert(builder.toString === "ScalaTest is fun!")
  *     assert(buffer.isEmpty)
@@ -866,14 +870,14 @@ import Suite.reportInfoProvided
  *     buffer.clear()
  *   }
  * 
- *   def testEasy() {
+ *   def testEasy {
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
  *     assert(buffer.isEmpty)
  *     buffer += "sweet"
  *   }
  * 
- *   def testFun() {
+ *   def testFun {
  *     builder.append("fun!")
  *     assert(builder.toString === "ScalaTest is fun!")
  *     assert(buffer.isEmpty)
@@ -925,14 +929,14 @@ import Suite.reportInfoProvided
  *     }
  *   }
  *
- *   def testEasy() {
+ *   def testEasy {
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
  *     assert(buffer.isEmpty)
  *     buffer += "sweet"
  *   }
  *
- *   def testFun() {
+ *   def testFun {
  *     builder.append("fun!")
  *     assert(builder.toString === "ScalaTest is fun!")
  *     assert(buffer.isEmpty)
@@ -1041,21 +1045,21 @@ import Suite.reportInfoProvided
  *     }
  *   }
  * 
- *   def testProductive() { // This test needs the StringBuilder fixture
+ *   def testProductive { // This test needs the StringBuilder fixture
  *     new Builder {
  *       builder.append("productive!")
  *       assert(builder.toString === "ScalaTest is productive!")
  *     }
  *   }
  * 
- *   def testReadable() { // This test needs the ListBuffer[String] fixture
+ *   def testReadable { // This test needs the ListBuffer[String] fixture
  *     new Buffer {
  *       buffer += ("readable!")
  *       assert(buffer === List("ScalaTest", "is", "readable!"))
  *     }
  *   }
  * 
- *   def testFriendly() { // This test needs the FileWriter fixture
+ *   def testFriendly { // This test needs the FileWriter fixture
  *     withWriter { writer =>
  *       writer.write("Hello, user!")
  *       writer.flush()
@@ -1063,7 +1067,7 @@ import Suite.reportInfoProvided
  *     }
  *   }
  * 
- *   def testClearAndConcise() { // This test needs the StringBuilder and ListBuffer
+ *   def testClearAndConcise { // This test needs the StringBuilder and ListBuffer
  *     new Builder with Buffer {
  *       builder.append("clear!")
  *       buffer += ("concise!")
@@ -1072,7 +1076,7 @@ import Suite.reportInfoProvided
  *     }
  *   }
  * 
- *   def testComposable() { // This test needs all three fixtures
+ *   def testComposable { // This test needs all three fixtures
  *     new Builder with Buffer {
  *       builder.append("clear!")
  *       buffer += ("concise!")
@@ -1110,6 +1114,16 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <p>
+ * Note also that two test methods, <code>testFriendly</code> and <code>testComposable</code>, are declared as parameterless methods even
+ * though they have a side effect. In production code you would normally declare these as <em>empty-paren</em> methods, and call them with
+ * empty parentheses, to make it more obvious to readers of the code that they have a side effect. Whether or not a test method has
+ * a side effect, however, is a less important distinction than it is for methods in production code. Moreover, test methods are not
+ * normally invoked directly by client code, but rather through reflection by running the <code>Suite</code> that contains them, so a
+ * lack of parentheses on an invocation of a side-effecting test method would not normally appear in any client code. Given the empty
+ * parentheses do not add much value in the test methods case, the recommended style is to simply always leave them off.
+ * </p>
+ *
+ * <p>
  * In the previous example, the <code>withWriter</code> method passed an object into
  * the tests. Passing fixture objects into tests is generally a good idea when possible, but sometimes a side affect is unavoidable.
  * For example, if you need to initialize a database running on a server across a network, your with-fixture 
@@ -1134,7 +1148,7 @@ import Suite.reportInfoProvided
  * </p>
  * 
  * <pre class="stHighlight">
- * def testUserLogsIn() {
+ * def testUserLogsIn {
  *   withDataInDatabase {
  *     // test user logging in scenario
  *   }
@@ -1188,14 +1202,14 @@ import Suite.reportInfoProvided
  * 
  * class ExampleSuite extends Suite with Builder with Buffer {
  * 
- *   def testEasy() {
+ *   def testEasy {
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
  *     assert(buffer.isEmpty)
  *     buffer += "sweet"
  *   }
  * 
- *   def testFun() {
+ *   def testFun {
  *     builder.append("fun!")
  *     assert(builder.toString === "ScalaTest is fun!")
  *     assert(buffer.isEmpty)
@@ -1273,14 +1287,14 @@ import Suite.reportInfoProvided
  * 
  * class ExampleSuite extends Suite with Builder with Buffer {
  * 
- *   def testEasy() {
+ *   def testEasy {
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
  *     assert(buffer.isEmpty)
  *     buffer += "sweet"
  *   }
  * 
- *   def testFun() {
+ *   def testFun {
  *     builder.append("fun!")
  *     assert(builder.toString === "ScalaTest is fun!")
  *     assert(buffer.isEmpty)
