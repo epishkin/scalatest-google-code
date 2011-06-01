@@ -177,6 +177,45 @@ import Suite.checkRunTestParamsForNull
  * <span class="stGreen">- subtraction</span>
  * </pre>
  *
+ * <h2>Informers</h2>
+ *
+ * <p>
+ * One of the parameters to the <code>run</code> method is a <code>Reporter</code>, which
+ * will collect and report information about the running suite of tests.
+ * Information about suites and tests that were run, whether tests succeeded or failed, 
+ * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
+ * Most often the reporting done by default by <code>FunSuite</code>'s methods will be sufficient, but
+ * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
+ * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
+ * is provided via the <code>info</code> parameterless method.
+ * You can pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods.
+ * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
+ * Here's an example:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.FunSuite
+ *
+ * class ExampleSuite extends FunSuite {
+ *
+ *   test("addition") {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *     info("Addition seems to work")
+ *   }
+ * }
+ * </pre>
+ *
+ * If you run this <code>Suite</code> from the interpreter, you will see the following message
+ * included in the printed report:
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">ExampleSuite:
+ * - addition
+ *   + Addition seems to work</span> 
+ * </pre>
+ *
  * <h2>Pending tests</h2>
  *
  * <p>
@@ -242,45 +281,6 @@ import Suite.checkRunTestParamsForNull
  * <span class="stYellow">- subtraction (pending)</span>
  * </pre>
  * 
- * <h2>Informers</h2>
- *
- * <p>
- * One of the parameters to the primary <code>run</code> method is a <code>Reporter</code>, which
- * will collect and report information about the running suite of tests.
- * Information about suites and tests that were run, whether tests succeeded or failed, 
- * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
- * Most often the reporting done by default by <code>FunSuite</code>'s methods will be sufficient, but
- * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
- * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
- * is provided via the <code>info</code> parameterless method.
- * You can pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods.
- * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
- * Here's an example:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.FunSuite
- *
- * class ExampleSuite extends FunSuite {
- *
- *   test("addition") {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *     info("Addition seems to work")
- *   }
- * }
- * </pre>
- *
- * If you run this <code>Suite</code> from the interpreter, you will see the following message
- * included in the printed report:
- *
- * <pre class="stREPL">
- * <span class="stGreen">ExampleSuite:
- * - addition
- *   + Addition seems to work</span> 
- * </pre>
- *
  * <a name="SharedTests"></a><h2>Shared tests</h2>
  *
  * <p>

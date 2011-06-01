@@ -174,6 +174,368 @@ import Suite.anErrorThatShouldCauseAnAbort
  * See also: <a href="http://www.scalatest.org/getting_started_with_flat_spec" target="_blank">Getting started with <code>FlatSpec</code>.</a>
  * </p>
  *
+ * <a name="TaggingTests"></a><h2>Tagging tests</h2>
+ *
+ * A <code>FlatSpec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
+ * As with any suite, when executing a <code>FlatSpec</code>, groups of tests can
+ * optionally be included and/or excluded. To tag a <code>FlatSpec</code>'s tests,
+ * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to <code>taggedAs</code> method
+ * invoked on the string that describes the test you want to tag. Class <code>Tag</code> takes one parameter,
+ * a string name.  If you have
+ * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
+ * then you will probably want to use group names on your <code>FlatSpec</code>s that match. To do so, simply 
+ * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DbTest</code>, then you could
+ * create matching groups for <code>Spec</code>s like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Tag
+ *
+ * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
+ * object DbTest extends Tag("com.mycompany.groups.DbTest")
+ * </pre>
+ *
+ * <p>
+ * Given these definitions, you could place <code>FlatSpec</code> tests into groups like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.FlatSpec
+ *
+ * class MySuite extends FlatSpec {
+ *
+ *   "The Scala language" must "add correctly" taggedAs(SlowTest) in {
+ *       val sum = 1 + 1
+ *       assert(sum === 2)
+ *     }
+ *
+ *   it must "subtract correctly" taggedAs(SlowTest, DbTest) in {
+ *     val diff = 4 - 1
+ *     assert(diff === 3)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * This code marks both tests with the <code>com.mycompany.groups.SlowTest</code> tag, 
+ * and test <code>"The Scala language should subtract correctly"</code> with the <code>com.mycompany.groups.DbTest</code> tag.
+ * </p>
+ *
+ * <p>
+ * The <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
+ * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
+ * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
+ * except those those belonging to tags listed in the
+ * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
+ * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
+ * will be run.
+ * </p>
+ *
+ * <a name="IgnoredTests"></a><h2>Ignored tests</h2>
+ *
+ * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
+ * good intention of resurrecting the test at a later time, <code>FlatSpec</code> provides a method
+ * <code>ignore</code> that can be used instead of <code>it</code> to register a test. For example, to temporarily
+ * disable the test with the name <code>"A Stack should throw NoSuchElementException if an empty stack is popped"</code>, just
+ * change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.FlatSpec
+ * import scala.collection.mutable.Stack
+ *
+ * class StackSpec extends FlatSpec {
+ *
+ *   "A Stack" should "pop values in last-in-first-out order" in {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *   ignore should "throw NoSuchElementException if an empty stack is popped" in {
+ *     val emptyStack = new Stack[String]
+ *     intercept[NoSuchElementException] {
+ *       emptyStack.pop()
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>StackSpec</code> with:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * scala> (new StackSpec).execute()
+ * </pre>
+ *
+ * <p>
+ * It will run only the first test and report that the second test was ignored:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">A Stack
+ * - should pop values in last-in-first-out order</span>
+ * <span class="stYellow">- should throw NoSuchElementException if an empty stack is popped !!! IGNORED !!!</span>
+ * </pre>
+ *
+ * <p>
+ * When using shorthand notation, you won't have an <code>it</code> to change into <code>ignore</code> for
+ * the first test of each new subject. To ignore such tests, you must instead change <code>in</code> to <code>ignore</code>.
+ * For example, to temporarily disable the test with the name <code>"A Stack should pop values in last-in-first-out order"</code>,
+ * change &#8220;<code>in</code>&#8221; into &#8220;<code>ignore</code>&#8221; like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.FlatSpec
+ * import scala.collection.mutable.Stack
+ *
+ * class StackSpec extends FlatSpec {
+ *
+ *   "A Stack" should "pop values in last-in-first-out order" ignore {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *   it should "throw NoSuchElementException if an empty stack is popped" in {
+ *     val emptyStack = new Stack[String]
+ *     intercept[NoSuchElementException] {
+ *       emptyStack.pop()
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>StackSpec</code> with:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * scala> (new StackSpec).execute()
+ * </pre>
+ *
+ * <p>
+ * It will run only the second test and report that the first test was ignored:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">A Stack</span>
+ * <span class="stYellow">- should pop values in last-in-first-out order !!! IGNORED !!!</span>
+ * <span class="stGreen">- should throw NoSuchElementException if an empty stack is popped</span>
+ * </pre>
+ *
+ * <h2>Informers</h2>
+ *
+ * <p>
+ * One of the parameters to the <code>run</code> method is a <code>Reporter</code>, which
+ * will collect and report information about the running suite of tests.
+ * Information about suites and tests that were run, whether tests succeeded or failed, 
+ * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
+ * Most often the reporting done by default by <code>FlatSpec</code>'s methods will be sufficient, but
+ * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
+ * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
+ * is provided via the <code>info</code> parameterless method.
+ * You can pass the extra information to the <code>Informer</code> via its <code>apply</code> method.
+ * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
+ * Here's an example:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.FlatSpec
+ *
+ * class ArithmeticSpec extends FlatSpec {
+ *
+ *  "The Scala language" must "add correctly" in {
+ *     val sum = 2 + 3
+ *     assert(sum === 5)
+ *     info("addition seems to work")
+ *   }
+ *
+ *   it must "subtract correctly" in {
+ *     val diff = 7 - 2
+ *     assert(diff === 5)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this <code>FlatSpec</code> from the interpreter, you will see the following message
+ * included in the printed report:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * scala> (new ArithmeticSpec).execute()
+ * <span class="stGreen">The Scala language 
+ * - must add correctly
+ *   + addition seems to work 
+ * - must subtract correctly</span>
+ * </pre>
+ *
+ * <p>
+ * One use case for the <code>Informer</code> is to pass more information about a specification to the reporter. For example,
+ * the <code>GivenWhenThen</code> trait provides methods that use the implicit <code>info</code> provided by <code>FlatSpec</code>
+ * to pass such information to the reporter. Here's an example:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.FlatSpec
+ * import org.scalatest.GivenWhenThen
+ * 
+ * class ArithmeticSpec extends FlatSpec with GivenWhenThen {
+ * 
+ *  "The Scala language" must "add correctly" in { 
+ * 
+ *     given("two integers")
+ *     val x = 2
+ *     val y = 3
+ * 
+ *     when("they are added")
+ *     val sum = x + y
+ * 
+ *     then("the result is the sum of the two numbers")
+ *     assert(sum === 5)
+ *   }
+ * 
+ *   it must "subtract correctly" in {
+ * 
+ *     given("two integers")
+ *     val x = 7
+ *     val y = 2
+ * 
+ *     when("one is subtracted from the other")
+ *     val diff = x - y
+ * 
+ *     then("the result is the difference of the two numbers")
+ *     assert(diff === 5)
+ *   }
+ * }
+ * </pre>
+ *
+ * <pre class="stREPL">
+ * scala> (new ArithmeticSpec).execute()
+ * <span class="stGreen">The Scala language 
+ * - must add correctly
+ *   + Given two integers 
+ *   + When they are added 
+ *   + Then the result is the sum of the two numbers 
+ * - must subtract correctly
+ *   + Given two integers 
+ *   + When one is subtracted from the other 
+ *   + Then the result is the difference of the two numbers</span> 
+ * </pre>
+ *
+ * <a name="PendingTests"><h2>Pending tests</h2></a>
+ *
+ * <p>
+ * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
+ * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
+ * out before tests are written to verify that behavior (and often, before the behavior of
+ * the system being tested is itself implemented). Such sketches form a kind of specification of
+ * what tests and functionality to implement later.
+ * </p>
+ *
+ * <p>
+ * To support this style of testing, a test can be given a name that specifies one
+ * bit of behavior required by the system being tested. The test can also include some code that
+ * sends more information about the behavior to the reporter when the tests run. At the end of the test,
+ * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+ * </p>
+ *
+ * <p>
+ * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
+ * sent to the reporter when running the test can appear in the report of a test run. (In other words,
+ * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
+ * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
+ * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
+ * You can mark tests as pending in <code>FlatSpec</code> like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.FlatSpec
+ *
+ * class ArithmeticSpec extends FlatSpec {
+ *
+ *   // Sharing fixture objects via instance variables
+ *   val shared = 5
+ *
+ *  "The Scala language" must "add correctly" in {
+ *     val sum = 2 + 3
+ *     assert(sum === shared)
+ *   }
+ *
+ *   it must "subtract correctly" is (pending)
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>ArithmeticSpec</code> with:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * scala> (new ArithmeticSpec).execute()
+ * </pre>
+ *
+ * <p>
+ * It will run both tests but report that <code>The Scala language must subtract correctly</code> is pending. You'll see:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">The Scala language
+ * - must add correctly</span>
+ * <span class="stYellow">- must subtract correctly (pending)</span>
+ * </pre>
+ * 
+ * <p>
+ * One difference between an ignored test and a pending one is that an ignored test is intended to be used during a
+ * significant refactorings of the code under test, when tests break and you don't want to spend the time to fix
+ * all of them immediately. You can mark some of those broken tests as ignored temporarily, so that you can focus the red
+ * bar on just failing tests you actually want to fix immediately. Later you can go back and fix the ignored tests.
+ * In other words, by ignoring some failing tests temporarily, you can more easily notice failed tests that you actually
+ * want to fix. By contrast, a pending test is intended to be used before a test and/or the code under test is written.
+ * Pending indicates you've decided to write a test for a bit of behavior, but either you haven't written the test yet, or
+ * have only written part of it, or perhaps you've written the test but don't want to implement the behavior it tests
+ * until after you've implemented a different bit of behavior you realized you need first. Thus ignored tests are designed
+ * to facilitate refactoring of existing code whereas pending tests are designed to facilitate the creation of new code.
+ * </p>
+ *
+ * <p>
+ * One other difference between ignored and pending tests is that ignored tests are implemented as a test tag that is
+ * excluded by default. Thus an ignored test is never executed. By contrast, a pending test is implemented as a
+ * test that throws <code>TestPendingException</code> (which is what calling the <code>pending</code> method does). Thus
+ * the body of pending tests are executed up until they throw <code>TestPendingException</code>. The reason for this difference
+ * is that it enables your unfinished test to send <code>InfoProvided</code> messages to the reporter before it completes
+ * abruptly with <code>TestPendingException</code>, as shown in the previous example on <code>Informer</code>s
+ * that used the <code>GivenWhenThen</code> trait. For example, the following snippet in a <code>FlatSpec</code>:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ *  "The Scala language" must "add correctly" in { 
+ *     given("two integers")
+ *     when("they are added")
+ *     then("the result is the sum of the two numbers")
+ *     pending
+ *   }
+ *   // ...
+ * </pre>
+ *
+ * <p>
+ * Would yield the following output when run in the interpreter:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">The Scala language</span>
+ * <span class="stYellow">- must add correctly (pending)
+ *   + Given two integers 
+ *   + When they are added 
+ *   + Then the result is the sum of the two numbers</span> 
+ * </pre>
+ *
  * <h2>Shared fixtures</h2>
  *
  * <p>
@@ -780,368 +1142,6 @@ import Suite.anErrorThatShouldCauseAnAbort
  * as each invocation of the behavior function is in the context of a different combination
  * of <code>when</code>, <em>verb</em>, and <code>that</code> clauses.
  * </p>
- *
- * <a name="TaggingTests"></a><h2>Tagging tests</h2>
- *
- * A <code>FlatSpec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
- * As with any suite, when executing a <code>FlatSpec</code>, groups of tests can
- * optionally be included and/or excluded. To tag a <code>FlatSpec</code>'s tests,
- * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to <code>taggedAs</code> method
- * invoked on the string that describes the test you want to tag. Class <code>Tag</code> takes one parameter,
- * a string name.  If you have
- * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>FlatSpec</code>s that match. To do so, simply 
- * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
- * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DbTest</code>, then you could
- * create matching groups for <code>Spec</code>s like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.Tag
- *
- * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
- * object DbTest extends Tag("com.mycompany.groups.DbTest")
- * </pre>
- *
- * <p>
- * Given these definitions, you could place <code>FlatSpec</code> tests into groups like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.FlatSpec
- *
- * class MySuite extends FlatSpec {
- *
- *   "The Scala language" must "add correctly" taggedAs(SlowTest) in {
- *       val sum = 1 + 1
- *       assert(sum === 2)
- *     }
- *
- *   it must "subtract correctly" taggedAs(SlowTest, DbTest) in {
- *     val diff = 4 - 1
- *     assert(diff === 3)
- *   }
- * }
- * </pre>
- *
- * <p>
- * This code marks both tests with the <code>com.mycompany.groups.SlowTest</code> tag, 
- * and test <code>"The Scala language should subtract correctly"</code> with the <code>com.mycompany.groups.DbTest</code> tag.
- * </p>
- *
- * <p>
- * The <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
- * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
- * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
- * except those those belonging to tags listed in the
- * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
- * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
- * will be run.
- * </p>
- *
- * <a name="IgnoredTests"></a><h2>Ignored tests</h2>
- *
- * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
- * good intention of resurrecting the test at a later time, <code>FlatSpec</code> provides a method
- * <code>ignore</code> that can be used instead of <code>it</code> to register a test. For example, to temporarily
- * disable the test with the name <code>"A Stack should throw NoSuchElementException if an empty stack is popped"</code>, just
- * change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.FlatSpec
- * import scala.collection.mutable.Stack
- *
- * class StackSpec extends FlatSpec {
- *
- *   "A Stack" should "pop values in last-in-first-out order" in {
- *       val stack = new Stack[Int]
- *       stack.push(1)
- *       stack.push(2)
- *       assert(stack.pop() === 2)
- *       assert(stack.pop() === 1)
- *     }
- *
- *   ignore should "throw NoSuchElementException if an empty stack is popped" in {
- *     val emptyStack = new Stack[String]
- *     intercept[NoSuchElementException] {
- *       emptyStack.pop()
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * If you run this version of <code>StackSpec</code> with:
- * </p>
- *
- * <pre class="stREPL">
- * scala> (new StackSpec).execute()
- * </pre>
- *
- * <p>
- * It will run only the first test and report that the second test was ignored:
- * </p>
- *
- * <pre class="stREPL">
- * <span class="stGreen">A Stack
- * - should pop values in last-in-first-out order</span>
- * <span class="stYellow">- should throw NoSuchElementException if an empty stack is popped !!! IGNORED !!!</span>
- * </pre>
- *
- * <p>
- * When using shorthand notation, you won't have an <code>it</code> to change into <code>ignore</code> for
- * the first test of each new subject. To ignore such tests, you must instead change <code>in</code> to <code>ignore</code>.
- * For example, to temporarily disable the test with the name <code>"A Stack should pop values in last-in-first-out order"</code>,
- * change &#8220;<code>in</code>&#8221; into &#8220;<code>ignore</code>&#8221; like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.FlatSpec
- * import scala.collection.mutable.Stack
- *
- * class StackSpec extends FlatSpec {
- *
- *   "A Stack" should "pop values in last-in-first-out order" ignore {
- *       val stack = new Stack[Int]
- *       stack.push(1)
- *       stack.push(2)
- *       assert(stack.pop() === 2)
- *       assert(stack.pop() === 1)
- *     }
- *
- *   it should "throw NoSuchElementException if an empty stack is popped" in {
- *     val emptyStack = new Stack[String]
- *     intercept[NoSuchElementException] {
- *       emptyStack.pop()
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * If you run this version of <code>StackSpec</code> with:
- * </p>
- *
- * <pre class="stREPL">
- * scala> (new StackSpec).execute()
- * </pre>
- *
- * <p>
- * It will run only the second test and report that the first test was ignored:
- * </p>
- *
- * <pre class="stREPL">
- * <span class="stGreen">A Stack</span>
- * <span class="stYellow">- should pop values in last-in-first-out order !!! IGNORED !!!</span>
- * <span class="stGreen">- should throw NoSuchElementException if an empty stack is popped</span>
- * </pre>
- *
- * <h2>Informers</h2>
- *
- * <p>
- * One of the parameters to the <code>run</code> method is a <code>Reporter</code>, which
- * will collect and report information about the running suite of tests.
- * Information about suites and tests that were run, whether tests succeeded or failed, 
- * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
- * Most often the reporting done by default by <code>FlatSpec</code>'s methods will be sufficient, but
- * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
- * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
- * is provided via the <code>info</code> parameterless method.
- * You can pass the extra information to the <code>Informer</code> via its <code>apply</code> method.
- * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
- * Here's an example:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.FlatSpec
- *
- * class ArithmeticSpec extends FlatSpec {
- *
- *  "The Scala language" must "add correctly" in {
- *     val sum = 2 + 3
- *     assert(sum === 5)
- *     info("addition seems to work")
- *   }
- *
- *   it must "subtract correctly" in {
- *     val diff = 7 - 2
- *     assert(diff === 5)
- *   }
- * }
- * </pre>
- *
- * <p>
- * If you run this <code>FlatSpec</code> from the interpreter, you will see the following message
- * included in the printed report:
- * </p>
- *
- * <pre class="stREPL">
- * scala> (new ArithmeticSpec).execute()
- * <span class="stGreen">The Scala language 
- * - must add correctly
- *   + addition seems to work 
- * - must subtract correctly</span>
- * </pre>
- *
- * <p>
- * One use case for the <code>Informer</code> is to pass more information about a specification to the reporter. For example,
- * the <code>GivenWhenThen</code> trait provides methods that use the implicit <code>info</code> provided by <code>FlatSpec</code>
- * to pass such information to the reporter. Here's an example:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.FlatSpec
- * import org.scalatest.GivenWhenThen
- * 
- * class ArithmeticSpec extends FlatSpec with GivenWhenThen {
- * 
- *  "The Scala language" must "add correctly" in { 
- * 
- *     given("two integers")
- *     val x = 2
- *     val y = 3
- * 
- *     when("they are added")
- *     val sum = x + y
- * 
- *     then("the result is the sum of the two numbers")
- *     assert(sum === 5)
- *   }
- * 
- *   it must "subtract correctly" in {
- * 
- *     given("two integers")
- *     val x = 7
- *     val y = 2
- * 
- *     when("one is subtracted from the other")
- *     val diff = x - y
- * 
- *     then("the result is the difference of the two numbers")
- *     assert(diff === 5)
- *   }
- * }
- * </pre>
- *
- * <pre class="stREPL">
- * scala> (new ArithmeticSpec).execute()
- * <span class="stGreen">The Scala language 
- * - must add correctly
- *   + Given two integers 
- *   + When they are added 
- *   + Then the result is the sum of the two numbers 
- * - must subtract correctly
- *   + Given two integers 
- *   + When one is subtracted from the other 
- *   + Then the result is the difference of the two numbers</span> 
- * </pre>
- *
- * <a name="PendingTests"><h2>Pending tests</h2></a>
- *
- * <p>
- * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
- * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
- * out before tests are written to verify that behavior (and often, before the behavior of
- * the system being tested is itself implemented). Such sketches form a kind of specification of
- * what tests and functionality to implement later.
- * </p>
- *
- * <p>
- * To support this style of testing, a test can be given a name that specifies one
- * bit of behavior required by the system being tested. The test can also include some code that
- * sends more information about the behavior to the reporter when the tests run. At the end of the test,
- * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
- * </p>
- *
- * <p>
- * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
- * sent to the reporter when running the test can appear in the report of a test run. (In other words,
- * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
- * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
- * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
- * You can mark tests as pending in <code>FlatSpec</code> like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.FlatSpec
- *
- * class ArithmeticSpec extends FlatSpec {
- *
- *   // Sharing fixture objects via instance variables
- *   val shared = 5
- *
- *  "The Scala language" must "add correctly" in {
- *     val sum = 2 + 3
- *     assert(sum === shared)
- *   }
- *
- *   it must "subtract correctly" is (pending)
- * }
- * </pre>
- *
- * <p>
- * If you run this version of <code>ArithmeticSpec</code> with:
- * </p>
- *
- * <pre class="stREPL">
- * scala> (new ArithmeticSpec).execute()
- * </pre>
- *
- * <p>
- * It will run both tests but report that <code>The Scala language must subtract correctly</code> is pending. You'll see:
- * </p>
- *
- * <pre class="stREPL">
- * <span class="stGreen">The Scala language
- * - must add correctly</span>
- * <span class="stYellow">- must subtract correctly (pending)</span>
- * </pre>
- * 
- * <p>
- * One difference between an ignored test and a pending one is that an ignored test is intended to be used during a
- * significant refactorings of the code under test, when tests break and you don't want to spend the time to fix
- * all of them immediately. You can mark some of those broken tests as ignored temporarily, so that you can focus the red
- * bar on just failing tests you actually want to fix immediately. Later you can go back and fix the ignored tests.
- * In other words, by ignoring some failing tests temporarily, you can more easily notice failed tests that you actually
- * want to fix. By contrast, a pending test is intended to be used before a test and/or the code under test is written.
- * Pending indicates you've decided to write a test for a bit of behavior, but either you haven't written the test yet, or
- * have only written part of it, or perhaps you've written the test but don't want to implement the behavior it tests
- * until after you've implemented a different bit of behavior you realized you need first. Thus ignored tests are designed
- * to facilitate refactoring of existing code whereas pending tests are designed to facilitate the creation of new code.
- * </p>
- *
- * <p>
- * One other difference between ignored and pending tests is that ignored tests are implemented as a test tag that is
- * excluded by default. Thus an ignored test is never executed. By contrast, a pending test is implemented as a
- * test that throws <code>TestPendingException</code> (which is what calling the <code>pending</code> method does). Thus
- * the body of pending tests are executed up until they throw <code>TestPendingException</code>. The reason for this difference
- * is that it enables your unfinished test to send <code>InfoProvided</code> messages to the reporter before it completes
- * abruptly with <code>TestPendingException</code>, as shown in the previous example on <code>Informer</code>s
- * that used the <code>GivenWhenThen</code> trait. For example, the following snippet in a <code>FlatSpec</code>:
- * </p>
- *
- * <pre class="stHighlight">
- *  "The Scala language" must "add correctly" in { 
- *     given("two integers")
- *     when("they are added")
- *     then("the result is the sum of the two numbers")
- *     pending
- *   }
- *   // ...
- * </pre>
- *
- * <p>
- * Would yield the following output when run in the interpreter:
- * </p>
- *
- * <pre class="stREPL">
- * <span class="stGreen">The Scala language</span>
- * <span class="stYellow">- must add correctly (pending)
- *   + Given two integers 
- *   + When they are added 
- *   + Then the result is the sum of the two numbers</span> 
- * </pre>
  *
  * @author Bill Venners
  */

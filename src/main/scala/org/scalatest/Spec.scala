@@ -121,6 +121,235 @@ import Suite.reportTestIgnored
  * See also: <a href="http://www.scalatest.org/getting_started_with_spec" target="_blank">Getting started with <code>Spec</code>.</a>
  * </p>
  *
+ * <h2>Tagging tests</h2>
+ *
+ * <p>
+ * A <code>Spec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
+ * As with any suite, when executing a <code>Spec</code>, groups of tests can
+ * optionally be included and/or excluded. To tag a <code>Spec</code>'s tests,
+ * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
+ * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
+ * a string name.  If you have
+ * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
+ * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
+ * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DbTest</code>, then you could
+ * create matching groups for <code>Spec</code>s like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Tag
+ *
+ * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
+ * object DbTest extends Tag("com.mycompany.groups.DbTest")
+ * </pre>
+ *
+ * <p>
+ * Given these definitions, you could place <code>Spec</code> tests into groups like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Spec
+ *
+ * class MySuite extends Spec {
+ *
+ *   it("should add correctly", SlowTest) {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *   }
+ *
+ *   it("should subtract correctly", SlowTest, DbTest) {
+ *     val diff = 4 - 1
+ *     assert(diff === 3)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * This code marks both tests with the <code>com.mycompany.groups.SlowTest</code> tag, 
+ * and test <code>"should subtract correctly"</code> with the <code>com.mycompany.groups.DbTest</code> tag.
+ * </p>
+ *
+ * <p>
+ * The <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
+ * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
+ * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
+ * except those those belonging to tags listed in the
+ * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
+ * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
+ * will be run.
+ * </p>
+ *
+ * <h2>Ignored tests</h2>
+ *
+ * <p>
+ * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
+ * good intention of resurrecting the test at a later time, <code>Spec</code> provides registration
+ * methods that start with <code>ignore</code> instead of <code>it</code>. For example, to temporarily
+ * disable the test with the name <code>"should pop values in last-in-first-out order"</code>, just change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Spec
+ * import scala.collection.mutable.Stack
+ *
+ * class StackSpec extends Spec {
+ *
+ *   describe("A Stack") {
+ *
+ *     ignore("should pop values in last-in-first-out order") {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *     it("should throw NoSuchElementException if an empty stack is popped") {
+ *       val emptyStack = new Stack[String]
+ *       intercept[NoSuchElementException] {
+ *         emptyStack.pop()
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>StackSpec</code> with:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * scala> (new StackSpec).execute()
+ * </pre>
+ *
+ * <p>
+ * It will run only the second test and report that the first test was ignored:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">A Stack</span>
+ * <span class="stYellow">- should pop values in last-in-first-out order !!! IGNORED !!!</span>
+ * <span class="stGreen">- should throw NoSuchElementException if an empty stack is popped</span>
+ * </pre>
+ *
+ * <h2>Informers</h2>
+ *
+ * <p>
+ * One of the parameters to the <code>run</code> method is a <code>Reporter</code>, which
+ * will collect and report information about the running suite of tests.
+ * Information about suites and tests that were run, whether tests succeeded or failed, 
+ * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
+ * Most often the reporting done by default by <code>FunSuite</code>'s methods will be sufficient, but
+ * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
+ * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
+ * is provided via the <code>info</code> parameterless method.
+ * You can pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods.
+ * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
+ * Here's an example:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Spec
+ *
+ * class ExampleSpec extends Spec {
+ *
+ *   describe("The Scala language") {
+ *     it("should add correctly") {
+ *       val sum = 1 + 1
+ *       assert(sum === 2)
+ *       info("Addition seems to work")
+ *     }
+ *     it("should subtract correctly") {
+ *       val diff = 7 - 2
+ *       assert(diff === 5)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * If you run this <code>Spec</code> from the interpreter, you will see the following message
+ * included in the printed report:
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">ExampleSpec:
+ * The Scala language
+ * - should add correctly
+ *   + Addition seems to work
+ * - should subtract correctly</span> 
+ * </pre>
+ *
+ * <h2>Pending tests</h2>
+ *
+ * <p>
+ * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
+ * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
+ * out before tests are written to verify that behavior (and often, before the behavior of
+ * the system being tested is itself implemented). Such sketches form a kind of specification of
+ * what tests and functionality to implement later.
+ * </p>
+ *
+ * <p>
+ * To support this style of testing, a test can be given a name that specifies one
+ * bit of behavior required by the system being tested. The test can also include some code that
+ * sends more information about the behavior to the reporter when the tests run. At the end of the test,
+ * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+ * </p>
+ *
+ * <p>
+ * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
+ * sent to the reporter when running the test can appear in the report of a test run. (In other words,
+ * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
+ * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
+ * the actual test, and possibly the functionality, has not yet been implemented.
+ * </p>
+ *
+ * <p>
+ * You can mark a test as pending in <code>Spec</code> by placing "<code>(pending)</code>" after the 
+ * test name, like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.Spec
+ * import scala.collection.mutable.Stack
+ *
+ * class StackSpec extends Spec {
+ *
+ *   describe("A Stack") {
+ *
+ *     it("should pop values in last-in-first-out order") {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *     it("should throw NoSuchElementException if an empty stack is popped") (pending)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * (Note: "<code>(pending)</code>" is the body of the test. Thus the test contains just one statement, an invocation
+ * of the <code>pending</code> method, which throws <code>TestPendingException</code>.)
+ * If you run this version of <code>StackSpec</code> with:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * scala> (new StackSpec).execute()
+ * </pre>
+ *
+ * <p>
+ * It will run both tests, but report that the test named "<code>A stack should pop values in last-in-first-out order</code>" is pending. You'll see:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">A Stack 
+ * - should pop values in last-in-first-out order</span>
+ * <span class="stYellow">- should throw NoSuchElementException if an empty stack is popped (pending)</span>
+ * </pre>
+ * 
  * <h2>Shared fixtures</h2>
  *
  * <p>
@@ -722,189 +951,6 @@ import Suite.reportTestIgnored
  * If the <code>"should be empty"</code> test was factored out into a behavior function, it could be called repeatedly so long
  * as each invocation of the behavior function is inside a different set of <code>describe</code> clauses.
  *
- * <h2>Tagging tests</h2>
- *
- * <p>
- * A <code>Spec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
- * As with any suite, when executing a <code>Spec</code>, groups of tests can
- * optionally be included and/or excluded. To tag a <code>Spec</code>'s tests,
- * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
- * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
- * a string name.  If you have
- * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
- * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
- * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DbTest</code>, then you could
- * create matching groups for <code>Spec</code>s like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.Tag
- *
- * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
- * object DbTest extends Tag("com.mycompany.groups.DbTest")
- * </pre>
- *
- * <p>
- * Given these definitions, you could place <code>Spec</code> tests into groups like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.Spec
- *
- * class MySuite extends Spec {
- *
- *   it("should add correctly", SlowTest) {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *   }
- *
- *   it("should subtract correctly", SlowTest, DbTest) {
- *     val diff = 4 - 1
- *     assert(diff === 3)
- *   }
- * }
- * </pre>
- *
- * <p>
- * This code marks both tests with the <code>com.mycompany.groups.SlowTest</code> tag, 
- * and test <code>"should subtract correctly"</code> with the <code>com.mycompany.groups.DbTest</code> tag.
- * </p>
- *
- * <p>
- * The <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
- * <code>Set[String]</code> called <code>tagsToInclude</code> and a <code>Set[String]</code> called
- * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
- * except those those belonging to tags listed in the
- * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
- * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
- * will be run.
- * </p>
- *
- * <h2>Ignored tests</h2>
- *
- * <p>
- * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
- * good intention of resurrecting the test at a later time, <code>Spec</code> provides registration
- * methods that start with <code>ignore</code> instead of <code>it</code>. For example, to temporarily
- * disable the test with the name <code>"should pop values in last-in-first-out order"</code>, just change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.Spec
- * import scala.collection.mutable.Stack
- *
- * class StackSpec extends Spec {
- *
- *   describe("A Stack") {
- *
- *     ignore("should pop values in last-in-first-out order") {
- *       val stack = new Stack[Int]
- *       stack.push(1)
- *       stack.push(2)
- *       assert(stack.pop() === 2)
- *       assert(stack.pop() === 1)
- *     }
- *
- *     it("should throw NoSuchElementException if an empty stack is popped") {
- *       val emptyStack = new Stack[String]
- *       intercept[NoSuchElementException] {
- *         emptyStack.pop()
- *       }
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * If you run this version of <code>StackSpec</code> with:
- * </p>
- *
- * <pre class="stREPL">
- * scala> (new StackSpec).execute()
- * </pre>
- *
- * <p>
- * It will run only the second test and report that the first test was ignored:
- * </p>
- *
- * <pre class="stREPL">
- * <span class="stGreen">A Stack</span>
- * <span class="stYellow">- should pop values in last-in-first-out order !!! IGNORED !!!</span>
- * <span class="stGreen">- should throw NoSuchElementException if an empty stack is popped</span>
- * </pre>
- *
- * <h2>Pending tests</h2>
- *
- * <p>
- * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
- * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
- * out before tests are written to verify that behavior (and often, before the behavior of
- * the system being tested is itself implemented). Such sketches form a kind of specification of
- * what tests and functionality to implement later.
- * </p>
- *
- * <p>
- * To support this style of testing, a test can be given a name that specifies one
- * bit of behavior required by the system being tested. The test can also include some code that
- * sends more information about the behavior to the reporter when the tests run. At the end of the test,
- * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
- * </p>
- *
- * <p>
- * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
- * sent to the reporter when running the test can appear in the report of a test run. (In other words,
- * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
- * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
- * the actual test, and possibly the functionality, has not yet been implemented.
- * </p>
- *
- * <p>
- * You can mark a test as pending in <code>Spec</code> by placing "<code>(pending)</code>" after the 
- * test name, like this:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.Spec
- * import scala.collection.mutable.Stack
- *
- * class StackSpec extends Spec {
- *
- *   describe("A Stack") {
- *
- *     it("should pop values in last-in-first-out order") {
- *       val stack = new Stack[Int]
- *       stack.push(1)
- *       stack.push(2)
- *       assert(stack.pop() === 2)
- *       assert(stack.pop() === 1)
- *     }
- *
- *     it("should throw NoSuchElementException if an empty stack is popped") (pending)
- *   }
- * }
- * </pre>
- *
- * <p>
- * (Note: "<code>(pending)</code>" is the body of the test. Thus the test contains just one statement, an invocation
- * of the <code>pending</code> method, which throws <code>TestPendingException</code>.)
- * If you run this version of <code>StackSpec</code> with:
- * </p>
- *
- * <pre class="stREPL">
- * scala> (new StackSpec).execute()
- * </pre>
- *
- * <p>
- * It will run both tests, but report that the test named "<code>A stack should pop values in last-in-first-out order</code>" is pending. You'll see:
- * </p>
- *
- * <pre class="stREPL">
- * <span class="stGreen">A Stack 
- * - should pop values in last-in-first-out order</span>
- * <span class="stYellow">- should throw NoSuchElementException if an empty stack is popped (pending)</span>
- * </pre>
- * 
  * @author Bill Venners
  */
 trait Spec extends Suite { thisSuite =>

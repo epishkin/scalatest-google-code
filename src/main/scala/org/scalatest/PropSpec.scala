@@ -133,27 +133,6 @@ import Suite.checkRunTestParamsForNull
  * Rickard Nilsson for the <a href="http://code.google.com/p/scalacheck/">ScalaCheck test framework</a>.</em>
  * </p>
  *
- * <h2>Shared fixtures</h2>
- *
- * <p>
- * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
- * connections, <em>etc.</em>) used by tests to do their work. You can use fixtures in
- * <code>PropSpec</code>s with the same approaches suggested for <code>FunSuite</code> in
- * its documentation. For more information, see the <a href="FunSuite.html#SharedFixtures">Shared fixtures</a> section of <code>FunSuite</code>'s
- * documentation (and substitute <code>property</code> for <code>test</code>).
- * </p>
- *
- * <a name="SharedTests"></a><h2>Shared tests</h2>
- *
- * <p>
- * Sometimes you may want to run the same test code on different fixture objects. In other words, you may want to write tests that are "shared"
- * by different fixture objects.
- * You accomplish this in a <code>PropSpec</code> in the same way you would do it in a <code>FunSuite</code>, exception instead of <code>test</code>
- * you say <code>property</code>, and instead of <code>testsFor</code> you say <code>propertiesFor</code>. 
- * For more information, see the <a href="FunSuite.html#SharedTests">Shared tests</a> section of <code>FunSuite</code>'s
- * documentation.
- * </p>
- *
  * <h2>Tagging tests</h2>
  *
  * <p>
@@ -257,6 +236,49 @@ import Suite.checkRunTestParamsForNull
  * <span class="stGreen">- subtraction</span>
  * </pre>
  *
+ * <h2>Informers</h2>
+ *
+ * <p>
+ * One of the parameters to the <code>run</code> method is a <code>Reporter</code>, which
+ * will collect and report information about the running suite of tests.
+ * Information about suites and tests that were run, whether tests succeeded or failed, 
+ * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
+ * Most often the reporting done by default by <code>PropSpec</code>'s methods will be sufficient, but
+ * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
+ * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
+ * is provided via the <code>info</code> parameterless method.
+ * You can pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods.
+ * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
+ * Here's an example:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * import org.scalatest.PropSpec
+ * import org.scalatest.prop.PropertyChecks
+ * import org.scalatest.matchers.ShouldMatchers
+ *
+ * class MathSpec extends PropSpec with PropertyChecks with ShouldMatchers {
+ *
+ *   property("addition", SlowTest) {
+ *     forAll { (i: Int) => i + i should equal (2 * i) }
+ *     info("Addition seems to work")
+ *   }
+ *
+ *   property("subtraction", SlowTest, DbTest) {
+ *     forAll { (i: Int) => i - i should equal (0) }
+ *   }
+ * }
+ * </pre>
+ *
+ * If you run this <code>Suite</code> from the interpreter, you will see the following message
+ * included in the printed report:
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">MySuite:
+ * - addition
+ *   + Addition seems to work</span> 
+ * </pre>
+ *
  * <h2>Pending tests</h2>
  *
  * <p>
@@ -322,48 +344,26 @@ import Suite.checkRunTestParamsForNull
  * <span class="stYellow">- subtraction (pending)</span>
  * </pre>
  * 
- * <h2>Informers</h2>
+ * <h2>Shared fixtures</h2>
  *
  * <p>
- * One of the parameters to the primary <code>run</code> method is a <code>Reporter</code>, which
- * will collect and report information about the running suite of tests.
- * Information about suites and tests that were run, whether tests succeeded or failed, 
- * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
- * Most often the reporting done by default by <code>PropSpec</code>'s methods will be sufficient, but
- * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
- * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
- * is provided via the <code>info</code> parameterless method.
- * You can pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods.
- * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
- * Here's an example:
+ * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
+ * connections, <em>etc.</em>) used by tests to do their work. You can use fixtures in
+ * <code>PropSpec</code>s with the same approaches suggested for <code>FunSuite</code> in
+ * its documentation. For more information, see the <a href="FunSuite.html#SharedFixtures">Shared fixtures</a> section of <code>FunSuite</code>'s
+ * documentation (and substitute <code>property</code> for <code>test</code>).
  * </p>
  *
- * <pre class="stHighlight">
- * import org.scalatest.PropSpec
- * import org.scalatest.prop.PropertyChecks
- * import org.scalatest.matchers.ShouldMatchers
+ * <a name="SharedTests"></a><h2>Shared tests</h2>
  *
- * class MathSpec extends PropSpec with PropertyChecks with ShouldMatchers {
- *
- *   property("addition", SlowTest) {
- *     forAll { (i: Int) => i + i should equal (2 * i) }
- *     info("Addition seems to work")
- *   }
- *
- *   property("subtraction", SlowTest, DbTest) {
- *     forAll { (i: Int) => i - i should equal (0) }
- *   }
- * }
- * </pre>
- *
- * If you run this <code>Suite</code> from the interpreter, you will see the following message
- * included in the printed report:
- *
- * <pre class="stREPL">
- * <span class="stGreen">MySuite:
- * - addition
- *   + Addition seems to work</span> 
- * </pre>
+ * <p>
+ * Sometimes you may want to run the same test code on different fixture objects. In other words, you may want to write tests that are "shared"
+ * by different fixture objects.
+ * You accomplish this in a <code>PropSpec</code> in the same way you would do it in a <code>FunSuite</code>, exception instead of <code>test</code>
+ * you say <code>property</code>, and instead of <code>testsFor</code> you say <code>propertiesFor</code>. 
+ * For more information, see the <a href="FunSuite.html#SharedTests">Shared tests</a> section of <code>FunSuite</code>'s
+ * documentation.
+ * </p>
  *
  * @author Bill Venners
  */
