@@ -233,16 +233,16 @@ import Suite.checkRunTestParamsForNull
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
  * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
- * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and
- * <code>com.mycompany.groups.DbTest</code>, then you could
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.tags.SlowTest</code> and
+ * <code>com.mycompany.tags.DbTest</code>, then you could
  * create matching groups for <code>FunSuite</code>s like this:
  * </p>
  *
  * <pre class="stHighlight">
  * import org.scalatest.Tag
  *
- * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
- * object DbTest extends Tag("com.mycompany.groups.DbTest")
+ * object SlowTest extends Tag("com.mycompany.tags.SlowTest")
+ * object DbTest extends Tag("com.mycompany.tags.DbTest")
  * </pre>
  *
  * <p>
@@ -267,8 +267,8 @@ import Suite.checkRunTestParamsForNull
  * </pre>
  *
  * <p>
- * This code marks both tests, "addition" and "subtraction," with the <code>com.mycompany.groups.SlowTest</code> tag, 
- * and test "subtraction" with the <code>com.mycompany.groups.DbTest</code> tag.
+ * This code marks both tests, "addition" and "subtraction," with the <code>com.mycompany.tags.SlowTest</code> tag, 
+ * and test "subtraction" with the <code>com.mycompany.tags.DbTest</code> tag.
  * </p>
  *
  * <p>

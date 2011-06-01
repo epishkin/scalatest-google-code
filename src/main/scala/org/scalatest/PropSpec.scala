@@ -296,8 +296,8 @@ import Suite.checkRunTestParamsForNull
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
  * then you will probably want to use group names on your <code>PropSpec</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
- * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and
- * <code>com.mycompany.groups.DbTest</code>, then you could
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.tags.SlowTest</code> and
+ * <code>com.mycompany.tags.DbTest</code>, then you could
  * create matching groups for <code>PropSpec</code>s like this:
  * </p>
  *
