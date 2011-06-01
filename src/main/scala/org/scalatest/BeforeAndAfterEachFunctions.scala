@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference
  * could potentially result in which method form is being invoked when both traits are mixed together.
  * </p>
  */
-@deprecated("Use BeforeAndAfter instead.")
+@deprecated("Use BeforeAndAfter instead." /*, "ScalaTest 1.5.1/1.6.1"*/)
 trait BeforeAndAfterEachFunctions extends AbstractSuite {
 
   this: Suite =>
