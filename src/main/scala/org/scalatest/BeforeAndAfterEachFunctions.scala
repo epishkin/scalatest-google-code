@@ -18,74 +18,17 @@ package org.scalatest
 import java.util.concurrent.atomic.AtomicReference
 
 /**
- * Trait that can be mixed into suites that need code executed before and after
- * running each test. This trait facilitates a style of testing in which mutable
- * fixture objects held in instance variables are replaced or reinitialized before each test or
- * suite. Here's an example:
- *
- * <pre class="stHighlight">
- * import org.scalatest._
- * import scala.collection.mutable.ListBuffer
- *
- * class MySuite extends BeforeAndAfterEachFunctions {
- *
- *   // Fixtures as reassignable variables and mutable objects
- *   var sb: StringBuilder = _
- *   val lb = new ListBuffer[String]
- *
- *   beforeEach {
- *     sb = new StringBuilder("ScalaTest is ")
- *     lb.clear()
- *   }
- *
- *   def testEasy() {
- *     sb.append("easy!")
- *     assert(sb.toString === "ScalaTest is easy!")
- *     assert(lb.isEmpty)
- *     lb += "sweet"
- *   }
- *
- *   def testFun() {
- *     sb.append("fun!")
- *     assert(sb.toString === "ScalaTest is fun!")
- *     assert(lb.isEmpty)
- *   }
- * }
- * </pre>
+ * <b>Trait <code>BeforeAndAfterEachFunctions</code> has been deprecated and will be removed in a future version of ScalaTest. Please
+ * use trait <code>BeforeAndAfter</code> instead.</b>
  *
  * <p>
- * Because this trait invokes <code>super.runTest</code> to
- * run each test, you may need to mix this trait in last to get the desired behavior. For example, this won't
- * work, because <code>BeforeAndAfterEachFunctions</code> is "super" to </code>FunSuite</code>:
+ * Note: The reasons this was deprecated is 1) <code>BeforeAndAfter</code> is more concise, both the trait name and the
+ * <code>before</code>/<code>after</code> method names, and 2) because its <code>beforeEach</code> and <code>afterEach</code>
+ * methods have the same name and number of arguments as corresponding methods in <code>BeforeAndAfterEach</code>, some confusion
+ * could potentially result in which method form is being invoked when both traits are mixed together.
  * </p>
- * <pre class="stHighlight">
- * class MySuite extends BeforeAndAfterEachFunctions with FunSuite 
- * </pre>
- * <p>
- * You'd need to turn it around, so that <code>FunSuite</code> is "super" to <code>BeforeAndAfterEachFunctions</code>, like this:
- * </p>
- * <pre class="stHighlight">
- * class MySuite extends FunSuite with BeforeAndAfterEachFunctions
- * </pre>
- *
- * <p>
- * The <code>beforeEach</code> and <code>afterEach</code> methods can each only be called once per <code>Suite</code>,
- * and cannot be invoked after <code>run</code> has been invoked.
- * </p>
- *
- * <p>
- * Note: The advantage this trait has over <code>BeforeAndAfterEach</code> is that its syntax is more concise. 
- * The main disadvantage is that it is not stackable, whereas <code>BeforeAndAfterEach</code> is. <em>I.e.</em>, 
- * you can write several traits that extend <code>BeforeAndAfterEach</code> and provide <code>beforeEach</code> methods
- * that include a call to <code>super.beforeEach</code>, and mix them together in various combinations. By contrast,
- * only one call to the <code>beforeEach</code> registration function is allowed in a suite or spec that mixes
- * in <code>BeforeAndAfterEachFunctions</code>. In addition, <code>BeforeAndAfterEach</code> allows you to access
- * the config map in its <code>beforeEach</code> and <code>afterEach</code> methods, but <code>BeforeAndAfterEachFunctions</code>
- * does not.
- * </p>
- *
- * @author Bill Venners
  */
+@deprecated("Use BeforeAndAfter instead.")
 trait BeforeAndAfterEachFunctions extends AbstractSuite {
 
   this: Suite =>

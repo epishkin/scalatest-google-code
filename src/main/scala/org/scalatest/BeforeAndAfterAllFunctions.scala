@@ -18,82 +18,16 @@ package org.scalatest
 import java.util.concurrent.atomic.AtomicReference
 
 /**
- * Trait that can be mixed into suites that need code executed before and after executing the
- * suite. This trait allows code to be executed before and/or after all the tests and nested suites of a
- * suite are run. This trait overrides <code>run</code> (the main <code>run</code> method that
- * takes seven parameters, an optional test name, reporter, stopper, filter, configMap, optional distributor,
- * and tracker) and calls the code passed to the
- * <code>beforeAll</code> method, if any, then calls <code>super.run</code>. After the <code>super.run</code>
- * invocation completes, whether it returns normally or completes abruptly with an exception,
- * this trait's <code>run</code> method will execute the code passed to <code>afterAll</code>, if any.
+ * <b>Trait <code>BeforeAndAfterAllFunctions</code> has been deprecated and will be removed in a future version of ScalaTest. Please
+ * use trait <code>BeforeAndAfterAll</code> instead.</b>
  *
  * <p>
- * For example, the following <code>MasterSuite</code> mixes in <code>BeforeAndAfterAllFunctions</code> and
- * in the code passed to <code>beforeAll</code>, creates and writes to a temp file.
- * After all of the nested suites have executed, the code passed to <code>afterAll</code> is invoked, which
- * deletes the file:
+ * Note: The reason this was deprecated is because its <code>beforeAll</code> and <code>afterAll</code>
+ * methods have the same name and number of arguments as corresponding methods in <code>BeforeAndAfterAll</code>, some confusion
+ * could potentially result in which method form is being invoked when both traits are mixed together.
  * </p>
- * 
- * <pre class="stHighlight">
- * import org.scalatest.SuperSuite
- * import org.scalatest.BeforeAndAfterAllFunctions
- * import java.io.FileReader
- * import java.io.FileWriter
- * import java.io.File
- *
- * class MasterSuite extends Suite with BeforeAndAfterAllFunctions {
- *
- *   private val tempFileName = "temp.txt"
- *
- *   // Set up the temp file needed by the test
- *   beforeAll {
- *
- *     val fileName = configMap(tempFileName)
- *
- *     val writer = new FileWriter(fileName)
- *     try {
- *       writer.write("Hello, suite of tests!")
- *     }
- *     finally {
- *       writer.close()
- *     }
- *   }
- *
- *   override def nestedSuites =
- *     List(new OneSuite, new TwoSuite, new RedSuite, new BlueSuite)
- * 
- *   // Delete the temp file
- *   afterAll {
- *     val fileName = configMap(tempFileName))
- *     val file = new File(fileName)
- *     file.delete()
- *   }
- * }
- * </pre>
- *
- * <p>
- * Because the <code>BeforeAndAfterAllFunctions</code> trait invokes <code>super.run</code> to run the suite, you may need to
- * mix this trait in last to get the desired behavior. For example, this won't
- * work, because <code>BeforeAndAfterAllFunctions</code> is "super" to </code>FunSuite</code>:
- * </p>
- * <pre class="stHighlight">
- * class MySuite extends BeforeAndAfterAllFunctions with FunSuite
- * </pre>
- * <p>
- * You'd need to turn it around, so that <code>FunSuite</code> is "super" to <code>BeforeAndAfterAllFunctions</code>, like this:
- * </p>
- * <pre class="stHighlight">
- * class MySuite extends FunSuite with BeforeAndAfterAllFunctions
- * </pre>
- *
- * <strong>Note: This trait does not currently ensure that the code passed to <code>afterAll</code> is executed after
- * all the tests and nested suites are executed if a <code>Distributor</code> is passed. The
- * plan is to do that eventually, but in the meantime, be aware that the code passed to <code>afterAll</code> is
- * guaranteed to be run after all the tests and nested suites only when they are run
- * sequentially.</strong>
- *
- * @author Bill Venners
  */
+@deprecated("Use BeforeAndAfterAll instead.")
 trait BeforeAndAfterAllFunctions extends AbstractSuite {
 
   this: Suite =>
