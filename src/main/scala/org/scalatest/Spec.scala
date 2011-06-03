@@ -1102,7 +1102,7 @@ import Suite.reportTestIgnored
  * which looks like this:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre class="stHighlight">
  * it should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
  * it should behave like nonFullStack(stackWithOneItem)
  * </pre>
@@ -1114,7 +1114,7 @@ import Suite.reportTestIgnored
  * in scope already inside the behavior function. In that case, your code would look like this:
  * </p>
  *
- * <pre class="stExamples">
+ * <pre class="stHighlight">
  * it should behave like nonEmptyStack // assuming lastValuePushed is also in scope inside nonEmptyStack
  * it should behave like nonFullStack
  * </pre>
