@@ -78,6 +78,31 @@ class ScalaTestFramework extends Framework {
 
     import org.scalatest._
 
+    /* 
+      test-only FredSuite -- -A -B -C -d  all things to right of == come in as a separate string in the array
+ the other way is to set up the options and when I say test it always comes in that way
+
+ new wqay, if one framework
+
+testOptions in Test += Tests.Arguments("-d", "-g")
+
+so each of those would come in as one separate string in the aray
+
+testOptions in Test += Tests.Arguments(TestFrameworks.ScalaTest, "-d", "-g")
+
+Remember:
+
+maybe add a distributor like thing to run
+maybe add some event things like pending, ignored as well skipped
+maybe a call back for the summary
+
+st look at wiki on xsbt
+
+tasks & commands. commands have full control over everything.
+tasks are more integrated, don't need to know as much.
+write a sbt plugin to deploy the task.
+
+     */
     def run(testClassName: String, fingerprint: TestFingerprint, eventHandler: EventHandler, args: Array[String]) {
       val testClass = Class.forName(testClassName, true, testLoader).asSubclass(classOf[Suite])
 
