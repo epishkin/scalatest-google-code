@@ -58,3 +58,23 @@ pre.stHighlighted {
   font-style: italic;
 }
 
+table.stTable {
+ border-collapse: collapse;
+ border: 1px solid black;
+}
+
+th.stHeadingCell {
+  background-color: #CCCCCC;
+  border-width: 1px;
+  padding: 3px;
+  text-align: center;
+  border: 1px solid black;
+}
+
+td.stTableCell {
+  border-width: 1px;
+  padding: 3px;
+  text-align: center;
+  border: 1px solid black;
+}
+
