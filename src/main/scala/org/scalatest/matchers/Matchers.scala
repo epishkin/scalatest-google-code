@@ -2481,16 +2481,16 @@ trait Matchers extends Assertions { matchers =>
    * the <code>apply</code> method will select based on the following algorithm:
    * </p>
    * 
-   * <table cellpadding="2" border="1">
-   * <tr><th>Field</th><th>Method</th><th>"get" Method</th><th>Result</th></tr>
-   * <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>Throws <code>TestFailedException</code>, because no candidates found</td></tr>
-   * <tr><td>&nbsp;</td><td>&nbsp;</td><td><code>getTitle()</code></td><td>Invokes <code>getTitle()</code></td></tr>
-   * <tr><td>&nbsp;</td><td><code>title()</code></td><td>&nbsp;</td><td>Invokes <code>title()</code></td></tr>
-   * <tr><td>&nbsp;</td><td><code>title()</code></td><td><code>getTitle()</code></td><td>Invokes <code>title()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
-   * <tr><td><code>title</code></td><td>&nbsp;</td><td>&nbsp;</td><td>Accesses field <code>title</code></td></tr>
-   * <tr><td><code>title</code></td><td>&nbsp;</td><td><code>getTitle()</code></td><td>Invokes <code>getTitle()</code></td></tr>
-   * <tr><td><code>title</code></td><td><code>title()</code></td><td>&nbsp;</td><td>Invokes <code>title()</code></td></tr>
-   * <tr><td><code>title</code></td><td><code>title()</code></td><td><code>getTitle()</code></td><td>Invokes <code>title()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
+   * <table class="stTable">
+   * <tr><th class="stHeadingCell">Field</th><th class="stHeadingCell">Method</th><th class="stHeadingCell">"get" Method</th><th class="stHeadingCell">Result</th></tr>
+   * <tr><td class="stTableCell">&nbsp;</td><td class="stTableCell">&nbsp;</td><td class="stTableCell">&nbsp;</td><td class="stTableCell">Throws <code>TestFailedException</code>, because no candidates found</td></tr>
+   * <tr><td class="stTableCell">&nbsp;</td><td class="stTableCell">&nbsp;</td><td class="stTableCell"><code>getTitle()</code></td><td class="stTableCell">Invokes <code>getTitle()</code></td></tr>
+   * <tr><td class="stTableCell">&nbsp;</td><td class="stTableCell"><code>title()</code></td><td class="stTableCell">&nbsp;</td><td class="stTableCell">Invokes <code>title()</code></td></tr>
+   * <tr><td class="stTableCell">&nbsp;</td><td class="stTableCell"><code>title()</code></td><td class="stTableCell"><code>getTitle()</code></td><td class="stTableCell">Invokes <code>title()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
+   * <tr><td class="stTableCell"><code>title</code></td><td class="stTableCell">&nbsp;</td><td class="stTableCell">&nbsp;</td><td class="stTableCell">Accesses field <code>title</code></td></tr>
+   * <tr><td class="stTableCell"><code>title</code></td><td class="stTableCell">&nbsp;</td><td class="stTableCell"><code>getTitle()</code></td><td class="stTableCell">Invokes <code>getTitle()</code></td></tr>
+   * <tr><td class="stTableCell"><code>title</code></td><td class="stTableCell"><code>title()</code></td><td class="stTableCell">&nbsp;</td><td class="stTableCell">Invokes <code>title()</code></td></tr>
+   * <tr><td class="stTableCell"><code>title</code></td><td class="stTableCell"><code>title()</code></td><td class="stTableCell"><code>getTitle()</code></td><td class="stTableCell">Invokes <code>title()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
    * </table>
    * 
    *
@@ -4577,16 +4577,16 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
    * the <code>apply</code> method will select based on the following algorithm:
    * </p>
    * 
-   * <table cellpadding="2" border="1">
-   * <tr><th>Field</th><th>Method</th><th>"is" Method</th><th>Result</th></tr>
-   * <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>Throws <code>TestFailedException</code>, because no candidates found</td></tr>
-   * <tr><td>&nbsp;</td><td>&nbsp;</td><td><code>isEmpty()</code></td><td>Invokes <code>isEmpty()</code></td></tr>
-   * <tr><td>&nbsp;</td><td><code>empty()</code></td><td>&nbsp;</td><td>Invokes <code>empty()</code></td></tr>
-   * <tr><td>&nbsp;</td><td><code>empty()</code></td><td><code>isEmpty()</code></td><td>Invokes <code>empty()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
-   * <tr><td><code>empty</code></td><td>&nbsp;</td><td>&nbsp;</td><td>Accesses field <code>empty</code></td></tr>
-   * <tr><td><code>empty</code></td><td>&nbsp;</td><td><code>isEmpty()</code></td><td>Invokes <code>isEmpty()</code></td></tr>
-   * <tr><td><code>empty</code></td><td><code>empty()</code></td><td>&nbsp;</td><td>Invokes <code>empty()</code></td></tr>
-   * <tr><td><code>empty</code></td><td><code>empty()</code></td><td><code>isEmpty()</code></td><td>Invokes <code>empty()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
+   * <table class="stTable">
+   * <tr><th class="stHeadingCell">Field</th><th class="stHeadingCell">Method</th><th class="stHeadingCell">"is" Method</th><th class="stHeadingCell">Result</th></tr>
+   * <tr><td class="stTableCell">&nbsp;</td><td class="stTableCell">&nbsp;</td><td class="stTableCell">&nbsp;</td><td class="stTableCell">Throws <code>TestFailedException</code>, because no candidates found</td></tr>
+   * <tr><td class="stTableCell">&nbsp;</td><td class="stTableCell">&nbsp;</td><td class="stTableCell"><code>isEmpty()</code></td><td class="stTableCell">Invokes <code>isEmpty()</code></td></tr>
+   * <tr><td class="stTableCell">&nbsp;</td><td class="stTableCell"><code>empty()</code></td><td class="stTableCell">&nbsp;</td><td class="stTableCell">Invokes <code>empty()</code></td></tr>
+   * <tr><td class="stTableCell">&nbsp;</td><td class="stTableCell"><code>empty()</code></td><td class="stTableCell"><code>isEmpty()</code></td><td class="stTableCell">Invokes <code>empty()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
+   * <tr><td class="stTableCell"><code>empty</code></td><td class="stTableCell">&nbsp;</td><td class="stTableCell">&nbsp;</td><td class="stTableCell">Accesses field <code>empty</code></td></tr>
+   * <tr><td class="stTableCell"><code>empty</code></td><td class="stTableCell">&nbsp;</td><td class="stTableCell"><code>isEmpty()</code></td><td class="stTableCell">Invokes <code>isEmpty()</code></td></tr>
+   * <tr><td class="stTableCell"><code>empty</code></td><td class="stTableCell"><code>empty()</code></td><td class="stTableCell">&nbsp;</td><td class="stTableCell">Invokes <code>empty()</code></td></tr>
+   * <tr><td class="stTableCell"><code>empty</code></td><td class="stTableCell"><code>empty()</code></td><td class="stTableCell"><code>isEmpty()</code></td><td class="stTableCell">Invokes <code>empty()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
    * </table>
    * 
    * @author Bill Venners
