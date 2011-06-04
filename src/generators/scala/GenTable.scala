@@ -106,7 +106,7 @@ val scaladocForTableFor1VerbatimString = """
  * a <code>Some</code> wrapping that exception. For example, the previous for expression would give you:
  * </p>
  *
- * <pre class="stHighlight">
+ * <pre>
  * Vector(None, None, None, None, None, None, None,
  *     Some(org.scalatest.TestFailedException: 7 equaled 7), None, None)
  * </pre>
@@ -255,7 +255,7 @@ $columnsOfIndexes$
  * a <code>Some</code> wrapping that exception. For example, the previous for expression would give you:
  * </p>
  *
- * <pre class="stHighlight">
+ * <pre>
  * Vector(None, None, None, None, None, None, None,
  *     Some(org.scalatest.TestFailedException: 7 equaled 7), None, None)
  * </pre>
