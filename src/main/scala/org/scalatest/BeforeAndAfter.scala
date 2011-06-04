@@ -55,8 +55,8 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * <p>
  * Because this trait invokes <code>super.runTest</code> to
- * run each test, you may need to mix this trait in last to get the desired behavior. For example, this won't
- * work, because <code>BeforeAndAfter</code> is "super" to </code>FunSuite</code>:
+ * run each test, you will need to mix it in after a core suite trait to get the desired behavior. For example, this won't
+ * compile, because <code>BeforeAndAfter</code> is "super" to </code>FunSuite</code>:
  * </p>
  * <pre class="stHighlight">
  * class MySuite extends BeforeAndAfter with FunSuite 
