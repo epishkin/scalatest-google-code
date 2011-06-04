@@ -147,7 +147,7 @@ import org.scalatest.Suite._
  * import org.scalatest.fixture.FixtureSuite
  * import scala.collection.mutable.ListBuffer
  *
- * class MySuite extends FixtureSuite {
+ * class ExampleSuite extends FixtureSuite {
  *
  *   case class F(builder: StringBuilder, buffer: ListBuffer[String])
  *   type FixtureParam = F
@@ -196,7 +196,7 @@ import org.scalatest.Suite._
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends FixtureSuite {
+ * class ExampleSuite extends FixtureSuite {
  *
  *   type FixtureParam = FileReader
  *   def withFixture(test: OneArgTest) {
@@ -260,7 +260,7 @@ import org.scalatest.Suite._
  *  import org.scalatest.fixture.FixtureSuite
  *  import org.scalatest.fixture.ConfigMapFixture
  *
- *  class MySuite extends FixtureSuite with ConfigMapFixture {
+ *  class ExampleSuite extends FixtureSuite with ConfigMapFixture {
  *
  *    def testHello(configMap: Map[String, Any]) {
  *      // Use the configMap passed to runTest in the test
@@ -274,13 +274,13 @@ import org.scalatest.Suite._
  * </pre>
  *
  * <h2>Providing multiple fixtures</h2>
- * 
+ *
  * <p>
  * If different tests in the same <code>FixtureSuite</code> need different shared fixtures, you can use the <em>loan pattern</em> to supply to
  * each test just the fixture or fixtures it needs. First select the most commonly used fixture objects and pass them in via the
- * <code>FixtureParam</code>. Then for each remaining fixture needed by multiple tests, create a <em>with-fixture</em>
+ * <code>FixtureParam</code>. Then for each remaining fixture needed by multiple tests, create a <em>with&lt;fixture name&gt;</em>
  * method that takes a function you will use to pass the fixture to the test. Lasty, use the appropriate
- * with-fixture method or methods in each test.
+ * <em>with&lt;fixture name&gt;</em> method or methods in each test.
  * </p>
  *
  * <p>
