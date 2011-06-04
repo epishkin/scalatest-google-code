@@ -61,8 +61,8 @@ import org.scalatest.Suite._
  * <ol>
  * <li>define the type of the fixture parameter by specifying type <code>FixtureParam</code></li>
  * <li>define the <code>withFixture(OneArgTest)</code> method</li>
- * <li>write test methods that take a fixture parameter</li>
- * <li>(You can also define test methods that don't take a fixture parameter.)</li>
+ * <li>write tests that take a fixture parameter</li>
+ * <li>(You can also define tests that don't take a fixture parameter.)</li>
  * </ol>
  *
  * <p>
@@ -87,7 +87,7 @@ import org.scalatest.Suite._
  *     test(stack) // "loan" the fixture to the test
  *   }
  *
- *   // 3. write test methods that take a fixture parameter
+ *   // 3. write tests that take a fixture parameter
  *   def testPopAValue(stack: Stack[Int]) {
  *     val top = stack.pop()
  *     assert(top === 2)
@@ -100,7 +100,7 @@ import org.scalatest.Suite._
  *     assert(stack.head === 9)
  *   }
  *
- *   // 4. You can also write test methods that don't take a fixture parameter.
+ *   // 4. You can also write tests that don't take a fixture parameter.
  *   def testPopAnEmptyStack() {
  *     intercept[NoSuchElementException] {
  *       (new Stack[Int]).pop()

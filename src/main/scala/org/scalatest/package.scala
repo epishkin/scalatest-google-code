@@ -16,7 +16,7 @@
 package org
 
 /**
- * Members supporting ScalaTest's DSL for the Scala interpreter.
+ * ScalaTest's main traits, classes, and other members, including members supporting ScalaTest's DSL for the Scala interpreter.
  */
 package object scalatest {
 
