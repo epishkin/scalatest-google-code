@@ -705,7 +705,7 @@ import scala.collection.Traversable
  * You'll get a <code>TestFailedException</code> with this detail message:
  * </p>
  *
- * <pre class="stHighlight">
+ * <pre>
  * The title property had value "Moby Dick", instead of its expected value "A Tale of Two Cities",
  * on object Book("Moby Dick", "Melville", 1851)
  * </pre>
@@ -809,17 +809,17 @@ import scala.collection.Traversable
  * </p>
  *
  * <pre>
- * result should equal <span style="stRed">(</span>4<span style="stRed">)</span>
- * array should have length <span style="stRed">(</span>3<span style="stRed">)</span>
+ * result should equal <span class="stRed">(</span>4<span class="stRed">)</span>
+ * array should have length <span class="stRed">(</span>3<span class="stRed">)</span>
  * book should have (
- *   'title <span style="stRed">(</span>"Programming in Scala"<span style="stRed">)</span>,
- *   'author <span style="stRed">(</span>List("Odersky", "Spoon", "Venners")<span style="stRed">)</span>,
- *   'pubYear <span style="stRed">(</span>2008<span style="stRed">)</span>
+ *   'title <span class="stRed">(</span>"Programming in Scala"<span class="stRed">)</span>,
+ *   'author <span class="stRed">(</span>List("Odersky", "Spoon", "Venners")<span class="stRed">)</span>,
+ *   'pubYear <span class="stRed">(</span>2008<span class="stRed">)</span>
  * )
- * option should be <span style="stRed">(</span>'defined<span style="stRed">)</span>
- * catMap should (contain key <span style="stRed">(</span>9<span style="stRed">)</span> and contain value <span style="stRed">(</span>"lives"<span style="stRed">)</span>)</span>
- * keyEvent should be an <span style="stRed">(</span>'actionKey<span style="stRed">)</span>
- * javaSet should have size <span style="stRed">(</span>90<span style="stRed">)</span>
+ * option should be <span class="stRed">(</span>'defined<span class="stRed">)</span>
+ * catMap should (contain key <span class="stRed">(</span>9<span class="stRed">)</span> and contain value <span class="stRed">(</span>"lives"<span class="stRed">)</span>)</span>
+ * keyEvent should be an <span class="stRed">(</span>'actionKey<span class="stRed">)</span>
+ * javaSet should have size <span class="stRed">(</span>90<span class="stRed">)</span>
  * </pre>
  *
  * <p>
@@ -828,12 +828,12 @@ import scala.collection.Traversable
  * </p>
  *
  * <pre>
- * file should (exist and have <span style="stRed">(</span>'name ("temp.txt")<span style="stRed">)</span>)
- * book should have <span style="stRed">(</span>
+ * file should (exist and have <span class="stRed">(</span>'name ("temp.txt")<span class="stRed">)</span>)
+ * book should have <span class="stRed">(</span>
  *   title ("Programming in Scala"),
  *   author (List("Odersky", "Spoon", "Venners")),
  *   pubYear (2008)
- * <span style="stRed">)</span>
+ * <span class="stRed">)</span>
  * javaList should have length (9) // parens optional for length and size
  * </pre>
  *
@@ -842,8 +842,8 @@ import scala.collection.Traversable
  * </p>
  *
  * <pre>
- * catMap should <span style="stRed">(</span>contain key (9) and contain value ("lives")<span style="stRed">)</span>
- * number should <span style="stRed">(</span>equal (2) or equal (4) or equal (8)<span style="stRed">)</span>
+ * catMap should <span class="stRed">(</span>contain key (9) and contain value ("lives")<span class="stRed">)</span>
+ * number should <span class="stRed">(</span>equal (2) or equal (4) or equal (8)<span class="stRed">)</span>
  * </pre>
  * 
  * <p>
@@ -853,11 +853,11 @@ import scala.collection.Traversable
  * 
  * <pre>
  * file should exist
- * file should not <span style="stRed">(</span>exist<span style="stRed">)</span>
+ * file should not <span class="stRed">(</span>exist<span class="stRed">)</span>
  * file should (exist and have ('name ("temp.txt")))
- * file should (not <span style="stRed">(</span>exist<span style="stRed">)</span> and have ('name ("temp.txt"))
+ * file should (not <span class="stRed">(</span>exist<span class="stRed">)</span> and have ('name ("temp.txt"))
  * file should (have ('name ("temp.txt") or exist)
- * file should (have ('name ("temp.txt") or not <span style="stRed">(</span>exist<span style="stRed">)</span>)
+ * file should (have ('name ("temp.txt") or not <span class="stRed">(</span>exist<span class="stRed">)</span>)
  * </pre>
  *
  * <p>
