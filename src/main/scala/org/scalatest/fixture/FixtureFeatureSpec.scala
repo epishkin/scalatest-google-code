@@ -344,7 +344,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  *
- *   "scenario("User pushes a String value") { configMap =>
+ *   scenario("User pushes a String value") { configMap =>
  *     withStringStack { stack =>
  *       val sToPush = // This test uses the configMap fixture...
  *         configMap("StringToPush").toString
