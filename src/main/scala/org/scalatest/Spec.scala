@@ -352,7 +352,7 @@ import Suite.reportTestIgnored
  * will be run.
  * </p>
  *
- * <h2>Shared fixtures</h2>
+ * <a name="sharedFixtures"></a><h2>Shared fixtures</h2>
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
@@ -396,7 +396,7 @@ import Suite.reportTestIgnored
  *       val buffer = new ListBuffer[String]
  *     }
  * 
- *   describe("ScalaTest") {
+ *   describe("Testing") {
  *
  *     it("should be easy") {
  *       val f = fixture
@@ -440,7 +440,7 @@ import Suite.reportTestIgnored
  *     val buffer = new ListBuffer[String]
  *   }
  * 
- *   describe("ScalaTest") {
+ *   describe("Testing") {
  *
  *     it("should be easy") {
  *       new Fixture {
@@ -481,7 +481,7 @@ import Suite.reportTestIgnored
  *   val builder = new StringBuilder("ScalaTest is ")
  *   val buffer = new ListBuffer[String]
  * 
- *   describe("ScalaTest") {
+ *   describe("Testing") {
  *
  *     it("should be easy") {
  *       builder.append("easy!")
@@ -532,7 +532,7 @@ import Suite.reportTestIgnored
  *     buffer.clear()
  *   }
  * 
- *   describe("ScalaTest") {
+ *   describe("Testing") {
  *
  *     it("should be easy") {
  *       builder.append("easy!")
@@ -594,7 +594,7 @@ import Suite.reportTestIgnored
  *     }
  *   }
  *
- *   describe("ScalaTest") {
+ *   describe("Testing") {
  *
  *     it("should be easy") {
  *       builder.append("easy!")
@@ -659,7 +659,7 @@ import Suite.reportTestIgnored
  *     }
  *   }
  * 
- *   describe("ScalaTest") {
+ *   describe("Testing") {
  *
  *     it("should be easy") { writer =>
  *       writer.write("Hello, test!")
@@ -680,7 +680,7 @@ import Suite.reportTestIgnored
  * For more information, see the <a href="fixture/FixtureSpec.html">documentation for <code>FixtureSpec</code></a>.
  * </p>
  *
- * <h2>Providing different fixtures to different tests</h2>
+ * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
  * 
  * <p>
  * If different tests in the same <code>Spec</code> require different fixtures, you can combine the previous techniques and
@@ -716,7 +716,7 @@ import Suite.reportTestIgnored
  *     }
  *   }
  * 
- *   describe("ScalaTest") {
+ *   describe("Testing") {
  *
  *     it("should be productive") { // This test needs the StringBuilder fixture
  *       new Builder {
@@ -821,7 +821,7 @@ import Suite.reportTestIgnored
  * }
  * </pre>
  *
- * <h2>Composing stackable fixture traits</h2>
+ * <a name="composingFixtures"></a><h2>Composing stackable fixture traits</h2>
  *
  * <p>
  * In larger projects, teams often end up with several different fixtures that test classes need in different combinations,
@@ -868,7 +868,7 @@ import Suite.reportTestIgnored
  * 
  * class ExampleSpec extends Spec with Builder with Buffer {
  * 
- *   describe("ScalaTest") {
+ *   describe("Testing") {
  *
  *     it("should be easy") {
  *       builder.append("easy!")
@@ -956,7 +956,7 @@ import Suite.reportTestIgnored
  * 
  * class ExampleSpec extends Spec with Builder with Buffer {
  * 
- *   describe("ScalaTest") {
+ *   describe("Testing") {
  *
  *     it("should be easy") {
  *       builder.append("easy!")

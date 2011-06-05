@@ -536,7 +536,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * will be run.
  * </p>
  *
- * <h2>Shared fixtures</h2>
+ * <a name="sharedFixtures"></a><h2>Shared fixtures</h2>
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
@@ -580,7 +580,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *       val buffer = new ListBuffer[String]
  *     }
  * 
- *   "ScalaTest" should "be easy" in {
+ *   "Testing" should "be easy" in {
  *     val f = fixture
  *     f.builder.append("easy!")
  *     assert(f.builder.toString === "ScalaTest is easy!")
@@ -621,7 +621,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     val buffer = new ListBuffer[String]
  *   }
  * 
- *   "ScalaTest" should "be easy" in {
+ *   "Testing" should "be easy" in {
  *     new Fixture {
  *       builder.append("easy!")
  *       assert(builder.toString === "ScalaTest is easy!")
@@ -659,7 +659,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   val builder = new StringBuilder("ScalaTest is ")
  *   val buffer = new ListBuffer[String]
  * 
- *   "ScalaTest" should "be easy" in {
+ *   "Testing" should "be easy" in {
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
  *     assert(buffer.isEmpty)
@@ -707,7 +707,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     buffer.clear()
  *   }
  * 
- *   "ScalaTest" should "be easy" in {
+ *   "Testing" should "be easy" in {
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
  *     assert(buffer.isEmpty)
@@ -766,7 +766,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  *
- *   "ScalaTest" should "be easy" in {
+ *   "Testing" should "be easy" in {
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
  *     assert(buffer.isEmpty)
@@ -828,7 +828,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  * 
- *   "ScalaTest" should "be easy" in { writer =>
+ *   "Testing" should "be easy" in { writer =>
  *     writer.write("Hello, test!")
  *     writer.flush()
  *     assert(new File(tmpFile).length === 12)
@@ -846,7 +846,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * For more information, see the <a href="fixture/FixtureFlatSpec.html">documentation for <code>FixtureFlatSpec</code></a>.
  * </p>
  *
- * <h2>Providing different fixtures to different tests</h2>
+ * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
  * 
  * <p>
  * If different tests in the same <code>FlatSpec</code> require different fixtures, you can combine the previous techniques and
@@ -882,7 +882,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  * 
- *   "ScalaTest" should "be productive" in { // This test needs the StringBuilder fixture
+ *   "Testing" should "be productive" in { // This test needs the StringBuilder fixture
  *     new Builder {
  *       builder.append("productive!")
  *       assert(builder.toString === "ScalaTest is productive!")
@@ -982,7 +982,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * }
  * </pre>
  * 
- * <h2>Composing stackable fixture traits</h2>
+ * <a name="composingFixtures"></a><h2>Composing stackable fixture traits</h2>
  *
  * <p>
  * In larger projects, teams often end up with several different fixtures that test classes need in different combinations,
@@ -1029,7 +1029,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class ExampleSpec extends FlatSpec with Builder with Buffer {
  * 
- *   "ScalaTest" should "be easy" in {
+ *   "Testing" should "be easy" in {
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
  *     assert(buffer.isEmpty)
@@ -1114,7 +1114,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class ExampleSpec extends FlatSpec with Builder with Buffer {
  * 
- *   "ScalaTest" should "be easy" in {
+ *   "Testing" should "be easy" in {
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
  *     assert(buffer.isEmpty)

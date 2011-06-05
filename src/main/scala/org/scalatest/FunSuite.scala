@@ -281,7 +281,7 @@ import Suite.checkRunTestParamsForNull
  * will be run.
  * </p>
  *
- * <h2>Shared fixtures</h2>
+ * <a name="sharedFixtures"></a><h2>Shared fixtures</h2>
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
@@ -591,7 +591,7 @@ import Suite.checkRunTestParamsForNull
  * For more information, see the <a href="fixture/FixtureFunSuite.html">documentation for <code>FixtureFunSuite</code></a>.
  * </p>
  *
- * <h2>Providing different fixtures to different tests</h2>
+ * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
  * 
  * <p>
  * If different tests in the same <code>FunSuite</code> require different fixtures, you can combine the previous techniques and
@@ -727,7 +727,7 @@ import Suite.checkRunTestParamsForNull
  * }
  * </pre>
  * 
- * <h2>Composing stackable fixture traits</h2>
+ * <a name="composingFixtures"></a><h2>Composing stackable fixture traits</h2>
  *
  * <p>
  * In larger projects, teams often end up with several different fixtures that test classes need in different combinations,

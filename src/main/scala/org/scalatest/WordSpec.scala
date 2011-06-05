@@ -695,7 +695,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * will be run.
  * </p>
  *
- * <h2>Shared fixtures</h2>
+ * <a name="sharedFixtures"></a><h2>Shared fixtures</h2>
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
@@ -739,7 +739,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *       val buffer = new ListBuffer[String]
  *     }
  * 
- *   "ScalaTest" should {
+ *   "Testing" should {
  *
  *     "be easy" in {
  *       val f = fixture
@@ -783,7 +783,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     val buffer = new ListBuffer[String]
  *   }
  * 
- *   "ScalaTest" should {
+ *   "Testing" should {
  *
  *     "be easy" in {
  *       new Fixture {
@@ -824,7 +824,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   val builder = new StringBuilder("ScalaTest is ")
  *   val buffer = new ListBuffer[String]
  * 
- *   "ScalaTest" should {
+ *   "Testing" should {
  *
  *     "be easy" in {
  *       builder.append("easy!")
@@ -875,7 +875,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     buffer.clear()
  *   }
  * 
- *   "ScalaTest" should {
+ *   "Testing" should {
  *
  *     "be easy" in {
  *       builder.append("easy!")
@@ -937,7 +937,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  *
- *   "ScalaTest" should {
+ *   "Testing" should {
  *
  *     "be easy" in {
  *       builder.append("easy!")
@@ -1002,7 +1002,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  * 
- *   "ScalaTest" should {
+ *   "Testing" should {
  *
  *     "be easy" in { writer =>
  *       writer.write("Hello, test!")
@@ -1023,7 +1023,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * For more information, see the <a href="fixture/FixtureWordSpec.html">documentation for <code>FixtureWordSpec</code></a>.
  * </p>
  *
- * <h2>Providing different fixtures to different tests</h2>
+ * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
  * 
  * <p>
  * If different tests in the same <code>WordSpec</code> require different fixtures, you can combine the previous techniques and
@@ -1059,7 +1059,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  * 
- *   "ScalaTest" should {
+ *   "Testing" should {
  *
  *     "be productive" in { // This test needs the StringBuilder fixture
  *       new Builder {
@@ -1164,7 +1164,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * }
  * </pre>
  * 
- * <h2>Composing stackable fixture traits</h2>
+ * <a name="composingFixtures"></a><h2>Composing stackable fixture traits</h2>
  *
  * <p>
  * In larger projects, teams often end up with several different fixtures that test classes need in different combinations,
@@ -1211,7 +1211,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class ExampleSpec extends WordSpec with Builder with Buffer {
  * 
- *   "ScalaTest" should {
+ *   "Testing" should {
  *
  *     "be easy" in {
  *       builder.append("easy!")
@@ -1299,7 +1299,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class ExampleSpec extends WordSpec with Builder with Buffer {
  * 
- *   "ScalaTest" should {
+ *   "Testing" should {
  *
  *     "be easy" in {
  *       builder.append("easy!")

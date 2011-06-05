@@ -344,7 +344,7 @@ import Suite.checkRunTestParamsForNull
  * will be run.
  * </p>
  *
- * <h2>Shared fixtures</h2>
+ * <a name="sharedFixtures"></a><h2>Shared fixtures</h2>
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
