@@ -190,7 +190,9 @@
     <target name="compile" depends="compile-main, compile-tests, compile-examples"/>
 
     <!--<target name="compile-main" depends="init">-->
-    <target name="compile-main" depends="init, gentables, gengen">
+    <target name="compile-main" depends="get-jvm, init, gentables, gengen">
+        <fail message="Wrong JVM. Include 'java6' target to use java 6."
+              unless="jvm.ok"/>
 
         <!-- Compile the Java code from ${javasrc} into ${classes}  Needs to go first because TagAnnotation used in Suite -->
         <javac srcdir="${javasrc}" destdir="${classes}" compiler="javac1.5" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
@@ -790,6 +792,19 @@
 -->
             <classpath refid="test.class.path" />
         </junit>
+    </target>
+
+    <target name="java6">
+        <property name="java6" value="true" />
+    </target>
+
+    <target name="get-jvm">
+        <condition property="jvm.ok">
+            <or>
+                <equals arg1="${java6}" arg2="true"/>
+                <equals arg1="${ant.java.version}" arg2="1.5"/>
+            </or>
+        </condition>
     </target>
 </project>
 
