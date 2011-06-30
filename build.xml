@@ -794,10 +794,16 @@
         </junit>
     </target>
 
+    <!--
+      - Allows build to succeed when using a JVM other than 1.5.
+      -->
     <target name="java6">
         <property name="java6" value="true" />
     </target>
 
+    <!--
+      - Sets property jvm.ok if JVM version 1.5 is being used.
+      -->
     <target name="get-jvm">
         <condition property="jvm.ok">
             <or>
