@@ -658,6 +658,7 @@
         <fileset dir="src/main/resources" includes="org/**"/>
         <fileset dir="src/examples/scala"/>
         <fileset dir="src/examples/java"/>
+        <fileset dir="target/generated/src/main/scala"/>
       </jar>
     </target>
 
@@ -665,6 +666,7 @@
       <jar jarfile="${build}/scalatest-test-sources.jar">
         <fileset dir="src/test/scala"/>
         <fileset dir="src/test/java"/>
+        <fileset dir="target/generated/src/test/scala"/>
       </jar>
     </target>
 
