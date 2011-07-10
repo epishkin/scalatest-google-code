@@ -355,11 +355,11 @@ import Suite.reportTestIgnored
  * <a name="sharedFixtures"></a><h2>Shared fixtures</h2>
  *
  * <p>
- * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
+ * A <em>fixture</em> is objects or other artifacts (such as files, sockets, database
  * connections, <em>etc.</em>) used by tests to do their work.
- * If a fixture is used by only one test method, then the definitions of the fixture objects can
+ * If a fixture is used by only one test, then the definitions of the fixture objects can
  * be local to the method, such as the objects assigned to <code>sum</code> and <code>diff</code> in the
- * previous <code>ExampleSpec</code> examples. If multiple methods need to share an immutable fixture, one approach
+ * previous <code>ExampleSpec</code> examples. If multiple tests need to share an immutable fixture, one approach
  * is to assign them to instance variables.
  * </p>
  *

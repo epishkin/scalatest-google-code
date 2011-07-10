@@ -35,7 +35,7 @@ import scala.reflect.Manifest
  * </pre>
  *
  * <p>
- * JMockCycle uses jMock's ClassImposterizer to support mocking of classes, so the following line
+ * <code>JMockCycle</code> uses jMock's <code>ClassImposterizer</code> to support mocking of classes, so the following line
  * would also be needed if you wanted that functionality as well:
  * </p>
  *
