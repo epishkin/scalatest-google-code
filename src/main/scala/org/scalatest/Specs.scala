@@ -25,13 +25,13 @@ package org.scalatest
  * </p>
  *
  * <pre class="stHighlight">
- * class StepsSpec extends Specs {
+ * class StepsSpec extends Specs(
  *   new Step1Spec,
  *   new Step2Spec,
  *   new Step3Spec,
  *   new Step4Spec,
  *   new Step5Spec
- * }
+ * )
  * </pre>
  *
  * <p>

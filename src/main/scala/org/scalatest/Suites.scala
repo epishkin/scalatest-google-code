@@ -25,13 +25,13 @@ package org.scalatest
  * </p>
  *
  * <pre class="stHighlight">
- * class StepsSuite extends Suites {
+ * class StepsSuite extends Suites(
  *   new Step1Suite,
  *   new Step2Suite,
  *   new Step3Suite,
  *   new Step4Suite,
  *   new Step5Suite
- * }
+ * )
  * </pre>
  *
  * <p>
