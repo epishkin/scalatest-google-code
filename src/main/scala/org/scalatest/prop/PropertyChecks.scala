@@ -28,7 +28,7 @@ package prop
  *
  * <p>
  * For a quick example of using both table and generator-driven property checks in the same suite of tests, however,
- * imagine you want to test this <code>Fraction,</code> class:
+ * imagine you want to test this <code>Fraction</code> class:
  * </p>
  *
  * <pre class="stHighlight">
