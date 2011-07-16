@@ -600,8 +600,8 @@ val propertyCheckPreamble = """
  * and a <code>List[Char]</code>. The <code>forAll</code> method will pass each row of data to
  * the function, and generate a <code>TableDrivenPropertyCheckFailedException</code> if the function
  * completes abruptly for any row of data with any exception that would <a href="../Suite.html#errorHandling">normally cause</a> a test to
- * fail in ScalaTest other than <code>UnmetConditionException</code>. An
- * <code>UnmetConditionException</code>,
+ * fail in ScalaTest other than <code>DiscardedEvaluationException</code>. An
+ * <code>DiscardedEvaluationException</code>,
  * which is thrown by the <code>whenever</code> method (also defined in this trait) to indicate
  * a condition required by the property function is not met by a row
  * of passed data, will simply cause <code>forAll</code> to skip that row of data.
@@ -760,7 +760,7 @@ val propertyCheckPreamble = """
 trait TableDrivenPropertyChecks extends Whenever with Tables {
 
   /*
-   * Evaluates the passed code block if the passed boolean condition is true, else throws <code>UnmetConditionException</code>.
+   * Evaluates the passed code block if the passed boolean condition is true, else throws <code>DiscardedEvaluationException</code>.
    *
    * <p>
    * The <code>whenever</code> method can be used inside property check functions to skip invocations of the function with
@@ -838,18 +838,18 @@ trait TableDrivenPropertyChecks extends Whenever with Tables {
    * <p>
    * In this example, rows 6, 8, and 9 have values that would cause a false to be passed 
    * to <code>whenever</code>. (For example, in row 6, <code>d</code> is 0, which means <code>d</code> <code>!=</code> <code>0</code>
-   * will be false.) For those rows, <code>whenever</code> will throw <code>UnmetConditionException</code>,
+   * will be false.) For those rows, <code>whenever</code> will throw <code>DiscardedEvaluationException</code>,
    * which will cause the <code>forAll</code> method to skip that row.
    * </p>
    *
    * @param condition the boolean condition that determines whether <code>whenever</code> will evaluate the 
-   *    <code>fun</code> function (<code>condition<code> is true) or throws <code>UnmetConditionException</code> (<code>condition<code> is false)
+   *    <code>fun</code> function (<code>condition<code> is true) or throws <code>DiscardedEvaluationException</code> (<code>condition<code> is false)
    * @param fun the function to evaluate if the specified <code>condition</code> is true
    */
 /*
   def whenever(condition: Boolean)(fun: => Unit) {
     if (!condition)
-      throw new UnmetConditionException
+      throw new DiscardedEvaluationException
     fun
   }
 */
