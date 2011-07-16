@@ -136,7 +136,7 @@ trait Configuration {
    *
    * <p>
    * In <code>GeneratorDrivenPropertyChecks</code>, a property evaluation is discarded if it throws
-   * <code>UnmetConditionException</code>, which is produce by <code>whenever</code> clause that
+   * <code>DiscardedEvaluationException</code>, which is produce by <code>whenever</code> clause that
    * evaluates to false. For example, consider this ScalaTest property check:
    * </p>
    *
@@ -152,7 +152,7 @@ trait Configuration {
    *
    * <p>
    * In the above code, whenever a non-positive <code>n</code> is passed, the property function will complete abruptly
-   * with <code>UnmetConditionException</code>.
+   * with <code>DiscardedEvaluationException</code>.
    * </p>
    *
    * <p>
