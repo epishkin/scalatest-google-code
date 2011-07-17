@@ -15,11 +15,19 @@ import org.scalatest.events.SuiteAborted
  * Class that makes ScalaTest tests visible to sbt.
  *
  * <p>
- * To use ScalaTest from within sbt, simply add a line like this to your project file, replacing 1.5 with whatever version you desire:
+ * To use ScalaTest from within sbt, simply add a line like this to your project file (for sbt 0.1.0 or higher):
  * </p>
  *
  * <pre class="stExamples">
- * val scalatest = "org.scalatest" % "scalatest_2.8.1" % "1.5"
+ * libraryDependencies += "org.scalatest" % "scalatest_2.9.0" % "1.6.1" % "test"
+ * </pre>
+ *
+ * <p>
+ * The above line of code will work for any version of Scala 2.9 (for example, it works for Scala 2.9.0-1).
+ * </p>
+ *
+ * <pre class="stExamples">
+ * libraryDependencies += "org.scalatest" % "scalatest_2.8.1" % "1.5.1" % "test"
  * </pre>
  *
  * <p>
@@ -107,6 +115,20 @@ st look at wiki on xsbt
 tasks & commands. commands have full control over everything.
 tasks are more integrated, don't need to know as much.
 write a sbt plugin to deploy the task.
+
+Commands that should work:
+
+-Ddbname=testdb -Dserver=192.168.1.188
+Can't do a runpath
+Can add more reporters. -g seems odd, but could be done, -o seems odd. Maybe it is a no-op. -e could work. -r for sure. -u for sure.
+Ask Mark about -o. If there's some way to turn off his output, then that could mean -o. Or maybe -o is the default, which I think
+it should be for runner anyway, and then if you say -g you don't get -o. Meaning I don't send the strings to log. yes, -o maybe
+means log in the sbt case.
+
+Reporters can be configured.
+
+Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests NetworkTests"
+
 
      */
     def run(testClassName: String, fingerprint: TestFingerprint, eventHandler: EventHandler, args: Array[String]) {
