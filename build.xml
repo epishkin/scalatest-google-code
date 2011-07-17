@@ -191,7 +191,7 @@
 
     <!--<target name="compile-main" depends="init">-->
     <target name="compile-main" depends="get-jvm, init, gentables, gengen">
-        <fail message="Wrong JVM. Include 'java6' target to use java 6."
+        <fail message="Wrong JVM [${ant.java.version}]. Include 'java6' target to use java 6."
               unless="jvm.ok"/>
 
         <!-- Compile the Java code from ${javasrc} into ${classes}  Needs to go first because TagAnnotation used in Suite -->
