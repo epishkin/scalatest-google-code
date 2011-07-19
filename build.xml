@@ -686,6 +686,133 @@
       - 
       -->
      <target name="deploy" depends="jar,jartests,jarsrc,jartestsrc,doc">
+
+      <jar jarfile="${build}/scalatest-scaladoc.jar" basedir="${doc}"/>
+      <jar jarfile="${build}/scalatest-javadoc.jar"  basedir="${jdoc}"/>
+
+      <property name="deploy.main"
+                value="${dist}/lib/scalatest.jar"/>
+      <property name="deploy.tests" 
+                value="${build.tests.jar}"/>
+      <property name="deploy.sources" 
+                value="${build}/scalatest-sources.jar"/>
+      <property name="deploy.test-sources" 
+                value="${build}/scalatest-test-sources.jar"/>
+      <property name="deploy.scaladoc" 
+                value="${build}/scalatest-scaladoc.jar"/>
+      <property name="deploy.javadoc" 
+                value="${build}/scalatest-javadoc.jar"/>
+
+      <antcall target="deploy-jars"/>
+    </target>
+
+    <!--
+      - Redeploys an already-deployed release, naming it with a different
+      - scala version.  E.g., if you have a release based on artifact:
+      -
+      -    scalatest_2.9.0
+      -
+      - then this target could be used to redeploy it to an artifact named,
+      - e.g.:
+      -
+      -    scalatest_2.9.0-1
+      -
+      - Requires three properties, old.scala.version, new.scala.version,
+      - and scalatest.version to be defined on the command line, e.g.:
+      -
+      -   ant redeploy -Dold.scala.version='2.9.0'
+      -                -Dnew.scala.version='2.9.0-1'
+      -                -Dscalatest.version=1.6.1
+      -
+      - Retrieves the specified jars from the maven repo, in this case
+      - for artifact scalatest_2.9.0, version 1.6.1, and redeploys them
+      - using the new artifact name, in this case scalatest_2.9.0-1.
+      -->
+    <target name="redeploy"
+          description="redeploy a release using a different scala version tag">
+      <fail message="Missing old.scala.version definition."
+            unless="old.scala.version" />
+      <fail message="Missing new.scala.version definition." 
+            unless="new.scala.version" />
+      <fail message="Missing scalatest.version definition." 
+            unless="scalatest.version"  />
+
+      <artifact:dependencies filesetId="old.scala.fileset"
+                             versionsId="dependency.versions">
+        <dependency groupId="org.scalatest"
+                    artifactId="scalatest_${old.scala.version}"
+                    version="${scalatest.version}" />
+        <dependency groupId="org.scalatest"
+                    artifactId="scalatest_${old.scala.version}"
+                    version="${scalatest.version}"
+                    classifier="tests"/>
+        <dependency groupId="org.scalatest"
+                    artifactId="scalatest_${old.scala.version}"
+                    version="${scalatest.version}"
+                    classifier="sources"/>
+        <dependency groupId="org.scalatest"
+                    artifactId="scalatest_${old.scala.version}"
+                    version="${scalatest.version}"
+                    classifier="test-sources"/>
+        <dependency groupId="org.scalatest"
+                    artifactId="scalatest_${old.scala.version}"
+                    version="${scalatest.version}"
+                    classifier="scaladoc"/>
+        <dependency groupId="org.scalatest"
+                    artifactId="scalatest_${old.scala.version}"
+                    version="${scalatest.version}"
+                    classifier="javadoc"/>
+      </artifact:dependencies>
+
+      <copy file="pom_template.xml" tofile="${build}/pom.xml" overwrite="true">
+        <filterset>
+          <filter token="RELEASE" value="${scalatest.version}" />
+          <filter token="SCALA_VERSION" value="${new.scala.version}" />
+        </filterset>
+      </copy>
+
+      <mkdir dir="target/redeploy" />
+      <copy todir="target/redeploy">
+        <fileset refid="old.scala.fileset" />
+        <mapper classpathref="maven-ant-tasks.classpath"
+                classname="org.apache.maven.artifact.ant.VersionMapper"
+                from="${dependency.versions}" to="flatten" />
+      </copy>
+
+      <move todir="target/redeploy">
+        <fileset dir="target/redeploy" includes="scalatest_*.jar"/>
+        <globmapper from="scalatest_${old.scala.version}*" to="scalatest*"/>
+      </move>
+
+      <property name="deploy.main"
+                value="target/redeploy/scalatest.jar"/>
+      <property name="deploy.tests" 
+                value="target/redeploy/scalatest-tests.jar"/>
+      <property name="deploy.sources" 
+                value="target/redeploy/scalatest-sources.jar"/>
+      <property name="deploy.test-sources" 
+                value="target/redeploy/scalatest-test-sources.jar"/>
+      <property name="deploy.scaladoc" 
+                value="target/redeploy/scalatest-scaladoc.jar"/>
+      <property name="deploy.javadoc" 
+                value="target/redeploy/scalatest-javadoc.jar"/>
+
+      <antcall target="deploy-jars"/>
+    </target>
+
+    <!--
+      - For internal use by targets 'deploy' and 'redeploy'.  Deploys jars
+      - specified by following properties:
+      -   
+      -    deploy.main
+      -    deploy.tests
+      -    deploy.sources
+      -    deploy.test-sources
+      -    deploy.scaladoc
+      -    deploy.javadoc
+      -
+      -->
+    <target name="deploy-jars">
       <artifact:pom id="pom" file="${build}/pom.xml" />
 
       <property name="snapshot.repository"
@@ -709,12 +836,9 @@
         <contains string="${release}" substring="-SNAPSHOT"/>
       </condition>
 
-      <jar jarfile="${build}/scalatest-scaladoc.jar" basedir="${doc}"/>
-      <jar jarfile="${build}/scalatest-javadoc.jar"  basedir="${jdoc}"/>
-
       <artifact:mvn>
         <arg value="${mvn.deploy.plugin}" />
-        <arg value="-Dfile=${dist}/lib/scalatest.jar" />
+        <arg value="-Dfile=${deploy.main}" />
         <arg value="-Durl=${maven.repository.url}" />
         <arg value="-DpomFile=${build}/pom.xml" />
         <arg value="-DrepositoryId=${repository.id}" />
@@ -724,7 +848,7 @@
 
       <artifact:mvn>
         <arg value="${mvn.deploy.plugin}" />
-        <arg value="-Dfile=${build.tests.jar}" />
+        <arg value="-Dfile=${deploy.tests}" />
         <arg value="-Dclassifier=tests" />
         <arg value="-Durl=${maven.repository.url}" />
         <arg value="-DpomFile=${build}/pom.xml" />
@@ -735,7 +859,7 @@
 
       <artifact:mvn>
         <arg value="${mvn.deploy.plugin}" />
-        <arg value="-Dfile=${build}/scalatest-sources.jar" />
+        <arg value="-Dfile=${deploy.sources}" />
         <arg value="-Dclassifier=sources" />
         <arg value="-Durl=${maven.repository.url}" />
         <arg value="-DpomFile=${build}/pom.xml" />
@@ -746,7 +870,7 @@
 
       <artifact:mvn>
         <arg value="${mvn.deploy.plugin}" />
-        <arg value="-Dfile=${build}/scalatest-test-sources.jar" />
+        <arg value="-Dfile=${deploy.test-sources}" />
         <arg value="-Dclassifier=test-sources" />
         <arg value="-Durl=${maven.repository.url}" />
         <arg value="-DpomFile=${build}/pom.xml" />
@@ -757,7 +881,7 @@
 
       <artifact:mvn>
         <arg value="${mvn.deploy.plugin}" />
-        <arg value="-Dfile=${build}/scalatest-scaladoc.jar" />
+        <arg value="-Dfile=${deploy.scaladoc}" />
         <arg value="-Dclassifier=scaladoc" />
         <arg value="-Durl=${maven.repository.url}" />
         <arg value="-DpomFile=${build}/pom.xml" />
@@ -768,7 +892,7 @@
 
       <artifact:mvn>
         <arg value="${mvn.deploy.plugin}" />
-        <arg value="-Dfile=${build}/scalatest-javadoc.jar" />
+        <arg value="-Dfile=${deploy.javadoc}" />
         <arg value="-Dclassifier=javadoc" />
         <arg value="-Durl=${maven.repository.url}" />
         <arg value="-DpomFile=${build}/pom.xml" />
