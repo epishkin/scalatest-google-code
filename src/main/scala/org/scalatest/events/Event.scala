@@ -22,10 +22,6 @@ import java.util.Date
  * A base class for the events that can be passed to the report function passed
  * to the <code>execute</code> method of a <code>Suite</code>.
  *
- * Will have a sealed abstract InfoProvided message with three final concrete subclasses,
- * RunInfoProvided, SuiteInfoProvided, TestInfoProvided. Anything that starts with Run just
- * has runStamp and ordinal; Suite has those plus suiteStamp; Test has those plus testStamp.
- *
  * @author Bill Venners
  */
 sealed abstract class Event extends Ordered[Event] {
