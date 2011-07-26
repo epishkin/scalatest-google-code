@@ -51,5 +51,5 @@ final case class LineInFile(stackDepth: Int) extends Location {
  * Indicates the location should be taken from the stack depth exception, included elsewhere in 
  * the event that contained this location.
  */
-final case object SeeStackDepthException
+final case object SeeStackDepthException extends Location
 
