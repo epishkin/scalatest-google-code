@@ -39,6 +39,13 @@ sealed abstract class Event extends Ordered[Event] {
   val formatter: Option[Formatter]
 
   /**
+   * An optional location that provides information indicating where in the source code an event originated.
+   * IDEs can use this information, for example, to allow the user to hop from an event report to the relevant
+   * line of source code.
+   */
+  val location: Option[Location]
+
+  /**
    * An optional object that can be used to pass custom information to the reporter about this event.
    */
   val payload: Option[Any]
@@ -100,6 +107,7 @@ sealed abstract class Event extends Ordered[Event] {
  * @param testName the name of the test that is starting
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param rerunner an optional <code>Rerunner</code> that can be used to rerun the test that is starting (if <code>None</code>
  *        is passed, the test cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestStarting</code> event
@@ -115,12 +123,13 @@ final case class TestStarting (
   suiteClassName: Option[String],
   testName: String,
   formatter: Option[Formatter],
+  location: Option[Location],
   rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
 ) extends Event {
-    
+
   if (ordinal == null)
     throw new NullPointerException("ordinal was null")
   if (suiteName == null)
@@ -180,7 +189,7 @@ object TestStarting {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestStarting = {
-    apply(ordinal, suiteName, suiteClassName, testName, formatter, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -209,7 +218,7 @@ object TestStarting {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestStarting = {
-    apply(ordinal, suiteName, suiteClassName, testName, formatter, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -236,7 +245,7 @@ object TestStarting {
     testName: String,
     formatter: Option[Formatter]
   ): TestStarting = {
-    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -260,7 +269,7 @@ object TestStarting {
     suiteClassName: Option[String],
     testName: String
   ): TestStarting = {
-    apply(ordinal, suiteName, suiteClassName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -300,6 +309,7 @@ object TestStarting {
  * @param duration an optional amount of time, in milliseconds, that was required to run the test that has succeeded
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param rerunner an optional <code>Rerunner</code> that can be used to rerun the test that has succeeded (if <code>None</code>
  *        is passed, the test cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestSucceeded</code> event
@@ -316,6 +326,7 @@ final case class TestSucceeded (
   testName: String,
   duration: Option[Long],
   formatter: Option[Formatter],
+  location: Option[Location],
   rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
@@ -384,7 +395,7 @@ object TestSucceeded {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestSucceeded = {
-    apply(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -415,7 +426,7 @@ object TestSucceeded {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestSucceeded = {
-    apply(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -444,7 +455,7 @@ object TestSucceeded {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): TestSucceeded = {
-    apply(ordinal, suiteName, suiteClassName, testName, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -470,7 +481,7 @@ object TestSucceeded {
     testName: String,
     duration: Option[Long]
   ): TestSucceeded = {
-    apply(ordinal, suiteName, suiteClassName, testName, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -494,7 +505,7 @@ object TestSucceeded {
     suiteClassName: Option[String],
     testName: String
   ): TestSucceeded = {
-    apply(ordinal, suiteName, suiteClassName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -536,6 +547,7 @@ object TestSucceeded {
  * @param duration an optional amount of time, in milliseconds, that was required to run the test that has failed
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param rerunner an optional <code>Rerunner</code> that can be used to rerun the test that has failed (if <code>None</code>
  *        is passed, the test cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestFailed</code> event
@@ -554,6 +566,7 @@ final case class TestFailed (
   throwable: Option[Throwable],
   duration: Option[Long],
   formatter: Option[Formatter],
+  location: Option[Location],
   rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
@@ -631,7 +644,7 @@ object TestFailed {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestFailed = {
-    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -667,7 +680,7 @@ object TestFailed {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestFailed = {
-    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -701,7 +714,7 @@ object TestFailed {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): TestFailed = {
-    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -732,7 +745,7 @@ object TestFailed {
     throwable: Option[Throwable],
     duration: Option[Long]
   ): TestFailed = {
-    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -761,7 +774,7 @@ object TestFailed {
     testName: String,
     throwable: Option[Throwable]
   ): TestFailed = {
-    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -800,6 +813,7 @@ object TestFailed {
  * @param testName the name of the test that was ignored
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestIgnored</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
@@ -813,6 +827,7 @@ final case class TestIgnored (
   suiteClassName: Option[String],
   testName: String,
   formatter: Option[Formatter],
+  location: Option[Location],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -871,7 +886,7 @@ object TestIgnored {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): TestIgnored = {
-    apply(ordinal, suiteName, suiteClassName, testName, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -897,7 +912,7 @@ object TestIgnored {
     testName: String,
     formatter: Option[Formatter]
   ): TestIgnored = {
-    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -921,7 +936,7 @@ object TestIgnored {
     suiteClassName: Option[String],
     testName: String
   ): TestIgnored = {
-    apply(ordinal, suiteName, suiteClassName, testName, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -954,6 +969,7 @@ object TestIgnored {
  * @param testName the name of the test that is pending
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestPending</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
@@ -967,6 +983,7 @@ final case class TestPending (
   suiteClassName: Option[String],
   testName: String,
   formatter: Option[Formatter],
+  location: Option[Location],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -1025,7 +1042,7 @@ object TestPending {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): TestPending = {
-    apply(ordinal, suiteName, suiteClassName, testName, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1051,7 +1068,7 @@ object TestPending {
     testName: String,
     formatter: Option[Formatter]
   ): TestPending = {
-    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1075,7 +1092,7 @@ object TestPending {
     suiteClassName: Option[String],
     testName: String
   ): TestPending = {
-    apply(ordinal, suiteName, suiteClassName, testName, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -1113,6 +1130,7 @@ object TestPending {
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name of the suite that is starting
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param rerunner an optional <code>Rerunner</code> that can be used to rerun the suite that is starting (if <code>None</code>
  *        is passed, the suite cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>SuiteStarting</code> event
@@ -1127,6 +1145,7 @@ final case class SuiteStarting (
   suiteName: String,
   suiteClassName: Option[String],
   formatter: Option[Formatter],
+  location: Option[Location],
   rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
@@ -1188,7 +1207,7 @@ object SuiteStarting {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): SuiteStarting = {
-    apply(ordinal, suiteName, suiteClassName, formatter, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1216,7 +1235,7 @@ object SuiteStarting {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): SuiteStarting = {
-    apply(ordinal, suiteName, suiteClassName, formatter, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1242,7 +1261,7 @@ object SuiteStarting {
     suiteClassName: Option[String],
     formatter: Option[Formatter]
   ): SuiteStarting = {
-    apply(ordinal, suiteName, suiteClassName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1265,7 +1284,7 @@ object SuiteStarting {
     suiteName: String,
     suiteClassName: Option[String]
   ): SuiteStarting = {
-    apply(ordinal, suiteName, suiteClassName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -1304,6 +1323,7 @@ object SuiteStarting {
  * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has completed
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param rerunner an optional <code>Rerunner</code> that can be used to rerun the suite that has completed (if <code>None</code>
  *        is passed, the suite cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>SuiteCompleted</code> event
@@ -1319,6 +1339,7 @@ final case class SuiteCompleted (
   suiteClassName: Option[String],
   duration: Option[Long],
   formatter: Option[Formatter],
+  location: Option[Location],
   rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
@@ -1383,7 +1404,7 @@ object SuiteCompleted {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): SuiteCompleted = {
-    apply(ordinal, suiteName, suiteClassName, duration, formatter, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1412,7 +1433,7 @@ object SuiteCompleted {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): SuiteCompleted = {
-    apply(ordinal, suiteName, suiteClassName, duration, formatter, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1439,7 +1460,7 @@ object SuiteCompleted {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): SuiteCompleted = {
-    apply(ordinal, suiteName, suiteClassName, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1463,7 +1484,7 @@ object SuiteCompleted {
     suiteClassName: Option[String],
     duration: Option[Long]
   ): SuiteCompleted = {
-    apply(ordinal, suiteName, suiteClassName, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1487,7 +1508,7 @@ object SuiteCompleted {
     suiteName: String,
     suiteClassName: Option[String]
   ): SuiteCompleted = {
-    apply(ordinal, suiteName, suiteClassName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -1532,6 +1553,7 @@ object SuiteCompleted {
  * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has aborted
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param rerunner an optional <code>Rerunner</code> that can be used to rerun the suite that has aborted (if <code>None</code>
  *        is passed, the suite cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>SuiteAborted</code> event
@@ -1549,6 +1571,7 @@ final case class SuiteAborted (
   throwable: Option[Throwable],
   duration: Option[Long],
   formatter: Option[Formatter],
+  location: Option[Location],
   rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
@@ -1624,7 +1647,7 @@ object SuiteAborted {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): SuiteAborted = {
-    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1658,7 +1681,7 @@ object SuiteAborted {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): SuiteAborted = {
-    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1690,7 +1713,7 @@ object SuiteAborted {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): SuiteAborted = {
-    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1719,7 +1742,7 @@ object SuiteAborted {
     throwable: Option[Throwable],
     duration: Option[Long]
   ): SuiteAborted = {
-    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1746,7 +1769,7 @@ object SuiteAborted {
     suiteClassName: Option[String],
     throwable: Option[Throwable]
   ): SuiteAborted = {
-    apply(ordinal, message, suiteName, suiteClassName, throwable, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -1775,6 +1798,7 @@ object SuiteAborted {
  * @param configMap a <code>Map</code> of key-value pairs that can be used by custom <code>Reporter</code>s
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>RunStarting</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
@@ -1789,6 +1813,7 @@ final case class RunStarting (
   testCount: Int,
   configMap: Map[String, Any],
   formatter: Option[Formatter],
+  location: Option[Location],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -1845,7 +1870,7 @@ object RunStarting {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): RunStarting = {
-    apply(ordinal, testCount, configMap, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, testCount, configMap, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1870,7 +1895,7 @@ object RunStarting {
     configMap: Map[String, Any],
     formatter: Option[Formatter]
   ): RunStarting = {
-    apply(ordinal, testCount, configMap, formatter, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, testCount, configMap, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1892,7 +1917,7 @@ object RunStarting {
     testCount: Int,
     configMap: Map[String, Any]
   ): RunStarting = {
-    apply(ordinal, testCount, configMap, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, testCount, configMap, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -1937,6 +1962,7 @@ object RunStarting {
  * @param summary an optional summary of the number of tests that were reported as succeeded, failed, ignored, and pending
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>RunCompleted</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
@@ -1949,6 +1975,7 @@ final case class RunCompleted (
   duration: Option[Long],
   summary: Option[Summary],
   formatter: Option[Formatter],
+  location: Option[Location],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -2003,7 +2030,7 @@ object RunCompleted {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): RunCompleted = {
-    apply(ordinal, duration, summary, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, duration, summary, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2028,7 +2055,7 @@ object RunCompleted {
     summary: Option[Summary],
     formatter: Option[Formatter]
   ): RunCompleted = {
-    apply(ordinal, duration, summary, formatter, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, duration, summary, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2050,7 +2077,7 @@ object RunCompleted {
     duration: Option[Long],
     summary: Option[Summary]
   ): RunCompleted = {
-    apply(ordinal, duration, summary, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, duration, summary, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2070,7 +2097,7 @@ object RunCompleted {
     ordinal: Ordinal,
     duration: Option[Long]
   ): RunCompleted = {
-    apply(ordinal, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2088,7 +2115,7 @@ object RunCompleted {
   def apply(
     ordinal: Ordinal
   ): RunCompleted = {
-    apply(ordinal, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -2134,6 +2161,7 @@ object RunCompleted {
  * @param summary an optional summary of the number of tests that were reported as succeeded, failed, ignored, and pending
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>RunStopped</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
@@ -2146,6 +2174,7 @@ final case class RunStopped (
   duration: Option[Long],
   summary: Option[Summary],
   formatter: Option[Formatter],
+  location: Option[Location],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -2200,7 +2229,7 @@ object RunStopped {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): RunStopped = {
-    apply(ordinal, duration, summary, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, duration, summary, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2225,7 +2254,7 @@ object RunStopped {
     summary: Option[Summary],
     formatter: Option[Formatter]
   ): RunStopped = {
-    apply(ordinal, duration, summary, formatter, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, duration, summary, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2247,7 +2276,7 @@ object RunStopped {
     duration: Option[Long],
     summary: Option[Summary]
   ): RunStopped = {
-    apply(ordinal, duration, summary, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, duration, summary, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2267,7 +2296,7 @@ object RunStopped {
     ordinal: Ordinal,
     duration: Option[Long]
   ): RunStopped = {
-    apply(ordinal, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2285,7 +2314,7 @@ object RunStopped {
   def apply(
     ordinal: Ordinal
   ): RunStopped = {
-    apply(ordinal, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -2324,6 +2353,7 @@ object RunStopped {
  * @param summary an optional summary of the number of tests that were reported as succeeded, failed, ignored, and pending
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>RunAborted</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
@@ -2338,6 +2368,7 @@ final case class RunAborted (
   duration: Option[Long],
   summary: Option[Summary],
   formatter: Option[Formatter],
+  location: Option[Location],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -2401,7 +2432,7 @@ object RunAborted {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): RunAborted = {
-    apply(ordinal, message, throwable, duration, summary, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, throwable, duration, summary, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2431,7 +2462,7 @@ object RunAborted {
     summary: Option[Summary],
     formatter: Option[Formatter]
   ): RunAborted = {
-    apply(ordinal, message, throwable, duration, summary, formatter, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, throwable, duration, summary, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2458,7 +2489,7 @@ object RunAborted {
     duration: Option[Long],
     summary: Option[Summary]
   ): RunAborted = {
-    apply(ordinal, message, throwable, duration, summary, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, throwable, duration, summary, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2483,7 +2514,7 @@ object RunAborted {
     throwable: Option[Throwable],
     duration: Option[Long]
   ): RunAborted = {
-    apply(ordinal, message, throwable, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2506,7 +2537,7 @@ object RunAborted {
     message: String,
     throwable: Option[Throwable]
   ): RunAborted = {
-    apply(ordinal, message, throwable, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -2541,6 +2572,7 @@ object RunAborted {
  * @param throwable an optional <code>Throwable</code>
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>InfoProvided</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
@@ -2555,6 +2587,7 @@ final case class InfoProvided (
   aboutAPendingTest: Option[Boolean],
   throwable: Option[Throwable],
   formatter: Option[Formatter],
+  location: Option[Location],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -2616,7 +2649,7 @@ object InfoProvided {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): InfoProvided = {
-    apply(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
 
@@ -2647,7 +2680,7 @@ object InfoProvided {
     throwable: Option[Throwable],
     formatter: Option[Formatter]
   ): InfoProvided = {
-    apply(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2674,7 +2707,7 @@ object InfoProvided {
     aboutAPendingTest: Option[Boolean],
     throwable: Option[Throwable]
   ): InfoProvided = {
-    apply(ordinal, message, nameInfo, aboutAPendingTest, throwable, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, nameInfo, aboutAPendingTest, throwable, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2700,7 +2733,7 @@ object InfoProvided {
     nameInfo: Option[NameInfo],
     aboutAPendingTest: Option[Boolean]
   ): InfoProvided = {
-    apply(ordinal, message, nameInfo, aboutAPendingTest, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, nameInfo, aboutAPendingTest, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2725,7 +2758,7 @@ object InfoProvided {
     message: String,
     nameInfo: Option[NameInfo]
   ): InfoProvided = {
-    apply(ordinal, message, nameInfo, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, nameInfo, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 

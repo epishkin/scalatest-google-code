@@ -39,6 +39,7 @@ class XmlReporterSuite extends FunSuite {
       None,
       None,
       None,
+      None,
       "thread1",
       123123)
 
@@ -46,6 +47,7 @@ class XmlReporterSuite extends FunSuite {
     SuiteStarting(
       ord1b,
       "suite2",
+      None,
       None,
       None,
       None,
@@ -69,6 +71,7 @@ class XmlReporterSuite extends FunSuite {
     SuiteCompleted(
       ord1d,
       "suite1",
+      None,
       None,
       None,
       None,
