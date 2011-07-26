@@ -122,12 +122,12 @@ final case class TestStarting (
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
-  formatter: Option[Formatter],
-  location: Option[Location],
-  rerunner: Option[Rerunner],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  rerunner: Option[Rerunner] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
 
   if (ordinal == null)
@@ -324,13 +324,13 @@ final case class TestSucceeded (
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
-  duration: Option[Long],
-  formatter: Option[Formatter],
-  location: Option[Location],
-  rerunner: Option[Rerunner],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  duration: Option[Long] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  rerunner: Option[Rerunner] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
 
   if (ordinal == null)
@@ -563,14 +563,14 @@ final case class TestFailed (
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
-  throwable: Option[Throwable],
-  duration: Option[Long],
-  formatter: Option[Formatter],
-  location: Option[Location],
-  rerunner: Option[Rerunner],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  throwable: Option[Throwable] = None,
+  duration: Option[Long] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  rerunner: Option[Rerunner] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
 
   if (ordinal == null)
@@ -826,11 +826,11 @@ final case class TestIgnored (
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
-  formatter: Option[Formatter],
-  location: Option[Location],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
     
   if (ordinal == null)
@@ -982,11 +982,11 @@ final case class TestPending (
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
-  formatter: Option[Formatter],
-  location: Option[Location],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
 
   if (ordinal == null)
@@ -1144,12 +1144,12 @@ final case class SuiteStarting (
   ordinal: Ordinal,
   suiteName: String,
   suiteClassName: Option[String],
-  formatter: Option[Formatter],
-  location: Option[Location],
-  rerunner: Option[Rerunner],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  rerunner: Option[Rerunner] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
 
   if (ordinal == null)
@@ -1337,13 +1337,13 @@ final case class SuiteCompleted (
   ordinal: Ordinal,
   suiteName: String,
   suiteClassName: Option[String],
-  duration: Option[Long],
-  formatter: Option[Formatter],
-  location: Option[Location],
-  rerunner: Option[Rerunner],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  duration: Option[Long] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  rerunner: Option[Rerunner] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
 
   if (ordinal == null)
@@ -1568,14 +1568,14 @@ final case class SuiteAborted (
   message: String,
   suiteName: String,
   suiteClassName: Option[String],
-  throwable: Option[Throwable],
-  duration: Option[Long],
-  formatter: Option[Formatter],
-  location: Option[Location],
-  rerunner: Option[Rerunner],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  throwable: Option[Throwable] = None,
+  duration: Option[Long] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  rerunner: Option[Rerunner] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
 
   if (ordinal == null)
@@ -1812,11 +1812,11 @@ final case class RunStarting (
   ordinal: Ordinal,
   testCount: Int,
   configMap: Map[String, Any],
-  formatter: Option[Formatter],
-  location: Option[Location],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
     
   if (ordinal == null)
@@ -1972,13 +1972,13 @@ object RunStarting {
  */
 final case class RunCompleted (
   ordinal: Ordinal,
-  duration: Option[Long],
-  summary: Option[Summary],
-  formatter: Option[Formatter],
-  location: Option[Location],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  duration: Option[Long] = None,
+  summary: Option[Summary] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
 
   if (ordinal == null)
@@ -2171,13 +2171,13 @@ object RunCompleted {
  */
 final case class RunStopped (
   ordinal: Ordinal,
-  duration: Option[Long],
-  summary: Option[Summary],
-  formatter: Option[Formatter],
-  location: Option[Location],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  duration: Option[Long] = None,
+  summary: Option[Summary] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
 
   if (ordinal == null)
@@ -2365,13 +2365,13 @@ final case class RunAborted (
   ordinal: Ordinal,
   message: String,
   throwable: Option[Throwable],
-  duration: Option[Long],
-  summary: Option[Summary],
-  formatter: Option[Formatter],
-  location: Option[Location],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  duration: Option[Long] = None,
+  summary: Option[Summary] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
 
   if (ordinal == null)
@@ -2584,13 +2584,13 @@ final case class InfoProvided (
   ordinal: Ordinal,
   message: String,
   nameInfo: Option[NameInfo],
-  aboutAPendingTest: Option[Boolean],
-  throwable: Option[Throwable],
-  formatter: Option[Formatter],
-  location: Option[Location],
-  payload: Option[Any],
-  threadName: String,
-  timeStamp: Long
+  aboutAPendingTest: Option[Boolean] = None,
+  throwable: Option[Throwable] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
 ) extends Event {
 
   if (ordinal == null)
