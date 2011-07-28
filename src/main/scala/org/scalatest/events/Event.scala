@@ -83,7 +83,7 @@ sealed abstract class Event extends Ordered[Event] {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="TestStarting$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="TestStarting$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>TestStarting</code> event like this:
  * </p>
  *
@@ -140,6 +140,8 @@ final case class TestStarting (
     throw new NullPointerException("testName was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (rerunner == null)
     throw new NullPointerException("rerunner was null")
   if (payload == null)
@@ -285,7 +287,7 @@ object DeprecatedTestStarting {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="TestSucceeded$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="TestSucceeded$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>TestSucceeded</code> event like this:
  * </p>
  *
@@ -346,6 +348,8 @@ final case class TestSucceeded (
     throw new NullPointerException("duration was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (rerunner == null)
     throw new NullPointerException("rerunner was null")
   if (payload == null)
@@ -521,7 +525,7 @@ object DeprecatedTestSucceeded {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="TestFailed$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="TestFailed$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>TestFailed</code> event like this:
  * </p>
  *
@@ -591,6 +595,8 @@ final case class TestFailed (
     throw new NullPointerException("duration was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (rerunner == null)
     throw new NullPointerException("rerunner was null")
   if (payload == null)
@@ -792,7 +798,7 @@ object DeprecatedTestFailed {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="TestIgnored$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="TestIgnored$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>TestIgnored</code> event like this:
  * </p>
  *
@@ -846,6 +852,8 @@ final case class TestIgnored (
     throw new NullPointerException("testName was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (payload == null)
     throw new NullPointerException("payload was null")
   if (threadName == null)
@@ -949,7 +957,7 @@ object DeprecatedTestIgnored {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="TestPending$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="TestPending$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>TestPending</code> event like this:
  * </p>
  *
@@ -1003,6 +1011,75 @@ final case class TestPending (
     throw new NullPointerException("testName was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
+  if (payload == null)
+    throw new NullPointerException("payload was null")
+  if (threadName == null)
+    throw new NullPointerException("threadName was null")
+}
+
+/**
+ * Event that indicates a test was canceled, <em>i.e.</em>, it couldn't run because some precondition was not met.
+ *
+ * <p>
+ * To create instances of this class you may
+ * use the factory methods provided in its <a href="TestCanceled$.html">companion object</a>. For example, given a
+ * report function named <code>report</code>, you could fire a <code>TestCanceled</code> event like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * report(TestPending(ordinal, userFriendlyName, suiteName, Some(thisSuite.getClass.getName), testName))
+ * </pre>
+ *
+ * <p>
+ * The suite class name parameter is optional, because suites in ScalaTest are an abstraction that
+ * need not necessarily correspond to one class. Nevertheless, it most cases each suite will correspond
+ * to a class, and when it does, the fully qualified name of that class should be reported by passing a
+ * <code>Some</code> for <code>suiteClassName</code>. One use for this bit of information is JUnit integration,
+ * because the "name" provided to a JUnit <code>org.junit.runner.Description</code> appears to usually include
+ * a fully qualified class name by convention.
+ * </p>
+ *
+ * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
+ *        other events reported during the same run
+ * @param suiteName the name of the suite containing the test that is pending
+ * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is pending
+ * @param testName the name of the test that is pending
+ * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
+ *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
+ * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestPending</code> event
+ * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
+ * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
+ *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
+ */
+final case class TestCanceled (
+  ordinal: Ordinal,
+  suiteName: String,
+  suiteClassName: Option[String],
+  testName: String,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
+) extends Event {
+
+  if (ordinal == null)
+    throw new NullPointerException("ordinal was null")
+  if (suiteName == null)
+    throw new NullPointerException("suiteName was null")
+  if (suiteClassName == null)
+    throw new NullPointerException("suiteClassName was null")
+  if (testName == null)
+    throw new NullPointerException("testName was null")
+  if (formatter == null)
+    throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (payload == null)
     throw new NullPointerException("payload was null")
   if (threadName == null)
@@ -1111,7 +1188,7 @@ object DeprecatedTestPending {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="SuiteStarting$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="SuiteStarting$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>SuiteStarting</code> event like this:
  * </p>
  *
@@ -1165,6 +1242,8 @@ final case class SuiteStarting (
     throw new NullPointerException("suiteClassName was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (rerunner == null)
     throw new NullPointerException("rerunner was null")
   if (payload == null)
@@ -1305,7 +1384,7 @@ object DeprecatedSuiteStarting {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="SuiteCompleted$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="SuiteCompleted$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>SuiteCompleted</code> event like this:
  * </p>
  *
@@ -1362,6 +1441,8 @@ final case class SuiteCompleted (
     throw new NullPointerException("duration was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (rerunner == null)
     throw new NullPointerException("rerunner was null")
   if (payload == null)
@@ -1531,7 +1612,7 @@ object DeprecatedSuiteCompleted {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="SuiteAborted$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="SuiteAborted$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>SuiteAborted</code> event like this:
  * </p>
  *
@@ -1599,6 +1680,8 @@ final case class SuiteAborted (
     throw new NullPointerException("duration was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (rerunner == null)
     throw new NullPointerException("rerunner was null")
   if (payload == null)
@@ -1792,7 +1875,7 @@ object DeprecatedSuiteAborted {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="RunStarting$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="RunStarting$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>RunStarting</code> event like this:
  * </p>
  *
@@ -1835,6 +1918,8 @@ final case class RunStarting (
     throw new NullPointerException("configMap was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (payload == null)
     throw new NullPointerException("payload was null")
   if (threadName == null)
@@ -1957,7 +2042,7 @@ object DeprecatedRunStarting {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="RunCompleted$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="RunCompleted$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>RunCompleted</code> event like this:
  * </p>
  *
@@ -1998,6 +2083,8 @@ final case class RunCompleted (
     throw new NullPointerException("summary was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (payload == null)
     throw new NullPointerException("payload was null")
   if (threadName == null)
@@ -2157,7 +2244,7 @@ object DeprecatedRunCompleted {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="RunStopped$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="RunStopped$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>RunStopped</code> event like this:
  * </p>
  *
@@ -2198,6 +2285,8 @@ final case class RunStopped (
     throw new NullPointerException("summary was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (payload == null)
     throw new NullPointerException("payload was null")
   if (threadName == null)
@@ -2347,7 +2436,7 @@ object DeprecatedRunStopped {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="RunAborted$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="RunAborted$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>RunAborted</code> event like this:
  * </p>
  *
@@ -2397,6 +2486,8 @@ final case class RunAborted (
     throw new NullPointerException("summary was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (payload == null)
     throw new NullPointerException("payload was null")
   if (threadName == null)
@@ -2558,7 +2649,7 @@ object DeprecatedRunAborted {
  *
  * <p>
  * To create instances of this class you may
- * use one of the factory methods provided in its <a href="InfoProvided$.html">companion object</a>. For example, given a
+ * use the factory method provided in its <a href="InfoProvided$.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>InfoProvided</code> event like this:
  * </p>
  *
@@ -2615,6 +2706,78 @@ final case class InfoProvided (
     throw new NullPointerException("throwable was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
+  if (payload == null)
+    throw new NullPointerException("payload was null")
+  if (threadName == null)
+    throw new NullPointerException("threadName was null")
+}
+
+/**
+ * Event used to provide markup text for document-style reports.
+ *
+ * <p>
+ * To create instances of this class you may
+ * use the factory method provided in its <a href="MarkupProvided$.html">companion object</a>. For example, given a
+ * report function named <code>report</code>, you could fire a <code>MarkupProvided</code> event like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * report(MarkupProvided(ordinal, text, Some(NameInfo(suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+ * </pre>
+ *
+ * <p>
+ * A <code>MarkupProvided</code> event may be fired from anywhere. In this respect <code>MarkupProvided</code> is different
+ * from the other events, for which it is defined whether they are fired in the context of a suite or test.
+ * If fired in the context of a test, the <code>MarkupProvided</code> event should include a <code>NameInfo</code> in which
+ * <code>testName</code> is defined. If fired in the context of a suite, but not a test, the <code>MarkupProvided</code> event
+ * should include a <code>NameInfo</code> in which <code>testName</code> is <em>not</em> defined. If fired within the context
+ * of neither a suite nor a test, the <code>nameInfo</code> of the <code>MarkupProvided</code> event (an <code>Option[NameInfo]</code>) should be <code>None</code>.
+ * </p>
+ *
+ * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
+ *        other events reported during the same run
+ * @param text a snippet of markup text (in Markdown format)
+ * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test 
+ *        in the context of which the information was provided
+ * @param aboutAPendingTest indicates whether the information being provided via this event is about a pending test
+ * @param throwable an optional <code>Throwable</code>
+ * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
+ *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
+ * @param payload an optional object that can be used to pass custom information to the reporter about the <code>MarkupProvided</code> event
+ * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
+ * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
+ *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
+ */
+final case class MarkupProvided (
+  ordinal: Ordinal,
+  text: String,
+  nameInfo: Option[NameInfo],
+  aboutAPendingTest: Option[Boolean] = None,
+  throwable: Option[Throwable] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
+) extends Event {
+
+  if (ordinal == null)
+    throw new NullPointerException("ordinal was null")
+  if (text == null)
+    throw new NullPointerException("message was null")
+  if (nameInfo == null)
+    throw new NullPointerException("nameInfo was null")
+  if (throwable == null)
+    throw new NullPointerException("throwable was null")
+  if (formatter == null)
+    throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
   if (payload == null)
     throw new NullPointerException("payload was null")
   if (threadName == null)
