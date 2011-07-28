@@ -64,7 +64,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
         val rawString = Resources("suiteExecutionStarting")
         val formatter = formatterForSuiteStarting(suite)
 
-        report(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
+        report(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, Some(TopOfClass(suite.getClass.getName)), rerunnable))
 
         suite.run(None, report, stopRequested, filter, configMap, distributor, tracker)
 
@@ -72,7 +72,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
         val formatter2 = formatterForSuiteCompleted(suite)
         val duration = System.currentTimeMillis - suiteStartTime
 
-        report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), Some(duration), formatter2, rerunnable))
+        report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), Some(duration), formatter2, Some(TopOfClass(suite.getClass.getName)), rerunnable))
       }
       catch {
         case e: RuntimeException => {
@@ -80,7 +80,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
           val formatter3 = formatterForSuiteAborted(suite, rawString3)
 
           val duration = System.currentTimeMillis - suiteStartTime
-          report(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), Some(duration), formatter3, rerunnable))
+          report(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), Some(duration), formatter3, Some(SeeStackDepthException), rerunnable))
         }
       }
 

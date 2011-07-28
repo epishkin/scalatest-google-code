@@ -31,7 +31,7 @@ final case class TopOfClass(className: String) extends Location
  * <code>methodName</code> in the class whose fully qualified name is passed
  * as <code>className</code> is declared.
  */
-final case class TopOfMethod(className: String, methodName: String) extends Location
+final case class TopOfMethod(className: String, methodId: String) extends Location
 
 /**
  * An arbitrary line number in a named source file.
@@ -52,4 +52,9 @@ final case class LineInFile(stackDepth: Int) extends Location {
  * the event that contained this location.
  */
 final case object SeeStackDepthException extends Location
+
+/**
+ * Interim one that I can quickly put in to get the compile going, and later I can go back carefully and do them correctly.
+ */
+final case object ToDoLocation extends Location
 

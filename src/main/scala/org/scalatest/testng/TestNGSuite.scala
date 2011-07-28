@@ -257,7 +257,7 @@ trait TestNGSuite extends Suite { thisSuite =>
      */
     override def onTestStart(result: ITestResult) = {
       report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), result.getName + params(result),
-          Some(MotionToSuppress), Some(new TestRerunner(className, result.getName))))
+          Some(MotionToSuppress), Some(TopOfMethod(thisSuite.getClass.getName, result.getName)), Some(new TestRerunner(className, result.getName))))
     }
 
     /**
@@ -268,7 +268,7 @@ trait TestNGSuite extends Suite { thisSuite =>
       val testName = result.getName + params(result)
       val formatter = getIndentedText(testName, 1, true)
       report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName,
-          None, Some(formatter), Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
+          None, Some(formatter), Some(TopOfMethod(thisSuite.getClass.getName, result.getName)), Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
     }
 
     /**
@@ -290,7 +290,7 @@ trait TestNGSuite extends Suite { thisSuite =>
       val message = if (throwableOrNull != null && throwableOrNull.getMessage != null) throwableOrNull.getMessage else Resources("testNGConfigFailed")
       val testName = result.getName + params(result)
       val formatter = getIndentedText(testName, 1, true)
-      report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, throwable, None, Some(formatter), Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
+      report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, throwable, None, Some(formatter), Some(SeeStackDepthException), Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
     }
 
     /**
