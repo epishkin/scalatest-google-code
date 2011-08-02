@@ -319,6 +319,14 @@ trait Assertions {
       case (Some(message), Some(cause)) => new TestFailedException(message.toString, cause, stackDepth)
     }
 
+  private def newTestCanceledException(optionalMessage: Option[Any], optionalCause: Option[Throwable], stackDepth: Int): Throwable =
+    (optionalMessage, optionalCause) match {
+      case (None, None) => new TestCanceledException(stackDepth)
+      case (None, Some(cause)) => new TestCanceledException(cause, stackDepth)
+      case (Some(message), None) => new TestCanceledException(message.toString, stackDepth)
+      case (Some(message), Some(cause)) => new TestCanceledException(message.toString, cause, stackDepth)
+    }
+
   /**
    * Assert that a boolean condition, described in <code>String</code>
    * <code>message</code>, is true.
@@ -402,6 +410,115 @@ trait Assertions {
       case None =>
     }
   }
+    
+  /**
+   * Assume that a boolean condition is true.
+   * If the condition is <code>true</code>, this method returns normally.
+   * Else, it throws <code>TestCanceledException</code>.
+   *
+   * @param condition the boolean condition to assert
+   * @throws TestCanceledException if the condition is <code>false</code>.
+   */
+  def assume(condition: Boolean) {
+    if (!condition)
+      throw newTestCanceledException(None, None, 3)
+  }
+
+  
+  /**
+   * Assume that a boolean condition, described in <code>String</code>
+   * <code>message</code>, is true.
+   * If the condition is <code>true</code>, this method returns normally.
+   * Else, it throws <code>TestCanceledException</code> with the
+   * <code>String</code> obtained by invoking <code>toString</code> on the
+   * specified <code>message</code> as the exception's detail message.
+   *
+   * @param condition the boolean condition to assume
+   * @param clue An objects whose <code>toString</code> method returns a message to include in a failure report.
+   * @throws TestFailedException if the condition is <code>false</code>.
+   * @throws NullPointerException if <code>message</code> is <code>null</code>.
+   */
+  def assume(condition: Boolean, clue: Any) {
+    if (!condition)
+      throw newTestCanceledException(Some(clue.toString), None, 3)
+  }
+
+  /**
+   * Assume that an <code>Option[String]</code> is <code>None</code>. 
+   * If the condition is <code>None</code>, this method returns normally.
+   * Else, it throws <code>TestCanceledException</code> with the <code>String</code>
+   * value of the <code>Some</code>, as well as the 
+   * <code>String</code> obtained by invoking <code>toString</code> on the
+   * specified <code>message</code>,
+   * included in the <code>TestCanceledException</code>'s detail message.
+   *
+   * <p>
+   * This form of <code>assume</code> is usually called in conjunction with an
+   * implicit conversion to <code>Equalizer</code>, using a <code>===</code> comparison, as in:
+   * </p>
+   *
+   * <pre class="stHighlight">
+   * assume(a === b, "extra info reported if assertion fails")
+   * </pre>
+   *
+   * <p>
+   * For more information on how this mechanism works, see the <a href="Suite.Equalizer.html">documentation for
+   * <code>Equalizer</code></a>.
+   * </p>
+   *
+   * @param o the <code>Option[String]</code> to assert
+   * @param clue An objects whose <code>toString</code> method returns a message to include in a failure report.
+   * @throws TestCanceledException if the <code>Option[String]</code> is <code>Some</code>.
+   * @throws NullPointerException if <code>message</code> is <code>null</code>.
+   */
+  def assume(o: Option[String], clue: Any) {
+    o match {
+      case Some(s) => throw newTestCanceledException(Some(clue + "\n" + s), None, 3)
+      case None =>
+    }
+  }
+  
+  /**
+   * Assume that an <code>Option[String]</code> is <code>None</code>.
+   * If the condition is <code>None</code>, this method returns normally.
+   * Else, it throws <code>TestCanceledException</code> with the <code>String</code>
+   * value of the <code>Some</code> included in the <code>TestCanceledException</code>'s
+   * detail message.
+   *
+   * <p>
+   * This form of <code>assume</code> is usually called in conjunction with an
+   * implicit conversion to <code>Equalizer</code>, using a <code>===</code> comparison, as in:
+   * </p>
+   *
+   * <pre class="stHighlight">
+   * assert(a === b)
+   * </pre>
+   *
+   * <p>
+   * For more information on how this mechanism works, see the <a href="Suite.Equalizer.html">documentation for
+   * <code>Equalizer</code></a>.
+   * </p>
+   *
+   * @param o the <code>Option[String]</code> to assert
+   * @throws TestFailedException if the <code>Option[String]</code> is <code>Some</code>.
+   */
+  // def assume(o: Option[String]) = throwIfSome(o, (a: Any) => newTestCanceledException(Some(a.toString), None, 3))
+  def assume(o: Option[String]) {
+    o match {
+      case Some(s) => throw newTestCanceledException(Some(s), None, 3)
+      case None =>
+    }
+  }
+
+/*
+  def throwIfSome(o: Option[String], exception: (Any) => Throwable) {
+    o match {
+      case Some(s) => throw exception(s)
+      case None =>
+    }
+  }
+*/
+  
 
   /**
    * Implicit conversion from <code>Any</code> to <code>Equalizer</code>, used to enable
@@ -711,6 +828,65 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
         
     throw newAssertionFailedException(None, Some(cause), 4)
   }
+  
+  /**
+   * Throws <code>TestFailedException</code> to indicate a test canceled.
+   */
+  def cancel() = { throw newTestCanceledException(None, None, 3) }
+
+  /**
+   * Throws <code>TestCanceledException</code>, with the passed
+   * <code>String</code> <code>message</code> as the exception's detail
+   * message, to indicate a test canceled.
+   *
+   * @param message A message describing the cancellation.
+   * @throws NullPointerException if <code>message</code> is <code>null</code>
+   */
+  def cancel(message: String) = {
+
+    if (message == null)
+        throw new NullPointerException("message is null")
+     
+    throw newTestCanceledException(Some(message),  None, 3)
+  }
+
+  /**
+   * Throws <code>TestCanceledException</code>, with the passed
+   * <code>String</code> <code>message</code> as the exception's detail
+   * message and <code>Throwable</code> cause, to indicate a test failed.
+   *
+   * @param message A message describing the failure.
+   * @param cause A <code>Throwable</code> that indicates the cause of the failure.
+   * @throws NullPointerException if <code>message</code> or <code>cause</code> is <code>null</code>
+   */
+  def cancel(message: String, cause: Throwable) = {
+
+    if (message == null)
+      throw new NullPointerException("message is null")
+
+    if (cause == null)
+      throw new NullPointerException("cause is null")
+
+    throw newTestCanceledException(Some(message), Some(cause), 3)
+  }
+
+  /**
+   * Throws <code>TestCanceledException</code>, with the passed
+   * <code>Throwable</code> cause, to indicate a test failed.
+   * The <code>getMessage</code> method of the thrown <code>TestCanceledException</code>
+   * will return <code>cause.toString()</code>.
+   *
+   * @param cause a <code>Throwable</code> that indicates the cause of the cancellation.
+   * @throws NullPointerException if <code>cause</code> is <code>null</code>
+   */
+  def cancel(cause: Throwable) = {
+
+    if (cause == null)
+      throw new NullPointerException("cause is null")
+        
+    throw newTestCanceledException(None, Some(cause), 3)
+  }
+  
 
   /**
    * Executes the block of code passed as the second parameter, and, if it

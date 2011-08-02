@@ -15,6 +15,21 @@
  */
 package org.scalatest
 
+object StackDepthException {
+
+  /**
+   * If message or message contents are null, throw a null exception, otherwise
+   * create a function that returns the option.
+   */
+  def toExceptionFunction(message: Option[String]): StackDepthException => Option[String] = {
+    message match {
+        case null => throw new NullPointerException("message was null")
+        case Some(null) => throw new NullPointerException("message was a Some(null)")
+        case _ => { e => message }
+    }
+  }
+}
+
 /**
  * Exception class that encapsulates information about the stack depth at which the line of code that failed resides,
  * so that information can be presented to the user that makes it quick to find the failing line of code. (In other

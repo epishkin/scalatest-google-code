@@ -32,10 +32,12 @@ private[tools] case object PresentTestFailed extends EventToPresent
 private[tools] case object PresentTestSucceeded extends EventToPresent
 private[tools] case object PresentTestIgnored extends EventToPresent
 private[tools] case object PresentTestPending extends EventToPresent
+private[tools] case object PresentTestCanceled extends EventToPresent
 private[tools] case object PresentSuiteStarting extends EventToPresent
 private[tools] case object PresentSuiteAborted extends EventToPresent
 private[tools] case object PresentSuiteCompleted extends EventToPresent
 private[tools] case object PresentInfoProvided extends EventToPresent
+private[tools] case object PresentMarkupProvided extends EventToPresent // Won't present these in the GUI reporter, but useful for completeness
 private[tools] case object PresentRunStopped extends EventToPresent
 private[tools] case object PresentRunAborted extends EventToPresent
 private[tools] case object PresentRunCompleted extends EventToPresent
@@ -50,10 +52,12 @@ private[tools] object EventToPresent {
       PresentTestFailed,
       PresentTestIgnored,
       PresentTestPending,
+      PresentTestCanceled,
       PresentSuiteStarting,
       PresentSuiteCompleted,
       PresentSuiteAborted,
       PresentInfoProvided,
+      PresentMarkupProvided,
       PresentRunStopped,
       PresentRunCompleted,
       PresentRunAborted
@@ -67,10 +71,12 @@ private[tools] object EventToPresent {
       case _: TestFailed => PresentTestFailed
       case _: TestIgnored => PresentTestIgnored
       case _: TestPending => PresentTestPending
+      case _: TestCanceled => PresentTestCanceled
       case _: SuiteStarting => PresentSuiteStarting
       case _: SuiteCompleted => PresentSuiteCompleted
       case _: SuiteAborted => PresentSuiteAborted
       case _: InfoProvided => PresentInfoProvided
+      case _: MarkupProvided => PresentMarkupProvided // Should never get here, because MarkupProvided events are not registered in the GUI
       case _: RunStopped => PresentRunStopped
       case _: RunCompleted => PresentRunCompleted
       case _: RunAborted => PresentRunAborted

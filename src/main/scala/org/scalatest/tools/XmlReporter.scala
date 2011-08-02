@@ -130,7 +130,7 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
       event match {
         case e: TestStarting =>
           val (testEndIndex, testcase) = processTest(orderedEvents, e, idx)
-          if (!testcase.pending) {
+          if (!testcase.pending && !testcase.canceled) {
             testsuite.testcases += testcase
             if (testcase.failure != None) testsuite.failures += 1
           }
@@ -149,7 +149,9 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
 
         case e: TestIgnored    => idx += 1
         case e: InfoProvided   => idx += 1
+        case e: MarkupProvided   => idx += 1
         case e: TestPending    => unexpected(e)
+        case e: TestCanceled    => unexpected(e)
         case e: RunStarting    => unexpected(e)
         case e: RunCompleted   => unexpected(e)
         case e: RunStopped     => unexpected(e)
@@ -257,10 +259,15 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
           endIndex = idx
           testcase.pending = true
 
+        case e: TestCanceled =>
+          endIndex = idx
+          testcase.canceled = true
+
         case e: SuiteCompleted => unexpected(e)
         case e: TestStarting   => unexpected(e)
         case e: TestIgnored    => unexpected(e)
         case e: InfoProvided   => unexpected(e)
+        case e: MarkupProvided  => unexpected(e)
         case e: SuiteStarting  => unexpected(e)
         case e: RunStarting    => unexpected(e)
         case e: RunCompleted   => unexpected(e)
@@ -447,6 +454,7 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
                               timeStamp: Long) {
     var time = 0L
     var pending = false
+    var canceled = false
     var failure: Option[TestFailed] = None
   }
 }

@@ -43,8 +43,10 @@ private[tools] class FilterReporter(reporter: Reporter, configSet: Set[ReporterC
       case event: TestStarting => if (!configSet.contains(FilterTestStarting)) report(event)
       case event: TestSucceeded => if (!configSet.contains(FilterTestSucceeded)) report(event)
       case event: TestIgnored => if (!configSet.contains(FilterTestIgnored)) report(event)
+      case event: TestCanceled => if (!configSet.contains(FilterTestCanceled)) report(event)
       case event: TestPending => if (!configSet.contains(FilterTestPending)) report(event)
       case event: InfoProvided => if (!configSet.contains(FilterInfoProvided)) report(event)
+      case event: MarkupProvided => if (!configSet.contains(FilterMarkupProvided)) report(event)
     }
   }
 

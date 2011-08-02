@@ -548,9 +548,9 @@
               unless="class" />
 
         <scalatest runpath="${build.tests};${classes}" haltonfailure="true">
-            <!--<reporter type="graphic"/>-->
+            <reporter type="graphic"/>
             <!--<reporter type="file" filename="test.out" config="ND"/>-->
-            <reporter type="stdout" config="ND"/>
+            <!--<reporter type="stdout" config="ND"/>-->
             <suite classname="${class}"/>
         </scalatest>
     </target>

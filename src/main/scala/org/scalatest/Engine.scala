@@ -162,6 +162,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
 
     val oldInformer = atomicInformer.getAndSet(informerForThisTest)
     var testWasPending = false
+    var testWasCanceled = false
 
     try {
 
@@ -174,13 +175,18 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
       case _: TestPendingException =>
         reportTestPending(theSuite, report, tracker, testName, formatter)
         testWasPending = true // Set so info's printed out in the finally clause show up yellow
+      case e: TestCanceledException =>
+        val duration = System.currentTimeMillis - testStartTime
+        //reportTestCanceled(theSuite, report, tracker, testName, duration, formatter)
+        reportTestCanceled(theSuite, report, e, testName, theTest.testText, rerunnable, tracker, duration, theTest.indentationLevel, includeIcon)
+        testWasCanceled = true // Set so info's printed out in the finally clause show up yellow
       case e if !anErrorThatShouldCauseAnAbort(e) =>
         val duration = System.currentTimeMillis - testStartTime
         reportTestFailed(theSuite, report, e, testName, theTest.testText, rerunnable, tracker, duration, theTest.indentationLevel, includeIcon)
       case e => throw e
     }
     finally {
-      informerForThisTest.fireRecordedMessages(testWasPending)
+      informerForThisTest.fireRecordedMessages(testWasPending || testWasCanceled) // TODO: Change msgrecinformer2 to take both of these, and pass them separately to InfoProvided 
       val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
       val swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
       if (!swapAndCompareSucceeded)

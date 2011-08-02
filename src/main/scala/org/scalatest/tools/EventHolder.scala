@@ -60,6 +60,7 @@ private[tools] class EventHolder(val event: Event, val message: Option[String], 
           case event: RunAborted => firstString
           case event: RunCompleted => firstString
           case event: InfoProvided => firstString + " - " + event.message
+          case event: MarkupProvided => firstString + " - " + event.text
           case event: SuiteStarting => firstAndSecondString(firstString, event.suiteName)
           case event: SuiteCompleted => firstAndSecondString(firstString, event.suiteName)
           case event: SuiteAborted => firstAndSecondString(firstString, event.suiteName)
@@ -68,6 +69,7 @@ private[tools] class EventHolder(val event: Event, val message: Option[String], 
           case event: TestIgnored => firstAndSecondString(firstString, suiteAndTestName(event.suiteName, event.testName))
           case event: TestSucceeded => firstAndSecondString(firstString, suiteAndTestName(event.suiteName, event.testName))
           case event: TestFailed => firstAndSecondString(firstString, suiteAndTestName(event.suiteName, event.testName))
+          case event: TestCanceled => firstAndSecondString(firstString, suiteAndTestName(event.suiteName, event.testName))
         }
     }
   }

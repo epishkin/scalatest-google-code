@@ -156,6 +156,12 @@ private[tools] class IconEmbellishedListCellRenderer extends ListCellRenderer {
         else
           renderer.setIcon(Icons.testIgnoredIcon)
       }
+      case _: TestCanceled => {
+        if (isSelected)
+          renderer.setIcon(Icons.testIgnoredSelIcon)
+        else
+          renderer.setIcon(Icons.testIgnoredIcon)
+      }
       case _: TestFailed => {
         if (isSelected)
           renderer.setIcon(Icons.testFailedSelIcon)
@@ -190,6 +196,12 @@ private[tools] class IconEmbellishedListCellRenderer extends ListCellRenderer {
           renderer.setIcon(Icons.suiteCompletedIcon)
       }
       case _: InfoProvided => {
+        if (isSelected)
+          renderer.setIcon(Icons.infoProvidedSelIcon)
+        else
+          renderer.setIcon(Icons.infoProvidedIcon)
+      }
+      case _: MarkupProvided => { // Shouldn't get here because not registering markup events
         if (isSelected)
           renderer.setIcon(Icons.infoProvidedSelIcon)
         else
