@@ -203,100 +203,110 @@ class ShouldContainKeySpec extends Spec with ShouldMatchers with Checkers with R
       }
 
       it("should throw TestFailedException if map does not contain the specified key") {
+        val map = mutable.Map("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should contain key ("three")
+          map should contain key ("three")
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\"")
+        assert(caught1.getMessage === map + " did not contain key \"three\"")
       }
 
       it("should throw TestFailedException if contains the specified key when used with not") {
-
+        val map1 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should (not contain key ("two"))
+          map1 should (not contain key ("two"))
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) contained key \"two\"")
-
+        assert(caught1.getMessage === map1 + " contained key \"two\"")
+        val map2 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught2 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should not (contain key ("two"))
+          map2 should not (contain key ("two"))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) contained key \"two\"")
-
+        assert(caught2.getMessage === map2 + " contained key \"two\"")
+        
+        val map3 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught3 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should not contain key ("two")
+          map3 should not contain key ("two")
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained key \"two\"")
+        assert(caught3.getMessage === map3 + " contained key \"two\"")
       }
 
       it("should throw an TestFailedException when map doesn't contain specified key and used in a logical-and expression") {
-
+        val map1 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should { contain key ("five") and (contain key ("two")) }
+          map1 should { contain key ("five") and (contain key ("two")) }
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"five\"")
-
+        assert(caught1.getMessage === map1 + " did not contain key \"five\"")
+        
+        val map2 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught2 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should ((contain key ("five")) and (contain key ("two")))
+          map2 should ((contain key ("five")) and (contain key ("two")))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain key \"five\"")
-
+        assert(caught2.getMessage === map2 + " did not contain key \"five\"")
+        
+        val map3 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught3 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should (contain key ("five") and contain key ("two"))
+          map3 should (contain key ("five") and contain key ("two"))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain key \"five\"")
+        assert(caught3.getMessage === map3 + " did not contain key \"five\"")
       }
 
       it("should throw an TestFailedException when map doesn't contain specified key and used in a logical-or expression") {
-
+        val map1 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should { contain key ("fifty five") or (contain key ("twenty two")) }
+          map1 should { contain key ("fifty five") or (contain key ("twenty two")) }
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"fifty five\", and Map(one -> 1, two -> 2) did not contain key \"twenty two\"")
-
+        assert(caught1.getMessage === map1 + " did not contain key \"fifty five\", and " + map1 + " did not contain key \"twenty two\"")
+        
+        val map2 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught2 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should ((contain key ("fifty five")) or (contain key ("twenty two")))
+          map2 should ((contain key ("fifty five")) or (contain key ("twenty two")))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain key \"fifty five\", and Map(one -> 1, two -> 2) did not contain key \"twenty two\"")
-
+        assert(caught2.getMessage === map2 + " did not contain key \"fifty five\", and " + map2 + " did not contain key \"twenty two\"")
+        
+        val map3 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught3 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should (contain key ("fifty five") or contain key ("twenty two"))
+          map3 should (contain key ("fifty five") or contain key ("twenty two"))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain key \"fifty five\", and Map(one -> 1, two -> 2) did not contain key \"twenty two\"")
+        assert(caught3.getMessage === map3 + " did not contain key \"fifty five\", and " + map3 + " did not contain key \"twenty two\"")
       }
 
       it("should throw an TestFailedException when map contains specified key and used in a logical-and expression with not") {
-
+        val map1 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should { not { contain key ("three") } and not { contain key ("two") }}
+          map1 should { not { contain key ("three") } and not { contain key ("two") }}
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\", but Map(one -> 1, two -> 2) contained key \"two\"")
-
+        assert(caught1.getMessage === map1 + " did not contain key \"three\", but " + map1 + " contained key \"two\"")
+        
+        val map2 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught2 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should ((not contain key ("three")) and (not contain key ("two")))
+          map2 should ((not contain key ("three")) and (not contain key ("two")))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\", but Map(one -> 1, two -> 2) contained key \"two\"")
-
+        assert(caught2.getMessage === map2 + " did not contain key \"three\", but " + map2 + " contained key \"two\"")
+        
+        val map3 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught3 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should (not contain key ("three") and not contain key ("two"))
+          map3 should (not contain key ("three") and not contain key ("two"))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\", but Map(one -> 1, two -> 2) contained key \"two\"")
+        assert(caught3.getMessage === map3 + " did not contain key \"three\", but " + map3 + " contained key \"two\"")
       }
 
       it("should throw an TestFailedException when map contains specified key and used in a logical-or expression with not") {
-
+        val map1 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should { not { contain key ("two") } or not { contain key ("two") }}
+          map1 should { not { contain key ("two") } or not { contain key ("two") }}
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) contained key \"two\", and Map(one -> 1, two -> 2) contained key \"two\"")
-
+        assert(caught1.getMessage === map1 + " contained key \"two\", and " + map1 + " contained key \"two\"")
+        
+        val map2 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught2 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should ((not contain key ("two")) or (not contain key ("two")))
+          map2 should ((not contain key ("two")) or (not contain key ("two")))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) contained key \"two\", and Map(one -> 1, two -> 2) contained key \"two\"")
-
+        assert(caught2.getMessage === map2 + " contained key \"two\", and " + map2 + " contained key \"two\"")
+        
+        val map3 = mutable.Map("one" -> 1, "two" -> 2) 
         val caught3 = intercept[TestFailedException] {
-          mutable.Map("one" -> 1, "two" -> 2) should (not contain key ("two") or not contain key ("two"))
+          map3 should (not contain key ("two") or not contain key ("two"))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained key \"two\", and Map(one -> 1, two -> 2) contained key \"two\"")
+        assert(caught3.getMessage === map3 + " contained key \"two\", and " + map3 + " contained key \"two\"")
       }
     }
 
@@ -632,100 +642,110 @@ class ShouldContainKeySpec extends Spec with ShouldMatchers with Checkers with R
       }
 
       it("should throw TestFailedException if map does not contain the specified key") {
+        val map = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should contain key ("three")
+          map should contain key ("three")
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\"")
+        assert(caught1.getMessage === map + " did not contain key \"three\"")
       }
 
       it("should throw TestFailedException if contains the specified key when used with not") {
-
+        val map1 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should (not contain key ("two"))
+          map1 should (not contain key ("two"))
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) contained key \"two\"")
-
+        assert(caught1.getMessage === map1 + " contained key \"two\"")
+        
+        val map2 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught2 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should not (contain key ("two"))
+          map2 should not (contain key ("two"))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) contained key \"two\"")
-
+        assert(caught2.getMessage === map2 + " contained key \"two\"")
+        
+        val map3 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught3 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should not contain key ("two")
+          map3 should not contain key ("two")
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained key \"two\"")
+        assert(caught3.getMessage === map3 + " contained key \"two\"")
       }
 
       it("should throw an TestFailedException when map doesn't contain specified key and used in a logical-and expression") {
-
+        val map1 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should { contain key ("five") and (contain key ("two")) }
+          map1 should { contain key ("five") and (contain key ("two")) }
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"five\"")
-
+        assert(caught1.getMessage === map1 + " did not contain key \"five\"")
+        
+        val map2 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught2 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should ((contain key ("five")) and (contain key ("two")))
+          map2 should ((contain key ("five")) and (contain key ("two")))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain key \"five\"")
-
+        assert(caught2.getMessage === map2 + " did not contain key \"five\"")
+        
+        val map3 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught3 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should (contain key ("five") and contain key ("two"))
+          map3 should (contain key ("five") and contain key ("two"))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain key \"five\"")
+        assert(caught3.getMessage === map3 + " did not contain key \"five\"")
       }
 
       it("should throw an TestFailedException when map doesn't contain specified key and used in a logical-or expression") {
-
+        val map1 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should { contain key ("fifty five") or (contain key ("twenty two")) }
+          map1 should { contain key ("fifty five") or (contain key ("twenty two")) }
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"fifty five\", and Map(one -> 1, two -> 2) did not contain key \"twenty two\"")
-
+        assert(caught1.getMessage === map1 + " did not contain key \"fifty five\", and " + map1 + " did not contain key \"twenty two\"")
+        
+        val map2 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught2 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should ((contain key ("fifty five")) or (contain key ("twenty two")))
+          map2 should ((contain key ("fifty five")) or (contain key ("twenty two")))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain key \"fifty five\", and Map(one -> 1, two -> 2) did not contain key \"twenty two\"")
-
+        assert(caught2.getMessage === map2 + " did not contain key \"fifty five\", and " + map2 + " did not contain key \"twenty two\"")
+        
+        val map3 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught3 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should (contain key ("fifty five") or contain key ("twenty two"))
+          map3 should (contain key ("fifty five") or contain key ("twenty two"))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain key \"fifty five\", and Map(one -> 1, two -> 2) did not contain key \"twenty two\"")
+        assert(caught3.getMessage === map3 + " did not contain key \"fifty five\", and " + map3 + " did not contain key \"twenty two\"")
       }
 
       it("should throw an TestFailedException when map contains specified key and used in a logical-and expression with not") {
-
+        val map1 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should { not { contain key ("three") } and not { contain key ("two") }}
+          map1 should { not { contain key ("three") } and not { contain key ("two") }}
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\", but Map(one -> 1, two -> 2) contained key \"two\"")
-
+        assert(caught1.getMessage === map1 + " did not contain key \"three\", but " + map1 + " contained key \"two\"")
+        
+        val map2 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught2 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should ((not contain key ("three")) and (not contain key ("two")))
+          map2 should ((not contain key ("three")) and (not contain key ("two")))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\", but Map(one -> 1, two -> 2) contained key \"two\"")
-
+        assert(caught2.getMessage === map2 + " did not contain key \"three\", but " + map2 + " contained key \"two\"")
+        val map3 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught3 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should (not contain key ("three") and not contain key ("two"))
+          map3 should (not contain key ("three") and not contain key ("two"))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\", but Map(one -> 1, two -> 2) contained key \"two\"")
+        assert(caught3.getMessage === map3 + " did not contain key \"three\", but " + map3 + " contained key \"two\"")
       }
 
       it("should throw an TestFailedException when map contains specified key and used in a logical-or expression with not") {
-
+        val map1 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught1 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should { not { contain key ("two") } or not { contain key ("two") }}
+          map1 should { not { contain key ("two") } or not { contain key ("two") }}
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) contained key \"two\", and Map(one -> 1, two -> 2) contained key \"two\"")
-
+        assert(caught1.getMessage === map1 + " contained key \"two\", and " + map1 + " contained key \"two\"")
+        
+        val map2 = mutable.HashMap("one" -> 1, "two" -> 2) 
         val caught2 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should ((not contain key ("two")) or (not contain key ("two")))
+          map2 should ((not contain key ("two")) or (not contain key ("two")))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) contained key \"two\", and Map(one -> 1, two -> 2) contained key \"two\"")
-
-        val caught3 = intercept[TestFailedException] {
-          mutable.HashMap("one" -> 1, "two" -> 2) should (not contain key ("two") or not contain key ("two"))
+        assert(caught2.getMessage === map2 + " contained key \"two\", and " + map2 + " contained key \"two\"")
+        
+        val map3 = mutable.HashMap("one" -> 1, "two" -> 2) 
+        val caught3 = intercept[TestFailedException] {(
+          map3 should (not contain key ("two") or not contain key ("two")))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained key \"two\", and Map(one -> 1, two -> 2) contained key \"two\"")
+        assert(caught3.getMessage === map3 + " contained key \"two\", and " + map3 + " contained key \"two\"")
       }
     }
 
