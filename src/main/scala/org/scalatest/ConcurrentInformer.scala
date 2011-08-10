@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicReference
  rare case. Also, in that case I think it is reasonable to say you may get interleaved output
  in the interpreter, so if you don't like that, use the Runner.
 */
+/*
 private[scalatest] abstract class ConcurrentInformer(nameInfo: NameInfo) extends Informer {
 
   private final val atomic = new AtomicReference[(Thread, Option[NameInfo])](Thread.currentThread, Some(nameInfo))
@@ -56,6 +57,7 @@ private[scalatest] abstract class ConcurrentInformer(nameInfo: NameInfo) extends
     Thread.currentThread == constructingThread
   }
 }
+*/
 
 private[scalatest] abstract class ThreadAwareInformer extends Informer {
 
