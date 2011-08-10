@@ -42,23 +42,6 @@ import java.util.concurrent.atomic.AtomicReference
  rare case. Also, in that case I think it is reasonable to say you may get interleaved output
  in the interpreter, so if you don't like that, use the Runner.
 */
-/*
-private[scalatest] abstract class ConcurrentInformer(nameInfo: NameInfo) extends Informer {
-
-  private final val atomic = new AtomicReference[(Thread, Option[NameInfo])](Thread.currentThread, Some(nameInfo))
-
-  def nameInfoForCurrentThread: Option[NameInfo] = {
-    val (constructingThread, nameInfo) = atomic.get
-    if (Thread.currentThread == constructingThread) nameInfo else None
-  }
-
-  def isConstructingThread: Boolean = {
-    val (constructingThread, _) = atomic.get
-    Thread.currentThread == constructingThread
-  }
-}
-*/
-
 private[scalatest] abstract class ThreadAwareInformer extends Informer {
 
   private final val atomic = new AtomicReference[Thread](Thread.currentThread)
@@ -69,9 +52,7 @@ private[scalatest] abstract class ThreadAwareInformer extends Informer {
   }
 }
 
-// Getting rid of the NameInfo passed to ConcurrentInformer. After go through entire
-// refactor can rename ConcurrentInformer2 to ConcurrentInformer, deleting the old one
-private[scalatest] class ConcurrentInformer2(fire: (String, Boolean) => Unit) extends ThreadAwareInformer {
+private[scalatest] class ConcurrentInformer(fire: (String, Boolean) => Unit) extends ThreadAwareInformer {
 
   def apply(message: String) {
     if (message == null)
@@ -80,8 +61,8 @@ private[scalatest] class ConcurrentInformer2(fire: (String, Boolean) => Unit) ex
   }
 }
 
-private[scalatest] object ConcurrentInformer2 {
-  def apply(fire: (String, Boolean) => Unit) = new ConcurrentInformer2(fire)
+private[scalatest] object ConcurrentInformer {
+  def apply(fire: (String, Boolean) => Unit) = new ConcurrentInformer(fire)
 }
 
 //
@@ -92,7 +73,7 @@ private[scalatest] object ConcurrentInformer2 {
 // This kind of informer is only used during the execution of tests, to delay the printing out of info's fired
 // during tests until after the test succeeded, failed, or pending gets sent out.
 //
-private[scalatest] class MessageRecordingInformer2(fire: (String, Boolean, Boolean) => Unit) extends ThreadAwareInformer {
+private[scalatest] class MessageRecordingInformer(fire: (String, Boolean, Boolean) => Unit) extends ThreadAwareInformer {
 
   private var messages = List[String]()
 
@@ -123,6 +104,6 @@ private[scalatest] class MessageRecordingInformer2(fire: (String, Boolean, Boole
   }
 }
 
-private[scalatest] object MessageRecordingInformer2 {
-  def apply(fire: (String, Boolean, Boolean) => Unit) = new MessageRecordingInformer2(fire)
+private[scalatest] object MessageRecordingInformer {
+  def apply(fire: (String, Boolean, Boolean) => Unit) = new MessageRecordingInformer(fire)
 }

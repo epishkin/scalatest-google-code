@@ -156,7 +156,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     val formatter = getIndentedText(testTextWithOptionalPrefix, theTest.indentationLevel, includeIcon)
 
     val informerForThisTest =
-      MessageRecordingInformer2(
+      MessageRecordingInformer(
         (message, isConstructingThread, testWasPending) => reportInfoProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, includeIcon, Some(testWasPending))
       )
 
@@ -313,7 +313,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     val report = theSuite.wrapReporterIfNecessary(reporter)
 
     val informerForThisSuite =
-      ConcurrentInformer2(
+      ConcurrentInformer(
         (message, isConstructingThread) => reportInfoProvided(theSuite, report, tracker, None, message, 1, isConstructingThread)
       )
 

@@ -2034,22 +2034,12 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     val formatter = getIndentedText(testName, 1, true)
 
     val informerForThisTest =
-      MessageRecordingInformer2(
+      MessageRecordingInformer(
         (message, isConstructingThread, testWasPending) => reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, isConstructingThread, true, Some(testWasPending))
       )
 
     val args: Array[Object] =
       if (testMethodTakesAnInformer(testName)) {
-/*
-        val informer =
-          new Informer {
-            def apply(message: String) {
-              if (message == null)
-                throw new NullPointerException
-              reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, true)
-            }
-          }
-*/
         Array(informerForThisTest)  
       }
       else Array()
