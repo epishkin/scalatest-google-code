@@ -15,8 +15,9 @@
  */
 package org.scalatest
 
-import events.NameInfo
 import java.util.concurrent.atomic.AtomicReference
+import MessageRecorder.RecordedMessageFiringFun
+import MessageRecorder.ConcurrentMessageFiringFun
 
 /*
  This is used by Suite and test informers created as tests run, which therefore have
@@ -42,7 +43,7 @@ import java.util.concurrent.atomic.AtomicReference
  rare case. Also, in that case I think it is reasonable to say you may get interleaved output
  in the interpreter, so if you don't like that, use the Runner.
 */
-private[scalatest] abstract class ThreadAwareInformer extends Informer {
+private[scalatest] abstract class ThreadAwareness {
 
   private final val atomic = new AtomicReference[Thread](Thread.currentThread)
 
@@ -52,17 +53,23 @@ private[scalatest] abstract class ThreadAwareInformer extends Informer {
   }
 }
 
-private[scalatest] class ConcurrentInformer(fire: (String, Boolean) => Unit) extends ThreadAwareInformer {
+private[scalatest] class ConcurrentMessageSender(fire: ConcurrentMessageFiringFun) extends ThreadAwareness {
 
   def apply(message: String) {
     if (message == null)
-      throw new NullPointerException
+      throw new NullPointerException("message was null")
     fire(message, isConstructingThread) // Fire the info provided event using the passed function
   }
 }
 
+private[scalatest] class ConcurrentInformer(fire: ConcurrentMessageFiringFun) extends ConcurrentMessageSender(fire) with Informer
 private[scalatest] object ConcurrentInformer {
   def apply(fire: (String, Boolean) => Unit) = new ConcurrentInformer(fire)
+}
+
+private[scalatest] class ConcurrentDocumenter(fire: ConcurrentMessageFiringFun) extends ConcurrentMessageSender(fire) with Documenter
+private[scalatest] object ConcurrentDocumenter {
+  def apply(fire: (String, Boolean) => Unit) = new ConcurrentDocumenter(fire)
 }
 
 //
@@ -73,37 +80,63 @@ private[scalatest] object ConcurrentInformer {
 // This kind of informer is only used during the execution of tests, to delay the printing out of info's fired
 // during tests until after the test succeeded, failed, or pending gets sent out.
 //
-private[scalatest] class MessageRecordingInformer(fire: (String, Boolean, Boolean) => Unit) extends ThreadAwareInformer {
+private[scalatest] class MessageRecorder extends ThreadAwareness {
 
-  private var messages = List[String]()
+  private var messages = List[(String, RecordedMessageFiringFun)]()
 
   // Should only be called by the thread that constructed this
   // ConcurrentInformer, because don't want to worry about synchronization here. Just send stuff from
   // other threads whenever they come in. So only call record after first checking isConstructingThread
-  private def record(message: String) {
+  private def record(message: String, fire: RecordedMessageFiringFun) {
     require(isConstructingThread)
-    messages ::= message
+    messages ::= (message, fire)
   }
 
   // Returns them in order recorded
-  private def recordedMessages: List[String] = messages.reverse
+  private def recordedMessages: List[(String, RecordedMessageFiringFun)] = messages.reverse
 
-  def apply(message: String) {
+  def apply(message: String, fire: RecordedMessageFiringFun) {
     if (message == null)
       throw new NullPointerException
     if (isConstructingThread)
-      record(message)
+      record(message, fire)
     else 
       fire(message, false, false) // Fire the info provided event using the passed function
   }
 
   // send out any recorded messages
   def fireRecordedMessages(testWasPending: Boolean) {
-    for (message <- recordedMessages)
+    for ((message, fire) <- recordedMessages)
       fire(message, true, testWasPending) // Fire the info provided event using the passed function
   }
 }
 
+private[scalatest] class MessageRecordingInformer(recorder: MessageRecorder, fire: RecordedMessageFiringFun) extends Informer {
+  def apply(message: String) {
+    recorder.apply(message, fire)
+  }
+}
 private[scalatest] object MessageRecordingInformer {
-  def apply(fire: (String, Boolean, Boolean) => Unit) = new MessageRecordingInformer(fire)
+  def apply(recorder: MessageRecorder, fire: RecordedMessageFiringFun) = new MessageRecordingInformer(recorder, fire)
+}
+
+private[scalatest] class MessageRecordingDocumenter(recorder: MessageRecorder, fire: RecordedMessageFiringFun) extends Documenter {
+  def apply(message: String) {
+    recorder.apply(message, fire)
+  }
+}
+private[scalatest] object MessageRecordingDocumenter {
+  def apply(recorder: MessageRecorder, fire: RecordedMessageFiringFun) = new MessageRecordingDocumenter(recorder, fire)
+}
+
+private[scalatest] object MessageRecorder {
+  // Three params of function are the string message, a boolean indicating this was from the current thread, and
+  // the last one is an optional boolean that indicates the message is about a pending test, in which case it would
+  // be printed out in yellow.
+  type RecordedMessageFiringFun = (String, Boolean, Boolean) => Unit 
+
+  // Two params of function are the string message and a boolean indicating this was from the current thread
+  type ConcurrentMessageFiringFun = (String, Boolean) => Unit 
+
+  // def apply(fire: (String, Boolean, Boolean) => Unit) = new MessageRecorder(fire)
 }

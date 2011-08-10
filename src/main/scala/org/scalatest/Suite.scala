@@ -2033,8 +2033,16 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
 
     val formatter = getIndentedText(testName, 1, true)
 
+    val messageRecorderForThisTest = new MessageRecorder
     val informerForThisTest =
       MessageRecordingInformer(
+        messageRecorderForThisTest, 
+        (message, isConstructingThread, testWasPending) => reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, isConstructingThread, true, Some(testWasPending))
+      )
+
+    val documenterForThisTest =
+      MessageRecordingDocumenter(
+        messageRecorderForThisTest, 
         (message, isConstructingThread, testWasPending) => reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, isConstructingThread, true, Some(testWasPending))
       )
 
@@ -2083,7 +2091,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
       case e => throw e  
     }
     finally {
-      informerForThisTest.fireRecordedMessages(testWasPending || testWasCanceled) // TODO: Change msgrecinformer2 to take both of these, and pass them separately to InfoProvided
+      messageRecorderForThisTest.fireRecordedMessages(testWasPending || testWasCanceled) // TODO: Change msgrecinformer2 to take both of these, and pass them separately to InfoProvided
     }
   }
 
@@ -2906,6 +2914,33 @@ used for test events like succeeded/failed, etc.
         aboutAPendingTest,
         None,
         Some(getIndentedTextForInfo(message, level, includeIcon, testName.isDefined))
+      )
+    )
+  }
+
+  // If not fired in the context of a test, then testName will be None
+  def reportMarkupProvided(
+    theSuite: Suite,
+    report: Reporter,
+    tracker: Tracker,
+    testName: Option[String],
+    message: String,
+    level: Int,
+    includeNameInfo: Boolean,
+    includeIcon: Boolean = true,
+    aboutAPendingTest: Option[Boolean] = None
+  ) {
+    report(
+      MarkupProvided(
+        tracker.nextOrdinal(),
+        message,
+        if (includeNameInfo)
+          Some(NameInfo(theSuite.suiteName, Some(theSuite.getClass.getName), testName))
+        else
+          None,
+        aboutAPendingTest,
+        None,
+        None // Some(getIndentedTextForInfo(message, level, includeIcon, testName.isDefined))  for now don't send a formatter
       )
     )
   }

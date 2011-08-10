@@ -52,6 +52,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
   ) extends Node(Some(parent))
 
   case class InfoLeaf(parent: Branch, message: String) extends Node(Some(parent))
+  case class MarkupLeaf(parent: Branch, message: String) extends Node(Some(parent))
 
   case class DescriptionBranch(
     parent: Branch,
@@ -108,13 +109,38 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     }
   }
 
+  class RegistrationDocumenter extends Documenter {
+    def apply(message: String) {
+      if (message == null)
+        throw new NullPointerException
+      val oldBundle = atomic.get
+      var (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+      currentBranch.subNodes ::= MarkupLeaf(currentBranch, message)
+      updateAtomic(oldBundle, Bundle(currentBranch, testNamesList, testsMap, tagsMap, registrationClosed))
+    }
+  }
+
   // The informer will be a registration informer until run is called for the first time. (This
-  // is the registration phase of a FunSuite's lifecycle.)
+  // is the registration phase of a style trait's lifecycle.)
   final val atomicInformer = new AtomicReference[Informer](new RegistrationInformer)
+
+  // The documenter will be a registration informer until run is called for the first time. (This
+  // is the registration phase of a style trait's lifecycle.)
+  final val atomicDocumenter = new AtomicReference[Documenter](new RegistrationDocumenter)
 
   final val zombieInformer =
     new Informer {
       private val complaint = Resources("cantCallInfoNow", simpleClassName)
+      def apply(message: String) {
+        if (message == null)
+          throw new NullPointerException
+        throw new IllegalStateException(complaint)
+      }
+    }
+
+  final val zombieDocumenter =
+    new Documenter {
+      private val complaint = Resources("cantCallMarkupNow", simpleClassName)
       def apply(message: String) {
         if (message == null)
           throw new NullPointerException
@@ -155,12 +181,21 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     val testTextWithOptionalPrefix = prependChildPrefix(theTest.parent, theTest.testText)
     val formatter = getIndentedText(testTextWithOptionalPrefix, theTest.indentationLevel, includeIcon)
 
+    val messageRecorderForThisTest = new MessageRecorder
     val informerForThisTest =
       MessageRecordingInformer(
+        messageRecorderForThisTest,
         (message, isConstructingThread, testWasPending) => reportInfoProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, includeIcon, Some(testWasPending))
       )
 
+    val documenterForThisTest =
+      MessageRecordingDocumenter(
+        messageRecorderForThisTest,
+        (message, isConstructingThread, testWasPending) => reportMarkupProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, includeIcon, Some(testWasPending))
+      )
+
     val oldInformer = atomicInformer.getAndSet(informerForThisTest)
+    val oldDocumenter = atomicDocumenter.getAndSet(documenterForThisTest)
     var testWasPending = false
     var testWasCanceled = false
 
@@ -186,7 +221,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
       case e => throw e
     }
     finally {
-      informerForThisTest.fireRecordedMessages(testWasPending || testWasCanceled) // TODO: Change msgrecinformer2 to take both of these, and pass them separately to InfoProvided 
+      messageRecorderForThisTest.fireRecordedMessages(testWasPending || testWasCanceled) // TODO: Change msgrecinformer to take both of these, and pass them separately to InfoProvided 
       val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
       val swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
       if (!swapAndCompareSucceeded)
