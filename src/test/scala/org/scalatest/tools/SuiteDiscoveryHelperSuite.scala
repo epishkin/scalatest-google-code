@@ -19,7 +19,7 @@ import org.scalatest._
 import scala.collection.mutable
 import java.io.File
 
-class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper) {
+class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper.type) {
 
   def transformToClassName(fileName: String, fileSeparator: Char): Option[String] = {
     val m = Class.forName("org.scalatest.tools.SuiteDiscoveryHelper").getDeclaredMethod("org$scalatest$tools$SuiteDiscoveryHelper$$transformToClassName",
@@ -61,7 +61,7 @@ class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper) {
 
 class SuiteDiscoveryHelperSuite extends Suite {
 
-  val sdtf = new SuiteDiscoveryHelperFriend(new SuiteDiscoveryHelper)
+  val sdtf = new SuiteDiscoveryHelperFriend(SuiteDiscoveryHelper)
 
   def testTransformToClassName() {
     assert(sdtf.transformToClassName("bob.class", '/') === Some("bob"))

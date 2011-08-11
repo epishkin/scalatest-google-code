@@ -1431,19 +1431,20 @@ object Runner {
 
           val (membersOnlySuiteInstances, wildcardSuiteInstances) = {
 
-            val membersOnlyAndBeginsWithListsAreEmpty = membersOnlyList.isEmpty && wildcardList.isEmpty // They didn't specify any -m's or -w's on the command line
+            val membersOnlyAndWildcardListsAreEmpty = membersOnlyList.isEmpty && wildcardList.isEmpty // They didn't specify any -m's or -w's on the command line
 
-
-            // TODO: rename the 'BeginsWith' variables to 'Wildcard' to match the terminology that
-            // we ended up with on the outside
-            // TODO: Should SuiteDiscoverHelper be a singleton object?
-            if (membersOnlyAndBeginsWithListsAreEmpty && (!suitesList.isEmpty || !junitsList.isEmpty)) {
+            if (membersOnlyAndWildcardListsAreEmpty && (!suitesList.isEmpty || !junitsList.isEmpty)) {
               (Nil, Nil) // No DiscoverySuites in this case. Just run Suites named with -s or -j
             }
             else {
-              val accessibleSuites = (new SuiteDiscoveryHelper).discoverSuiteNames(runpath, loader)
+println("DEBUG: Discovery Starting")
+val discoveryStartTime = System.currentTimeMillis
 
-              if (membersOnlyAndBeginsWithListsAreEmpty && suitesList.isEmpty && junitsList.isEmpty) {
+              val accessibleSuites = SuiteDiscoveryHelper.discoverSuiteNames(runpath, loader)
+val discoveryDuration = System.currentTimeMillis - discoveryStartTime
+println("DEBUG: Discovery Completed: " + discoveryDuration + " milliseconds")
+
+              if (membersOnlyAndWildcardListsAreEmpty && suitesList.isEmpty && junitsList.isEmpty) {
                 // In this case, they didn't specify any -w, -m, -s, or -j on the command line, so the default
                 // is to run any accessible Suites discovered on the runpath
                 (Nil, List(new DiscoverySuite("", accessibleSuites, true, loader)))

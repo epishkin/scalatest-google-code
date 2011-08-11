@@ -34,7 +34,7 @@ import java.io.IOException
  *
  * @author Bill Venners
  */
-private[scalatest] class SuiteDiscoveryHelper() {
+private[scalatest] object SuiteDiscoveryHelper {
 
   def discoverSuiteNames(runpath: List[String], loader: ClassLoader): Set[String] = {
 
