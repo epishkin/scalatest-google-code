@@ -359,7 +359,7 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
         val lines = stringsToPrintOnError("abortedNote", "suiteAborted", message, throwable, formatter, Some(suiteName), None, duration)
         for (line <- lines) printPossiblyInColor(line, ansiRed)
 
-      case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, location, rerunnable, payload, threadName, timeStamp) =>
+      case TestStarting(ordinal, suiteName, suiteClassName, testName, testText, formatter, location, rerunnable, payload, threadName, timeStamp) =>
 
         val stringToPrint = stringToPrintWhenNoError("testStarting", formatter, suiteName, Some(testName))
 
@@ -417,6 +417,7 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
         for (line <- lines) printPossiblyInColor(line, if (shouldBeYellow) ansiYellow else ansiGreen)
 
       case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+//println("Got markup: " + message)
         // Won't do anything here, because not reporting these events in the StringReporter.
 
       case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, location, payload, threadName, timeStamp) =>

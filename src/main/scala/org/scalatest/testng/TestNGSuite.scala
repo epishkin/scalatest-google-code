@@ -256,7 +256,7 @@ trait TestNGSuite extends Suite { thisSuite =>
      * and pass it to the Reporter.
      */
     override def onTestStart(result: ITestResult) = {
-      report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), result.getName + params(result),
+      report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), result.getName + params(result), result.getName + params(result),
           Some(MotionToSuppress), Some(TopOfMethod(thisSuite.getClass.getName, result.getName)), Some(new TestRerunner(className, result.getName))))
     }
 

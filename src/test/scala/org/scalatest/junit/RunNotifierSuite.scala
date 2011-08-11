@@ -45,15 +45,15 @@ class RunNotifierSuite extends FunSuite {
       }
 
     val reporter = new RunNotifierReporter(runNotifier)
-    reporter(TestStarting(new Ordinal(99), "suite name", Some("suite.class.name"), "some test name"))
+    reporter(TestStarting(new Ordinal(99), "suite name", Some("suite.class.name"), "some test name", "some test name"))
     assert(runNotifier.fireTestStartedInvocationCount === 1)
     assert(runNotifier.passedDesc.get.getDisplayName === "some test name(suite.class.name)")
 
-    reporter(TestStarting(new Ordinal(99), "suiteName", Some("suite.class.name"), "someTestName"))
+    reporter(TestStarting(new Ordinal(99), "suiteName", Some("suite.class.name"), "someTestName", "someTestName"))
     assert(runNotifier.fireTestStartedInvocationCount === 2)
     assert(runNotifier.passedDesc.get.getDisplayName === "someTestName(suite.class.name)")
 
-    reporter(TestStarting(ordinal, "suiteName", None, "theTestName"))
+    reporter(TestStarting(ordinal, "suiteName", None, "theTestName", "theTestName"))
     assert(runNotifier.passedDesc.get.getDisplayName === "theTestName(suiteName)")
   }
 

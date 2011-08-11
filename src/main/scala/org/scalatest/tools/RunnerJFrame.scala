@@ -913,7 +913,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             selectFirstFailureIfExistsAndNothingElseAlreadySelected()
           }
 
-        case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, location, rerunner, payload, threadName, timeStamp) =>
+        case TestStarting(ordinal, suiteName, suiteClassName, testName, testText, formatter, location, rerunner, payload, threadName, timeStamp) =>
   
           usingEventDispatchThread {
             registerEvent(event)
@@ -1307,7 +1307,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             }
           }
  
-        case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, location, rerunner, payload, threadName, timeStamp) =>
+        case TestStarting(ordinal, suiteName, suiteClassName, testName, testText, formatter, location, rerunner, payload, threadName, timeStamp) =>
 
           usingEventDispatchThread {
             registerRerunEvent(event)

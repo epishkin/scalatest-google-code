@@ -2854,7 +2854,7 @@ used for test events like succeeded/failed, etc.
 
   // TODO: Possibly separate these out from method tests and function tests, because locations are different
   def reportTestStarting(theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, rerunnable: Option[Rerunner]) {
-    report(TestStarting(tracker.nextOrdinal(), theSuite.suiteName, Some(theSuite.getClass.getName), testName, Some(MotionToSuppress),
+    report(TestStarting(tracker.nextOrdinal(), theSuite.suiteName, Some(theSuite.getClass.getName), testName, testName, Some(MotionToSuppress),
       Some(ToDoLocation), rerunnable))
   }
 

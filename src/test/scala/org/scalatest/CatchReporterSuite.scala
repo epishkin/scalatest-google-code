@@ -41,9 +41,9 @@ class CatchReporterSuite extends Suite {
     catchReporter(RunStarting(new Ordinal(99), 1, Map()))
 
     intercept[RuntimeException] {
-      buggyReporter(TestStarting(new Ordinal(99), "suite name", Some("suite.className"), "test name"))
+      buggyReporter(TestStarting(new Ordinal(99), "suite name", Some("suite.className"), "test name", "test name"))
     }
-    catchReporter(TestStarting(new Ordinal(99), "suite name", Some("suite.className"), "test name"))
+    catchReporter(TestStarting(new Ordinal(99), "suite name", Some("suite.className"), "test name", "test name"))
 
     intercept[RuntimeException] {
       buggyReporter(TestSucceeded(new Ordinal(99), "suite name", Some("suite.className"), "test name"))

@@ -105,6 +105,7 @@ sealed abstract class Event extends Ordered[Event] {
  * @param suiteName the name of the suite containing the test that is starting
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is starting
  * @param testName the name of the test that is starting
+ * @param testText the text of the test that is starting (may be the test name, or a suffix of the test name)
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
@@ -122,6 +123,7 @@ final case class TestStarting (
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
+  testText: String,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
   rerunner: Option[Rerunner] = None,
@@ -138,6 +140,8 @@ final case class TestStarting (
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
     throw new NullPointerException("testName was null")
+  if (testText == null)
+    throw new NullPointerException("testText was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
   if (location == null)
@@ -192,7 +196,7 @@ object DeprecatedTestStarting {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -221,7 +225,7 @@ object DeprecatedTestStarting {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -248,7 +252,7 @@ object DeprecatedTestStarting {
     testName: String,
     formatter: Option[Formatter]
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -272,7 +276,7 @@ object DeprecatedTestStarting {
     suiteClassName: Option[String],
     testName: String
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName, testName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 

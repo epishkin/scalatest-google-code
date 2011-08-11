@@ -85,7 +85,7 @@ import Suite.getIndentedText
     override def testStarted(description: Description) {
       val (testName, testClass, testClassName) =
         parseTestDescription(description)
-      report(TestStarting(theTracker.nextOrdinal(), testClassName, Some(testClass), testName, Some(MotionToSuppress), None))
+      report(TestStarting(theTracker.nextOrdinal(), testClassName, Some(testClass), testName, testName, Some(MotionToSuppress), None))
     }
 
     //

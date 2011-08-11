@@ -57,7 +57,7 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
 
     event match {
 
-      case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, location, rerunnable, payload, threadName, timeStamp) =>
+      case TestStarting(ordinal, suiteName, suiteClassName, testName, testText, formatter, location, rerunnable, payload, threadName, timeStamp) =>
         runNotifier.fireTestStarted(Description.createSuiteDescription(testDescriptionName(suiteName, suiteClassName, testName)))
 
       case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, location, rerunnable, payload, threadName, timeStamp) => 

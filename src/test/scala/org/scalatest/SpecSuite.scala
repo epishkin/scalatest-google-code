@@ -918,7 +918,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case TestStarting(_, _, _, testName, _, _, _, _, _, _) =>
+          case TestStarting(_, _, _, testName, _, _, _, _, _, _, _) =>
             if (testName == "A Stack needs to push and pop properly") {
               testSucceededReportHadCorrectTestName = true
             }

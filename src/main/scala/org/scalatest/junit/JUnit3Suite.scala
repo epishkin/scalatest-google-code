@@ -348,7 +348,7 @@ private[scalatest] class MyTestListener(report: Reporter, tracker: Tracker) exte
   def startTest(testCase: Test) {
     if (testCase == null)
       throw new NullPointerException("testCase was null")
-    report(TestStarting(tracker.nextOrdinal(), getSuiteNameForTestCase(testCase), Some(testCase.getClass.getName), testCase.toString, Some(MotionToSuppress), None))
+    report(TestStarting(tracker.nextOrdinal(), getSuiteNameForTestCase(testCase), Some(testCase.getClass.getName), testCase.toString, testCase.toString, Some(MotionToSuppress), None))
   }
   
   def addError(testCase: Test, throwable: Throwable) {
