@@ -2729,76 +2729,6 @@ final case class InfoProvided (
 }
 
 /**
- * Event used to provide markup text for document-style reports.
- *
- * <p>
- * To create instances of this class you may
- * use the factory method provided in its <a href="MarkupProvided$.html">companion object</a>. For example, given a
- * report function named <code>report</code>, you could fire a <code>MarkupProvided</code> event like this:
- * </p>
- *
- * <pre class="stHighlight">
- * report(MarkupProvided(ordinal, text, Some(NameInfo(suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
- * </pre>
- *
- * <p>
- * A <code>MarkupProvided</code> event may be fired from anywhere. In this respect <code>MarkupProvided</code> is different
- * from the other events, for which it is defined whether they are fired in the context of a suite or test.
- * If fired in the context of a test, the <code>MarkupProvided</code> event should include a <code>NameInfo</code> in which
- * <code>testName</code> is defined. If fired in the context of a suite, but not a test, the <code>MarkupProvided</code> event
- * should include a <code>NameInfo</code> in which <code>testName</code> is <em>not</em> defined. If fired within the context
- * of neither a suite nor a test, the <code>nameInfo</code> of the <code>MarkupProvided</code> event (an <code>Option[NameInfo]</code>) should be <code>None</code>.
- * </p>
- *
- * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
- *        other events reported during the same run
- * @param text a snippet of markup text (in Markdown format)
- * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test 
- *        in the context of which the information was provided
- * @param aboutAPendingTest indicates whether the information being provided via this event is about a pending test
- * @param throwable an optional <code>Throwable</code>
- * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
- *        how to present this event to the user
- * @param location An optional location that provides information indicating where in the source code an event originated.
- * @param payload an optional object that can be used to pass custom information to the reporter about the <code>MarkupProvided</code> event
- * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
- * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
- *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
- *
- * @author Bill Venners
- */
-final case class MarkupProvided (
-  ordinal: Ordinal,
-  text: String,
-  nameInfo: Option[NameInfo],
-  aboutAPendingTest: Option[Boolean] = None,
-  throwable: Option[Throwable] = None,
-  formatter: Option[Formatter] = None,
-  location: Option[Location] = None,
-  payload: Option[Any] = None,
-  threadName: String = Thread.currentThread.getName,
-  timeStamp: Long = (new Date).getTime
-) extends Event {
-
-  if (ordinal == null)
-    throw new NullPointerException("ordinal was null")
-  if (text == null)
-    throw new NullPointerException("message was null")
-  if (nameInfo == null)
-    throw new NullPointerException("nameInfo was null")
-  if (throwable == null)
-    throw new NullPointerException("throwable was null")
-  if (formatter == null)
-    throw new NullPointerException("formatter was null")
-  if (location == null)
-    throw new NullPointerException("location was null")
-  if (payload == null)
-    throw new NullPointerException("payload was null")
-  if (threadName == null)
-    throw new NullPointerException("threadName was null")
-}
-
-/**
  * Companion object for the <a href="InfoProvided.html"><code>InfoProvided</code></a> event, which contains overloaded factory methods
  * and an extractor method to facilitate pattern matching on <code>InfoProvided</code> objects.
  *
@@ -2950,5 +2880,75 @@ object DeprecatedInfoProvided {
   ): InfoProvided = {
     InfoProvided(ordinal, message, nameInfo, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
+}
+
+/**
+ * Event used to provide markup text for document-style reports.
+ *
+ * <p>
+ * To create instances of this class you may
+ * use the factory method provided in its <a href="MarkupProvided$.html">companion object</a>. For example, given a
+ * report function named <code>report</code>, you could fire a <code>MarkupProvided</code> event like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * report(MarkupProvided(ordinal, text, Some(NameInfo(suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+ * </pre>
+ *
+ * <p>
+ * A <code>MarkupProvided</code> event may be fired from anywhere. In this respect <code>MarkupProvided</code> is different
+ * from the other events, for which it is defined whether they are fired in the context of a suite or test.
+ * If fired in the context of a test, the <code>MarkupProvided</code> event should include a <code>NameInfo</code> in which
+ * <code>testName</code> is defined. If fired in the context of a suite, but not a test, the <code>MarkupProvided</code> event
+ * should include a <code>NameInfo</code> in which <code>testName</code> is <em>not</em> defined. If fired within the context
+ * of neither a suite nor a test, the <code>nameInfo</code> of the <code>MarkupProvided</code> event (an <code>Option[NameInfo]</code>) should be <code>None</code>.
+ * </p>
+ *
+ * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
+ *        other events reported during the same run
+ * @param text a snippet of markup text (in Markdown format)
+ * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test 
+ *        in the context of which the information was provided
+ * @param aboutAPendingTest indicates whether the information being provided via this event is about a pending test
+ * @param throwable an optional <code>Throwable</code>
+ * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
+ *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
+ * @param payload an optional object that can be used to pass custom information to the reporter about the <code>MarkupProvided</code> event
+ * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
+ * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
+ *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
+ */
+final case class MarkupProvided (
+  ordinal: Ordinal,
+  text: String,
+  nameInfo: Option[NameInfo],
+  aboutAPendingTest: Option[Boolean] = None,
+  throwable: Option[Throwable] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
+) extends Event {
+
+  if (ordinal == null)
+    throw new NullPointerException("ordinal was null")
+  if (text == null)
+    throw new NullPointerException("message was null")
+  if (nameInfo == null)
+    throw new NullPointerException("nameInfo was null")
+  if (throwable == null)
+    throw new NullPointerException("throwable was null")
+  if (formatter == null)
+    throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
+  if (payload == null)
+    throw new NullPointerException("payload was null")
+  if (threadName == null)
+    throw new NullPointerException("threadName was null")
 }
 
