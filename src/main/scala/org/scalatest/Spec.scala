@@ -1265,7 +1265,7 @@ trait Spec extends Suite { thisSuite =>
   import engine._
 
   /**
-   * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
+   * Returns an <code>Informer</code> that during test execution will forward strings passed to its
    * <code>apply</code> method to the current reporter. If invoked in a constructor, it
    * will register the passed string for forwarding later during test execution. If invoked while this
    * <code>Spec</code> is being executed, such as from inside a test function, it will forward the information to
@@ -1273,6 +1273,16 @@ trait Spec extends Suite { thisSuite =>
    * throw an exception. This method can be called safely by any thread.
    */
   implicit protected def info: Informer = atomicInformer.get
+
+  /**
+   * Returns a <code>Documenter</code> that during test execution will forward strings passed to its
+   * <code>apply</code> method to the current reporter. If invoked in a constructor, it
+   * will register the passed string for forwarding later during test execution. If invoked while this
+   * <code>Spec</code> is being executed, such as from inside a test function, it will forward the information to
+   * the current reporter immediately. If invoked at any other time, it will
+   * throw an exception. This method can be called safely by any thread.
+   */
+  implicit protected def markup: Documenter = atomicDocumenter.get
 
   /**
    * Class that, via an instance referenced from the <code>it</code> field,
