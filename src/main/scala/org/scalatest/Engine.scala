@@ -269,6 +269,9 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
           case infoLeaf @ InfoLeaf(_, message) =>
             reportInfoProvided(theSuite, report, tracker, None, message, infoLeaf.indentationLevel, true, includeIcon)
 
+          case markupLeaf @ MarkupLeaf(_, message) =>
+            reportMarkupProvided(theSuite, report, tracker, None, message, markupLeaf.indentationLevel, true, includeIcon)
+
           case branch: Branch => runTestsInBranch(theSuite, branch, report, stopRequested, filter, configMap, tracker, includeIcon, runTest)
         }
       }
