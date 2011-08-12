@@ -2964,3 +2964,150 @@ final case class MarkupProvided (
     throw new NullPointerException("threadName was null")
 }
 
+/**
+ * Event that indicates a new scope has been opened.
+ *
+ * <p>
+ * To create instances of this class you may
+ * use the factory method provided in its <a href="ScopeOpened$.html">companion object</a>. For example, given a
+ * report function named <code>report</code>, you could fire a <code>ScopeOpened</code> event like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * report(ScopeOpened(ordinal, message, Some(NameInfo(suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+ * </pre>
+ *
+ * <p>
+ * A <code>ScopeOpened</code> event may be fired from within suites or tests. 
+ * If fired in the context of a test, the <code>ScopeOpened</code> event should include a <code>NameInfo</code> in which
+ * <code>testName</code> is defined. If fired in the context of a suite, but not a test, the <code>ScopeOpened</code> event
+ * should include a <code>NameInfo</code> in which <code>testName</code> is <em>not</em> defined.
+ * </p>
+ *
+ * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
+ *        other events reported during the same run
+ * @param message a localized message suitable for presenting to the user
+ * @param nameInfo a <code>NameInfo</code> that provides names for the suite and optionally the test 
+ *        in the context of which the scope was opened
+ * @param aboutAPendingTest indicates whether the scope was opened in the context of a pending test
+ * @param aboutACanceledTest indicates whether the scope was opened in the context of a canceled test
+ * @param throwable an optional <code>Throwable</code>
+ * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
+ *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
+ * @param payload an optional object that can be used to pass custom information to the reporter about the <code>ScopeOpened</code> event
+ * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
+ * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
+ *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
+ */
+final case class ScopeOpened (
+  ordinal: Ordinal,
+  message: String,
+  nameInfo: NameInfo,
+  aboutAPendingTest: Option[Boolean] = None,
+  aboutACanceledTest: Option[Boolean] = None,
+  throwable: Option[Throwable] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
+) extends Event {
+
+  if (ordinal == null)
+    throw new NullPointerException("ordinal was null")
+  if (message == null)
+    throw new NullPointerException("message was null")
+  if (nameInfo == null)
+    throw new NullPointerException("nameInfo was null")
+  if (aboutAPendingTest == null)
+    throw new NullPointerException("aboutAPendingTest was null")
+  if (aboutACanceledTest == null)
+    throw new NullPointerException("aboutACanceledTest was null")
+  if (throwable == null)
+    throw new NullPointerException("throwable was null")
+  if (formatter == null)
+    throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
+  if (payload == null)
+    throw new NullPointerException("payload was null")
+  if (threadName == null)
+    throw new NullPointerException("threadName was null")
+}
+
+/**
+ * Event that indicates a scope has been closed.
+ *
+ * <p>
+ * To create instances of this class you may
+ * use the factory method provided in its <a href="ScopeClosed$.html">companion object</a>. For example, given a
+ * report function named <code>report</code>, you could fire a <code>ScopeClosed</code> event like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * report(ScopeClosed(ordinal, message, Some(NameInfo(suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+ * </pre>
+ *
+ * <p>
+ * A <code>ScopeClosed</code> event may be fired from within suites or tests. 
+ * If fired in the context of a test, the <code>ScopeClosed</code> event should include a <code>NameInfo</code> in which
+ * <code>testName</code> is defined. If fired in the context of a suite, but not a test, the <code>ScopeClosed</code> event
+ * should include a <code>NameInfo</code> in which <code>testName</code> is <em>not</em> defined.
+ * </p>
+ *
+ * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
+ *        other events reported during the same run
+ * @param message a localized message suitable for presenting to the user
+ * @param nameInfo a <code>NameInfo</code> that provides names for the suite and optionally the test 
+ *        in the context of which the scope was closed
+ * @param aboutAPendingTest indicates whether the scope was closed in the context of a pending test
+ * @param aboutACanceledTest indicates whether the scope was closed in the context of a canceled test
+ * @param throwable an optional <code>Throwable</code>
+ * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
+ *        how to present this event to the user
+ * @param location An optional location that provides information indicating where in the source code an event originated.
+ * @param payload an optional object that can be used to pass custom information to the reporter about the <code>ScopeClosed</code> event
+ * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
+ * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
+ *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
+ */
+final case class ScopeClosed (
+  ordinal: Ordinal,
+  message: String,
+  nameInfo: NameInfo,
+  aboutAPendingTest: Option[Boolean] = None,
+  aboutACanceledTest: Option[Boolean] = None,
+  throwable: Option[Throwable] = None,
+  formatter: Option[Formatter] = None,
+  location: Option[Location] = None,
+  payload: Option[Any] = None,
+  threadName: String = Thread.currentThread.getName,
+  timeStamp: Long = (new Date).getTime
+) extends Event {
+
+  if (ordinal == null)
+    throw new NullPointerException("ordinal was null")
+  if (message == null)
+    throw new NullPointerException("message was null")
+  if (nameInfo == null)
+    throw new NullPointerException("nameInfo was null")
+  if (aboutAPendingTest == null)
+    throw new NullPointerException("aboutAPendingTest was null")
+  if (aboutACanceledTest == null)
+    throw new NullPointerException("aboutACanceledTest was null")
+  if (throwable == null)
+    throw new NullPointerException("throwable was null")
+  if (formatter == null)
+    throw new NullPointerException("formatter was null")
+  if (location == null)
+    throw new NullPointerException("location was null")
+  if (payload == null)
+    throw new NullPointerException("payload was null")
+  if (threadName == null)
+    throw new NullPointerException("threadName was null")
+}
