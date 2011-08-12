@@ -971,13 +971,13 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             selectFirstFailureIfExistsAndNothingElseAlreadySelected()
           }
 
-        case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+        case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
 
           usingEventDispatchThread {
             registerEvent(event)
           }
 
-        case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+        case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
       }
     }
   }
@@ -1355,13 +1355,13 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             }
           }
   
-        case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+        case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
 
           usingEventDispatchThread {
             registerRerunEvent(event)
           }
   
-        case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+        case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
       }
     }
   }

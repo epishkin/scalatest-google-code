@@ -401,7 +401,7 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
         val lines = stringsToPrintOnError("canceledNote", "testCanceled", message, throwable, formatter, Some(suiteName), Some(testName), duration)
         for (line <- lines) printPossiblyInColor(line, ansiRed)
 
-      case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+      case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
 
         val (suiteName, testName) =
           nameInfo match {
@@ -409,14 +409,20 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
             case None => (None, None)
           }
         val lines = stringsToPrintOnError("infoProvidedNote", "infoProvided", message, throwable, formatter, suiteName, testName, None)
-        val shouldBeYellow =
+        val isPending =
           aboutAPendingTest match {
             case Some(isPending) => isPending
             case None => false
           }
+        val wasCanceled =
+          aboutACanceledTest match {
+            case Some(wasCanceled) => wasCanceled
+            case None => false
+          }
+        val shouldBeYellow = isPending || wasCanceled
         for (line <- lines) printPossiblyInColor(line, if (shouldBeYellow) ansiYellow else ansiGreen)
 
-      case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+      case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
 //println("Got markup: " + message)
         // Won't do anything here, because not reporting these events in the StringReporter.
 

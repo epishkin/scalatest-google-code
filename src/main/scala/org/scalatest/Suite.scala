@@ -2901,7 +2901,8 @@ used for test events like succeeded/failed, etc.
     level: Int,
     includeNameInfo: Boolean,
     includeIcon: Boolean = true,
-    aboutAPendingTest: Option[Boolean] = None
+    aboutAPendingTest: Option[Boolean] = None,
+    aboutACanceledTest: Option[Boolean] = None
   ) {
     report(
       InfoProvided(
@@ -2912,6 +2913,7 @@ used for test events like succeeded/failed, etc.
         else
           None,
         aboutAPendingTest,
+        aboutACanceledTest,
         None,
         Some(getIndentedTextForInfo(message, level, includeIcon, testName.isDefined))
       )

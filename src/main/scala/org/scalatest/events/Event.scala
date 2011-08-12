@@ -2686,6 +2686,7 @@ object DeprecatedRunAborted {
  * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test 
  *        in the context of which the information was provided
  * @param aboutAPendingTest indicates whether the information being provided via this event is about a pending test
+ * @param aboutACanceledTest indicates whether the information being provided via this event is about a canceled test
  * @param throwable an optional <code>Throwable</code>
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
@@ -2702,6 +2703,7 @@ final case class InfoProvided (
   message: String,
   nameInfo: Option[NameInfo],
   aboutAPendingTest: Option[Boolean] = None,
+  aboutACanceledTest: Option[Boolean] = None,
   throwable: Option[Throwable] = None,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
@@ -2716,6 +2718,10 @@ final case class InfoProvided (
     throw new NullPointerException("message was null")
   if (nameInfo == null)
     throw new NullPointerException("nameInfo was null")
+  if (aboutAPendingTest == null)
+    throw new NullPointerException("aboutAPendingTest was null")
+  if (aboutACanceledTest == null)
+    throw new NullPointerException("aboutACanceledTest was null")
   if (throwable == null)
     throw new NullPointerException("throwable was null")
   if (formatter == null)
@@ -2769,7 +2775,7 @@ object DeprecatedInfoProvided {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): InfoProvided = {
-    InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
+    InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, Some(false), throwable, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
 
@@ -2800,7 +2806,7 @@ object DeprecatedInfoProvided {
     throwable: Option[Throwable],
     formatter: Option[Formatter]
   ): InfoProvided = {
-    InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, Some(false), throwable, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2827,7 +2833,7 @@ object DeprecatedInfoProvided {
     aboutAPendingTest: Option[Boolean],
     throwable: Option[Throwable]
   ): InfoProvided = {
-    InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, Some(false), throwable, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2853,7 +2859,7 @@ object DeprecatedInfoProvided {
     nameInfo: Option[NameInfo],
     aboutAPendingTest: Option[Boolean]
   ): InfoProvided = {
-    InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, Some(false), None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2878,7 +2884,7 @@ object DeprecatedInfoProvided {
     message: String,
     nameInfo: Option[NameInfo]
   ): InfoProvided = {
-    InfoProvided(ordinal, message, nameInfo, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    InfoProvided(ordinal, message, nameInfo, None, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -2910,6 +2916,7 @@ object DeprecatedInfoProvided {
  * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test 
  *        in the context of which the information was provided
  * @param aboutAPendingTest indicates whether the information being provided via this event is about a pending test
+ * @param aboutACanceledTest indicates whether the information being provided via this event is about a canceled test
  * @param throwable an optional <code>Throwable</code>
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
@@ -2926,6 +2933,7 @@ final case class MarkupProvided (
   text: String,
   nameInfo: Option[NameInfo],
   aboutAPendingTest: Option[Boolean] = None,
+  aboutACanceledTest: Option[Boolean] = None,
   throwable: Option[Throwable] = None,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
@@ -2940,6 +2948,10 @@ final case class MarkupProvided (
     throw new NullPointerException("message was null")
   if (nameInfo == null)
     throw new NullPointerException("nameInfo was null")
+  if (aboutAPendingTest == null)
+    throw new NullPointerException("aboutAPendingTest was null")
+  if (aboutACanceledTest == null)
+    throw new NullPointerException("aboutACanceledTest was null")
   if (throwable == null)
     throw new NullPointerException("throwable was null")
   if (formatter == null)
