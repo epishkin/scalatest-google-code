@@ -322,6 +322,42 @@ private[scalatest] class HtmlReporter(pw: PrintWriter, presentAllDurations: Bool
         val shouldBeYellow = isPending || wasCanceled
         for (line <- lines) printPossiblyInColor(line, if (shouldBeYellow) ansiYellow else ansiGreen)
 
+      case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+
+        val suiteName = Some(nameInfo.suiteName)
+        val testName = nameInfo.testName
+        val lines = stringsToPrintOnError("scopeOpenedNote", "scopeOpened", message, throwable, formatter, suiteName, testName, None)
+        val isPending =
+          aboutAPendingTest match {
+            case Some(isPending) => isPending
+            case None => false
+          } 
+        val wasCanceled =
+          aboutACanceledTest match {
+            case Some(wasCanceled) => wasCanceled
+            case None => false
+          }
+        val shouldBeYellow = isPending || wasCanceled
+        for (line <- lines) printPossiblyInColor(line, if (shouldBeYellow) ansiYellow else ansiGreen)
+
+      case ScopeClosed(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+
+        val suiteName = Some(nameInfo.suiteName)
+        val testName = nameInfo.testName
+        val lines = stringsToPrintOnError("scopeClosedNote", "scopeClosed", message, throwable, formatter, suiteName, testName, None)
+        val isPending =
+          aboutAPendingTest match {
+            case Some(isPending) => isPending
+            case None => false
+          } 
+        val wasCanceled =
+          aboutACanceledTest match {
+            case Some(wasCanceled) => wasCanceled
+            case None => false
+          }
+        val shouldBeYellow = isPending || wasCanceled
+        for (line <- lines) printPossiblyInColor(line, if (shouldBeYellow) ansiYellow else ansiGreen)
+
       case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, location, payload, threadName, timeStamp) =>
 
         val stringToPrint =

@@ -239,15 +239,15 @@ class SpecSuite extends FunSuite with SharedHelpers {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
-    var infoProvidedHasBeenInvoked = false
+    var scopeOpenedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
-            // infoProvided should be invoked before the other method
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+            // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
-            infoProvidedHasBeenInvoked = true
+            scopeOpenedHasBeenInvoked = true
             if (message.indexOf("My Spec") != -1)
               infoReportHadCorrectTestName = true
             formatter match {
@@ -259,8 +259,8 @@ class SpecSuite extends FunSuite with SharedHelpers {
               case _ =>
             }
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, location, rerunnable, payload, threadName, timeStamp) =>
-            // infoProvided should be invoked before the this method
-            assert(infoProvidedHasBeenInvoked)
+            // scopeOpened should be invoked before the this method
+            assert(scopeOpenedHasBeenInvoked)
             theOtherMethodHasBeenInvoked = true
             if (testName.indexOf("My Spec must start with proper words") != -1)
               reportHadCorrectTestName = true
@@ -298,15 +298,15 @@ class SpecSuite extends FunSuite with SharedHelpers {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
-    var infoProvidedHasBeenInvoked = false
+    var scopeOpenedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
-            // infoProvided should be invoked before the other method
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+            // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
-            infoProvidedHasBeenInvoked = true
+            scopeOpenedHasBeenInvoked = true
             if (message.indexOf("My Spec") != -1)
               infoReportHadCorrectTestName = true
             formatter match {
@@ -318,8 +318,8 @@ class SpecSuite extends FunSuite with SharedHelpers {
               case _ =>
             }
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, location, rerunnable, payload, threadName, timeStamp) =>
-            // infoProvided should be invoked before the this method
-            assert(infoProvidedHasBeenInvoked)
+            // scopeOpened should be invoked before the this method
+            assert(scopeOpenedHasBeenInvoked)
             theOtherMethodHasBeenInvoked = true
             if (testName.indexOf("My Spec must start with proper words") != -1)
               reportHadCorrectTestName = true
@@ -357,15 +357,15 @@ class SpecSuite extends FunSuite with SharedHelpers {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
-    var infoProvidedHasBeenInvoked = false
+    var scopeOpenedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
-            // infoProvided should be invoked before the other method
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+            // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
-            infoProvidedHasBeenInvoked = true
+            scopeOpenedHasBeenInvoked = true
             if (message.indexOf("My Spec") != -1)
               infoReportHadCorrectTestName = true
             formatter match {
@@ -377,8 +377,8 @@ class SpecSuite extends FunSuite with SharedHelpers {
               case _ =>
             }
           case event: TestFailed =>
-            // infoProvided should be invoked before the this method
-            assert(infoProvidedHasBeenInvoked)
+            // scopeOpened should be invoked before the this method
+            assert(scopeOpenedHasBeenInvoked)
             theOtherMethodHasBeenInvoked = true
             if (event.testName.indexOf("My Spec must start with proper words") != -1)
               reportHadCorrectTestName = true
@@ -418,17 +418,17 @@ class SpecSuite extends FunSuite with SharedHelpers {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
-    var infoProvidedHasBeenInvokedOnce = false
-    var infoProvidedHasBeenInvokedTwice = false
+    var scopeOpenedHasBeenInvokedOnce = false
+    var scopeOpenedHasBeenInvokedTwice = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
-            // infoProvided should be invoked before the other method
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+            // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
-            if (!infoProvidedHasBeenInvokedOnce) { 
-              infoProvidedHasBeenInvokedOnce = true
+            if (!scopeOpenedHasBeenInvokedOnce) { 
+              scopeOpenedHasBeenInvokedOnce = true
               if (message.indexOf("My") >= 0)
                 infoReportHadCorrectTestName = true
               formatter match {
@@ -441,7 +441,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
               }
             }
             else {
-              infoProvidedHasBeenInvokedTwice = true
+              scopeOpenedHasBeenInvokedTwice = true
               if (message.indexOf("Spec") < 0)
                 infoReportHadCorrectTestName = false
               formatter match {
@@ -454,8 +454,8 @@ class SpecSuite extends FunSuite with SharedHelpers {
               }
             }
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, location, rerunnable, payload, threadName, timeStamp) =>
-            // infoProvided should be invoked before the this method
-            assert(infoProvidedHasBeenInvokedTwice)
+            // scopeOpened should be invoked before the this method
+            assert(scopeOpenedHasBeenInvokedTwice)
             theOtherMethodHasBeenInvoked = true
             if (testName.indexOf("My Spec must start with proper words") != -1)
               reportHadCorrectTestName = true
@@ -495,17 +495,17 @@ class SpecSuite extends FunSuite with SharedHelpers {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
-    var infoProvidedHasBeenInvokedOnce = false
-    var infoProvidedHasBeenInvokedTwice = false
+    var scopeOpenedHasBeenInvokedOnce = false
+    var scopeOpenedHasBeenInvokedTwice = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
-            // infoProvided should be invoked before the other method
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+            // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
-            if (!infoProvidedHasBeenInvokedOnce) { 
-              infoProvidedHasBeenInvokedOnce = true
+            if (!scopeOpenedHasBeenInvokedOnce) { 
+              scopeOpenedHasBeenInvokedOnce = true
               if (message.indexOf("My") >= 0)
                 infoReportHadCorrectTestName = true
               formatter match {
@@ -518,7 +518,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
               }
             }
             else {
-              infoProvidedHasBeenInvokedTwice = true
+              scopeOpenedHasBeenInvokedTwice = true
               if (message.indexOf("Spec") < 0)
                 infoReportHadCorrectTestName = false
               formatter match {
@@ -531,8 +531,8 @@ class SpecSuite extends FunSuite with SharedHelpers {
               }
             }
           case event: TestFailed =>
-            // infoProvided should be invoked before the this method
-            assert(infoProvidedHasBeenInvokedTwice)
+            // scopeOpened should be invoked before the this method
+            assert(scopeOpenedHasBeenInvokedTwice)
             theOtherMethodHasBeenInvoked = true
             if (event.testName.indexOf("My Spec must start with proper words") != -1)
               reportHadCorrectTestName = true
@@ -714,15 +714,15 @@ class SpecSuite extends FunSuite with SharedHelpers {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
-    var infoProvidedHasBeenInvoked = false
+    var scopeOpenedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
-            // infoProvided should be invoked before the other method
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+            // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
-            infoProvidedHasBeenInvoked = true
+            scopeOpenedHasBeenInvoked = true
             if (message.indexOf("My Spec") != -1)
               infoReportHadCorrectTestName = true
             formatter match {
@@ -734,8 +734,8 @@ class SpecSuite extends FunSuite with SharedHelpers {
               case _ =>
             }
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, location, rerunnable, payload, threadName, timeStamp) =>
-            // infoProvided should be invoked before the this method
-            assert(infoProvidedHasBeenInvoked)
+            // scopeOpened should be invoked before the this method
+            assert(scopeOpenedHasBeenInvoked)
             theOtherMethodHasBeenInvoked = true
             if (testName.indexOf("My Spec should start with proper words") != -1)
               reportHadCorrectTestName = true
@@ -1071,14 +1071,14 @@ class SpecSuite extends FunSuite with SharedHelpers {
     val expectedSpecText = "A Stack"
 
     class MyReporter extends Reporter {
-      var infoProvidedCalled = false
+      var scopeOpenedCalled = false
       var expectedMessageReceived = false
       def apply(event: Event) {
         event match {
-          case event: InfoProvided =>
+          case event: ScopeOpened =>
             event.formatter match {
               case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
-                infoProvidedCalled = true
+                scopeOpenedCalled = true
                 if (!expectedMessageReceived) {
                   expectedMessageReceived = (rawText == expectedSpecText)
                 }
@@ -1094,11 +1094,11 @@ class SpecSuite extends FunSuite with SharedHelpers {
         it("should allow me to push") {}
       }
     }
-    
+
     val a = new MySpec
     val myRep = new MyReporter
     a.run(None, myRep, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(myRep.infoProvidedCalled)
+    assert(myRep.scopeOpenedCalled)
     assert(myRep.expectedMessageReceived)
   }
  

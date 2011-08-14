@@ -422,6 +422,43 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
         val shouldBeYellow = isPending || wasCanceled
         for (line <- lines) printPossiblyInColor(line, if (shouldBeYellow) ansiYellow else ansiGreen)
 
+      case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+
+        val suiteName = Some(nameInfo.suiteName)
+        val testName = nameInfo.testName
+        val lines = stringsToPrintOnError("scopeOpenedNote", "scopeOpened", message, throwable, formatter, suiteName, testName, None)
+        val isPending =
+          aboutAPendingTest match {
+            case Some(isPending) => isPending
+            case None => false
+          }
+        val wasCanceled =
+          aboutACanceledTest match {
+            case Some(wasCanceled) => wasCanceled
+            case None => false
+          }
+        val shouldBeYellow = isPending || wasCanceled
+        for (line <- lines) printPossiblyInColor(line, if (shouldBeYellow) ansiYellow else ansiGreen)
+
+      // TODO: Reduce duplication among InfoProvided, ScopeOpened, and ScopeClosed
+      case ScopeClosed(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+
+        val suiteName = Some(nameInfo.suiteName)
+        val testName = nameInfo.testName
+        val lines = stringsToPrintOnError("scopeClosedNote", "scopeClosed", message, throwable, formatter, suiteName, testName, None)
+        val isPending =
+          aboutAPendingTest match {
+            case Some(isPending) => isPending
+            case None => false
+          }
+        val wasCanceled =
+          aboutACanceledTest match {
+            case Some(wasCanceled) => wasCanceled
+            case None => false
+          }
+        val shouldBeYellow = isPending || wasCanceled
+        for (line <- lines) printPossiblyInColor(line, if (shouldBeYellow) ansiYellow else ansiGreen)
+
       case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
 //println("Got markup: " + message)
         // Won't do anything here, because not reporting these events in the StringReporter.

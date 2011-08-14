@@ -247,32 +247,37 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
 
         val descriptionTextWithOptionalPrefix = prependChildPrefix(parent, descriptionText)
         val indentationLevel = desc.indentationLevel
-        reportInfoProvided(theSuite, report, tracker, None, descriptionTextWithOptionalPrefix, indentationLevel, true, false)
+        reportScopeOpened(theSuite, report, tracker, None, descriptionTextWithOptionalPrefix, indentationLevel, false)
+        traverseSubNodes()
+        reportScopeClosed(theSuite, report, tracker, None, descriptionTextWithOptionalPrefix, indentationLevel, false)
 
       case Trunk =>
+        traverseSubNodes()
     }
 
 
-    branch.subNodes.reverse.foreach { node =>
-      if (!stopRequested()) {
-        node match {
-          case testLeaf @ TestLeaf(_, testName, testText, _) =>
-            val (filterTest, ignoreTest) = filter(testName, theSuite.tags)
-            if (!filterTest)
-              if (ignoreTest) {
-                val testTextWithOptionalPrefix = prependChildPrefix(branch, testText)
-                reportTestIgnored(theSuite, report, tracker, testName, testTextWithOptionalPrefix, testLeaf.indentationLevel)
-              }
-              else
-                runTest(testName, report, stopRequested, configMap, tracker)
+    def traverseSubNodes() {
+      branch.subNodes.reverse.foreach { node =>
+        if (!stopRequested()) {
+          node match {
+            case testLeaf @ TestLeaf(_, testName, testText, _) =>
+              val (filterTest, ignoreTest) = filter(testName, theSuite.tags)
+              if (!filterTest)
+                if (ignoreTest) {
+                  val testTextWithOptionalPrefix = prependChildPrefix(branch, testText)
+                  reportTestIgnored(theSuite, report, tracker, testName, testTextWithOptionalPrefix, testLeaf.indentationLevel)
+                }
+                else
+                  runTest(testName, report, stopRequested, configMap, tracker)
 
-          case infoLeaf @ InfoLeaf(_, message) =>
-            reportInfoProvided(theSuite, report, tracker, None, message, infoLeaf.indentationLevel, true, includeIcon)
+            case infoLeaf @ InfoLeaf(_, message) =>
+              reportInfoProvided(theSuite, report, tracker, None, message, infoLeaf.indentationLevel, true, includeIcon)
 
-          case markupLeaf @ MarkupLeaf(_, message) =>
-            reportMarkupProvided(theSuite, report, tracker, None, message, markupLeaf.indentationLevel, true, includeIcon)
+            case markupLeaf @ MarkupLeaf(_, message) =>
+              reportMarkupProvided(theSuite, report, tracker, None, message, markupLeaf.indentationLevel, true, includeIcon)
 
-          case branch: Branch => runTestsInBranch(theSuite, branch, report, stopRequested, filter, configMap, tracker, includeIcon, runTest)
+            case branch: Branch => runTestsInBranch(theSuite, branch, report, stopRequested, filter, configMap, tracker, includeIcon, runTest)
+          }
         }
       }
     }

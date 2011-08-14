@@ -46,6 +46,8 @@ private[tools] class FilterReporter(reporter: Reporter, configSet: Set[ReporterC
       case event: TestCanceled => if (!configSet.contains(FilterTestCanceled)) report(event)
       case event: TestPending => if (!configSet.contains(FilterTestPending)) report(event)
       case event: InfoProvided => if (!configSet.contains(FilterInfoProvided)) report(event)
+      case event: ScopeOpened => if (!configSet.contains(FilterScopeOpened)) report(event)
+      case event: ScopeClosed => if (!configSet.contains(FilterScopeClosed)) report(event)
       case event: MarkupProvided => if (!configSet.contains(FilterMarkupProvided)) report(event)
     }
   }

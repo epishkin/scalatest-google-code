@@ -351,6 +351,8 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
                 case event: RunAborted => None
                 case event: RunCompleted => None
                 case event: InfoProvided => nameFromNameInfo(event.nameInfo)
+                case event: ScopeOpened => nameFromNameInfo(Some(event.nameInfo))
+                case event: ScopeClosed => nameFromNameInfo(Some(event.nameInfo))
                 case event: MarkupProvided => nameFromNameInfo(event.nameInfo) // Should not get here because I'm not registering MarkupInfos
                 case event: SuiteStarting => Some(event.suiteName)
                 case event: SuiteCompleted => Some(event.suiteName)
@@ -370,6 +372,8 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
                 case event: RunAborted => event.duration
                 case event: RunCompleted => event.duration
                 case event: InfoProvided => None
+                case event: ScopeOpened => None
+                case event: ScopeClosed => None
                 case event: MarkupProvided => None // Shouldn't get here because not registering MarkupInfos
                 case event: SuiteStarting => None
                 case event: SuiteCompleted => event.duration
@@ -977,6 +981,18 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerEvent(event)
           }
 
+        case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+
+          usingEventDispatchThread {
+            registerEvent(event)
+          }
+
+        case ScopeClosed(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+
+          usingEventDispatchThread {
+            registerEvent(event)
+          }
+
         case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
       }
     }
@@ -1361,6 +1377,18 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerRerunEvent(event)
           }
   
+        case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+
+          usingEventDispatchThread {
+            registerRerunEvent(event)
+          }
+  
+        case ScopeClosed(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+
+          usingEventDispatchThread {
+            registerRerunEvent(event)
+          }
+  
         case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
       }
     }
@@ -1444,6 +1472,8 @@ private[tools] object RunnerJFrame {
       case PresentSuiteAborted => "SUITE_ABORTED"
       case PresentSuiteCompleted => "SUITE_COMPLETED"
       case PresentInfoProvided => "INFO_PROVIDED"
+      case PresentScopeOpened => "SCOPE_OPENED"
+      case PresentScopeClosed => "SCOPE_CLOSED"
       case PresentMarkupProvided => "MARKUP_PROVIDED" // Shouldn't get here, because not registering these events in the GUI
       case PresentRunStopped => "RUN_STOPPED"
       case PresentRunAborted => "RUN_ABORTED"

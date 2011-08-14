@@ -2946,4 +2946,54 @@ used for test events like succeeded/failed, etc.
       )
     )
   }
+
+  // If not fired in the context of a test, then testName will be None
+  def reportScopeOpened(
+    theSuite: Suite,
+    report: Reporter,
+    tracker: Tracker,
+    testName: Option[String],
+    message: String,
+    level: Int,
+    includeIcon: Boolean = true,
+    aboutAPendingTest: Option[Boolean] = None,
+    aboutACanceledTest: Option[Boolean] = None
+  ) {
+    report(
+      ScopeOpened(
+        tracker.nextOrdinal(),
+        message,
+        NameInfo(theSuite.suiteName, Some(theSuite.getClass.getName), testName),
+        aboutAPendingTest,
+        aboutACanceledTest,
+        None,
+        Some(getIndentedTextForInfo(message, level, includeIcon, testName.isDefined))
+      )
+    )
+  }
+
+  // If not fired in the context of a test, then testName will be None
+  def reportScopeClosed(
+    theSuite: Suite,
+    report: Reporter,
+    tracker: Tracker,
+    testName: Option[String],
+    message: String,
+    level: Int,
+    includeIcon: Boolean = true,
+    aboutAPendingTest: Option[Boolean] = None,
+    aboutACanceledTest: Option[Boolean] = None
+  ) {
+    report(
+      ScopeClosed(
+        tracker.nextOrdinal(),
+        message,
+        NameInfo(theSuite.suiteName, Some(theSuite.getClass.getName), testName),
+        aboutAPendingTest,
+        aboutACanceledTest,
+        None,
+        Some(getIndentedTextForInfo(message, level, includeIcon, testName.isDefined))
+      )
+    )
+  }
 }

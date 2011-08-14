@@ -184,6 +184,9 @@ path&gt; [...]]
  * <li> <code><b>H</b></code> - drop <code>SuiteStarting</code> events</li>
  * <li> <code><b>L</b></code> - drop <code>SuiteCompleted</code> events</li>
  * <li> <code><b>O</b></code> - drop <code>InfoProvided</code> events</li>
+ * <li> <code><b>P</b></code> - drop <code>ScopeOpened</code> events</li>
+ * <li> <code><b>Q</b></code> - drop <code>ScopeClosed</code> events</li>
+ * <li> <code><b>M</b></code> - drop <code>MarkupProvided</code> events</li>
  * </ul>
  *
  * <p>
