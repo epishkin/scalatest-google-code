@@ -49,7 +49,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
         concurrentList,
         memberOfList,
         beginsWithList,
-        testNGList
+        testNGList,
+        dollar
       ) = Runner.parseArgs(args)
 
       assert(runpathList === expectedRunpathList)
@@ -63,6 +64,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       assert(memberOfList === expectedMemberOfList)
       assert(beginsWithList === expectedBeginsWithList)
       assert(testNGList === expectedTestNGList)
+      assert(dollar === false)
     }
 
     verify(

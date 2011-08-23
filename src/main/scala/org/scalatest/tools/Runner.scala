@@ -49,7 +49,7 @@ import java.util.concurrent.ExecutorService
 [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] 
 [-n &lt;includes&gt;] [-l &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; 
 [...]] [-j &lt;junit class name&gt; [...]] [-m &lt;members-only suite path&gt; 
-[...]] [-w &lt;wildcard suite path&gt; [...]] [-t &lt;TestNG config file 
+[...]] [-w &lt;wildcard suite path&gt; [...]] [-$] [-t &lt;TestNG config file 
 path&gt; [...]]
  * </pre>
  *
@@ -349,6 +349,13 @@ path&gt; [...]]
  * </p>
  *
  * <p>
+ * By default, to speed up searching for Suite files to run, class
+ * files with a '$' in their name are ignored.  To have all class
+ * files included in the discovery search, specify option
+ * <code>-$</code>.
+ * </p>
+ *
+ * <p>
  * For example, if you specify <code>-m com.example.webapp</code>
  * on the command line, and you've placed <code>com.example.webapp.RedSuite</code> and <code>com.example.webapp.BlueSuite</code>
  * on the runpath, then <code>Runner</code> will instantiate and execute both of those <code>Suite</code>s. The difference
@@ -509,7 +516,8 @@ object Runner {
       concurrentList,
       membersOnlyArgsList,
       wildcardArgsList,
-      testNGArgsList
+      testNGArgsList,
+      dollar
     ) = parseArgs(args)
 
     val fullReporterConfigurations: ReporterConfigurations =
@@ -569,7 +577,7 @@ object Runner {
         val abq = new ArrayBlockingQueue[RunnerJFrame](1)
         usingEventDispatchThread {
           val rjf = new RunnerJFrame(graphicEventsToPresent, reporterConfigs, suitesList, junitsList, runpathList,
-            filter, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, passFailReporter, numThreads)
+            filter, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, passFailReporter, numThreads, dollar)
           rjf.setLocation(RUNNER_JFRAME_START_X, RUNNER_JFRAME_START_Y)
           rjf.setVisible(true)
           rjf.prepUIForRunning()
@@ -585,7 +593,7 @@ object Runner {
         withClassLoaderAndDispatchReporter(runpathList, reporterConfigs, None, passFailReporter) {
           (loader, dispatchReporter) => {
             doRunRunRunDaDoRunRun(dispatchReporter, suitesList, junitsList, new Stopper {}, filter,
-                propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}, 1, numThreads) 
+                propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}, 1, numThreads, dollar) 
           }
         }
       }
@@ -611,7 +619,7 @@ object Runner {
         if (it.hasNext)
           it.next
       }
-      else if (!s.startsWith("-D") && !s.startsWith("-g") && !s.startsWith("-o") && !s.startsWith("-e") && !s.startsWith("-c")) {
+      else if (!s.startsWith("-D") && !s.startsWith("-g") && !s.startsWith("-o") && !s.startsWith("-e") && !s.startsWith("-$") && !s.startsWith("-c")) {
         lb += s
       }
     }
@@ -654,6 +662,7 @@ object Runner {
     val membersOnly = new ListBuffer[String]()
     val wildcard = new ListBuffer[String]()
     val testNGXMLFiles = new ListBuffer[String]()
+    var dollar = false
 
     val it = args.iterator
     while (it.hasNext) {
@@ -748,6 +757,9 @@ object Runner {
         if (it.hasNext)
           testNGXMLFiles += it.next
       }
+      else if (s.startsWith("-$")) {
+        dollar = true
+      }
       else {
         throw new IllegalArgumentException("Unrecognized argument: " + s)
       }
@@ -764,7 +776,8 @@ object Runner {
       concurrent.toList,
       membersOnly.toList,
       wildcard.toList,
-      testNGXMLFiles.toList
+      testNGXMLFiles.toList,
+      dollar
     )
   }
 
@@ -1355,7 +1368,8 @@ object Runner {
     loader: ClassLoader,
     doneListener: RunDoneListener,
     runStamp: Int,
-    numThreads: Int
+    numThreads: Int,
+    dollar: Boolean
   ) = {
 
     // TODO: add more, and to RunnerThread too
@@ -1443,7 +1457,7 @@ object Runner {
 println("DEBUG: Discovery Starting")
 val discoveryStartTime = System.currentTimeMillis
 
-              val accessibleSuites = SuiteDiscoveryHelper.discoverSuiteNames(runpath, loader)
+              val accessibleSuites = SuiteDiscoveryHelper.discoverSuiteNames(runpath, loader, dollar)
 val discoveryDuration = System.currentTimeMillis - discoveryStartTime
 println("DEBUG: Discovery Completed: " + discoveryDuration + " milliseconds")
 

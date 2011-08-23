@@ -36,7 +36,7 @@ import java.io.IOException
  */
 private[scalatest] object SuiteDiscoveryHelper {
 
-  def discoverSuiteNames(runpath: List[String], loader: ClassLoader): Set[String] = {
+  def discoverSuiteNames(runpath: List[String], loader: ClassLoader, dollar: Boolean): Set[String] = {
 
     val fileSeparatorString = System.getProperty("path.separator")
     val fileSeparator = if (!fileSeparatorString.isEmpty) fileSeparatorString(0) else ':'
@@ -86,12 +86,12 @@ private[scalatest] object SuiteDiscoveryHelper {
               }
     
             jarFileOption match {
-              case Some(jf) => processFileNames(getFileNamesIteratorFromJar(jf), '/', loader)
+              case Some(jf) => processFileNames(getFileNamesIteratorFromJar(jf), '/', loader, dollar)
               case None => Set[String]()
             }
           }
           else {
-            processFileNames(getFileNamesSetFromFile(new File(path), fileSeparator).iterator, fileSeparator, loader)
+            processFileNames(getFileNamesSetFromFile(new File(path), fileSeparator).iterator, fileSeparator, loader, dollar)
           }
         }
 
@@ -139,9 +139,16 @@ private[scalatest] object SuiteDiscoveryHelper {
   }
 
   // Returns Some(<class name>) if processed, else None
-  private def processClassName(className: String, loader: ClassLoader): Option[String] = {
-
-    if (className.indexOf('$') == -1 && isAccessibleSuite(className, loader)) {
+  //
+  // Parameter 'dollar' indicates that files containing dollar
+  // signs in their names should be included in the scan.
+  // Otherwise they are omitted to speed up processing.
+  //
+  private def processClassName(className: String, loader: ClassLoader, dollar: Boolean): Option[String] = {
+    if ((dollar || className.indexOf('$') == -1)
+        &&
+        isAccessibleSuite(className, loader))
+    {
       Some(className)
     }
     else {
@@ -150,11 +157,11 @@ private[scalatest] object SuiteDiscoveryHelper {
   }
 
   // Returns a set of class names that were processed
-  private def processFileNames(fileNames: Iterator[String], fileSeparator: Char, loader: ClassLoader): Set[String] = {
+  private def processFileNames(fileNames: Iterator[String], fileSeparator: Char, loader: ClassLoader, dollar: Boolean): Set[String] = {
 
     val classNameOptions = // elements are Some(<class name>) if processed, else None
       for (className <- extractClassNames(fileNames, fileSeparator))
-        yield processClassName(className, loader)
+        yield processClassName(className, loader, dollar)
 
     val classNames = 
       for (Some(className) <- classNameOptions)
