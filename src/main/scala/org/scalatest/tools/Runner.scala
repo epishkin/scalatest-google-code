@@ -49,7 +49,7 @@ import java.util.concurrent.ExecutorService
 [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] 
 [-n &lt;includes&gt;] [-l &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; 
 [...]] [-j &lt;junit class name&gt; [...]] [-m &lt;members-only suite path&gt; 
-[...]] [-w &lt;wildcard suite path&gt; [...]] [-$] [-t &lt;TestNG config file 
+[...]] [-w &lt;wildcard suite path&gt; [...]] [-S] [-t &lt;TestNG config file 
 path&gt; [...]]
  * </pre>
  *
@@ -352,7 +352,7 @@ path&gt; [...]]
  * By default, to speed up searching for Suite files to run, class
  * files with a '$' in their name are ignored.  To have all class
  * files included in the discovery search, specify option
- * <code>-$</code>.
+ * <code>-S</code>.
  * </p>
  *
  * <p>
@@ -619,7 +619,7 @@ object Runner {
         if (it.hasNext)
           it.next
       }
-      else if (!s.startsWith("-D") && !s.startsWith("-g") && !s.startsWith("-o") && !s.startsWith("-e") && !s.startsWith("-$") && !s.startsWith("-c")) {
+      else if (!s.startsWith("-D") && !s.startsWith("-g") && !s.startsWith("-o") && !s.startsWith("-e") && !s.startsWith("-S") && !s.startsWith("-c")) {
         lb += s
       }
     }
@@ -757,7 +757,7 @@ object Runner {
         if (it.hasNext)
           testNGXMLFiles += it.next
       }
-      else if (s.startsWith("-$")) {
+      else if (s.startsWith("-S")) {
         dollar = true
       }
       else {

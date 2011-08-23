@@ -324,12 +324,12 @@ class ScalaTestAntTask extends Task {
   }
 
   //
-  // Adds '-$' arg to args list if 'dollarfiles' attribute was
+  // Adds '-S' arg to args list if 'dollarfiles' attribute was
   // specified true for task.
   //
   private def addDollarfilesArg(args: ListBuffer[String]) {
     if (dollarfiles) {
-      args += "-$"
+      args += "-S"
     }
   }
 
