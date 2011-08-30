@@ -7007,5 +7007,26 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
    */
   def produce[T](implicit manifest: Manifest[T]): ResultOfProduceInvocation[T] =
     new ResultOfProduceInvocation(manifest.erasure.asInstanceOf[Class[T]])
+
+  // For safe keeping
+  private implicit def nodeToCanonical(node: scala.xml.Node) = new Canonicalizer(node)
+
+  private class Canonicalizer(node: scala.xml.Node) {
+
+    def toCanonical: scala.xml.Node = {
+      node match {
+        case elem: scala.xml.Elem =>
+          val canonicalizedChildren =
+            for (child <- node.child if !child.toString.trim.isEmpty) yield {
+              child match {
+                case elem: scala.xml.Elem => elem.toCanonical
+                case other => other
+              }
+            }
+          new scala.xml.Elem(elem.prefix, elem.label, elem.attributes, elem.scope, canonicalizedChildren: _*)
+        case other => other
+      }
+    }
+  }
 }
 
