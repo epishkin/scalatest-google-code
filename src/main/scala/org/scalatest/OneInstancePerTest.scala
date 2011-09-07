@@ -15,6 +15,8 @@
  */
 package org.scalatest
 
+import org.scalatest.Suite.reportTestIgnored
+
 /**
  * Trait that facilitates a style of testing in which each test is run in its own instance
  * of the suite class to isolate each test from the side effects of the other tests in the
@@ -61,7 +63,7 @@ package org.scalatest
  */
 trait OneInstancePerTest extends AbstractSuite {
   
-  this: Suite =>
+  thisSuite: Suite =>
 
   /**
    * Run this <code>Suite's</code> tests each in their own instance of this <code>Suite</code>'s class.
@@ -96,9 +98,24 @@ trait OneInstancePerTest extends AbstractSuite {
     testName match {
       case Some(tn) => super.runTests(testName, reporter, stopper, filter, configMap, None, tracker)
       case None =>
+/*
         for (tn <- testNames) {
           val oneInstance = newInstance
           oneInstance.run(Some(tn), reporter, stopper, filter, configMap, None, tracker)
+        }
+*/
+        val stopRequested = stopper
+        for ((tn, ignoreTest) <- filter(testNames, tags)) {
+          if (!stopRequested()) {
+            if (ignoreTest) {
+              reportTestIgnored(thisSuite, reporter, tracker, tn, tn, 1) // TODO: How do I get the dang indentation level?
+            }
+            else {
+              // runTest(tn, report, stopRequested, configMap, tracker)
+              val oneInstance = newInstance
+              oneInstance.run(Some(tn), reporter, stopper, filter, configMap, None, tracker)
+            }
+          }
         }
     }
   }

@@ -66,5 +66,75 @@ class OneInstancePerTestSpec extends Spec with SharedHelpers {
       suite.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(TopLevelSuite.sideEffectWasNotSeen)
     }
+    it("should send TestIgnored for an ignored test") {
+
+      var aTheTestThisCalled = false
+      var aTheTestThatCalled = false
+      class ASpec extends WordSpec with OneInstancePerTest {
+        "test this" in { aTheTestThisCalled = true }
+        "test that" in { aTheTestThatCalled = true }
+        override def newInstance = new ASpec
+      }
+      val a = new ASpec
+
+      val repA = new TestIgnoredTrackingReporter
+      a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(!repA.testIgnoredReceived)
+      assert(aTheTestThisCalled)
+      assert(aTheTestThatCalled)
+
+      var bTheTestThisCalled = false
+      var bTheTestThatCalled = false
+      class BSpec extends WordSpec with OneInstancePerTest {
+        "test this" ignore { bTheTestThisCalled = true }
+        "test that" in { bTheTestThatCalled = true }
+        override def newInstance = new BSpec
+      }
+      val b = new BSpec
+
+      val repB = new TestIgnoredTrackingReporter
+      b.run(None, repB, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repB.testIgnoredReceived)
+      assert(repB.lastEvent.isDefined)
+      assert(repB.lastEvent.get.testName endsWith "test this")
+      assert(!bTheTestThisCalled)
+      assert(bTheTestThatCalled)
+
+      var cTheTestThisCalled = false
+      var cTheTestThatCalled = false
+      class CSpec extends WordSpec with OneInstancePerTest {
+        "test this" in { cTheTestThisCalled = true }
+        "test that" ignore { cTheTestThatCalled = true }
+        override def newInstance = new CSpec
+      }
+      val c = new CSpec
+
+      val repC = new TestIgnoredTrackingReporter
+      c.run(None, repC, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repC.testIgnoredReceived)
+      assert(repC.lastEvent.isDefined)
+      assert(repC.lastEvent.get.testName endsWith "test that", repC.lastEvent.get.testName)
+      assert(cTheTestThisCalled)
+      assert(!cTheTestThatCalled)
+
+      // The order I want is order of appearance in the file.
+      // Will try and implement that tomorrow. Subtypes will be able to change the order.
+      var dTheTestThisCalled = false
+      var dTheTestThatCalled = false
+      class DSpec extends WordSpec with OneInstancePerTest {
+        "test this" ignore { dTheTestThisCalled = true }
+        "test that" ignore { dTheTestThatCalled = true }
+        override def newInstance = new DSpec
+      }
+      val d = new DSpec
+
+      val repD = new TestIgnoredTrackingReporter
+      d.run(None, repD, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repD.testIgnoredReceived)
+      assert(repD.lastEvent.isDefined)
+      assert(repD.lastEvent.get.testName endsWith "test that") // last because should be in order of appearance
+      assert(!dTheTestThisCalled)
+      assert(!dTheTestThatCalled)
+    }
   }
 }
