@@ -581,6 +581,12 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
         t match {
           case _: TestPendingException =>
             reportTestPending(thisSuite, report, tracker, testName, testName, formatter)
+          case e: TestCanceledException =>
+            val duration = System.currentTimeMillis - testStartTime
+            val message = getMessageForException(e)
+            val formatter = getIndentedText(testName, 1, true)
+            report(TestCanceled(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, testName, Some(e), Some(duration), Some(formatter), Some(ToDoLocation), rerunnable))
+            // TODO: Handle this testWasCanceled = true // Set so info's printed out in the finally clause show up yellow
           case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
             handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)

@@ -2075,7 +2075,6 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
             testWasPending = true // Set so info's printed out in the finally clause show up yellow
           case e: TestCanceledException =>
             val duration = System.currentTimeMillis - testStartTime
-            //reportTestCanceled(this, report, tracker, testName, duration, formatter)
             val message = getMessageForException(e)
             val formatter = getIndentedText(testName, 1, true)
             report(TestCanceled(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, testName, Some(e), Some(duration), Some(formatter), Some(ToDoLocation), rerunnable))
