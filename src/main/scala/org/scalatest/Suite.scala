@@ -2929,7 +2929,6 @@ used for test events like succeeded/failed, etc.
     message: String,
     level: Int,
     includeNameInfo: Boolean,
-    includeIcon: Boolean = true,
     aboutAPendingTest: Option[Boolean] = None,
     aboutACanceledTest: Option[Boolean] = None
   ) {

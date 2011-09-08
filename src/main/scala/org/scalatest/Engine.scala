@@ -191,7 +191,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     val documenterForThisTest =
       MessageRecordingDocumenter(
         messageRecorderForThisTest,
-        (message, isConstructingThread, testWasPending, testWasCanceled) => reportMarkupProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, includeIcon, Some(testWasPending), Some(testWasCanceled))
+        (message, isConstructingThread, testWasPending, testWasCanceled) => reportMarkupProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, Some(testWasPending), Some(testWasCanceled))
       )
 
     val oldInformer = atomicInformer.getAndSet(informerForThisTest)
@@ -273,7 +273,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
               reportInfoProvided(theSuite, report, tracker, None, message, infoLeaf.indentationLevel, true, includeIcon)
 
             case markupLeaf @ MarkupLeaf(_, message) =>
-              reportMarkupProvided(theSuite, report, tracker, None, message, markupLeaf.indentationLevel, true, includeIcon)
+              reportMarkupProvided(theSuite, report, tracker, None, message, markupLeaf.indentationLevel, true)
 
             case branch: Branch => runTestsInBranch(theSuite, branch, report, stopRequested, filter, configMap, tracker, includeIcon, runTest)
           }
