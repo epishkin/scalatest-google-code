@@ -830,14 +830,14 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
   }
   
   /**
-   * Throws <code>TestFailedException</code> to indicate a test canceled.
+   * Throws <code>TestCanceledException</code> to indicate a test was canceled.
    */
   def cancel() = { throw newTestCanceledException(None, None, 3) }
 
   /**
    * Throws <code>TestCanceledException</code>, with the passed
    * <code>String</code> <code>message</code> as the exception's detail
-   * message, to indicate a test canceled.
+   * message, to indicate a test was canceled.
    *
    * @param message A message describing the cancellation.
    * @throws NullPointerException if <code>message</code> is <code>null</code>

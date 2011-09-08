@@ -696,6 +696,52 @@ class FixtureFreeSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       val tp = rep.testPendingEventsReceived
       assert(tp.size === 2)
     }
+    it("should generate a TestCanceled message when the test body includes a cancel invocation") {
+      val a = new FixtureFreeSpec {
+        type FixtureParam = String
+        val hello = "Hello, world!"
+        def withFixture(test: OneArgTest) {
+          test(hello)
+        }
+
+        "should do this" in { fixture => cancel() }
+
+        "should do that" in { fixture =>
+          assert(fixture === hello)
+        }
+        "should do something else" in { fixture =>
+          assert(fixture === hello)
+          cancel("i changed my mind")
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tp = rep.testCanceledEventsReceived
+      assert(tp.size === 2)
+    }
+    it("should generate a TestCanceled message when the test body includes an assume invocation") {
+      val a = new FixtureFreeSpec {
+        type FixtureParam = String
+        val hello = "Hello, world!"
+        def withFixture(test: OneArgTest) {
+          test(hello)
+        }
+
+        "should do this" in { fixture => assume(1 + 1 === 3, "ho") }
+
+        "should do that" in { fixture =>
+          assert(fixture === hello)
+        }
+        "should do something else" in { fixture =>
+          assert(fixture === hello)
+          assume(3 === 4)
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tp = rep.testCanceledEventsReceived
+      assert(tp.size === 2)
+    }
     it("should generate a test failure if a Throwable, or an Error other than direct Error subtypes " +
             "known in JDK 1.5, excluding AssertionError") {
       val a = new FixtureFreeSpec {
