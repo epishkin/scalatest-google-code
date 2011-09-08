@@ -507,6 +507,44 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       val tp = rep.testPendingEventsReceived
       assert(tp.size === 2)
     }
+    it("should generate a TestCanceled message when the test body includes a cancel call") {
+      val a = new Suite {
+
+        def testDoThis() { cancel() }
+
+        def testDoThat() {
+          assert(2 + 2 === 4)
+        }
+
+        def testDoSomethingElse() {
+          assert(2 + 2 === 4)
+          cancel()
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tp = rep.testCanceledEventsReceived
+      assert(tp.size === 2)
+    }
+    it("should generate a TestCanceled message when the test body includes a failed assume call") {
+      val a = new Suite {
+
+        def testDoThis() { assume(1 === 2) }
+
+        def testDoThat() {
+          assert(2 + 2 === 4)
+        }
+
+        def testDoSomethingElse() {
+          assert(2 + 2 === 4)
+          assume(3 === 4)
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tp = rep.testCanceledEventsReceived
+      assert(tp.size === 2)
+    }
     it("should generate a test failure if a Throwable, or an Error other than direct Error subtypes " +
             "known in JDK 1.5, excluding AssertionError") {
       val a = new Suite {
