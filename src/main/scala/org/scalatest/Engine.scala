@@ -185,13 +185,13 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     val informerForThisTest =
       MessageRecordingInformer(
         messageRecorderForThisTest,
-        (message, isConstructingThread, testWasPending) => reportInfoProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, includeIcon, Some(testWasPending))
+        (message, isConstructingThread, testWasPending, testWasCanceled) => reportInfoProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, includeIcon, Some(testWasPending), Some(testWasCanceled))
       )
 
     val documenterForThisTest =
       MessageRecordingDocumenter(
         messageRecorderForThisTest,
-        (message, isConstructingThread, testWasPending) => reportMarkupProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, includeIcon, Some(testWasPending))
+        (message, isConstructingThread, testWasPending, testWasCanceled) => reportMarkupProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, includeIcon, Some(testWasPending), Some(testWasCanceled))
       )
 
     val oldInformer = atomicInformer.getAndSet(informerForThisTest)
@@ -220,7 +220,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
       case e => throw e
     }
     finally {
-      messageRecorderForThisTest.fireRecordedMessages(testWasPending || testWasCanceled) // TODO: Change msgrecinformer to take both of these, and pass them separately to InfoProvided 
+      messageRecorderForThisTest.fireRecordedMessages(testWasPending, testWasCanceled)
       val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
       val swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
       if (!swapAndCompareSucceeded)

@@ -2037,13 +2037,13 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     val informerForThisTest =
       MessageRecordingInformer(
         messageRecorderForThisTest, 
-        (message, isConstructingThread, testWasPending) => reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, isConstructingThread, true, Some(testWasPending))
+        (message, isConstructingThread, testWasPending, testWasCanceled) => reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, isConstructingThread, true, Some(testWasPending), Some(testWasCanceled))
       )
 
     val documenterForThisTest =
       MessageRecordingDocumenter(
         messageRecorderForThisTest, 
-        (message, isConstructingThread, testWasPending) => reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, isConstructingThread, true, Some(testWasPending))
+        (message, isConstructingThread, testWasPending, testWasCanceled) => reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, isConstructingThread, true, Some(testWasPending)) // TODO: Need a test that fails because testWasCanceleed isn't being passed
       )
 
     val args: Array[Object] =
@@ -2090,7 +2090,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
       case e => throw e  
     }
     finally {
-      messageRecorderForThisTest.fireRecordedMessages(testWasPending || testWasCanceled) // TODO: Change msgrecinformer2 to take both of these, and pass them separately to InfoProvided
+      messageRecorderForThisTest.fireRecordedMessages(testWasPending, testWasCanceled) 
     }
   }
 
@@ -2930,7 +2930,8 @@ used for test events like succeeded/failed, etc.
     level: Int,
     includeNameInfo: Boolean,
     includeIcon: Boolean = true,
-    aboutAPendingTest: Option[Boolean] = None
+    aboutAPendingTest: Option[Boolean] = None,
+    aboutACanceledTest: Option[Boolean] = None
   ) {
     report(
       MarkupProvided(
@@ -2941,7 +2942,7 @@ used for test events like succeeded/failed, etc.
         else
           None,
         aboutAPendingTest,
-        None,
+        aboutACanceledTest,
         None // Some(getIndentedTextForInfo(message, level, includeIcon, testName.isDefined))  for now don't send a formatter
       )
     )

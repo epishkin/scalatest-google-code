@@ -80,6 +80,15 @@ trait SharedHelpers extends Assertions {
         case _ => throw new RuntimeException("should never happen")
       }
     }
+    def markupProvidedEventsReceived: List[MarkupProvided] = {
+      eventsReceived filter {
+        case event: MarkupProvided => true
+        case _ => false
+      } map {
+        case event: MarkupProvided => event
+        case _ => throw new RuntimeException("should never happen")
+      }
+    }
     def scopeOpenedEventsReceived: List[ScopeOpened] = {
       eventsReceived filter {
         case event: ScopeOpened => true

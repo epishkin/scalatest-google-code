@@ -777,8 +777,8 @@ class FixtureFreeSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       }
     }
-    it("should send InfoProvided events with aboutAPendingTest set to true for info " +
-            "calls made from a test that is pending") {
+    it("should send InfoProvided events with aboutAPendingTest set to true and aboutACanceledTest set to false for info " +
+            "calls made from a test that is pending and not canceled") {
       val a = new FixtureFreeSpec with GivenWhenThen {
         type FixtureParam = String
         val hello = "Hello, world!"
@@ -800,6 +800,7 @@ class FixtureFreeSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(ip.size === 3)
       for (event <- ip) {
         assert(event.aboutAPendingTest.isDefined && event.aboutAPendingTest.get)
+        assert(event.aboutACanceledTest.isDefined && !event.aboutACanceledTest.get)
       }
       val so = rep.scopeOpenedEventsReceived
       assert(so.size === 1)
@@ -812,8 +813,8 @@ class FixtureFreeSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         assert(event.message == "A FreeSpec")
       }
     }
-    it("should send InfoProvided events with aboutAPendingTest set to false for info " +
-            "calls made from a test that is not pending") {
+    it("should send InfoProvided events with aboutAPendingTest and aboutACanceledTest both set to false for info " +
+            "calls made from a test that is neither pending nor canceled") {
       val a = new FixtureFreeSpec with GivenWhenThen {
         type FixtureParam = String
         val hello = "Hello, world!"
@@ -835,6 +836,43 @@ class FixtureFreeSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(ip.size === 3)
       for (event <- ip) {
         assert(event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
+        assert(event.aboutACanceledTest.isDefined && !event.aboutACanceledTest.get)
+      }
+      val so = rep.scopeOpenedEventsReceived
+      assert(so.size === 1)
+      for (event <- so) {
+        assert(event.message == "A FreeSpec")
+      }
+      val sc = rep.scopeClosedEventsReceived
+      assert(so.size === 1)
+      for (event <- sc) {
+        assert(event.message == "A FreeSpec")
+      }
+    }
+    it("should send InfoProvided events with aboutAPendingTest set to false and aboutACanceledTest set to true for info " +
+            "calls made from a test that is pending and not canceled") {
+      val a = new FixtureFreeSpec with GivenWhenThen {
+        type FixtureParam = String
+        val hello = "Hello, world!"
+        def withFixture(test: OneArgTest) {
+          test(hello)
+        }
+        "A FreeSpec" - {
+          "should do something" in { s =>
+            given("two integers")
+            when("one is subracted from the other")
+            then("the result is the difference between the two numbers")
+            cancel()
+          }
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val ip = rep.infoProvidedEventsReceived
+      assert(ip.size === 3)
+      for (event <- ip) {
+        assert(event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
+        assert(event.aboutACanceledTest.isDefined && event.aboutACanceledTest.get)
       }
       val so = rep.scopeOpenedEventsReceived
       assert(so.size === 1)

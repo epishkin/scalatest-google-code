@@ -101,13 +101,13 @@ private[scalatest] class MessageRecorder extends ThreadAwareness {
     if (isConstructingThread)
       record(message, fire)
     else 
-      fire(message, false, false) // Fire the info provided event using the passed function
+      fire(message, false, false, false) // Fire the info provided event using the passed function
   }
 
   // send out any recorded messages
-  def fireRecordedMessages(testWasPending: Boolean) {
+  def fireRecordedMessages(testWasPending: Boolean, testWasCanceled: Boolean) {
     for ((message, fire) <- recordedMessages)
-      fire(message, true, testWasPending) // Fire the info provided event using the passed function
+      fire(message, true, testWasPending, testWasCanceled) // Fire the info provided event using the passed function
   }
 }
 
@@ -116,6 +116,7 @@ private[scalatest] class MessageRecordingInformer(recorder: MessageRecorder, fir
     recorder.apply(message, fire)
   }
 }
+
 private[scalatest] object MessageRecordingInformer {
   def apply(recorder: MessageRecorder, fire: RecordedMessageFiringFun) = new MessageRecordingInformer(recorder, fire)
 }
@@ -125,18 +126,17 @@ private[scalatest] class MessageRecordingDocumenter(recorder: MessageRecorder, f
     recorder.apply(message, fire)
   }
 }
+
 private[scalatest] object MessageRecordingDocumenter {
   def apply(recorder: MessageRecorder, fire: RecordedMessageFiringFun) = new MessageRecordingDocumenter(recorder, fire)
 }
 
 private[scalatest] object MessageRecorder {
-  // Three params of function are the string message, a boolean indicating this was from the current thread, and
-  // the last one is an optional boolean that indicates the message is about a pending test, in which case it would
-  // be printed out in yellow.
-  type RecordedMessageFiringFun = (String, Boolean, Boolean) => Unit 
+  // Three params of function are the string message, a boolean indicating this was from the current
+  // thread, and the last two are booleans that indicate the message is about a pending or canceled
+  // test, in which case it would be printed out in yellow.
+  type RecordedMessageFiringFun = (String, Boolean, Boolean, Boolean) => Unit 
 
   // Two params of function are the string message and a boolean indicating this was from the current thread
   type ConcurrentMessageFiringFun = (String, Boolean) => Unit 
-
-  // def apply(fire: (String, Boolean, Boolean) => Unit) = new MessageRecorder(fire)
 }
