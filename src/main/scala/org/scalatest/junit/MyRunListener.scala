@@ -52,7 +52,7 @@ import Suite.getIndentedText
           Resources("jUnitTestFailed")
 
       val formatter = getIndentedText(testName, 1, true)
-      report(TestFailed(theTracker.nextOrdinal(), message, testClassName, Some(testClass), testName, throwable, None, Some(formatter), None))
+      report(TestFailed(theTracker.nextOrdinal(), message, testClassName, Some(testClass), testName, testName, throwable, None, Some(formatter), None))
       // TODO: can I add a duration?
     }
 
@@ -61,7 +61,7 @@ import Suite.getIndentedText
         val (testName, testClass, testClassName) =
           parseTestDescription(description)
         val formatter = getIndentedText(testName, 1, true)
-        report(TestSucceeded(theTracker.nextOrdinal(), testClassName, Some(testClass), testName, None, Some(formatter), None))
+        report(TestSucceeded(theTracker.nextOrdinal(), testClassName, Some(testClass), testName, testName, None, Some(formatter), None))
         // TODO: can I add a duration?
       }
     }
@@ -71,7 +71,7 @@ import Suite.getIndentedText
         parseTestDescription(description)
       val testSucceededIcon = Resources("testSucceededIconChar")
       val formattedText = Resources("iconPlusShortName", testSucceededIcon, testName)
-      report(TestIgnored(theTracker.nextOrdinal(), testClassName, Some(testClass), testName, Some(IndentedText(formattedText, testName, 1))))
+      report(TestIgnored(theTracker.nextOrdinal(), testClassName, Some(testClass), testName, testName, Some(IndentedText(formattedText, testName, 1))))
     }
 
     override def testRunFinished(result: Result) {

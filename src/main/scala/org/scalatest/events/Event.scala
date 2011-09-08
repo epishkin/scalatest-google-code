@@ -313,6 +313,7 @@ object DeprecatedTestStarting {
  * @param suiteName the name of the suite containing the test that has succeeded
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has succeeded
  * @param testName the name of the test that has succeeded
+ * @param testText the text of the test that has succeeded (may be the test name, or a suffix of the test name)
  * @param duration an optional amount of time, in milliseconds, that was required to run the test that has succeeded
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
@@ -331,6 +332,7 @@ final case class TestSucceeded (
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
+  testText: String,
   duration: Option[Long] = None,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
@@ -348,6 +350,8 @@ final case class TestSucceeded (
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
     throw new NullPointerException("testName was null")
+  if (testText == null)
+    throw new NullPointerException("testText was null")
   if (duration == null)
     throw new NullPointerException("duration was null")
   if (formatter == null)
@@ -405,7 +409,7 @@ object DeprecatedTestSucceeded {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName, testName, testName, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -436,7 +440,7 @@ object DeprecatedTestSucceeded {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName, testName, testName, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -465,7 +469,7 @@ object DeprecatedTestSucceeded {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName, testName, testName, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -491,7 +495,7 @@ object DeprecatedTestSucceeded {
     testName: String,
     duration: Option[Long]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName, testName, testName, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -515,7 +519,7 @@ object DeprecatedTestSucceeded {
     suiteClassName: Option[String],
     testName: String
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName, testName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName, testName, testName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -552,6 +556,7 @@ object DeprecatedTestSucceeded {
  * @param suiteName the name of the suite containing the test that has failed
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has failed
  * @param testName the name of the test that has failed
+ * @param testText the text of the test that has failed (may be the test name, or a suffix of the test name)
  * @param throwable an optional <code>Throwable</code> that, if a <code>Some</code>, indicates why the test has failed,
  *        or a <code>Throwable</code> created to capture stack trace information about the problem.
  * @param duration an optional amount of time, in milliseconds, that was required to run the test that has failed
@@ -573,6 +578,7 @@ final case class TestFailed (
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
+  testText: String,
   throwable: Option[Throwable] = None,
   duration: Option[Long] = None,
   formatter: Option[Formatter] = None,
@@ -593,6 +599,8 @@ final case class TestFailed (
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
     throw new NullPointerException("testName was null")
+  if (testText == null)
+    throw new NullPointerException("testText was null")
   if (throwable == null)
     throw new NullPointerException("throwable was null")
   if (duration == null)
@@ -657,7 +665,7 @@ object DeprecatedTestFailed {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -693,7 +701,7 @@ object DeprecatedTestFailed {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -727,7 +735,7 @@ object DeprecatedTestFailed {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -758,7 +766,7 @@ object DeprecatedTestFailed {
     throwable: Option[Throwable],
     duration: Option[Long]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName, testName, testName, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -787,7 +795,7 @@ object DeprecatedTestFailed {
     testName: String,
     throwable: Option[Throwable]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName, testName, testName, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -824,6 +832,7 @@ object DeprecatedTestFailed {
  * @param suiteName the name of the suite containing the test that was ignored
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that was ignored
  * @param testName the name of the test that was ignored
+ * @param testText the text of the test that was ignored (may be the test name, or a suffix of the test name)
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
@@ -839,6 +848,7 @@ final case class TestIgnored (
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
+  testText: String,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
   payload: Option[Any] = None,
@@ -854,6 +864,8 @@ final case class TestIgnored (
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
     throw new NullPointerException("testName was null")
+  if (testText == null)
+    throw new NullPointerException("testText was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
   if (location == null)
@@ -902,7 +914,7 @@ object DeprecatedTestIgnored {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): TestIgnored = {
-    TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestIgnored(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -928,7 +940,7 @@ object DeprecatedTestIgnored {
     testName: String,
     formatter: Option[Formatter]
   ): TestIgnored = {
-    TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestIgnored(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -952,7 +964,7 @@ object DeprecatedTestIgnored {
     suiteClassName: Option[String],
     testName: String
   ): TestIgnored = {
-    TestIgnored(ordinal, suiteName, suiteClassName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestIgnored(ordinal, suiteName, suiteClassName, testName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -983,6 +995,7 @@ object DeprecatedTestIgnored {
  * @param suiteName the name of the suite containing the test that is pending
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is pending
  * @param testName the name of the test that is pending
+ * @param testText the text of the test that is pending (may be the test name, or a suffix of the test name)
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
@@ -998,6 +1011,7 @@ final case class TestPending (
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
+  testText: String,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
   payload: Option[Any] = None,
@@ -1013,6 +1027,8 @@ final case class TestPending (
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
     throw new NullPointerException("testName was null")
+  if (testText == null)
+    throw new NullPointerException("testText was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
   if (location == null)
@@ -1047,13 +1063,14 @@ final case class TestPending (
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param suiteName the name of the suite containing the test that is pending
- * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is pending
- * @param testName the name of the test that is pending
+ * @param suiteName the name of the suite containing the test that was canceled
+ * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that was canceled
+ * @param testName the name of the test that was canceled
+ * @param testText the text of the test that was canceled (may be the test name, or a suffix of the test name)
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
- * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestPending</code> event
+ * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestCanceled</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
@@ -1067,6 +1084,7 @@ final case class TestCanceled (
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
+  testText: String,
   throwable: Option[Throwable] = None,
   duration: Option[Long] = None,
   formatter: Option[Formatter] = None,
@@ -1086,6 +1104,8 @@ final case class TestCanceled (
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
     throw new NullPointerException("testName was null")
+  if (testText == null)
+    throw new NullPointerException("testText was null")
   if (throwable == null)
     throw new NullPointerException("throwable was null")
   if (duration == null)
@@ -1138,7 +1158,7 @@ object DeprecatedTestPending {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1164,7 +1184,7 @@ object DeprecatedTestPending {
     testName: String,
     formatter: Option[Formatter]
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1188,7 +1208,7 @@ object DeprecatedTestPending {
     suiteClassName: Option[String],
     testName: String
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName, testName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 

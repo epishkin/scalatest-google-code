@@ -72,9 +72,9 @@ class RunNotifierSuite extends FunSuite {
     val reporter = new RunNotifierReporter(runNotifier)
     val exception = new IllegalArgumentException
 
-    reporter(TestFailed(ordinal, "No msg", "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName", Some(exception)))
+    reporter(TestFailed(ordinal, "No msg", "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName", "theTestName", Some(exception)))
     assert(runNotifier.passed.get.getDescription.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
-    reporter(TestFailed(ordinal, "No msg", "SuiteClassName", None, "theTestName", Some(exception)))
+    reporter(TestFailed(ordinal, "No msg", "SuiteClassName", None, "theTestName", "theTestName", Some(exception)))
     assert(runNotifier.passed.get.getDescription.getDisplayName === "theTestName(SuiteClassName)")
   }
 
@@ -91,9 +91,9 @@ class RunNotifierSuite extends FunSuite {
       }
 
     val reporter = new RunNotifierReporter(runNotifier)
-    reporter(TestSucceeded(ordinal, "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName"))
+    reporter(TestSucceeded(ordinal, "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName", "theTestName"))
     assert(runNotifier.passed.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
-    reporter(TestSucceeded(ordinal, "SuiteClassName", None, "theTestName"))
+    reporter(TestSucceeded(ordinal, "SuiteClassName", None, "theTestName", "theTestName"))
     assert(runNotifier.passed.get.getDisplayName === "theTestName(SuiteClassName)")
   }
 
@@ -110,17 +110,17 @@ class RunNotifierSuite extends FunSuite {
       }
 
     val reporter = new RunNotifierReporter(runNotifier)
-    reporter(TestIgnored(new Ordinal(99), "suite name", Some("suite class name"), "some test name"))
+    reporter(TestIgnored(new Ordinal(99), "suite name", Some("suite class name"), "some test name", "some test name"))
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getDisplayName === "some test name(suite class name)")
 
-    reporter(TestIgnored(new Ordinal(99), "suiteName2", Some("suite.class.name"), "testName"))
+    reporter(TestIgnored(new Ordinal(99), "suiteName2", Some("suite.class.name"), "testName", "testName"))
     assert(runNotifier.methodInvocationCount === 2)
     assert(runNotifier.passed.get.getDisplayName === "testName(suite.class.name)")
 
-    reporter(TestIgnored(ordinal, "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName"))
+    reporter(TestIgnored(ordinal, "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName", "theTestName"))
     assert(runNotifier.passed.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
-    reporter(TestIgnored(ordinal, "SuiteClassName", None, "theTestName"))
+    reporter(TestIgnored(ordinal, "SuiteClassName", None, "theTestName", "theTestName"))
     assert(runNotifier.passed.get.getDisplayName === "theTestName(SuiteClassName)")
   }
 

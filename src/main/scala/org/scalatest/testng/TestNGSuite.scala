@@ -267,7 +267,7 @@ trait TestNGSuite extends Suite { thisSuite =>
     override def onTestSuccess(result: ITestResult) = {
       val testName = result.getName + params(result)
       val formatter = getIndentedText(testName, 1, true)
-      report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName,
+      report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, testName, 
           None, Some(formatter), Some(TopOfMethod(thisSuite.getClass.getName, result.getName)), Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
     }
 
@@ -278,7 +278,7 @@ trait TestNGSuite extends Suite { thisSuite =>
     override def onTestSkipped(result: ITestResult) = {
       val testName = result.getName + params(result)
       val formatter = getIndentedText(testName, 1, true)
-      report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(formatter)))
+      report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, testName, Some(formatter)))
     }
 
     /**
@@ -290,7 +290,7 @@ trait TestNGSuite extends Suite { thisSuite =>
       val message = if (throwableOrNull != null && throwableOrNull.getMessage != null) throwableOrNull.getMessage else Resources("testNGConfigFailed")
       val testName = result.getName + params(result)
       val formatter = getIndentedText(testName, 1, true)
-      report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, throwable, None, Some(formatter), Some(SeeStackDepthException), Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
+      report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, testName, throwable, None, Some(formatter), Some(SeeStackDepthException), Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
     }
 
     /**

@@ -923,13 +923,13 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerEvent(event)
           }
 
-        case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, location, payload, threadName, timeStamp) => 
+        case TestIgnored(ordinal, suiteName, suiteClassName, testName, testText, formatter, location, payload, threadName, timeStamp) => 
 
           usingEventDispatchThread {
             registerEvent(event)
           }
   
-        case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, location, payload, threadName, timeStamp) =>
+        case TestPending(ordinal, suiteName, suiteClassName, testName, testText, formatter, location, payload, threadName, timeStamp) =>
 
           usingEventDispatchThread {
             testsCompletedCount += 1
@@ -938,7 +938,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerEvent(event)
           }
 
-        case TestCanceled(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, location, payload, threadName, timeStamp) =>
+        case TestCanceled(ordinal, message, suiteName, suiteClassName, testName, testText, throwable, duration, formatter, location, payload, threadName, timeStamp) =>
 
           usingEventDispatchThread {
             testsCompletedCount += 1
@@ -947,7 +947,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerEvent(event)
           }
 
-        case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, location, rerunner, payload, threadName, timeStamp) =>
+        case TestSucceeded(ordinal, suiteName, suiteClassName, testName, testText, duration, formatter, location, rerunner, payload, threadName, timeStamp) =>
   
           usingEventDispatchThread {
             testsCompletedCount += 1
@@ -956,7 +956,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerEvent(event)
           }
   
-        case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, location, rerunner, payload, threadName, timeStamp) => 
+        case TestFailed(ordinal, message, suiteName, suiteClassName, testName, testText, throwable, duration, formatter, location, rerunner, payload, threadName, timeStamp) => 
 
           usingEventDispatchThread {
             testsCompletedCount += 1
@@ -1329,28 +1329,28 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerRerunEvent(event)
           }
   
-        case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, location, payload, threadName, timeStamp) => 
+        case TestIgnored(ordinal, suiteName, suiteClassName, testName, testText, formatter, location, payload, threadName, timeStamp) => 
 
           usingEventDispatchThread {
             rerunColorBox.setValue(rerunTestsCompletedCount)
             registerRerunEvent(event)
           }
 
-        case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, location, payload, threadName, timeStamp) =>
+        case TestPending(ordinal, suiteName, suiteClassName, testName, testText, formatter, location, payload, threadName, timeStamp) =>
 
           usingEventDispatchThread {
             rerunColorBox.setValue(rerunTestsCompletedCount)
             registerRerunEvent(event)
           }
 
-        case TestCanceled(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, location, payload, threadName, timeStamp) =>
+        case TestCanceled(ordinal, message, suiteName, suiteClassName, testName, testText, throwable, duration, formatter, location, payload, threadName, timeStamp) =>
 
           usingEventDispatchThread {
             rerunColorBox.setValue(rerunTestsCompletedCount)
             registerRerunEvent(event)
           }
 
-        case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, location, rerunner, payload, threadName, timeStamp) =>
+        case TestSucceeded(ordinal, suiteName, suiteClassName, testName, testText, duration, formatter, location, rerunner, payload, threadName, timeStamp) =>
 
           usingEventDispatchThread {
             rerunTestsCompletedCount += 1
@@ -1358,7 +1358,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerRerunEvent(event)
           }
 
-        case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, location, rerunner, payload, threadName, timeStamp) => 
+        case TestFailed(ordinal, message, suiteName, suiteClassName, testName, testText, throwable, duration, formatter, location, rerunner, payload, threadName, timeStamp) => 
 
           usingEventDispatchThread {
             rerunTestsCompletedCount += 1

@@ -171,12 +171,12 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) =
       theSuite.getRunTestGoodies(stopper, reporter, testName)
 
-    reportTestStarting(theSuite, report, tracker, testName, rerunnable)
-
     if (!atomic.get.testsMap.contains(testName))
       throw new IllegalArgumentException("No test in this suite has name: \"" + testName + "\"")
 
     val theTest = atomic.get.testsMap(testName)
+
+    reportTestStarting(theSuite, report, tracker, testName, theTest.testText, rerunnable)
 
     val testTextWithOptionalPrefix = prependChildPrefix(theTest.parent, theTest.testText)
     val formatter = getIndentedText(testTextWithOptionalPrefix, theTest.indentationLevel, includeIcon)
@@ -204,11 +204,11 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
       invokeWithFixture(theTest)
 
       val duration = System.currentTimeMillis - testStartTime
-      reportTestSucceeded(theSuite, report, tracker, testName, duration, formatter, rerunnable)
+      reportTestSucceeded(theSuite, report, tracker, testName, theTest.testText, duration, formatter, rerunnable)
     }
     catch { 
       case _: TestPendingException =>
-        reportTestPending(theSuite, report, tracker, testName, formatter)
+        reportTestPending(theSuite, report, tracker, testName, theTest.testText, formatter)
         testWasPending = true // Set so info's printed out in the finally clause show up yellow
       case e: TestCanceledException =>
         val duration = System.currentTimeMillis - testStartTime

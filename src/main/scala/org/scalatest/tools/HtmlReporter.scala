@@ -268,7 +268,7 @@ private[scalatest] class HtmlReporter(pw: PrintWriter, presentAllDurations: Bool
           case None =>
         }
 
-      case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, location, rerunnable, payload, threadName, timeStamp) => 
+      case TestSucceeded(ordinal, suiteName, suiteClassName, testName, testText, duration, formatter, location, rerunnable, payload, threadName, timeStamp) => 
 
         val stringToPrint = stringToPrintWhenNoError("testSucceeded", formatter, suiteName, Some(testName), duration)
 
@@ -277,7 +277,7 @@ private[scalatest] class HtmlReporter(pw: PrintWriter, presentAllDurations: Bool
           case None =>
         }
     
-      case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, location, payload, threadName, timeStamp) => 
+      case TestIgnored(ordinal, suiteName, suiteClassName, testName, testText, formatter, location, payload, threadName, timeStamp) => 
 
         val stringToPrint =
           formatter match {
@@ -291,12 +291,12 @@ private[scalatest] class HtmlReporter(pw: PrintWriter, presentAllDurations: Bool
           case None =>
         }
 
-      case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, location, rerunnable, payload, threadName, timeStamp) => 
+      case TestFailed(ordinal, message, suiteName, suiteClassName, testName, testText, throwable, duration, formatter, location, rerunnable, payload, threadName, timeStamp) => 
 
         val lines = stringsToPrintOnError("failedNote", "testFailed", message, throwable, formatter, Some(suiteName), Some(testName), duration)
         for (line <- lines) printPossiblyInColor(line, ansiRed)
 
-      case TestCanceled(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, location, payload, threadName, timeStamp) =>
+      case TestCanceled(ordinal, message, suiteName, suiteClassName, testName, testText, throwable, duration, formatter, location, payload, threadName, timeStamp) =>
 
         val lines = stringsToPrintOnError("canceledNote", "testCanceled", message, throwable, formatter, Some(suiteName), Some(testName), duration)
         for (line <- lines) printPossiblyInColor(line, ansiYellow)
@@ -358,7 +358,7 @@ private[scalatest] class HtmlReporter(pw: PrintWriter, presentAllDurations: Bool
         val shouldBeYellow = isPending || wasCanceled
         for (line <- lines) printPossiblyInColor(line, if (shouldBeYellow) ansiYellow else ansiGreen)
 
-      case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, location, payload, threadName, timeStamp) =>
+      case TestPending(ordinal, suiteName, suiteClassName, testName, testText, formatter, location, payload, threadName, timeStamp) =>
 
         val stringToPrint =
           formatter match {

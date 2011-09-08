@@ -519,7 +519,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     val (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime) =
       getSuiteRunTestGoodies(stopper, reporter, testName)
 
-    reportTestStarting(thisSuite, report, tracker, testName, rerunnable)
+    reportTestStarting(thisSuite, report, tracker, testName, testName, rerunnable)
 
     val formatter = getIndentedText(testName, 1, true)
 
@@ -573,14 +573,14 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
       }
 
       val duration = System.currentTimeMillis - testStartTime
-      reportTestSucceeded(thisSuite, report, tracker, testName, duration, formatter, rerunnable)
+      reportTestSucceeded(thisSuite, report, tracker, testName, testName, duration, formatter, rerunnable)
     }
     catch { 
       case ite: InvocationTargetException =>
         val t = ite.getTargetException
         t match {
           case _: TestPendingException =>
-            reportTestPending(thisSuite, report, tracker, testName, formatter)
+            reportTestPending(thisSuite, report, tracker, testName, testName, formatter)
           case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
             handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
@@ -591,7 +591,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
         handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
       case e => throw e
     }
-  }
+  } // TODO: I'm not seeing test canceled handled here either.
 
   // Overriding this in FixtureSuite to reduce duplication of tags method
   private[scalatest] override def getMethodForTestName(testName: String) = {
