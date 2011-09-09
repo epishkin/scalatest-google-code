@@ -6,6 +6,10 @@ import scala.collection.immutable.TreeSet
 import Arbitrary._
 import Prop._  */
 
+/*
+I think tagsToInclude and testNamesToInclude should intersect. If both are defined, then only tests with names included
+in testNamesToInclude, and tags with at least one tagToInclude, that don't have a tag mentioned in tagsToExclude, will be returned.
+*/
 class FilterSpec extends Spec {
 
   describe("A Filter") {
@@ -112,9 +116,27 @@ class FilterSpec extends Spec {
       validateIgnoreOtherBehavior(filter)
     }
 
+    it("should report a test tagged as Other as ignored when None is passed to filter for tagsToInclude, Some(myTestName) is passed to filter" +
+            "for testNamesToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+      val filter = new Filter(None, Set("no ignore here"), Some(Set("myTestName")))
+      validateIgnoreOtherBehavior(filter)
+    }
+
     it("should report a test tagged as Other as ignored when Some(Other) is passed to filter" +
             "for tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
       val filter = new Filter(Some(Set("Other")), Set("org.scalatest.Ignore"))
+      validateIgnoreOtherBehavior(filter)
+    }
+
+    it("should report a test tagged as Other as ignored when Some(Other) is passed to filter for tagsToInclude, Some(myTestName) is passed to filter" +
+            "for testNamesToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("Other")), Set("no ignore here"), Some(Set("myTestName")))
+      validateIgnoreOtherBehavior(filter)
+    }
+
+    ignore("should not return a test tagged as Other at all when Some(NotIncluded) is passed to filter for tagsToInclude, Some(myTestName) is passed to filter" +
+            "for testNamesToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("NotIncluded")), Set("no ignore here"), Some(Set("myTestName")))
       validateIgnoreOtherBehavior(filter)
     }
 

@@ -50,17 +50,24 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
     case None =>
   }
 
-  private def includedTestNames(testNamesAsList: List[String], tags: Map[String, Set[String]]): List[String] = 
-    tagsToInclude match {
-      case None => testNamesAsList
-      case Some(tagsToInclude) =>
-        for {
-          testName <- testNamesAsList
-          if tags contains testName
-          intersection = tagsToInclude intersect tags(testName)
-          if intersection.size > 0
-        } yield testName
+  private def includedTestNames(testNamesAsList: List[String], tags: Map[String, Set[String]]): List[String] = {
+    val testNamesToIncludeBasedJustOnTags =
+      tagsToInclude match {
+        case None => testNamesAsList
+        case Some(tagsToInclude) =>
+          for {
+            testName <- testNamesAsList
+            if tags contains testName
+            intersection = tagsToInclude intersect tags(testName)
+            if intersection.size > 0
+          } yield testName
+      }
+    testNamesToInclude match {
+      case None => testNamesToIncludeBasedJustOnTags 
+      case Some(tnToInclude) =>
+        testNamesToIncludeBasedJustOnTags intersect tnToInclude.toList
     }
+  }
 
   private def verifyPreconditionsForMethods(testNames: Set[String], tags: Map[String, Set[String]]) {
     val testWithEmptyTagSet = tags.find(tuple => tuple._2.isEmpty)
