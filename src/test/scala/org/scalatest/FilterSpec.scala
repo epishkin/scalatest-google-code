@@ -20,11 +20,32 @@ class FilterSpec extends Spec {
       intercept[NullPointerException] {
         new Filter(null, Set())
       }
+      intercept[NullPointerException] {
+        new Filter(null, null, Some(Set()))
+      }
+      intercept[NullPointerException] {
+        new Filter(None, null, Some(Set()))
+      }
+      intercept[NullPointerException] {
+        new Filter(null, Set(), Some(Set()))
+      }
+      intercept[NullPointerException] {
+        new Filter(None, Set(), null)
+      }
+      intercept[NullPointerException] {
+        new Filter(null, null, null)
+      }
     }
 
     it("should throw IAE if passed a Some(Set()) for tagsToInclude") {
       intercept[IllegalArgumentException] {
         new Filter(Some(Set()), Set())
+      }
+    }
+
+    it("should throw IAE if passed a Some(Set()) for testNamesToInclude") {
+      intercept[IllegalArgumentException] {
+        new Filter(None, Set(), Some(Set()))
       }
     }
 

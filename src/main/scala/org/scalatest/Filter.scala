@@ -25,7 +25,7 @@ import Filter.IgnoreTag
  * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude (<em>i.e.</em>, filter out) when filtering tests
  *
  * @throws NullPointerException if either <code>tagsToInclude</code> or <code>tagsToExclude</code> are null
- * @throws IllegalArgumentException if <code>tagsToInclude</code> is defined, but contains an empty set
+ * @throws IllegalArgumentException if <code>tagsToInclude</code> is defined, but contains an empty set, or if <code>testNamesToInclude</code> is defined, but contains an empty set
  */
 final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Set[String], val testNamesToInclude: Option[Set[String]] = None) extends Function2[Set[String], Map[String, Set[String]], List[(String, Boolean)]] {
 
@@ -40,6 +40,13 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
     case Some(tagsToInclude) =>
       if (tagsToInclude.isEmpty)
         throw new IllegalArgumentException("tagsToInclude was defined, but contained an empty set")
+    case None =>
+  }
+
+  testNamesToInclude match {
+    case Some(testNamesToInclude) =>
+      if (testNamesToInclude.isEmpty)
+        throw new IllegalArgumentException("testNamesToInclude was defined, but contained an empty set")
     case None =>
   }
 
