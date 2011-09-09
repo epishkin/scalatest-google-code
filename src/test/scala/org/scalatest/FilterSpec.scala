@@ -134,10 +134,11 @@ class FilterSpec extends Spec {
       validateIgnoreOtherBehavior(filter)
     }
 
-    ignore("should not return a test tagged as Other at all when Some(NotIncluded) is passed to filter for tagsToInclude, Some(myTestName) is passed to filter" +
+    it("should not return a test tagged as Other at all when Some(NotIncluded) is passed to filter for tagsToInclude, Some(myTestName) is passed to filter" +
             "for testNamesToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
       val filter = new Filter(Some(Set("NotIncluded")), Set("no ignore here"), Some(Set("myTestName")))
-      validateIgnoreOtherBehavior(filter)
+      val filtered = filter(Set("myTestName"), Map("myTestName" -> Set("org.scalatest.Ignore", "Other")))
+      assert(filtered.isEmpty)
     }
 
     def validateNotReportingIgnoresBehavior(filter: Filter) {
@@ -154,6 +155,18 @@ class FilterSpec extends Spec {
     it("should not report a test as ignored when Some(no ignore here) is passed to filter for" +
             "tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
       val filter = new Filter(Some(Set("no ignore here")), Set("org.scalatest.Ignore"))
+      validateNotReportingIgnoresBehavior(filter)
+    }
+
+    it("should not report a test as ignored when Some(no ignore here) is passed to filter for" +
+            "tagsToInclude, Some(Set(myTestname)) is passed in the testNamesToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("no ignore here")), Set("no ignore here"), Some(Set("myTestName")))
+      validateNotReportingIgnoresBehavior(filter)
+    }
+
+    it("should not report a test as ignored when Some(no ignore here) is passed to filter for" +
+            "tagsToInclude, Some(Set(myTestname)) is passed in the testNamesToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("no ignore here")), Set("org.scalatest.Ignore"), Some(Set("myTestName")))
       validateNotReportingIgnoresBehavior(filter)
     }
 

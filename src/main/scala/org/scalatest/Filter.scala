@@ -7,6 +7,34 @@ import Filter.IgnoreTag
  * as class parameters.
  *
  * <p>
+ * The behavior of <code>Filter</code> can be broken down into four cases:
+ * </p>
+ *
+ * <p>
+ * 1. If both <code>tagsToInclude</code> and <code>testNamesToInclude<code> are <code>None</code>, then only test names tagged with one or more tags in
+ * the <code>tagsToExclude</code> set will be filtered out by <code>Filter</code>'s <code>apply</code> methods.
+ * </p>
+ *
+ * <p>
+ * 2. If <code>tagsToInclude<code> is 
+ * defined, but <code>testNamesToInclude</code> is not, then test names without any tags mentioned in <code>tagsToInclude</code> as well as
+ * with a tag mentioned in <code>tagsToExclude</code> will be filtered out. (A test with tags mentioned in both <code>tagsToInclude</code> and <code>tagsToExclude</code> will
+ * be filtered out.)
+ * </p>
+ *
+ * <p>
+ * 3. If <code>testNamesToInclude<code> is defined, but <code>tagsToInclude</code> is not, then test names not mentioned in
+ * <code>testNamesToInclude</code> as well as any test name with one or more tags mentioned in <code>tagsToExclude</code> will be filtered out. (A test with a name
+ * mentioned in <code>testNamesToInclude</code> and one or more tags mentioned in <code>tagsToExclude</code> will be filtered out.)
+ * </p>
+ *
+ * <p>
+ * 4. If both <code>tagsToInclude</code> and <code>testNamesToInclude</code> are defined, then the result of <code>apply</code> will essentially be the
+ * intersection of cases 2 and 3. To survive the filter, a test's name must both be included in <code>testNamesToInclude</code> and have at least one
+ * tag mentioned in <code>tagsToInclude</code>.
+ * </p>
+ *
+ * <p>
  * This class handles the <code>org.scalatest.Ignore</code> tag specially, in that its <code>apply</code> method indicates which
  * tests should be ignored based on whether they are tagged with <code>org.scalatest.Ignore</code>. If
  * <code>"org.scalatest.Ignore"</code> is not passed in the <code>tagsToExclude</code> set, it will be implicitly added. However, if the 
@@ -23,6 +51,7 @@ import Filter.IgnoreTag
  *
  * @param tagsToInclude an optional <code>Set</code> of <code>String</code> tag names to include (<em>i.e.</em>, not filter out) when filtering tests
  * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude (<em>i.e.</em>, filter out) when filtering tests
+ * @param testNamesToInclude an optional <code>Set</code> of <code>String</code> test names to include (<em>i.e.</em>, not filter out) when filtering tests
  *
  * @throws NullPointerException if either <code>tagsToInclude</code> or <code>tagsToExclude</code> are null
  * @throws IllegalArgumentException if <code>tagsToInclude</code> is defined, but contains an empty set, or if <code>testNamesToInclude</code> is defined, but contains an empty set
