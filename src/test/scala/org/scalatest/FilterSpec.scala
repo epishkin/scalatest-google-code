@@ -187,7 +187,9 @@ class FilterSpec extends Spec {
         val filter = new Filter(None, tagsToExclude)
         val filtered = filter(TreeSet[String]() ++ testNames, tags)
 
-        // assert(filtered.sort(_ < _) === filtered) TODO: COMMENTING OUT JUST TO GET THE 2.8 BUILD OUT THE DOOR. NEED TO FIX THIS.
+        // Here I believe I was trying to check to make sure the test names come out in
+        // the same order they went in, possibly with just some missing.
+        assert(filtered.map(_._1).sortWith(_ < _) === filtered.map(_._1))
 
         for ((testName, ignore) <- filtered) {
 
@@ -230,8 +232,20 @@ class FilterSpec extends Spec {
       assert(filtered.size === 0) 
     }
 
+    it("should not include an excluded tag even if it also appears as test name to include") {
+      val filter = new Filter(None, Set("Slow"), Some(Set("myTestName")))
+      val filtered = filter(Set("myTestName"), Map("myTestName" -> Set("Slow")))
+      assert(filtered.size === 0) 
+    }
+
     it("should include an included tag if there are no excluded tags") {
       val filter = new Filter(Some(Set("Slow")), Set())
+      val filtered = filter(Set("myTestName"), Map("myTestName" -> Set("Slow")))
+      assert(filtered.size === 1) 
+    }
+
+    it("should include an included test name if there are no excluded tags") {
+      val filter = new Filter(None, Set(), Some(Set("myTestName")))
       val filtered = filter(Set("myTestName"), Map("myTestName" -> Set("Slow")))
       assert(filtered.size === 1) 
     }
@@ -255,7 +269,10 @@ class FilterSpec extends Spec {
         val filter = new Filter(Some(tagsToInclude), tagsToExclude)
         val filtered = filter(TreeSet[String]() ++ testNames, tags)
 
-        // assert(filtered.sort(_ < _) === filtered) TODO: COMMENTING OUT JUST TO GET THE 2.8 BUILD OUT THE DOOR. NEED TO FIX THIS.
+        // Here I believe I was trying to check to make sure the test names come out in
+        // the same order they went in, possibly with just some missing.
+        assert(filtered.map(_._1).sortWith(_ < _) === filtered.map(_._1))
+
 
         // Anything that's not in the include tags should not appear in the output
         // Look at everything in the output, and make sure it is in the include tags
