@@ -22,14 +22,14 @@ class DocSpec extends FreeSpec with ShouldMatchers {
 
   "A Doc" - {
     "with no run calls inside" - {
-      "should send the markup verbatim out the door" in {
-    // This one I'm putting flat against the margin on purpose.
-    val a = new Doc(<markup>
+      // This one I'm putting flat against the margin on purpose.
+      val a = new Doc(<markup>
 This is a Title
 ===============
 
 This is a paragraph later...
 </markup>)
+      "should send the markup verbatim out the door" in {
         val rep = new EventRecordingReporter
         a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
         val mp = rep.markupProvidedEventsReceived
@@ -41,6 +41,9 @@ This is a Title
 
 This is a paragraph later...
 """)
+      }
+      "should return an empty list from nestedSuites" in {
+        a.nestedSuites should equal (Nil)
       }
     }
   }
