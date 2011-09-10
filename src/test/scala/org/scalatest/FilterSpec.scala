@@ -172,7 +172,7 @@ class FilterSpec extends Spec {
 
     it("should work properly when None is passed to filter for tagsToInclude") {
       
-      // I want to pass None in for includes, pick a set of test names. From those test names, put some of them in the tags map, grabbing an arbitrary nonzero number of tags
+      // I want to pass None in for tags/testNamesToInclude, pick a set of test names. From those test names, put some of them in the tags map, grabbing an arbitrary nonzero number of tags
 
       for (i <- 0 to 1000) {
         val testNames = potentialTestNames.drop(randomPositiveInt(potentialTestNames.length))
@@ -251,8 +251,8 @@ class FilterSpec extends Spec {
     }
 
     it("should work properly when Some is passed to filter for tagsToInclude") {
-      
-      // I want to pass None in for includes, pick a set of test names. From those test names, put some of them in the tags map, grabbing an arbitrary nonzero number of tags
+
+      // I want to pass Some in for tagsToInclude, None for testNamesToInclude, pick a set of test names. From those test names, put some of them in the tags map, grabbing an arbitrary nonzero number of tags
 
       for (i <- 0 to 1000) {
         val testNames = potentialTestNames.drop(randomPositiveInt(potentialTestNames.length))
@@ -303,6 +303,60 @@ class FilterSpec extends Spec {
         for (testName <- testNames) {
           if (tags.contains(testName) && tags(testName).exists(_ == "org.scalatest.Ignore") &&
                   ((tags(testName) intersect tagsToInclude).size > 0) &&
+                  ((tags(testName) - "org.scalatest.Ignore") intersect tagsToExclude).isEmpty)
+            assert(filtered exists (tuple => tuple._1 == testName && tuple._2 == true), testName + " was in the tags map as ignored, but did not show up in the result of apply marked as ignored") 
+        }
+      }
+    }
+
+    it("should work properly when Some is passed to filter for testNamesToInclude") {
+      
+      // I want to pass Some in for includes, pick a set of test names. From those test names, put some of them in the tags map, grabbing an arbitrary nonzero number of tags
+
+      for (i <- 0 to 1000) {
+        val testNames = potentialTestNames.drop(randomPositiveInt(potentialTestNames.length))
+        val testNamesWithTags = testNames.drop(randomPositiveInt(testNames.length))
+        //val tuples = for (testName <- testNamesWithTags) yield (testName, Set() ++ potentialTagNames.drop(randomPositiveInt(potentialTagNames.length - 1)))
+        val tuples =
+          for (testName <- testNamesWithTags) yield
+            (testName, Set() ++ potentialTagNames.drop(randomPositiveInt(potentialTagNames.length - 1))) // subtract one, so never end up with an empty list
+        val tags = Map() ++ tuples
+
+        val tagsToExclude = Set() ++ potentialTagNames.drop(randomPositiveInt(potentialTagNames.length)) // Do want an empty set here occasionally
+        val testNamesToInclude = Set() ++ potentialTestNames.drop(randomPositiveInt(potentialTagNames.length - 1)) // Again, subtracting one to avoid an empty set, which is an illegal argument. 
+
+        val filter = new Filter(None, tagsToExclude, Some(testNamesToInclude))
+        val filtered = filter(TreeSet[String]() ++ testNames, tags)
+
+        // Here I believe I was trying to check to make sure the test names come out in
+        // the same order they went in, possibly with just some missing.
+        assert(filtered.map(_._1).sortWith(_ < _) === filtered.map(_._1))
+
+        // Anything that's not in the testsToInclude set should not appear in the output
+        // Look at everything in the output, and make sure it is in the include tags
+        for ((testName, _) <- filtered) {
+          assert(testNamesToInclude contains testName, "testNamesToInclude did not contain as a key the test name: " + testName)
+        }
+        for ((testName, ignore) <- filtered) {
+
+          // testName should not be in the tagsToExclude map unless it is ignored
+          if (tagsToExclude contains testName)
+            assert(tags(testName) exists (_ == "org.scalatest.Ignore"), testName + " was in the filtered list and in the tags, but didn't have an Ignore tag")
+        }
+
+        // Check that every test name that is not at all in the testNamesToInclude set, should not be in the filtered, because it has to be in testNamesToInclude
+        for (testName <- testNames) {
+          if (!testNamesToInclude.contains(testName)) {
+            assert(!filtered.exists(tuple => tuple._1 == testName), testName + " was not in the testNamesToInclude set, but showed up in the result of apply even though testNamesToInclude was a Some") 
+          }
+        }
+
+        // Check that every test name that is in the tags as ignored, which also shared a tag in common
+        // with tagsToInclude, should be in the filtered as ignored, unless it is also tagged with some
+        // other tag that is in tagsToExclude. In the latter case, the
+        // other exclude tag should "overpower" the Ignore tag.
+        for (testName <- testNames) {
+          if (testNamesToInclude.contains(testName) && tags.contains(testName) && tags(testName).exists(_ == "org.scalatest.Ignore") &&
                   ((tags(testName) - "org.scalatest.Ignore") intersect tagsToExclude).isEmpty)
             assert(filtered exists (tuple => tuple._1 == testName && tuple._2 == true), testName + " was in the tags map as ignored, but did not show up in the result of apply marked as ignored") 
         }
