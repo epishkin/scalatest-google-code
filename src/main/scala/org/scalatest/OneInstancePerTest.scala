@@ -95,36 +95,21 @@ trait OneInstancePerTest extends AbstractSuite {
    */
   protected abstract override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
-    testName match {
-      case Some(tn) =>
-        super.runTests(testName, reporter, stopper, filter, configMap, None, tracker)
-        // Don't pass the testName up. Instead, add a tag to include to the filter, and 
-        // a tag for the tests
-      case None =>
-/*
-        for (tn <- testNames) {
+    val flag = "org.scalatest.OneInstancePerTest.testToRun"
+    if (configMap.contains(flag)) {
+      val newFilter = new Filter(filter.tagsToInclude, filter.tagsToExclude, Some(Set(configMap(flag).asInstanceOf[String])))
+      super.runTests(None, reporter, stopper, newFilter, configMap, None, tracker)
+    }
+    else {
+      val stopRequested = stopper
+      for ((tn, _) <- filter(testNames, tags)) {
+        if (!stopRequested()) {
           val oneInstance = newInstance
-          oneInstance.run(Some(tn), reporter, stopper, filter, configMap, None, tracker)
+          oneInstance.run(None, reporter, stopper, filter, configMap + (flag -> tn), None, tracker)
         }
-*/
-        val stopRequested = stopper
-        for ((tn, _) <- filter(testNames, tags)) {
-          if (!stopRequested()) {
-            // runTest(tn, report, stopRequested, configMap, tracker)
-            val oneInstance = newInstance
-            oneInstance.run(Some(tn), reporter, stopper, filter, configMap, None, tracker)
-          }
-        }
+      }
     }
   }
-/*
-My thought was to have the thing ignored by filtering out all others and just calling super.runTests without the
-test name. That way I won't get the others; I will get the ignored one; and I will get all the enclosing scopes. Actually
-I'll get all the scopes, just not the tests. Later I could possibly enhance engine to not do that, but... I think all
-I need to do is add a tag for the named test, and pass it along. If it is ignored, it will be marked as such.
-No, add a testNamesToInclude param, and make an overloaded constructor or default param that keeps old Filter code compiling
-If testNamesToInclude is :q
-*/
   
   /**
    * Construct a new instance of this <code>Suite</code>.

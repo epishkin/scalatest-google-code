@@ -106,6 +106,7 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
     }
   }
 
+// TODO: Need to update these descriptions of the apply methods, etc., to include the behavior if testNamesToInclude is defined.
   /**
    * Filter test names based on their tags.
    *

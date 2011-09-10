@@ -66,7 +66,7 @@ class OneInstancePerTestSpec extends Spec with SharedHelpers {
       suite.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(TopLevelSuite.sideEffectWasNotSeen)
     }
-    ignore("should send TestIgnored for an ignored test") {
+    it("should send TestIgnored for an ignored test") {
 
       var aTheTestThisCalled = false
       var aTheTestThatCalled = false
