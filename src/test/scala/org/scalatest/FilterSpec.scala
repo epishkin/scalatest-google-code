@@ -426,30 +426,50 @@ class FilterSpec extends Spec {
 
       val emptyMap = Map[String, Set[String]]()
 
-      it("should return (false, false) if tagsToInclude is None and tagsToExclude is empty" +
+      it("should return (false, false) if tagsToInclude is None and tagsToExclude is empty " +
               "and the test has no tags") {
         val filter = new Filter(None, Set[String]())
         assert(filter("myTestName", emptyMap) === (false, false))
       }
-      it("should return (true, false) if tagsToInclude is None and tagsToExclude includes" +
+      it("should return (true, false) if tagsToInclude is None and tagsToExclude includes " +
               "SlowAsMolasses and the test is marked as SlowAsMolasses") {
         val filter = new Filter(None, Set("SlowAsMolasses"))
         assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses"))) === (true, false))
       }
-      it("should return (false, true) if tagsToInclude is None and tagsToExclude is empty" +
+      it("should return (false, false) if tagsToInclude is None and tagsToExclude is " +
+              "empty and testNamesToInclude includes myTestName") {
+        val filter = new Filter(None, Set(), Some(Set("myTestName")))
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses"))) === (false, false))
+      }
+      it("should return (false, true) if tagsToInclude is None and tagsToExclude is empty " +
               "and the test is marked as ignored") {
         val filter = new Filter(None, Set[String]())
         assert(filter("myTestName", Map("myTestName" -> Set("org.scalatest.Ignore"))) === (false, true))
       }
-      it("should return (true, false) if tagsToInclude is None and tagsToExclude includes" +
+      it("should return (false, true) if tagsToInclude is None, tagsToExclude is empty, testNamesToInclude includes myTestName " +
+              "and the test is marked as ignored") {
+        val filter = new Filter(None, Set[String](), Some(Set("myTestName")))
+        assert(filter("myTestName", Map("myTestName" -> Set("org.scalatest.Ignore"))) === (false, true))
+      }
+      it("should return (true, false) if tagsToInclude is None and tagsToExclude includes " +
               "SlowAsMolasses and the test is marked as SlowAsMolasses and ignored") {
         val filter = new Filter(None, Set("SlowAsMolasses"))
         assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses", "org.scalatest.Ignore"))) === (true, false))
       }
+      it("should return (true, false) if tagsToInclude is None, tagsToExclude includes, testNamesToInclude includes myTestName " +
+              "SlowAsMolasses and the test is marked as SlowAsMolasses and ignored") {
+        val filter = new Filter(None, Set("SlowAsMolasses"), Some(Set("myTestName")))
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses", "org.scalatest.Ignore"))) === (true, false))
+      }
 
-      it("should return (false, false) if tagsToInclude includes a tag for the test name and tagsToExclude" +
+      it("should return (false, false) if tagsToInclude includes a tag for the test name and tagsToExclude " +
               "is empty and the test has no tags") {
         val filter = new Filter(Some(Set("SlowAsMolasses")), Set[String]())
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses"))) === (false, false))
+      }
+      it("should return (false, false) if tagsToInclude includes a tag for the test name, tagsToExclude " +
+              "is empty, testNamesToInclude includes myTestName, and the test has no tags") {
+        val filter = new Filter(Some(Set("SlowAsMolasses")), Set[String](), Some(Set("myTestName")))
         assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses"))) === (false, false))
       }
       it("should return (true, false) if tagsToInclude includes a tag for the test name and tagsToExclude" +
@@ -457,22 +477,42 @@ class FilterSpec extends Spec {
         val filter = new Filter(Some(Set("SlowAsMolasses")), Set("SlowAsMolasses"))
         assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses"))) === (true, false))
       }
+      it("should return (true, false) if tagsToInclude includes a tag for the test name, tagsToExclude " +
+              "includes SlowAsMolasses, testNamesToInclude includes myTestName, and the test is marked as SlowAsMolasses") {
+        val filter = new Filter(Some(Set("SlowAsMolasses")), Set("SlowAsMolasses"), Some(Set("myTestName")))
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses"))) === (true, false))
+      }
       it("should return (false, true) if tagsToInclude includes a tag for the test name and tagsToExclude" +
               "is empty and the test is marked as ignored") {
         val filter = new Filter(Some(Set("SlowAsMolasses")), Set[String]())
         assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses", "org.scalatest.Ignore"))) === (false, true))
       }
+      it("should return (false, true) if tagsToInclude includes a tag for the test name,  tagsToExclude" +
+              "is empty and the test is marked as ignored") {
+        val filter = new Filter(Some(Set("SlowAsMolasses")), Set[String](), Some(Set("myTestName")))
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses", "org.scalatest.Ignore"))) === (false, true))
+      } // XXX
       it("should return (true, false) if tagsToInclude includes a tag for the test name and tagsToExclude" +
               "includes SlowAsMolasses and the test is marked as SlowAsMolasses and ignored") {
         val filter = new Filter(Some(Set("SlowAsMolasses")), Set("SlowAsMolasses"))
         assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses", "org.scalatest.Ignore"))) === (true, false))
       }
+      it("should return (true, false) if tagsToInclude includes a tag for the test name, tagsToExclude " +
+              "includes SlowAsMolasses, testNamesToInclude includes myTestName, and the test is marked as SlowAsMolasses and ignored") {
+        val filter = new Filter(Some(Set("SlowAsMolasses")), Set("SlowAsMolasses"), Some(Set("myTestName")))
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses", "org.scalatest.Ignore"))) === (true, false))
+      } // XXX
 
       it("should return (true, false) if tagsToInclude is defined but does not include any tags for the" +
               "test name") {
         val filter = new Filter(Some(Set("SlowAsMolasses")), Set[String]())
         assert(filter("myTestName", Map("myTestName" -> Set("FastAsLight"))) === (true, false))
       }
+      it("should return (true, false) if tagsToInclude is defined but does not include any tags for the" +
+              "test name, and testNamesToInclude includes myTestName") {
+        val filter = new Filter(Some(Set("SlowAsMolasses")), Set[String](), Some(Set("myTestName")))
+        assert(filter("myTestName", Map("myTestName" -> Set("FastAsLight"))) === (true, false))
+      } // XXX
     }
   }
 }
