@@ -136,5 +136,21 @@ class OneInstancePerTestSpec extends Spec with SharedHelpers {
       assert(!dTheTestThisCalled)
       assert(!dTheTestThatCalled)
     }
+    it("should run a test marked ignored if it is passed in a Some as testName") {
+      var bTheTestThisCalled = false
+      var bTheTestThatCalled = false
+      class BSpec extends WordSpec with OneInstancePerTest {
+        "test this" ignore { bTheTestThisCalled = true }
+        "test that" in { bTheTestThatCalled = true }
+        override def newInstance = new BSpec
+      }
+      val b = new BSpec
+
+      val repB = new TestIgnoredTrackingReporter
+      b.run(Some("test this"), repB, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(!repB.testIgnoredReceived)
+      assert(bTheTestThisCalled)
+      assert(!bTheTestThatCalled)
+    }
   }
 }

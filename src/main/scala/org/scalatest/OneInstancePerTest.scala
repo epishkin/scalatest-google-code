@@ -95,19 +95,24 @@ trait OneInstancePerTest extends AbstractSuite {
    */
   protected abstract override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
-    val flag = "org.scalatest.OneInstancePerTest.testToRun"
-    if (configMap.contains(flag)) {
-      val newFilter = new Filter(filter.tagsToInclude, filter.tagsToExclude, Some(Set(configMap(flag).asInstanceOf[String])))
-      super.runTests(None, reporter, stopper, newFilter, configMap, None, tracker)
-    }
-    else {
-      val stopRequested = stopper
-      for ((tn, _) <- filter(testNames, tags)) {
-        if (!stopRequested()) {
-          val oneInstance = newInstance
-          oneInstance.run(None, reporter, stopper, filter, configMap + (flag -> tn), None, tracker)
+    testName match {
+      case Some(_) =>
+        super.runTests(testName, reporter, stopper, filter, configMap, distributor, tracker)
+      case None =>
+        val flag = "org.scalatest.OneInstancePerTest.testToRun"
+        if (configMap.contains(flag)) {
+          val newFilter = new Filter(filter.tagsToInclude, filter.tagsToExclude, Some(Set(configMap(flag).asInstanceOf[String])))
+          super.runTests(None, reporter, stopper, newFilter, configMap, None, tracker)
         }
-      }
+        else {
+          val stopRequested = stopper
+          for ((tn, _) <- filter(testNames, tags)) {
+            if (!stopRequested()) {
+              val oneInstance = newInstance
+              oneInstance.run(None, reporter, stopper, filter, configMap + (flag -> tn), None, tracker)
+            }
+          }
+        }
     }
   }
   
