@@ -115,7 +115,7 @@ trait OneInstancePerTest extends AbstractSuite {
         }
     }
   }
-  
+
   /**
    * Construct a new instance of this <code>Suite</code>.
    *
