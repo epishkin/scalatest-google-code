@@ -17,6 +17,7 @@ package org.scalatest
 
 import scala.xml.Elem
 import Suite.reportMarkupProvided
+import Doc.stripMargin
 
 /**
  * A <code>Doc</code> class that takes one XML node markup
@@ -61,6 +62,26 @@ class Doc(markup: Elem) extends Suite { thisDoc =>
   override protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     reportMarkupProvided(thisDoc, reporter, tracker, None, markup.text, 0, true, None, None)
+  }
+
+}
+
+object Doc {
+
+  def insert[T <: Suite](implicit manifest: Manifest[T]): String = {
+    val clazz = manifest.erasure.asInstanceOf[Class[T]]
+    "\ninsert[" + clazz.getName + "]\n"
+  }
+
+  private[scalatest] def stripMargin(text: String): String = {
+    if (!text.trim.isEmpty) {
+      val lines = text.lines
+      val initialWhite = lines.toList.head.dropWhile(_.isWhitespace)
+      val margin = initialWhite.length
+      val choppedLines = lines map (_.substring(margin))
+      choppedLines.mkString
+    }
+    else text.trim
   }
 }
 
