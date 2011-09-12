@@ -74,14 +74,19 @@ object Doc {
   }
 
   private[scalatest] def stripMargin(text: String): String = {
-    if (!text.trim.isEmpty) {
-      val lines = text.lines
-      val initialWhite = lines.toList.head.dropWhile(_.isWhitespace)
-      val margin = initialWhite.length
-      val choppedLines = lines map (_.substring(margin))
-      choppedLines.mkString
+    val lines = text.lines.toList
+    val firstNonWhiteLine = lines.find(!_.trim.isEmpty)
+    firstNonWhiteLine match {
+      case None => text.trim
+      case Some(nonWhiteLine) =>
+        val initialWhite = nonWhiteLine.dropWhile(_.isWhitespace)
+        val margin =  nonWhiteLine.length - initialWhite.length
+        val choppedLines = lines map { line =>
+          val strip = if (line.length > margin) margin else line.length
+          line.substring(strip)
+        }
+        choppedLines.mkString("\n")
     }
-    else text.trim
   }
 }
 

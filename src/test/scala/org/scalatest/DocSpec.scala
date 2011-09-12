@@ -92,6 +92,9 @@ And this is another paragraph.
     }
   }
   "The stripMargin method" - {
+    "should throw NPE if null passed" in {
+      evaluating { stripMargin(null) } should produce [NullPointerException] 
+    }
     "should return an empty string as is" in {
       stripMargin("") should equal ("")
     }
@@ -102,6 +105,22 @@ And this is another paragraph.
       stripMargin("\tHowdy") should equal ("Howdy")
       stripMargin("\t\tHowdy") should equal ("Howdy")
       stripMargin(" \t \tHowdy") should equal ("Howdy")
+    }
+    "when passed a string with leading space and two lines, should return the string with the leading space omitted from the first line, and the same amound omitted from the second line, with tabs converted to one space" in {
+      stripMargin(" Howdy\n123456789") should equal ("Howdy\n23456789")
+      stripMargin("  Howdy\n123456789") should equal ("Howdy\n3456789")
+      stripMargin("   Howdy\n123456789") should equal ("Howdy\n456789")
+      stripMargin("\tHowdy\n123456789") should equal ("Howdy\n23456789")
+      stripMargin("\t\tHowdy\n123456789") should equal ("Howdy\n3456789")
+      stripMargin(" \t \tHowdy\n123456789") should equal ("Howdy\n56789")
+    }
+    "when passed a string with one or more blank lines, a line with leading space and two lines, should return the string with the leading space omitted from the first line, and the same amound omitted from the second line, with tabs converted to one space" in {
+      stripMargin("\n Howdy\n123456789") should equal ("\nHowdy\n23456789")
+      stripMargin("\n  \n\n  Howdy\n123456789") should equal ("\n\n\nHowdy\n3456789")
+      stripMargin("\n  \t\t\n   Howdy\n123456789") should equal ("\n\t\nHowdy\n456789")
+      stripMargin("\n\n\n\n\tHowdy\n123456789") should equal ("\n\n\n\nHowdy\n23456789")
+      stripMargin("\n\t\tHowdy\n123456789") should equal ("\nHowdy\n3456789")
+      stripMargin("\n      \n \t \tHowdy\n123456789") should equal ("\n  \nHowdy\n56789")
     }
   }
 }
