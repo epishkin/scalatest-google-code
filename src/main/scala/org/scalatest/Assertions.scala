@@ -410,7 +410,7 @@ trait Assertions {
       case None =>
     }
   }
-    
+
   /**
    * Assume that a boolean condition is true.
    * If the condition is <code>true</code>, this method returns normally.

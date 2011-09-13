@@ -18,6 +18,7 @@ package org.scalatest
 import scala.xml.Elem
 import Suite.reportMarkupProvided
 import Doc.stripMargin
+import Doc.trimMarkup
 
 /**
  * A <code>Doc</code> class that takes one XML node markup
@@ -61,9 +62,8 @@ class Doc(markup: Elem) extends Suite { thisDoc =>
 
   override protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
-    reportMarkupProvided(thisDoc, reporter, tracker, None, markup.text, 0, true, None, None)
+    reportMarkupProvided(thisDoc, reporter, tracker, None, trimMarkup(stripMargin(markup.text)), 0, true, None, None)
   }
-
 }
 
 object Doc {
@@ -71,6 +71,17 @@ object Doc {
   def insert[T <: Suite](implicit manifest: Manifest[T]): String = {
     val clazz = manifest.erasure.asInstanceOf[Class[T]]
     "\ninsert[" + clazz.getName + "]\n"
+  }
+
+  private[scalatest] def trimMarkup(text: String): String = {
+    val lines = text.lines.toList
+    val zipLines = lines.zipWithIndex
+    val firstNonWhiteLine = zipLines.find { case (line, _) => !line.trim.isEmpty }
+    val lastNonWhiteLine = zipLines.reverse.find { case (line, _) => !line.trim.isEmpty } 
+    (firstNonWhiteLine, lastNonWhiteLine) match {
+      case (None, None) => text.trim // Will be either (None, None) or (Some, Some)
+      case (Some((_, frontIdx)), Some((_, backIdx))) => lines.take(backIdx + 1).drop(frontIdx).mkString("\n")
+    }
   }
 
   private[scalatest] def stripMargin(text: String): String = {
@@ -89,5 +100,4 @@ object Doc {
     }
   }
 }
-
 

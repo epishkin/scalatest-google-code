@@ -20,6 +20,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.Doc.insert
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.Doc.stripMargin
+import org.scalatest.Doc.trimMarkup
 
 class DocSpecASuite extends Suite
 
@@ -46,7 +47,7 @@ This is a paragraph later...
       </markup>)
 
       val examples = Table("doc", flatAgainstMargin, indented8)
-      "should send the markup unindented out the door" ignore {
+      "should send the markup unindented out the door" in {
         forAll (examples) { doc =>
           val rep = new EventRecordingReporter
           doc.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
@@ -54,12 +55,12 @@ This is a paragraph later...
           assert(mp.size === 1)
           val event = mp(0)
           // After a checkin, try a stripmargin here
-          event.text should equal ("""
+          assert(event.text === trimMarkup("""
 This is a Title
 ===============
 
 This is a paragraph later...
-""")
+"""))
         }
       }
       "should return an empty list from nestedSuites" in {
@@ -89,6 +90,29 @@ And this is another paragraph.
   "The insert method" - {
     "should return a string that includes the suite class name" in {
       insert[DocSpecASuite] should equal ("\ninsert[org.scalatest.DocSpecASuite]\n")
+    }
+  }
+  "The trimMarkup method" - {
+    "should strip any blank lines off of the front" in {
+      trimMarkup("\n\n  First line with stuff") should equal ("  First line with stuff")
+      trimMarkup("\n  \n  First line with stuff") should equal ("  First line with stuff")
+      trimMarkup("  \n  \t \n  First line with stuff") should equal ("  First line with stuff")
+      trimMarkup("\n\n\n\n  \n  First line with stuff") should equal ("  First line with stuff")
+      trimMarkup("  First line with stuff") should equal ("  First line with stuff")
+    }
+    "should strip any blank lines off the front and have no blank line or return at the end" in {
+      trimMarkup("\n\n  First line with stuff\n") should equal ("  First line with stuff")
+      trimMarkup("\n  \n  First line with stuff\n\n") should equal ("  First line with stuff")
+      trimMarkup("  \n  \t \n  First line with stuff\n  \n") should equal ("  First line with stuff")
+      trimMarkup("\n\n\n\n  \n  First line with stuff\n \t\t   \n   \n") should equal ("  First line with stuff")
+      trimMarkup("  First line with stuff\n\n\n") should equal ("  First line with stuff")
+    }
+    "should have no blank line or return at the end" in {
+      trimMarkup("  First line with stuff\n") should equal ("  First line with stuff")
+      trimMarkup("  First line with stuff\n\n") should equal ("  First line with stuff")
+      trimMarkup("  First line with stuff\n  \n") should equal ("  First line with stuff")
+      trimMarkup("  First line with stuff\n \t\t   \n   \n") should equal ("  First line with stuff")
+      trimMarkup("  First line with stuff\n\n\n") should equal ("  First line with stuff")
     }
   }
   "The stripMargin method" - {
