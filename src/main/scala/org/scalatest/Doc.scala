@@ -52,18 +52,64 @@ import Doc.trimMarkup
  *
  * @author Bill Venners
  */
-class Doc(markup: Elem) extends Suite { thisDoc =>
+trait Doc extends Suite { thisDoc =>
 
-  /**
-   * Returns a list containing the suites passed to the constructor in
-   * the order they were passed.
+  def body: Elem
+
+  private val snippets: List[Snippet] = getSnippets(body.text)
+
+  /*
+   * Returns a list containing the suites mentioned in the body XML element,
+   * in the order they were mentioned.
    */
-  final override val nestedSuites = Nil
+  final override val nestedSuites = for (InsertedSuite(suite) <- snippets) yield suite
+/*
+println("^^^^^^^^^^^")
+println(body.text)
+println("###########")
+println(snippets)
+println("&&&&&&&&&&&")
+*/
 
   override protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
-    reportMarkupProvided(thisDoc, reporter, tracker, None, trimMarkup(stripMargin(markup.text)), 0, true, None, None)
+    reportMarkupProvided(thisDoc, reporter, tracker, None, trimMarkup(stripMargin(body.text)), 0, true, None, None)
   }
+
+  private[scalatest] def getSnippets(text: String): List[Snippet] = {
+println("text: " + text)
+    val lines = text.lines.toList
+println("lines: " + lines)
+    val pairs = lines map { line =>
+      val trimmed = line.trim
+      val suite =
+        if (trimmed.startsWith("insert[") && trimmed.endsWith("]")) {
+println("GOT HERE: " + trimmed + ", " + trimmed.substring(7).init)
+          Some(trimmed.substring(7).init)
+}
+        else
+          None
+      (line, suite)
+    }
+println("pairs: " + pairs)
+    // val zipped = pairs.zipWithIndex
+    // val insertionIndexes = for (((_, Some(_)), index) <- zipped) yield index
+// Output of my fold left is: List[Snippet] (left is a list of snippets, right is a pair
+    (List[Snippet](Markup("")) /: pairs) { (left: List[Snippet], right: (String, Option[String])) =>
+      right match {
+        case (_, Some(className)) => InsertedSuite(thisDoc.getClass.getClassLoader.loadClass(className).newInstance.asInstanceOf[Suite]) :: left
+        case (line, None) =>
+          left.head match {
+            case Markup(text) => Markup(text + "\n" + line) :: left.tail
+            case _ => Markup(line) :: left
+          }
+      }
+    }
+  }
+
+  private[scalatest] sealed trait Snippet
+  private[scalatest] case class Markup(text: String) extends Snippet
+  private[scalatest] case class InsertedSuite(suite: Suite) extends Snippet
 }
 
 object Doc {

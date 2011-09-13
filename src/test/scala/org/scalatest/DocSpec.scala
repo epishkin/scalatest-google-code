@@ -23,6 +23,7 @@ import org.scalatest.Doc.stripMargin
 import org.scalatest.Doc.trimMarkup
 
 class DocSpecASuite extends Suite
+class DocSpecBSuite extends Suite
 
 class DocSpec extends FreeSpec with ShouldMatchers with TableDrivenPropertyChecks {
 
@@ -30,21 +31,27 @@ class DocSpec extends FreeSpec with ShouldMatchers with TableDrivenPropertyCheck
     "with no run calls inside" - {
 
       // This one I'm putting flat against the margin on purpose.
-      val flatAgainstMargin = new Doc(<markup>
+      val flatAgainstMargin =
+        new Doc {
+          def body = <markup>
 This is a Title
 ===============
 
 This is a paragraph later...
-</markup>)
+</markup>
+        }
       // TODO: Blank line first, line with no chars, line with some white chars, and no lines, and only white lines
       // TODO: test with different end of line characters
       // This one is indented eight characters
-      val indented8 = new Doc(<markup>
-        This is a Title
-        ===============
+      val indented8 =
+        new Doc {
+          def body = <markup>
+            This is a Title
+            ===============
 
-        This is a paragraph later...
-      </markup>)
+            This is a paragraph later...
+          </markup>
+        }
 
       val examples = Table("doc", flatAgainstMargin, indented8)
       "should send the markup unindented out the door" in {
@@ -54,7 +61,6 @@ This is a paragraph later...
           val mp = rep.markupProvidedEventsReceived
           assert(mp.size === 1)
           val event = mp(0)
-          // After a checkin, try a stripmargin here
           val expected =
             trimMarkup("""
               |This is a Title
@@ -75,17 +81,20 @@ This is a paragraph later...
     "with one run call inside" - {
       class BSuite extends Suite
       // This one I'm putting flat against the margin on purpose.
-      val a = new Doc(<markup>
-This is a Title
-===============
+      val a =
+        new Doc {
+          def body = <markup>
+            This is a Title
+            ===============
 
-This is a paragraph later...
+            This is a paragraph later...
 
-{ insert[DocSpecASuite] }
+            { insert[DocSpecASuite] }
 
-And this is another paragraph.
-</markup>)
-      "should return an instance of the given suite to run in the list returned by nestedSuites" ignore {
+            And this is another paragraph.
+          </markup>
+        }
+      "should return an instance of the given suite to run in the list returned by nestedSuites" in {
         a.nestedSuites should have size 1
       }
     }
