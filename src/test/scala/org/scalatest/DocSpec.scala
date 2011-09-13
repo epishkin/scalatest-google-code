@@ -55,12 +55,15 @@ This is a paragraph later...
           assert(mp.size === 1)
           val event = mp(0)
           // After a checkin, try a stripmargin here
-          assert(event.text === trimMarkup("""
-This is a Title
-===============
-
-This is a paragraph later...
-"""))
+          val expected =
+            trimMarkup("""
+              |This is a Title
+              |===============
+              |
+              |This is a paragraph later...
+              |""".stripMargin
+            )
+          assert(event.text === expected)
         }
       }
       "should return an empty list from nestedSuites" in {
