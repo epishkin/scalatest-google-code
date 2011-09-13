@@ -17,7 +17,6 @@ package org.scalatest
 
 import org.scalatest.SharedHelpers.EventRecordingReporter
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.Doc.insert
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.Doc.stripMargin
 import org.scalatest.Doc.trimMarkup
@@ -101,7 +100,11 @@ This is a paragraph later...
   }
   "The insert method" - {
     "should return a string that includes the suite class name" in {
-      insert[DocSpecASuite] should equal ("\ninsert[org.scalatest.DocSpecASuite]\n")
+      new Doc {
+        def body = <markup>
+          { insert[DocSpecASuite] should equal ("\ninsert[org.scalatest.DocSpecASuite]\n"); insert[DocSpecASuite] }
+        </markup>
+      }
     }
   }
   "The trimMarkup method" - {

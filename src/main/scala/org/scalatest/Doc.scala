@@ -56,6 +56,11 @@ trait Doc extends Suite { thisDoc =>
 
   def body: Elem
 
+  protected def insert[T <: Suite](implicit manifest: Manifest[T]): String = {
+    val clazz = manifest.erasure.asInstanceOf[Class[T]]
+    "\ninsert[" + clazz.getName + "]\n"
+  }
+
   private val snippets: List[Snippet] = getSnippets(body.text)
 
   /*
@@ -113,11 +118,6 @@ println("pairs: " + pairs)
 }
 
 object Doc {
-
-  def insert[T <: Suite](implicit manifest: Manifest[T]): String = {
-    val clazz = manifest.erasure.asInstanceOf[Class[T]]
-    "\ninsert[" + clazz.getName + "]\n"
-  }
 
   private[scalatest] def trimMarkup(text: String): String = {
     val lines = text.lines.toList
