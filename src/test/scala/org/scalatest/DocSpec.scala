@@ -77,7 +77,7 @@ This is a paragraph later...
         }
       }
     }
-    "with one run call inside" - {
+    "with one insert call inside" - {
       class BSuite extends Suite
       // This one I'm putting flat against the margin on purpose.
       val a =
@@ -95,6 +95,27 @@ This is a paragraph later...
         }
       "should return an instance of the given suite to run in the list returned by nestedSuites" in {
         a.nestedSuites should have size 1
+      }
+    }
+    "with two insert calls inside" - {
+      class BSuite extends Suite
+      // This one I'm putting flat against the margin on purpose.
+      val a =
+        new Doc {
+          def body = <markup>
+            This is a Title
+            ===============
+
+            This is a paragraph later...
+
+            { insert[DocSpecASuite] }
+            { insert[DocSpecBSuite] }
+
+            And this is another paragraph.
+          </markup>
+        }
+      "should return an instance of the given suite to run in the list returned by nestedSuites" in {
+        a.nestedSuites should have size 2
       }
     }
   }
