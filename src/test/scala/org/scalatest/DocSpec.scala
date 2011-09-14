@@ -21,10 +21,13 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.Doc.stripMargin
 import org.scalatest.Doc.trimMarkup
 
-class DocSpecASuite extends Suite
-class DocSpecBSuite extends Suite
-
 class DocSpec extends FreeSpec with ShouldMatchers with TableDrivenPropertyChecks {
+
+  class DocSpecASuite extends Suite
+  class DocSpecBSuite extends Suite
+
+  val aSuite = new  DocSpecASuite
+  val bSuite = new  DocSpecBSuite
 
   "A Doc" - {
     "with no run calls inside" - {
@@ -77,7 +80,7 @@ This is a paragraph later...
         }
       }
     }
-    "with one insert call inside" - {
+    "with one include call inside" - {
       class BSuite extends Suite
       // This one I'm putting flat against the margin on purpose.
       val a =
@@ -88,7 +91,7 @@ This is a paragraph later...
 
             This is a paragraph later...
 
-            { insert[DocSpecASuite] }
+            { include(aSuite) }
 
             And this is another paragraph.
           </markup>
@@ -97,7 +100,7 @@ This is a paragraph later...
         a.nestedSuites should have size 1
       }
     }
-    "with two insert calls inside" - {
+    "with two include calls inside" - {
       class BSuite extends Suite
       // This one I'm putting flat against the margin on purpose.
       val a =
@@ -108,8 +111,8 @@ This is a paragraph later...
 
             This is a paragraph later...
 
-            { insert[DocSpecASuite] }
-            { insert[DocSpecBSuite] }
+            { include(aSuite) }
+            { include(bSuite) }
 
             And this is another paragraph.
           </markup>
@@ -119,11 +122,15 @@ This is a paragraph later...
       }
     }
   }
-  "The insert method" - {
-    "should return a string that includes the suite class name" in {
+  "The include method" - {
+    "should return a string that includes the suite class name" ignore {
       new Doc {
         def body = <markup>
-          { insert[DocSpecASuite] should equal ("\ninsert[org.scalatest.DocSpecASuite]\n"); insert[DocSpecASuite] }
+          {
+            val included = include(aSuite)
+            included should equal ("\ninclude[org.scalatest.DocSpecASuite]\n")
+            included
+          }
         </markup>
       }
     }

@@ -56,9 +56,8 @@ trait Doc extends Suite { thisDoc =>
 
   def body: Elem
 
-  protected def insert[T <: Suite](implicit manifest: Manifest[T]): String = {
-    val clazz = manifest.erasure.asInstanceOf[Class[T]]
-    "\ninsert[" + clazz.getName + "]\n"
+  protected def include(suite: Suite): String = {
+    "\ninclude[" + suite.getClass.getName + "]\n"
   }
 
   private val snippets: List[Snippet] = getSnippets(body.text)
@@ -88,9 +87,9 @@ println("lines: " + lines)
     val pairs = lines map { line =>
       val trimmed = line.trim
       val suite =
-        if (trimmed.startsWith("insert[") && trimmed.endsWith("]")) {
+        if (trimmed.startsWith("include[") && trimmed.endsWith("]")) {
 println("GOT HERE: " + trimmed + ", " + trimmed.substring(7).init)
-          Some(trimmed.substring(7).init)
+          Some(trimmed.substring(8).init)
 }
         else
           None
@@ -102,7 +101,7 @@ println("pairs: " + pairs)
 // Output of my fold left is: List[Snippet] (left is a list of snippets, right is a pair
     (List[Snippet](Markup("")) /: pairs) { (left: List[Snippet], right: (String, Option[String])) =>
       right match {
-        case (_, Some(className)) => InsertedSuite(thisDoc.getClass.getClassLoader.loadClass(className).newInstance.asInstanceOf[Suite]) :: left
+        case (_, Some(className)) => InsertedSuite(new Suite {}) :: left
         case (line, None) =>
           left.head match {
             case Markup(text) => Markup(text + "\n" + line) :: left.tail
