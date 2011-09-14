@@ -98,6 +98,7 @@ This is a paragraph later...
         }
       "should return an instance of the given suite to run in the list returned by nestedSuites" in {
         a.nestedSuites should have size 1
+        a.nestedSuites.head should equal (aSuite)
       }
     }
     "with two include calls inside" - {

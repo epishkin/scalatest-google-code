@@ -19,6 +19,8 @@ import scala.xml.Elem
 import Suite.reportMarkupProvided
 import Doc.stripMargin
 import Doc.trimMarkup
+import java.util.concurrent.atomic.AtomicReference
+import java.util.ConcurrentModificationException
 
 /**
  * A <code>Doc</code> class that takes one XML node markup
@@ -54,9 +56,41 @@ import Doc.trimMarkup
  */
 trait Doc extends Suite { thisDoc =>
 
+  // If registrationThreadName is None, then registration isn't open
+  // and include calls will return what they are supposed to return, but
+  // won't have the side effect of registering the suites and tests to run.
+  private class Bundle private(
+    val registrationThreadName: Option[String],
+    val registeredSuites: Map[String, Suite]
+  ) {
+    def unpack = (registrationThreadName, registeredSuites)
+  }
+
+  private object Bundle {
+    def apply(
+      registrationThreadName: Option[String],
+      registeredSuites: Map[String, Suite]
+    ): Bundle =
+      new Bundle(registrationThreadName, registeredSuites)
+  }
+
+  private final val atomic = new AtomicReference[Bundle](Bundle(None, Map()))
+
+  private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
+    val shouldBeOldBundle = atomic.getAndSet(newBundle)
+    if (!(shouldBeOldBundle eq oldBundle))
+      throw new ConcurrentModificationException("concurrentDocSpecMod")
+  }
+
   def body: Elem
 
   protected def include(suite: Suite): String = {
+    
+      val oldBundle = atomic.get
+      var (registrationThreadName, registeredSuites) = oldBundle.unpack
+// TODO: register two instances of the same class, which will break this key
+      registeredSuites += (suite.getClass.getName -> suite) // TODO: Check thread name, do nothing if None or non-matching
+      updateAtomic(oldBundle, Bundle(registrationThreadName, registeredSuites))
     "\ninclude[" + suite.getClass.getName + "]\n"
   }
 
@@ -66,7 +100,7 @@ trait Doc extends Suite { thisDoc =>
    * Returns a list containing the suites mentioned in the body XML element,
    * in the order they were mentioned.
    */
-  final override val nestedSuites = for (InsertedSuite(suite) <- snippets) yield suite
+  final override val nestedSuites = for (IncludedSuite(suite) <- snippets) yield suite
 /*
 println("^^^^^^^^^^^")
 println(body.text)
@@ -88,7 +122,7 @@ println("lines: " + lines)
       val trimmed = line.trim
       val suite =
         if (trimmed.startsWith("include[") && trimmed.endsWith("]")) {
-println("GOT HERE: " + trimmed + ", " + trimmed.substring(7).init)
+println("GOT HERE: " + trimmed + ", " + trimmed.substring(8).init)
           Some(trimmed.substring(8).init)
 }
         else
@@ -101,7 +135,10 @@ println("pairs: " + pairs)
 // Output of my fold left is: List[Snippet] (left is a list of snippets, right is a pair
     (List[Snippet](Markup("")) /: pairs) { (left: List[Snippet], right: (String, Option[String])) =>
       right match {
-        case (_, Some(className)) => InsertedSuite(new Suite {}) :: left
+        case (_, Some(key)) =>
+          var (_, registeredSuites) = atomic.get.unpack
+// TODO: Maybe give a better error message if this key doesn't exist?
+          IncludedSuite(registeredSuites(key)) :: left
         case (line, None) =>
           left.head match {
             case Markup(text) => Markup(text + "\n" + line) :: left.tail
@@ -113,7 +150,7 @@ println("pairs: " + pairs)
 
   private[scalatest] sealed trait Snippet
   private[scalatest] case class Markup(text: String) extends Snippet
-  private[scalatest] case class InsertedSuite(suite: Suite) extends Snippet
+  private[scalatest] case class IncludedSuite(suite: Suite) extends Snippet
 }
 
 object Doc {
