@@ -133,19 +133,21 @@ println("pairs: " + pairs)
     // val zipped = pairs.zipWithIndex
     // val insertionIndexes = for (((_, Some(_)), index) <- zipped) yield index
 // Output of my fold left is: List[Snippet] (left is a list of snippets, right is a pair
-    (List[Snippet](Markup("")) /: pairs) { (left: List[Snippet], right: (String, Option[String])) =>
-      right match {
-        case (_, Some(key)) =>
-          var (_, registeredSuites) = atomic.get.unpack
+    val backwards =
+      (List[Snippet](Markup("")) /: pairs) { (left: List[Snippet], right: (String, Option[String])) =>
+        right match {
+          case (_, Some(key)) =>
+            var (_, registeredSuites) = atomic.get.unpack
 // TODO: Maybe give a better error message if this key doesn't exist?
-          IncludedSuite(registeredSuites(key)) :: left
-        case (line, None) =>
-          left.head match {
-            case Markup(text) => Markup(text + "\n" + line) :: left.tail
-            case _ => Markup(line) :: left
-          }
+            IncludedSuite(registeredSuites(key)) :: left
+          case (line, None) =>
+            left.head match {
+              case Markup(text) => Markup(text + "\n" + line) :: left.tail
+              case _ => Markup(line) :: left
+            }
+        }
       }
-    }
+    backwards.reverse
   }
 
   private[scalatest] sealed trait Snippet
