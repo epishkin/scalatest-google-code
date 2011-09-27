@@ -283,4 +283,9 @@ final class Ordinal private (val runStamp: Int, private val stamps: Array[Int]) 
     41 * (
       41 + runStamp
     ) + Arrays.hashCode(stamps)
+
+  /**
+   * Returns a string that includes the integers returned by <code>toList</code>.
+   */
+  override def toString: String = toList.mkString("Ordinal(", ", ", ")")
 }
