@@ -102,7 +102,8 @@ sealed abstract class Event extends Ordered[Event] {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param suiteName the name of the suite containing the test that is starting
+ * @param suiteName a localized name identifying the suite containing the test that is starting, suitable for presenting to the user
+ * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is starting
  * @param testName the name of the test that is starting
  * @param testText the text of the test that is starting (may be the test name, or a suffix of the test name)
@@ -310,7 +311,8 @@ object DeprecatedTestStarting {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param suiteName the name of the suite containing the test that has succeeded
+ * @param suiteName a localized name identifying the suite containing the test that has succeeded, suitable for presenting to the user
+ * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has succeeded
  * @param testName the name of the test that has succeeded
  * @param testText the text of the test that has succeeded (may be the test name, or a suffix of the test name)
@@ -553,7 +555,8 @@ object DeprecatedTestSucceeded {
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
  * @param message a localized message suitable for presenting to the user
- * @param suiteName the name of the suite containing the test that has failed
+ * @param suiteName a localized name identifying the suite containing the test that has failed, suitable for presenting to the user
+ * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has failed
  * @param testName the name of the test that has failed
  * @param testText the text of the test that has failed (may be the test name, or a suffix of the test name)
@@ -829,7 +832,8 @@ object DeprecatedTestFailed {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param suiteName the name of the suite containing the test that was ignored
+ * @param suiteName a localized name identifying the suite containing the test that was ignored, suitable for presenting to the user
+ * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that was ignored
  * @param testName the name of the test that was ignored
  * @param testText the text of the test that was ignored (may be the test name, or a suffix of the test name)
@@ -992,7 +996,8 @@ object DeprecatedTestIgnored {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param suiteName the name of the suite containing the test that is pending
+ * @param suiteName a localized name identifying the suite containing the test that is pending, suitable for presenting to the user
+ * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is pending
  * @param testName the name of the test that is pending
  * @param testText the text of the test that is pending (may be the test name, or a suffix of the test name)
@@ -1063,7 +1068,8 @@ final case class TestPending (
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param suiteName the name of the suite containing the test that was canceled
+ * @param suiteName a localized name identifying the suite containing the test that was canceled, suitable for presenting to the user
+ * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that was canceled
  * @param testName the name of the test that was canceled
  * @param testText the text of the test that was canceled (may be the test name, or a suffix of the test name)
@@ -1241,8 +1247,8 @@ object DeprecatedTestPending {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param suiteName a localized name identifying the suite that is starting, which should include the
- *        suite name, suitable for presenting to the user
+ * @param suiteName a localized name identifying the suite that is starting, suitable for presenting to the user
+ * @param suiteID a string ID for the suite that is starting, intended to be unique across all suites in a run XXX 
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name of the suite that is starting
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
@@ -1437,7 +1443,8 @@ object DeprecatedSuiteStarting {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param suiteName the name of the suite containing the suite that has completed
+ * @param suiteName a localized name identifying the suite that has completed, suitable for presenting to the user
+ * @param suiteID a string ID for the suite that has completed, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has completed
  * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has completed
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
@@ -1668,7 +1675,8 @@ object DeprecatedSuiteCompleted {
  * @param name a localized name identifying the suite that has aborted, which should include the
  *        suite name, suitable for presenting to the user
  * @param message a localized message suitable for presenting to the user
- * @param suiteName the name of the suite containing the suite that has aborted
+ * @param suiteName a localized name identifying the suite that has aborted, suitable for presenting to the user
+ * @param suiteID a string ID for the suite that has aborted, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has aborted
  * @param throwable an optional <code>Throwable</code> that, if a <code>Some</code>, indicates why the suite has aborted,
  *        or a <code>Throwable</code> created to capture stack trace information about the problem.
