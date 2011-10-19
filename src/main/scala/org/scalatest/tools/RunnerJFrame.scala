@@ -336,7 +336,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
 
             def nameFromNameInfo(nameInfo: Option[NameInfo]): Option[String] = 
               nameInfo match {
-                case Some(NameInfo(suiteName, suiteClassName, testName)) =>
+                case Some(DeprecatedNameInfo(suiteName, suiteClassName, testName)) =>
                   testName match {
                     case Some(tn) => Some(suiteAndTestName(suiteName, tn))
                     case None => Some(suiteName)

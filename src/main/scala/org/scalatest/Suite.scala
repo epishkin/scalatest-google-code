@@ -2434,6 +2434,32 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
   def suiteName = getSimpleNameOfAnObjectsClass(thisSuite)
 
   /**
+   * A string ID for this <code>Suite</code> that is intended to be unique among all suites reported during a run.
+   *
+   * <p>
+   * This trait's
+   * implementation of this method returns the fully qualified name of this object's class. 
+   * Each suite reported during a run will commonly be an instance of a different <code>Suite</code> class,
+   * and in such cases, this default implementation of this method will suffice. However, in special cases
+   * you may need to override this method to ensure it is unique for each reported suite. For example, if you write
+   * a <code>Suite</code> subclass that reads in a file whose name is passed to its constructor and dynamically
+   * creates a suite of tests based on the information in that file, you will likely need to override this method
+   * in your <code>Suite</code> subclass, perhaps by appending the pathname of the file to the fully qualified class name. 
+   * That way if you run a suite of tests based on a directory full of these files, you'll have unique suite IDs for
+   * each reported suite.
+   * </p>
+   *
+   * <p>
+   * The suite ID is <em>intended</em> to be unique, because ScalaTest does not enforce that it is unique. If it is not
+   * unique, then you may not be able to uniquely identify a particular test of a particular suite. This ability is used,
+   * for example, to dynamically tag tests as having failed in the previous run when rerunning only failed tests.
+   * </p>
+   *
+   * @return this <code>Suite</code> object's ID.
+   */
+  def suiteID = thisSuite.getClass.getName
+
+  /**
    * Throws <code>TestPendingException</code> to indicate a test is pending.
    *
    * <p>
@@ -2564,7 +2590,7 @@ private[scalatest] object Suite {
   private[scalatest] val InformerInParens = "(Informer)"
   private[scalatest] val IgnoreAnnotation = "org.scalatest.Ignore"
 
-  private[scalatest] def getSimpleNameOfAnObjectsClass(o: AnyRef) = stripDollars(parseSimpleName(o.getClass().getName()))
+  private[scalatest] def getSimpleNameOfAnObjectsClass(o: AnyRef) = stripDollars(parseSimpleName(o.getClass.getName))
 
   // [bv: this is a good example of the expression type refactor. I moved this from SuiteClassNameListCellRenderer]
   // this will be needed by the GUI classes, etc.

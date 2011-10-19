@@ -161,7 +161,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
         val caught2 = intercept[TestFailedException] {
           "hi" should (not have length (2) or not equal ("hi") or equal ("frog"))
         }
-        assert(caught2.getMessage === "\"hi\" had length 2, and \"hi\" equaled \"hi\", and \"hi\" did not equal \"frog\"")
+        assert(caught2.getMessage === "\"hi\" had length 2, and \"hi\" equaled \"hi\", and \"[hi]\" did not equal \"[frog]\"")
       }
     }
 

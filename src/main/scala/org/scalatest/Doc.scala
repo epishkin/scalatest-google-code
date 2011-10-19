@@ -82,10 +82,16 @@ trait Doc extends Suite { thisDoc =>
       throw new ConcurrentModificationException("concurrentDocSpecMod")
   }
 
-  def body: Elem
+  // TODO: Make it atomic
+  // TODO: A test that throws NotAllowedE if it is called twice
+  // TODO: A test that throws TestRegistrationClosedE if it is called after run has been called
+  private var bodyText: Option[String] = None
+  def body(elem: Elem) {
+    bodyText = Some(elem.text)
+  }
 
   protected def include(suite: Suite): String = {
-    
+
       val oldBundle = atomic.get
       var (registrationThreadName, registeredSuites) = oldBundle.unpack
 // TODO: register two instances of the same class, which will break this key
@@ -94,13 +100,15 @@ trait Doc extends Suite { thisDoc =>
     "\ninclude[" + suite.getClass.getName + "]\n"
   }
 
-  private val snippets: List[Snippet] = getSnippets(body.text)
+  // TODO write a test to ensure you get a proper exception when 
+  // body is not called
+  private lazy val snippets: List[Snippet] = getSnippets(bodyText.get)
 
   /*
    * Returns a list containing the suites mentioned in the body XML element,
    * in the order they were mentioned.
    */
-  final override val nestedSuites = for (IncludedSuite(suite) <- snippets) yield suite
+  final override lazy val nestedSuites = for (IncludedSuite(suite) <- snippets) yield suite
 /*
 println("^^^^^^^^^^^")
 println(body.text)
@@ -109,27 +117,42 @@ println(snippets)
 println("&&&&&&&&&&&")
 */
 
+/*
   override protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     reportMarkupProvided(thisDoc, reporter, tracker, None, trimMarkup(stripMargin(body.text)), 0, true, None, None)
   }
+*/
+  override protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
+      configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+
+    val (_, registeredSuites) = atomic.get.unpack
+    snippets foreach {
+      case Markup(text) => 
+        reportMarkupProvided(thisDoc, reporter, tracker, None, trimMarkup(stripMargin(text)), 0, true, None, None)
+      case IncludedSuite(suite) =>
+        println("Send SuiteStarting ... ")
+        suite.run(None, reporter, stopper, filter, configMap, distributor, tracker) // Do the usual thing here
+        println("Send SuiteCompleted or Aborted ...")
+    }
+  }
 
   private[scalatest] def getSnippets(text: String): List[Snippet] = {
-println("text: " + text)
+//println("text: " + text)
     val lines = text.lines.toList
-println("lines: " + lines)
+//println("lines: " + lines)
     val pairs = lines map { line =>
       val trimmed = line.trim
       val suite =
         if (trimmed.startsWith("include[") && trimmed.endsWith("]")) {
-println("GOT HERE: " + trimmed + ", " + trimmed.substring(8).init)
+//println("GOT HERE: " + trimmed + ", " + trimmed.substring(8).init)
           Some(trimmed.substring(8).init)
 }
         else
           None
       (line, suite)
     }
-println("pairs: " + pairs)
+//println("pairs: " + pairs)
     // val zipped = pairs.zipWithIndex
     // val insertionIndexes = for (((_, Some(_)), index) <- zipped) yield index
 // Output of my fold left is: List[Snippet] (left is a list of snippets, right is a pair

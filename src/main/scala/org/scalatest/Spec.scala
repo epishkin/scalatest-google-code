@@ -31,7 +31,7 @@ import Suite.reportTestIgnored
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
  * (Note: In BDD, the word <em>example</em> is usually used instead of <em>test</em>. The word test will not appear
- * in your code if you use <code>WordSpec</code>, so if you prefer the word <em>example</em> you can use it. However, in this documentation
+ * in your code if you use <code>Spec</code>, so if you prefer the word <em>example</em> you can use it. However, in this documentation
  * the word <em>test</em> will be used, for clarity and to be consistent with the rest of ScalaTest.)
  * Here's an example <code>Spec</code>:
  *

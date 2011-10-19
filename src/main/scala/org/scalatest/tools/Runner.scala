@@ -500,7 +500,7 @@ object Runner {
     checkArgsForValidity(args) match {
       case Some(s) => {
         println(s)
-        exit(1)
+        exit(1) // TODO: Shouldn't this be returning false?
       }
       case None =>
     }

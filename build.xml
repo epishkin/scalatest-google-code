@@ -7,7 +7,7 @@
              classpathref="maven-ant-tasks.classpath" />
 
     <!-- set global properties for this build -->
-    <property name="release" value="1.6.1" />
+    <property name="release" value="2.0" />
     <property name="scala.version" value="2.9.0" />
 
     <property name="scalasrc" value="src/main/scala" />
@@ -209,11 +209,21 @@
         <scalac srcref="scalac.source.path" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
 
        <!-- copy these here not in dist because sometimes I like to do -cp target/jar_contents things, such as REPL sessions -->
+       <antcall target="copy-resources"/>
+<!-- TODO: Delete this if the antcall works
         <copy file="${resources}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
         <copy todir="${jar.contents}/images">
             <fileset dir="${images}" />
         </copy>
+-->
 
+    </target>
+
+    <target name="copy-resources">
+        <copy file="${resources}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
+        <copy todir="${jar.contents}/images">
+            <fileset dir="${images}" />
+        </copy>
     </target>
 
     <target name="compile-tests" depends="compile-main">

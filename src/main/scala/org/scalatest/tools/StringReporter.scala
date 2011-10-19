@@ -405,7 +405,7 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
 
         val (suiteName, testName) =
           nameInfo match {
-            case Some(NameInfo(suiteName, _, testName)) => (Some(suiteName), testName)
+            case Some(DeprecatedNameInfo(suiteName, _, testName)) => (Some(suiteName), testName)
             case None => (None, None)
           }
         val lines = stringsToPrintOnError("infoProvidedNote", "infoProvided", message, throwable, formatter, suiteName, testName, None)
