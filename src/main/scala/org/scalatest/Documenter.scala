@@ -16,15 +16,14 @@
 package org.scalatest
 
 /**
- * Trait to which custom information about a running suite of tests can be reported.
+ * Trait to which markup text tests can be reported.
  * 
  * <p>
- * An <code>Documenter</code> is essentially
- * used to wrap a <code>Reporter</code> and provide easy ways to send custom information
- * to that <code>Reporter</code> via an <code>MarkupProvided</code> event.
- * <code>Documenter</code> contains an <code>apply</code> method that takes an object.
- * The <code>Documenter</code> will invoke <code>toString</code> on the passed object and
- * forward the resulting string to the <code>Reporter</code> as the <code>message</code>
+ * A <code>Documenter</code> is essentially
+ * used to wrap a <code>Reporter</code> and provide easy ways to send markup text
+ * to that <code>Reporter</code> via a <code>MarkupProvided</code> event.
+ * <code>Documenter</code> contains an <code>apply</code> method that takes a string.
+ * The <code>Documenter</code> will forward the passed string to the <code>Reporter</code> as the <code>text</code>
  * parameter of an <code>MarkupProvided</code> event.
  * </p>
  *
@@ -37,63 +36,69 @@ package org.scalatest
  * import org.scalatest._
  * 
  * class MySuite extends Suite {
- *   def testAddition(info: Documenter) {
+ *   def testAddition(markup: Documenter) {
  *     assert(1 + 1 === 2)
- *     info("Addition seems to work")
+ *     markup("Addition *seems* to work")
  *   }
  * }
  * </pre>
  *
- * If you run this <code>Suite</code> from the interpreter, you will see the message
- * included in the printed report:
+ * <p>
+ * As of 2.0, the only built-in reporter that presents markup text is the HTML reporter. 
+ * If you run this <code>Suite</code> and specify the HTML reporter, you will see the message
+ * included in the HTML report:
+ * </p>
  *
  * <pre class="stREPL">
- * scala> (new MySuite).execute()
- * <span class="stGreen">Test Starting - MySuite.testAddition(Reporter)
- * Info Provided - MySuite.testAddition(Reporter): Addition seems to work
- * Test Succeeded - MySuite.testAddition(Reporter)</span>
+ * scala&gt; (new MySuite).execute()
+ * <span class="stGreen">- testAddition(Informer)
+ *   + Addition <em>seems</em> to work</span>
  * </pre>
  *
  * <p>
  * Traits <code>FunSuite</code>, <code>Spec</code>, <code>FlatSpec</code>, <code>WordSpec</code>, <code>FeatureSpec</code>, and 
- * their sister traits in <code>org.scalatest.fixture</code> package declare an implicit <code>info</code> method that returns
- * an <code>Documenter</code>. This implicit <code>info</code> is used, for example, to enable the syntax offered by the
- * <a href="GivenWhenThen.html"><code>GivenWhenThen</code> trait</a>, which contains methods that take an implicit <code>Documenter</code>.
- * Here's an example of a <code>FeatureSpec</code> that mixes in <code>GivenWhenThen</code>:
+ * their sister traits in <code>org.scalatest.fixture</code> package declare an implicit <code>markup</code> method that returns
+ * an <code>Documenter</code>.
+ * Here's an example of a <code>Spec</code> that uses <code>markup</code>:
  * </p>
  * 
  * <pre class="stHighlight">
- * import org.scalatest.FeatureSpec
- * import org.scalatest.GivenWhenThen
- * 
- * class ArithmeticSpec extends FeatureSpec with GivenWhenThen {
- * 
- *   feature("Integer arithmetic") {
+ * import org.scalatest.Spec
+ * import scala.collection.mutable.Stack
  *
- *     scenario("addition") {
- * 
- *       given("two integers")
- *       val x = 2
- *       val y = 3
- * 
- *       when("they are added")
- *       val sum = x + y
- * 
- *       then("the result is the sum of the two numbers")
- *       assert(sum === 5)
+ * class StackSpec extends Spec {
+ *
+ *   markup("""
+ *
+ *     Stack Specification
+ *     ===================
+ *
+ *     A  &#96;Stack&#96; is a data structure that allows you to store and retrieve objects in
+ *     a last-in-first-out (LIFO) fashion. &#96;Stack&#96;s (both this class and its immutable
+ *     cousin) are not commonly used in Scala, because a &#96;List&#96; gives you
+ *     the same basic functionality. Pushing an object onto a &#96;Stack&#96; maps to consing
+ *     a new element onto the front of a &#96;List&#96;. Peaking at the top of the &#96;Stack&#96; maps to
+ *     to a &#96;head&#96;. Popping an object off of a &#96;Stack&#96; maps to a &#96;head&#96; followed by a &#96;tail&#96;. 
+ *     Nevertheless, using a &#96;Stack&#96; instead of a &#96;List&#96; can clarify your intent
+ *     to readers of your code.
+ *
+ *   """)
+ *
+ *   describe("A Stack") {
+ *
+ *     it("should pop values in last-in-first-out order") {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
  *     }
  *
- *     scenario("subtraction") {
- * 
- *       given("two integers")
- *       val x = 7
- *       val y = 2
- * 
- *       when("one is subtracted from the other")
- *       val diff = x - y
- * 
- *       then("the result is the difference of the two numbers")
- *       assert(diff === 5)
+ *     it("should throw NoSuchElementException if an empty stack is popped") {
+ *       val emptyStack = new Stack[String]
+ *       intercept[NoSuchElementException] {
+ *         emptyStack.pop()
+ *       }
  *     }
  *   }
  * }

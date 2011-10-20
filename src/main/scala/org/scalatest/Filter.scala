@@ -11,19 +11,19 @@ import Filter.IgnoreTag
  * </p>
  *
  * <p>
- * 1. If both <code>tagsToInclude</code> and <code>testNamesToInclude<code> are <code>None</code>, then only test names tagged with one or more tags in
+ * 1. If both <code>tagsToInclude</code> and <code>testNamesToInclude</code> are <code>None</code>, then only test names tagged with one or more tags in
  * the <code>tagsToExclude</code> set will be filtered out by <code>Filter</code>'s <code>apply</code> methods.
  * </p>
  *
  * <p>
- * 2. If <code>tagsToInclude<code> is 
+ * 2. If <code>tagsToInclude</code> is 
  * defined, but <code>testNamesToInclude</code> is not, then test names without any tags mentioned in <code>tagsToInclude</code> as well as
  * with a tag mentioned in <code>tagsToExclude</code> will be filtered out. (A test with tags mentioned in both <code>tagsToInclude</code> and <code>tagsToExclude</code> will
  * be filtered out.)
  * </p>
  *
  * <p>
- * 3. If <code>testNamesToInclude<code> is defined, but <code>tagsToInclude</code> is not, then test names not mentioned in
+ * 3. If <code>testNamesToInclude</code> is defined, but <code>tagsToInclude</code> is not, then test names not mentioned in
  * <code>testNamesToInclude</code> as well as any test name with one or more tags mentioned in <code>tagsToExclude</code> will be filtered out. (A test with a name
  * mentioned in <code>testNamesToInclude</code> and one or more tags mentioned in <code>tagsToExclude</code> will be filtered out.)
  * </p>
