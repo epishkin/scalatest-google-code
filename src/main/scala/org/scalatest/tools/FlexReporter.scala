@@ -225,12 +225,22 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
       }
     }
 
+    //
+    // Reads the xml from the run file for the current run.
+    //
     def getThisRunXml: Elem = {
       XML.loadFile(thisRunFile)
     }
 
+    //
+    // Generates <regressedTest> elements for output summary file.
+    //
     def genRegressions(oldSummaryXml: NodeSeq, thisRunXml: Elem): String =
     {
+      //
+      // Searches through regressions from previous summary to try and
+      // find one matching specified test.
+      //
       def getOldRegression(suite: Node, test: Node,
                            oldRegressionsXml: NodeSeq): Option[Node] =
       {
@@ -239,6 +249,9 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
                    ((node \ "@suiteID") == (suite \ "@id"))))
       }
 
+      //
+      // Formats a <regressedTest> element.
+      //
       def formatRegression(suite: Node, test: Node, result: String,
                            lastSucceeded: String): String =
       {
@@ -249,6 +262,9 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
         "lastSucceeded=\"" + lastSucceeded      + "\"/>\n"
       }
 
+      //
+      // Gets the timestamp of the previous run.
+      //
       def getLastRunId: Option[String] = {
         val previousRuns = oldSummaryXml \\ "run"
 
@@ -256,6 +272,9 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
         else None
       }
 
+      //
+      // Retrieves xml of the previous run if available, else Empty.
+      //
       def getLastRunXml(lastRunId: Option[String]): NodeSeq = {
         if (lastRunId.isDefined)
           XML.loadFile(directory + "/runs/run-" + lastRunId.get + ".xml")
@@ -263,23 +282,24 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
           NodeSeq.Empty
       }
 
+      //
+      // Checks xml from previous run to see if it contains a test with
+      // success status that matches specified test.
+      //
       def lastRunSucceeded(suite: Node, test: Node, lastRunXml: NodeSeq):
       Boolean =
       {
         var found = false
         var succeeded = false
-        val suiteId = suite \ "@id"
-        val testName = test \ "@name"
 
         val oldSuitesIt = (lastRunXml \\ "suite").iterator
-
         while (!found && oldSuitesIt.hasNext) {
           val oldSuite = oldSuitesIt.next()
 
-          if (oldSuite \ "@id" == suiteId) {
+          if (oldSuite \ "@id" == suite \ "@id") {
             val oldTests = oldSuite \ "test"
             val matchingTest =
-              oldTests.find(node => (node \ "@name") == testName)
+              oldTests.find(node => (node \ "@name") == test \ "@name")
             if (matchingTest.isDefined) {
               found = true
               val result = "" + matchingTest.get \ "@result"
@@ -340,7 +360,6 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
       SummaryTemplate.
         replaceFirst("""\$runs\$""", thisRun + oldRuns).
         replaceFirst("""\$regressions\$""", regressions)
-        
 
     writeFile("summary.xml", summaryText)
   }
