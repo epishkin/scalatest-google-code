@@ -64,7 +64,7 @@ object DeprecatedTestStarting {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -93,7 +93,7 @@ object DeprecatedTestStarting {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -120,7 +120,7 @@ object DeprecatedTestStarting {
     testName: String,
     formatter: Option[Formatter]
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -144,7 +144,7 @@ object DeprecatedTestStarting {
     suiteClassName: Option[String],
     testName: String
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName, testName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -195,7 +195,7 @@ object DeprecatedTestSucceeded {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName, testName, testName, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -226,7 +226,7 @@ object DeprecatedTestSucceeded {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName, testName, testName, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -255,7 +255,7 @@ object DeprecatedTestSucceeded {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName, testName, testName, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -281,7 +281,7 @@ object DeprecatedTestSucceeded {
     testName: String,
     duration: Option[Long]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName, testName, testName, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -305,7 +305,7 @@ object DeprecatedTestSucceeded {
     suiteClassName: Option[String],
     testName: String
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName, testName, testName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -361,7 +361,7 @@ object DeprecatedTestFailed {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -397,7 +397,7 @@ object DeprecatedTestFailed {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -431,7 +431,7 @@ object DeprecatedTestFailed {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -462,7 +462,7 @@ object DeprecatedTestFailed {
     throwable: Option[Throwable],
     duration: Option[Long]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName, testName, testName, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -491,7 +491,7 @@ object DeprecatedTestFailed {
     testName: String,
     throwable: Option[Throwable]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName, testName, testName, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -537,7 +537,7 @@ object DeprecatedTestIgnored {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): TestIgnored = {
-    TestIgnored(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestIgnored(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -563,7 +563,7 @@ object DeprecatedTestIgnored {
     testName: String,
     formatter: Option[Formatter]
   ): TestIgnored = {
-    TestIgnored(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestIgnored(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -587,7 +587,7 @@ object DeprecatedTestIgnored {
     suiteClassName: Option[String],
     testName: String
   ): TestIgnored = {
-    TestIgnored(ordinal, suiteName, suiteClassName, testName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestIgnored(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -633,7 +633,7 @@ object DeprecatedTestPending {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -659,7 +659,7 @@ object DeprecatedTestPending {
     testName: String,
     formatter: Option[Formatter]
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName, testName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -683,7 +683,7 @@ object DeprecatedTestPending {
     suiteClassName: Option[String],
     testName: String
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName, testName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -731,7 +731,7 @@ object DeprecatedSuiteStarting {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): SuiteStarting = {
-    SuiteStarting(ordinal, suiteName, suiteClassName, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -759,7 +759,7 @@ object DeprecatedSuiteStarting {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): SuiteStarting = {
-    SuiteStarting(ordinal, suiteName, suiteClassName, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -785,7 +785,7 @@ object DeprecatedSuiteStarting {
     suiteClassName: Option[String],
     formatter: Option[Formatter]
   ): SuiteStarting = {
-    SuiteStarting(ordinal, suiteName, suiteClassName, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -808,7 +808,7 @@ object DeprecatedSuiteStarting {
     suiteName: String,
     suiteClassName: Option[String]
   ): SuiteStarting = {
-    SuiteStarting(ordinal, suiteName, suiteClassName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -857,7 +857,7 @@ object DeprecatedSuiteCompleted {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): SuiteCompleted = {
-    SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -886,7 +886,7 @@ object DeprecatedSuiteCompleted {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): SuiteCompleted = {
-    SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -913,7 +913,7 @@ object DeprecatedSuiteCompleted {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): SuiteCompleted = {
-    SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -937,7 +937,7 @@ object DeprecatedSuiteCompleted {
     suiteClassName: Option[String],
     duration: Option[Long]
   ): SuiteCompleted = {
-    SuiteCompleted(ordinal, suiteName, suiteClassName, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -961,7 +961,7 @@ object DeprecatedSuiteCompleted {
     suiteName: String,
     suiteClassName: Option[String]
   ): SuiteCompleted = {
-    SuiteCompleted(ordinal, suiteName, suiteClassName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -1017,7 +1017,7 @@ object DeprecatedSuiteAborted {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): SuiteAborted = {
-    SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1051,7 +1051,7 @@ object DeprecatedSuiteAborted {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): SuiteAborted = {
-    SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1083,7 +1083,7 @@ object DeprecatedSuiteAborted {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): SuiteAborted = {
-    SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1112,7 +1112,7 @@ object DeprecatedSuiteAborted {
     throwable: Option[Throwable],
     duration: Option[Long]
   ): SuiteAborted = {
-    SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1139,7 +1139,7 @@ object DeprecatedSuiteAborted {
     suiteClassName: Option[String],
     throwable: Option[Throwable]
   ): SuiteAborted = {
-    SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 

@@ -53,7 +53,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
       val suiteStartTime = System.currentTimeMillis
 
       if (!suite.isInstanceOf[DistributedTestRunnerSuite])
-        dispatch(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, Some(TopOfClass(suite.getClass.getName)), rerunnable))
+        dispatch(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, suite.suiteID, Some(suite.getClass.getName), formatter, Some(TopOfClass(suite.getClass.getName)), rerunnable))
   
       try {
         suite.run(None, dispatch, stopRequested, filter, propertiesMap, distributor, tracker)
@@ -63,7 +63,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
 
         val duration = System.currentTimeMillis - suiteStartTime
         if (!suite.isInstanceOf[DistributedTestRunnerSuite])
-          dispatch(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), Some(duration), formatter, Some(TopOfClass(suite.getClass.getName)), rerunnable))
+          dispatch(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, suite.suiteID, Some(suite.getClass.getName), Some(duration), formatter, Some(TopOfClass(suite.getClass.getName)), rerunnable))
       }
       catch {
         case e: RuntimeException => { // Do fire SuiteAborted even if a DistributedTestRunnerSuite 
@@ -72,7 +72,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
           val formatter3 = formatterForSuiteAborted(suite, rawString3)
 
           val duration = System.currentTimeMillis - suiteStartTime
-          dispatch(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), Some(duration), formatter3, Some(SeeStackDepthException), rerunnable))
+          dispatch(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, suite.suiteID, Some(suite.getClass.getName), Some(e), Some(duration), formatter3, Some(SeeStackDepthException), rerunnable))
         }
       }
     }

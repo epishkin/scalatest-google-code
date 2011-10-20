@@ -122,6 +122,7 @@ sealed abstract class Event extends Ordered[Event] {
 final case class TestStarting (
   ordinal: Ordinal,
   suiteName: String,
+  suiteID: String,
   suiteClassName: Option[String],
   testName: String,
   testText: String,
@@ -137,6 +138,8 @@ final case class TestStarting (
     throw new NullPointerException("ordinal was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
+  if (suiteID == null)
+    throw new NullPointerException("suiteID was null")
   if (suiteClassName == null)
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
@@ -206,6 +209,7 @@ final case class TestStarting (
 final case class TestSucceeded (
   ordinal: Ordinal,
   suiteName: String,
+  suiteID: String,
   suiteClassName: Option[String],
   testName: String,
   testText: String,
@@ -222,6 +226,8 @@ final case class TestSucceeded (
     throw new NullPointerException("ordinal was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
+  if (suiteID == null)
+    throw new NullPointerException("suiteID was null")
   if (suiteClassName == null)
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
@@ -296,6 +302,7 @@ final case class TestFailed (
   ordinal: Ordinal,
   message: String,
   suiteName: String,
+  suiteID: String,
   suiteClassName: Option[String],
   testName: String,
   testText: String,
@@ -315,6 +322,8 @@ final case class TestFailed (
     throw new NullPointerException("message was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
+  if (suiteID == null)
+    throw new NullPointerException("suiteID was null")
   if (suiteClassName == null)
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
@@ -385,6 +394,7 @@ final case class TestFailed (
 final case class TestIgnored (
   ordinal: Ordinal,
   suiteName: String,
+  suiteID: String,
   suiteClassName: Option[String],
   testName: String,
   testText: String,
@@ -399,6 +409,8 @@ final case class TestIgnored (
     throw new NullPointerException("ordinal was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
+  if (suiteID == null)
+    throw new NullPointerException("suiteID was null")
   if (suiteClassName == null)
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
@@ -457,6 +469,7 @@ final case class TestIgnored (
 final case class TestPending (
   ordinal: Ordinal,
   suiteName: String,
+  suiteID: String,
   suiteClassName: Option[String],
   testName: String,
   testText: String,
@@ -471,6 +484,8 @@ final case class TestPending (
     throw new NullPointerException("ordinal was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
+  if (suiteID == null)
+    throw new NullPointerException("suiteID was null")
   if (suiteClassName == null)
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
@@ -531,6 +546,7 @@ final case class TestCanceled (
   ordinal: Ordinal,
   message: String,
   suiteName: String,
+  suiteID: String,
   suiteClassName: Option[String],
   testName: String,
   testText: String,
@@ -549,6 +565,8 @@ final case class TestCanceled (
     throw new NullPointerException("message was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
+  if (suiteID == null)
+    throw new NullPointerException("suiteID was null")
   if (suiteClassName == null)
     throw new NullPointerException("suiteClassName was null")
   if (testName == null)
@@ -616,6 +634,7 @@ final case class TestCanceled (
 final case class SuiteStarting (
   ordinal: Ordinal,
   suiteName: String,
+  suiteID: String,
   suiteClassName: Option[String],
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
@@ -629,6 +648,8 @@ final case class SuiteStarting (
     throw new NullPointerException("ordinal was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
+  if (suiteID == null)
+    throw new NullPointerException("suiteID was null")
   if (suiteClassName == null)
     throw new NullPointerException("suiteClassName was null")
   if (formatter == null)
@@ -692,6 +713,7 @@ final case class SuiteStarting (
 final case class SuiteCompleted (
   ordinal: Ordinal,
   suiteName: String,
+  suiteID: String,
   suiteClassName: Option[String],
   duration: Option[Long] = None,
   formatter: Option[Formatter] = None,
@@ -706,6 +728,8 @@ final case class SuiteCompleted (
     throw new NullPointerException("ordinal was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
+  if (suiteID == null)
+    throw new NullPointerException("suiteID was null")
   if (suiteClassName == null)
     throw new NullPointerException("suiteClassName was null")
   if (duration == null)
@@ -778,6 +802,7 @@ final case class SuiteAborted (
   ordinal: Ordinal,
   message: String,
   suiteName: String,
+  suiteID: String,
   suiteClassName: Option[String],
   throwable: Option[Throwable] = None,
   duration: Option[Long] = None,
@@ -795,6 +820,8 @@ final case class SuiteAborted (
     throw new NullPointerException("message was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
+  if (suiteID == null)
+    throw new NullPointerException("suiteID was null")
   if (suiteClassName == null)
     throw new NullPointerException("suiteClassName was null")
   if (throwable == null)

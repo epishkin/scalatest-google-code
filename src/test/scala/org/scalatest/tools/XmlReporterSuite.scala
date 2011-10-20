@@ -35,6 +35,7 @@ class XmlReporterSuite extends FunSuite {
     SuiteStarting(
       ord1a,
       "suite1",
+      "suite id",
       None,
       None,
       None,
@@ -47,6 +48,7 @@ class XmlReporterSuite extends FunSuite {
     SuiteStarting(
       ord1b,
       "suite2",
+      "suite id",
       None,
       None,
       None,
@@ -60,6 +62,7 @@ class XmlReporterSuite extends FunSuite {
       ord1c,
       "aborted message",
       "suite2",
+      "suite id",
       None,
       None,
       None,
@@ -71,6 +74,7 @@ class XmlReporterSuite extends FunSuite {
     SuiteCompleted(
       ord1d,
       "suite1",
+      "suite id",
       None,
       None,
       None,
