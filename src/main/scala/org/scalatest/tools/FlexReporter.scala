@@ -130,10 +130,9 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     val SummaryTemplate =
       """|<summary>
          |  <runs>
-         |$runs$
-         |  </runs>
+         |$runs$  </runs>
          |  <regressions>
-         |  </regressions>
+         |$regressions$  </regressions>
          |  <recentlySlower>
          |  </recentlySlower>
          |</summary>
@@ -230,36 +229,97 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
       XML.loadFile(thisRunFile)
     }
 
-    def genRegressions(oldRegressionsXml: NodeSeq, thisRunXml: Elem): String =
+    def genRegressions(oldSummaryXml: NodeSeq, thisRunXml: Elem): String =
     {
-      def getOldRegression(suite: Node, test: Node): Option[Node] = {
-        val matches =
-          oldRegressionsXml.filter(
-            node => node \ "@testName" == test \ "@name")
+      def getOldRegression(suite: Node, test: Node,
+                           oldRegressionsXml: NodeSeq): Option[Node] =
+      {
+        oldRegressionsXml.find(
+          node => (((node \ "@testName") == (test \ "@name")) &&
+                   ((node \ "@suiteID") == (suite \ "@id"))))
+      }
 
-        if (matches.size > 0)
-          Some(matches(0))
+      def formatRegression(suite: Node, test: Node, result: String,
+                           lastSucceeded: String): String =
+      {
+        "    <regressedTest " +
+        "suiteID=\""       + (suite \ "@id")    + "\" " +
+        "testName=\""      + (test \ "@name")   + "\" " +
+        "status=\""        + result             + "\" " +
+        "lastSucceeded=\"" + lastSucceeded      + "\"/>\n"
+      }
+
+      def getLastRunId: Option[String] = {
+        val previousRuns = oldSummaryXml \\ "run"
+
+        if (previousRuns.size > 0) Some("" + (previousRuns(0) \ "@id"))
+        else None
+      }
+
+      def getLastRunXml(lastRunId: Option[String]): NodeSeq = {
+        if (lastRunId.isDefined)
+          XML.loadFile(directory + "/runs/run-" + lastRunId.get + ".xml")
         else
-          None
+          NodeSeq.Empty
+      }
+
+      def lastRunSucceeded(suite: Node, test: Node, lastRunXml: NodeSeq):
+      Boolean =
+      {
+        var found = false
+        var succeeded = false
+        val suiteId = suite \ "@id"
+        val testName = test \ "@name"
+
+        val oldSuitesIt = (lastRunXml \\ "suite").iterator
+
+        while (!found && oldSuitesIt.hasNext) {
+          val oldSuite = oldSuitesIt.next()
+
+          if (oldSuite \ "@id" == suiteId) {
+            val oldTests = oldSuite \ "test"
+            val matchingTest =
+              oldTests.find(node => (node \ "@name") == testName)
+            if (matchingTest.isDefined) {
+              found = true
+              val result = "" + matchingTest.get \ "@result"
+              succeeded = (result == "succeeded")
+            }
+          }
+        }
+        succeeded
       }
 
       //
       // genRegressionsMain
       //
+      val buf = new StringBuilder
       val suites = thisRunXml \\ "suite"
+      val oldRegressionsXml = oldSummaryXml \\ "regressedTest"
+      val lastRunId = getLastRunId
+      val lastRunXml = getLastRunXml(lastRunId)
 
       for (suite <- suites) {
-        val tests = suite \ "test"
+        for (test <- suite \ "test") {
+          val result = "" + (test \ "@result")
 
-        for (test <- tests) {
-          val result = test \ "result"
+          if (result != "succeeded") {
+            val oldRegression = getOldRegression(suite, test,
+                                                 oldRegressionsXml)
+            val lastSucceeded =
+              if (oldRegression.isDefined)
+                "" + oldRegression.get \ "@lastSucceeded"
+              else if (lastRunSucceeded(suite, test, lastRunXml))
+                lastRunId.get
+              else
+                "never"
 
-          if (result != "passed") {
-            val oldRegression = getOldRegression(suite, test)
+            if (!((result == "pending") && (lastSucceeded == "never")))
+              buf.append(formatRegression(suite, test, result, lastSucceeded))
           }
         }
       }
-      "genRegressions output"
+      buf.toString
     }
 
     //
@@ -267,19 +327,20 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     //
     val oldSummaryXml = getOldSummaryXml
     val thisRunXml    = getThisRunXml
-
-    val oldRunsXml        = oldSummaryXml \\ "run"
-    val oldRegressionsXml = oldSummaryXml \\ "regression"
+    val oldRunsXml    = oldSummaryXml \\ "run"
 
     archiveOldSummaryFile(oldRunsXml)
 
     val thisRun = genThisRun(terminatingEvent)
     val oldRuns = formatOldRuns(oldRunsXml)
 
-    val regressions = genRegressions(oldRegressionsXml, thisRunXml)
+    val regressions = genRegressions(oldSummaryXml, thisRunXml)
 
     val summaryText =
-      SummaryTemplate.replaceFirst("""\$runs\$""", thisRun + oldRuns)
+      SummaryTemplate.
+        replaceFirst("""\$runs\$""", thisRun + oldRuns).
+        replaceFirst("""\$regressions\$""", regressions)
+        
 
     writeFile("summary.xml", summaryText)
   }
@@ -513,6 +574,7 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
         val duration = endEvent.timeStamp - startEvent.timeStamp
         "\n" +
         "<suite index=\"" + nextIndex()                   + "\" " +
+        "id=\""           + startEvent.suiteID            + "\" " +
         "result=\""       + result                        + "\" " +
         "name=\""         + escape(startEvent.suiteName)  + "\" " +
         "duration=\""     + duration                      + "\" " +
@@ -615,7 +677,7 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     //
     def result: String = {
       endEvent match {
-        case _: TestSucceeded => "passed"
+        case _: TestSucceeded => "succeeded"
         case _: TestFailed    => "failed"
         case _: TestPending   => "pending"
         case _: TestCanceled  => "canceled"
