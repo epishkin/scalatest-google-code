@@ -77,6 +77,7 @@
 	
         <path id="build.class.path">
             <pathelement location="${classes}" />
+            <pathelement location="lib/txtmark.jar" />
             <path refid="lib.path"></path>
         </path>
 
@@ -340,9 +341,11 @@
       - Called from 'test' and 'testfromjar' targets.
       -->
     <target name="runtest" depends="compile,copyprops,taskdefscalatest">
+        <mkdir dir="target/flex" />
         <scalatest fork="true" runpath="${test.runpath}" parallel="true" haltonfailure="true">
             <jvmarg value="-XX:MaxPermSize=512m"/>
             <reporter type="graphic"/>
+            <reporter type="flex" directory="target/flex"/>
             <reporter type="junitxml" directory="target"/>
             <reporter type="stdout" config="D"/>
             <membersonly package="org.scalatest" />
@@ -948,6 +951,19 @@
                 <equals arg1="${ant.java.version}" arg2="1.5"/>
             </or>
         </condition>
+    </target>
+
+    <target name="gcbtest"
+            depends="compile-main,compile-tests,copyprops,taskdefscalatest">
+      <mkdir dir="flexrep" />
+      <scalatest runpath="${build.tests};${classes}" haltonfailure="true">
+        <reporter type="flex" directory="flexrep"/>
+        <reporter type="stdout" config="NF"/>
+        <jvmarg value="-XX:MaxPermSize=512m"/>
+
+        <suite classname="org.scalatest.FunSuiteSuite" />
+        <suite classname="org.scalatest.FunSuiteSpec" />
+      </scalatest>
     </target>
 </project>
 

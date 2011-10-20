@@ -27,7 +27,7 @@ import org.scalatest._
  *
  * @author Bill Venners
  */
-final case class Summary(testsSucceededCount: Int, testsFailedCount: Int, testsIgnoredCount: Int, testsPendingCount: Int,
+final case class Summary(testsSucceededCount: Int, testsFailedCount: Int, testsIgnoredCount: Int, testsPendingCount: Int, testsCanceledCount: Int,
   suitesCompletedCount: Int, suitesAbortedCount: Int) {
 
   /**
