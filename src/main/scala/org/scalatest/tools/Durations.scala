@@ -72,6 +72,56 @@ case class Durations(file: File) {
                                    quoteReplacement(buf.toString))
   }
 
+  def addDuration(suiteID: String, testName: String, run: String,
+                  millis: Int)
+  {
+    def getSuite(): Suite = {
+      val suiteOption = suites.find(suite => suite.suiteID == suiteID)
+
+      if (suiteOption.isDefined) {
+        suiteOption.get
+      }
+      else {
+        val newSuite = Suite(suiteID)
+        suites += newSuite
+        newSuite
+      }
+    }
+
+    def getTest(): Test = {
+      val suite = getSuite
+      val testOption = suite.tests.find(test => test.name == testName)
+
+      if (testOption.isDefined) {
+        testOption.get
+      }
+      else {
+        val newTest = Test(testName)
+        suite.tests += newTest
+        newTest
+      }
+    }
+
+    def archiveOldestDuration(test: Test) {
+      val oldestDuration = test.durations.last
+      test.durations = test.durations.dropRight(1)
+
+      test.previousAverage =
+        (test.previousAverage * test.previousNum + oldestDuration.millis) /
+        (test.previousNum + 1)
+
+      test.previousNum += 1
+    }
+    
+    val test = getTest()
+    test.durations ::= new Duration(run, millis)
+
+    if ((test.numberOfDurations * 0.8) > test.previousNum) {
+      archiveOldestDuration(test)
+    }
+  }
+}
+
   case class Suite(suiteID: String) {
     val tests = mutable.Set[Test]()
 
@@ -115,6 +165,14 @@ case class Durations(file: File) {
         replaceFirst("""\$previousAverage\$""", previousAverage.toString).
         replaceFirst("""\$durations\$""",       quoteReplacement(buf.toString))
     }
+
+    def runCount: Int = {
+      previousNum + durations.size
+    }
+
+    def computeNewAvg: Int = {
+      durations.foldLeft(0)(_ + _.millis) / durations.size
+    }
   }
 
   case class Duration(run: String, millis: Int) {
@@ -129,51 +187,3 @@ case class Durations(file: File) {
     }
   }
 
-  def addDuration(suiteID: String, testName: String, run: String,
-                  millis: Int)
-  {
-    def getSuite(): Suite = {
-      val suiteOption = suites.find(suite => suite.suiteID == suiteID)
-
-      if (suiteOption.isDefined) {
-        suiteOption.get
-      }
-      else {
-        val newSuite = Suite(suiteID)
-        suites += newSuite
-        newSuite
-      }
-    }
-
-    def getTest(): Test = {
-      val suite = getSuite
-      val testOption = suite.tests.find(test => test.name == testName)
-
-      if (testOption.isDefined) {
-        testOption.get
-      }
-      else {
-        val newTest = Test(testName)
-        suite.tests += newTest
-        newTest
-      }
-    }
-
-    def archiveOldestDuration(test: Test) {
-      val oldestDuration = test.durations.last
-      test.durations = test.durations.dropRight(1)
-
-      test.previousAverage =
-        (test.previousAverage * test.previousNum + oldestDuration.millis) /
-        (test.previousNum + 1)
-
-      test.previousNum += 1
-    }
-    
-    val test = getTest()
-    if (((test.numberOfDurations + 1) * 0.2).toInt > test.previousNum) {
-      archiveOldestDuration(test)
-    }
-    test.durations = new Duration(run, millis) :: test.durations
-  }
-}

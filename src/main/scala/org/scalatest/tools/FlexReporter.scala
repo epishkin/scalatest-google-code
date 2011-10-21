@@ -26,6 +26,7 @@ import java.io.FileOutputStream
 import java.io.File
 import java.util.Date
 import java.text.SimpleDateFormat
+import java.util.regex.Matcher.quoteReplacement
 
 import scala.collection.mutable
 import scala.collection.mutable.Stack
@@ -383,8 +384,61 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
       buf.toString
     }
 
-    def genRecentlySlower(thisRunXml: NodeSeq): String = {
-      "    recently slower content\n"
+    def genRecentlySlower(durations: Durations): String = {
+      var slowRecords = List[SlowRecord]()
+
+      case class SlowRecord(suite: Suite, test: Test,
+                            oldAvg: Int, newAvg: Int, percentSlower: Int)
+      {
+        def toXml: String = {
+          val SlowerTestTemplate =
+            """      <slowerTest suiteID="$suiteID$" """ +
+            """|testName="$testName$" oldAvg="$oldAvg$" newAvg="$newAvg$"/>
+               |""".stripMargin
+
+        SlowerTestTemplate.
+          replaceFirst("""\$suiteID\$""",  quoteReplacement(suite.suiteID)).
+          replaceFirst("""\$testName\$""", quoteReplacement(test.name)).
+          replaceFirst("""\$oldAvg\$""",   "" + oldAvg).
+          replaceFirst("""\$newAvg\$""",   "" + newAvg)
+        }
+      }
+
+      def toXml: String = {
+        val RecentlySlowerTemplate =
+          """|   <recentlySlower>
+             |$slowerTests$    </recentlySlower>
+             |""".stripMargin
+
+        val buf = new StringBuilder
+
+        for (slowRecord <- slowRecords) buf.append(slowRecord.toXml)
+
+        RecentlySlowerTemplate.
+          replaceFirst("""\$slowerTests\$""", quoteReplacement(buf.toString))
+      }
+
+      for (suite <- durations.suites) {
+        for (test <- suite.tests) {
+          if (test.runCount > 10) {
+            val oldAvg = test.previousAverage
+            val newAvg = test.computeNewAvg
+
+            if ((newAvg - oldAvg > 1) && (oldAvg > 0)) {
+              val percentSlower =
+                (((newAvg - oldAvg).toDouble / oldAvg.toDouble) * 100).toInt
+
+              if (percentSlower > 10)
+                slowRecords ::=
+                  SlowRecord(suite, test, oldAvg, newAvg, percentSlower)
+            }
+          }
+        }
+      }
+      slowRecords =
+        slowRecords.sort((a, b) => a.percentSlower < b.percentSlower).take(20)
+
+      toXml
     }
 
     //
@@ -393,13 +447,14 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     val thisRun        = genThisRun(terminatingEvent)
     val oldRuns        = formatOldRuns(oldRunsXml)
     val regressions    = genRegressions(oldSummaryXml, thisRunXml)
-    val recentlySlower = genRecentlySlower(thisRunXml)
+    val recentlySlower = genRecentlySlower(durations)
 
     val summaryText =
       SummaryTemplate.
-        replaceFirst("""\$runs\$""", thisRun + oldRuns).
-        replaceFirst("""\$regressions\$""", regressions).
-        replaceFirst("""\$recentlySlower\$""", recentlySlower)
+        replaceFirst("""\$runs\$""",     quoteReplacement(thisRun + oldRuns)).
+        replaceFirst("""\$regressions\$""", quoteReplacement(regressions)).
+        replaceFirst("""\$recentlySlower\$""",
+                     quoteReplacement(recentlySlower))
 
     writeFile("summary.xml", summaryText)
   }
