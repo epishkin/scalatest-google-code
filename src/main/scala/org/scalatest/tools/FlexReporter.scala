@@ -405,17 +405,11 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
       }
 
       def toXml: String = {
-        val RecentlySlowerTemplate =
-          """|   <recentlySlower>
-             |$slowerTests$    </recentlySlower>
-             |""".stripMargin
-
         val buf = new StringBuilder
 
         for (slowRecord <- slowRecords) buf.append(slowRecord.toXml)
 
-        RecentlySlowerTemplate.
-          replaceFirst("""\$slowerTests\$""", quoteReplacement(buf.toString))
+        buf.toString
       }
 
       for (suite <- durations.suites) {
