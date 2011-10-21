@@ -68,6 +68,20 @@ trait StateSuite extends Suite {
       }
     }
 
+    val shouldSlowATest = Random.nextInt(50) == 0
+    if (shouldSlowATest) {
+      val nameOfTestToSlow = allTestNames(Random.nextInt(testCounts(simpleName)))
+      val slowFactor = Random.nextInt(25)
+      val slowerStatus =
+        testStatuses(simpleName)(nameOfTestToSlow) match {
+          case Succeeded(d) => Succeeded(d * slowFactor)
+          case Pending(d, r) => Pending(d * slowFactor, r)
+          case Canceled(d, r) => Canceled(d * slowFactor, r)
+          case Ignored(d, r) => Ignored(d * slowFactor, r)
+          case Failed(d, r) => Failed(d * slowFactor, r)
+        }
+      testStatuses(simpleName)(nameOfTestToSlow) = slowerStatus
+    }
     super.run(testName, reporter, stopper, filter, configMap, distributor, tracker)
   }
 
