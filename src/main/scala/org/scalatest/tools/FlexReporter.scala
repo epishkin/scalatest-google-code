@@ -27,6 +27,7 @@ import java.io.File
 import java.util.Date
 import java.text.SimpleDateFormat
 
+import scala.collection.mutable
 import scala.collection.mutable.Stack
 import scala.collection.mutable.ListBuffer
 import scala.xml.XML
@@ -48,11 +49,14 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
   private val timestamp =
     new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date)
 
-  private val runsDir      = new File(directory + "/runs")
-  private val durationsDir = new File(directory + "/durations")
-  private val summariesDir = new File(directory + "/summaries")
-  private val summaryFile  = new File(directory + "/summary.xml")
-  private val thisRunFile  = new File(runsDir, "run-" + timestamp + ".xml")
+  private val runsDir          = new File(directory + "/runs")
+  private val durationsDir     = new File(directory + "/durations")
+  private val summariesDir     = new File(directory + "/summaries")
+  private val summaryFile      = new File(directory + "/summary.xml")
+  private val durationsFile    = new File(directory + "/durations.xml")
+  private val thisRunFile      = new File(runsDir, "run-" + timestamp + ".xml")
+  private val oldDurationsFile = new File(durationsDir + "/duration-" +
+                                          timestamp + ".xml")
 
   runsDir.mkdir()
   durationsDir.mkdir()
@@ -113,20 +117,83 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
       Processor.process(markdown)
   }
 
+  def getPreviousRunTimestamp(oldRunsXml: NodeSeq): Option[String] = {
+    if (oldRunsXml.size > 0) Some("" + oldRunsXml(0) \ "@id")
+    else None
+  }
+
+  //
+  // Reads existing summary.xml file, or, if none exists, returns a <summary>
+  // xml containing all empty elements.
+  //
+  def getOldSummaryXml: Elem = {
+    if (summaryFile.exists)
+      XML.loadFile(summaryFile)
+    else
+      <summary>
+        <runs/>
+        <regressions/>
+        <recentlySlower/>
+      </summary>
+  }
+
+  //
+  // If a summary file containing previous run histories exists, moves
+  // it to the summaries/ subdirectory and renames it to a filename
+  // containing the timestamp of the most recent run the file contains.
+  //
+  // Ditto for the durations.xml file.
+  //
+  def archiveOldFiles(oldRunsXml: NodeSeq) {
+    val previousRunTimestamp = getPreviousRunTimestamp(oldRunsXml)
+
+    if (previousRunTimestamp.isDefined) {
+      if (summaryFile.exists)
+        summaryFile.renameTo(
+          new File(
+            summariesDir + "/summary-" + previousRunTimestamp.get + ".xml"))
+
+      if (durationsFile.exists)
+        durationsFile.renameTo(
+          new File(
+            durationsDir + "/duration-" + previousRunTimestamp.get + ".xml"))
+    }
+  }
+
+  //
+  // Reads the xml from the run file for the current run.
+  //
+  def getThisRunXml: NodeSeq = {
+    XML.loadFile(thisRunFile)
+  }
+
   //
   // Writes flex reporter summary, duration, and run files at completion
   // of a run.  Archives old copies of summary and duration files into
   // summaries/ and durations/ subdirectories.
   //
   def writeFiles(terminatingEvent: Event) {
+    val durations     = Durations(durationsFile)
+    val oldSummaryXml = getOldSummaryXml
+    val oldRunsXml    = oldSummaryXml \\ "run"
+
+    archiveOldFiles(oldRunsXml)
+
     writeRunFile(terminatingEvent)
-    writeSummaryFile(terminatingEvent)
+    val thisRunXml = getThisRunXml
+
+    writeSummaryFile(terminatingEvent, oldSummaryXml, oldRunsXml, thisRunXml)
+
+    durations.addTests(timestamp, thisRunXml)
+    writeFile("durations.xml", durations.toXml)
   }
 
   //
-  // Writes the summary.xml file and archives the previous copy.
+  // Writes the summary.xml file.
   //
-  def writeSummaryFile(terminatingEvent: Event) {
+  def writeSummaryFile(terminatingEvent: Event, oldSummaryXml: NodeSeq,
+                       oldRunsXml: NodeSeq, thisRunXml: NodeSeq)
+  {
     val SummaryTemplate =
       """|<summary>
          |  <runs>
@@ -134,7 +201,7 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
          |  <regressions>
          |$regressions$  </regressions>
          |  <recentlySlower>
-         |  </recentlySlower>
+         |$recentlySlower$  </recentlySlower>
          |</summary>
          |""".stripMargin
 
@@ -178,6 +245,8 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     //
     // Formats <run> elements for previous runs.
     //
+    // (We could let scala do this its way, but it makes kind of a mess.)
+    //
     def formatOldRuns(oldRunsXml: NodeSeq): String = {
       val buf = new StringBuilder
 
@@ -196,46 +265,9 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     }
 
     //
-    // Reads existing summary.xml file, or, if none exists, returns a <summary>
-    // xml containing all empty elements.
-    //
-    def getOldSummaryXml: Elem = {
-      if (summaryFile.exists)
-        XML.loadFile(summaryFile)
-      else
-        <summary>
-          <runs/>
-          <regressions/>
-          <recentlySlower/>
-        </summary>
-    }
-
-    //
-    // If a summary file containing previous run histories exists, moves
-    // it to the summaries/ subdirectory and renames it to a filename
-    // containing the timestamp of the most recent run the file contains.
-    //
-    def archiveOldSummaryFile(oldRunsXml: NodeSeq) {
-      if (summaryFile.exists) {
-        if (oldRunsXml.size > 0) {
-          val lastRunId = oldRunsXml(0) \ "@id"
-          summaryFile.renameTo(
-            new File(summariesDir + "/summary-" + lastRunId + ".xml"))
-        }
-      }
-    }
-
-    //
-    // Reads the xml from the run file for the current run.
-    //
-    def getThisRunXml: Elem = {
-      XML.loadFile(thisRunFile)
-    }
-
-    //
     // Generates <regressedTest> elements for output summary file.
     //
-    def genRegressions(oldSummaryXml: NodeSeq, thisRunXml: Elem): String =
+    def genRegressions(oldSummaryXml: NodeSeq, thisRunXml: NodeSeq): String =
     {
       //
       // Searches through regressions from previous summary to try and
@@ -311,7 +343,7 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
       }
 
       //
-      // genRegressionsMain
+      // genRegressions main
       //
       val buf = new StringBuilder
       val suites = thisRunXml \\ "suite"
@@ -342,24 +374,23 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
       buf.toString
     }
 
+    def genRecentlySlower(thisRunXml: NodeSeq): String = {
+      "    recently slower content\n"
+    }
+
     //
     // writeSummaryFile main
     //
-    val oldSummaryXml = getOldSummaryXml
-    val thisRunXml    = getThisRunXml
-    val oldRunsXml    = oldSummaryXml \\ "run"
-
-    archiveOldSummaryFile(oldRunsXml)
-
-    val thisRun = genThisRun(terminatingEvent)
-    val oldRuns = formatOldRuns(oldRunsXml)
-
-    val regressions = genRegressions(oldSummaryXml, thisRunXml)
+    val thisRun        = genThisRun(terminatingEvent)
+    val oldRuns        = formatOldRuns(oldRunsXml)
+    val regressions    = genRegressions(oldSummaryXml, thisRunXml)
+    val recentlySlower = genRecentlySlower(thisRunXml)
 
     val summaryText =
       SummaryTemplate.
         replaceFirst("""\$runs\$""", thisRun + oldRuns).
-        replaceFirst("""\$regressions\$""", regressions)
+        replaceFirst("""\$regressions\$""", regressions).
+        replaceFirst("""\$recentlySlower\$""", recentlySlower)
 
     writeFile("summary.xml", summaryText)
   }
