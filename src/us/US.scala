@@ -3,6 +3,7 @@ import org.scalatest._
 import scala.collection.mutable.Stack
 import scala.collection.mutable
 import org.scalatest.events._
+import scala.util.Random
 
 class UnitedStates extends Suite {
 
@@ -25,6 +26,7 @@ trait StateSuite extends Suite {
 
   import StateSuite.allTestNames
   import StateSuite.testCounts
+  import StateSuite.testStatuses
 
   private val simpleName = getClass.getSimpleName.replaceAll("\\$", "")
 
@@ -37,8 +39,18 @@ trait StateSuite extends Suite {
 
     val testCount = testCounts(simpleName)
 
-    if (testCount < allTestNames.length)
+    if (testCount < allTestNames.length) {
       testCounts(simpleName) += 1
+
+    // The new test is at testCount; Decide if it is pending, and if so, how many times it will stay pending
+    // whether or not it will be pending should be a 50/50 choice
+    val nameOfNewTest = allTestNames(testCount)
+    val isPending = Random.nextInt(2) == 0
+
+    testStatuses(simpleName)(nameOfNewTest) =
+      if (isPending) Pending(Random.nextInt(30)) // Maximum of 30 times pending before going to some other status
+      else Succeeded
+    }
 
     super.run(testName, reporter, stopper, filter, configMap, distributor, tracker)
   }
@@ -51,6 +63,11 @@ trait StateSuite extends Suite {
   private def reportTestSucceeded(theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, testText: String, duration: Long, formatter: Formatter, rerunnable: Option[Rerunner]) {
     report(TestSucceeded(tracker.nextOrdinal(), theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName, testText, Some(duration), Some(formatter),
       Some(ToDoLocation), rerunnable))
+  }
+
+  private def reportTestPending(theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, testText: String, formatter: Formatter) {
+    report(TestPending(tracker.nextOrdinal(), theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName, testText, Some(formatter),
+      Some(ToDoLocation)))
   }
 
   private def getIndentedText(testText: String, level: Int, includeIcon: Boolean) = {
@@ -73,9 +90,24 @@ trait StateSuite extends Suite {
 
     val duration = 20
 
-    reportTestSucceeded(this, reporter, tracker, testName, testName, duration, formatter, None)
+    testStatuses(simpleName)(testName) match {
+      case Pending(remaining) =>
+        if (remaining > 1)
+          testStatuses(simpleName)(testName) = Pending(remaining - 1)
+        else
+          testStatuses(simpleName)(testName) = Succeeded
+        reportTestPending(this, reporter, tracker, testName, testName, formatter)
+      case _ => reportTestSucceeded(this, reporter, tracker, testName, testName, duration, formatter, None)
+    }
   }
 }
+
+abstract class Status
+case class Pending(remaining: Int) extends Status
+case object Succeeded extends Status
+case class Canceled(remaining: Int) extends Status
+case class Ignored(remaining: Int) extends Status
+case class Failed(remaining: Int) extends Status
 
 object StateSuite {
 
@@ -131,6 +163,60 @@ object StateSuite {
       "WestVirginia" -> 0,
       "Wisconsin" -> 0,
       "Wyoming" -> 0
+    )
+
+  val testStatuses =
+    mutable.Map(
+      "Alabama" -> mutable.Map.empty[String, Status],
+      "Alaska" -> mutable.Map.empty[String, Status],
+      "Arizona" -> mutable.Map.empty[String, Status],
+      "Arkansas" -> mutable.Map.empty[String, Status],
+      "California" -> mutable.Map.empty[String, Status],
+      "Colorado" -> mutable.Map.empty[String, Status],
+      "Connecticut" -> mutable.Map.empty[String, Status],
+      "Delaware" -> mutable.Map.empty[String, Status],
+      "Florida" -> mutable.Map.empty[String, Status],
+      "Georgia" -> mutable.Map.empty[String, Status],
+      "Hawaii" -> mutable.Map.empty[String, Status],
+      "Idaho" -> mutable.Map.empty[String, Status],
+      "Illinois" -> mutable.Map.empty[String, Status],
+      "Indiana" -> mutable.Map.empty[String, Status],
+      "Iowa" -> mutable.Map.empty[String, Status],
+      "Kansas" -> mutable.Map.empty[String, Status],
+      "Kentucky" -> mutable.Map.empty[String, Status],
+      "Louisiana" -> mutable.Map.empty[String, Status],
+      "Maine" -> mutable.Map.empty[String, Status],
+      "Maryland" -> mutable.Map.empty[String, Status],
+      "Massachusetts" -> mutable.Map.empty[String, Status],
+      "Michigan" -> mutable.Map.empty[String, Status],
+      "Minnesota" -> mutable.Map.empty[String, Status],
+      "Mississippi" -> mutable.Map.empty[String, Status],
+      "Missouri" -> mutable.Map.empty[String, Status],
+      "Montana" -> mutable.Map.empty[String, Status],
+      "Nebraska" -> mutable.Map.empty[String, Status],
+      "Nevada" -> mutable.Map.empty[String, Status],
+      "NewHampshire" -> mutable.Map.empty[String, Status],
+      "NewJersey" -> mutable.Map.empty[String, Status],
+      "NewMexico" -> mutable.Map.empty[String, Status],
+      "NewYork" -> mutable.Map.empty[String, Status],
+      "NorthCarolina" -> mutable.Map.empty[String, Status],
+      "NorthDakota" -> mutable.Map.empty[String, Status],
+      "Ohio" -> mutable.Map.empty[String, Status],
+      "Oklahoma" -> mutable.Map.empty[String, Status],
+      "Oregon" -> mutable.Map.empty[String, Status],
+      "Pennsylvania" -> mutable.Map.empty[String, Status],
+      "RhodeIsland" -> mutable.Map.empty[String, Status],
+      "SouthCarolina" -> mutable.Map.empty[String, Status],
+      "SouthDakota" -> mutable.Map.empty[String, Status],
+      "Tennessee" -> mutable.Map.empty[String, Status],
+      "Texas" -> mutable.Map.empty[String, Status],
+      "Utah" -> mutable.Map.empty[String, Status],
+      "Vermont" -> mutable.Map.empty[String, Status],
+      "Virginia" -> mutable.Map.empty[String, Status],
+      "Washington" -> mutable.Map.empty[String, Status],
+      "WestVirginia" -> mutable.Map.empty[String, Status],
+      "Wisconsin" -> mutable.Map.empty[String, Status],
+      "Wyoming" -> mutable.Map.empty[String, Status]
     )
     
   val allTestNames =
