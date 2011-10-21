@@ -1,4 +1,3 @@
-
 import org.scalatest._
 import scala.collection.mutable.Stack
 import scala.collection.mutable
@@ -52,12 +51,42 @@ trait StateSuite extends Suite {
       else Succeeded
     }
 
+    val alterSucceededTests = Random.nextInt(10) == 0
+
+    if (alterSucceededTests) {
+      val nameOfTestToAlter = allTestNames(Random.nextInt(testCounts(simpleName)) )
+      testStatuses(simpleName)(nameOfTestToAlter) match {
+        case Succeeded =>
+          val isIgnored = Random.nextInt(2) == 0
+          val isCanceled = !isIgnored && (Random.nextInt(2) == 0) // If not ignored or canceled, then make it failed
+          val remaining = Random.nextInt(if (isIgnored) 15 else 10)
+          testStatuses(simpleName)(nameOfTestToAlter) = if (isIgnored) Ignored(remaining) else if (isCanceled) Canceled(remaining) else Failed(remaining)
+        case _ =>
+      }
+    }
+
     super.run(testName, reporter, stopper, filter, configMap, distributor, tracker)
   }
 
   private def reportTestStarting(theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, testText: String, rerunnable: Option[Rerunner]) {
     report(TestStarting(tracker.nextOrdinal(), theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName, testText, Some(MotionToSuppress),
       Some(ToDoLocation), rerunnable))
+  }
+
+ private def reportTestFailed(theSuite: Suite, report: Reporter, throwable: Throwable, testName: String, testText: String,
+      rerunnable: Option[Rerunner], tracker: Tracker, duration: Long, level: Int, includeIcon: Boolean) {
+
+    val message = getMessageForException(throwable)
+    val formatter = getIndentedText(testText, level, includeIcon)
+    report(TestFailed(tracker.nextOrdinal(), message, theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName, testText, Some(throwable), Some(duration), Some(formatter), Some(ToDoLocation), rerunnable))
+  }
+
+  private def reportTestCanceled(theSuite: Suite, report: Reporter, throwable: Throwable, testName: String, testText: String,
+      rerunnable: Option[Rerunner], tracker: Tracker, duration: Long, level: Int, includeIcon: Boolean) {
+
+    val message = getMessageForException(throwable)
+    val formatter = getIndentedText(testText, level, includeIcon)
+    report(TestCanceled(tracker.nextOrdinal(), message, theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName, testText, Some(throwable), Some(duration), Some(formatter), Some(ToDoLocation), rerunnable))
   }
 
   private def reportTestSucceeded(theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, testText: String, duration: Long, formatter: Formatter, rerunnable: Option[Rerunner]) {
@@ -69,6 +98,12 @@ trait StateSuite extends Suite {
     report(TestPending(tracker.nextOrdinal(), theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName, testText, Some(formatter),
       Some(ToDoLocation)))
   }
+
+  private def getMessageForException(e: Throwable): String =
+    if (e.getMessage != null)
+      e.getMessage
+    else
+      e.getClass.getName + " was thrown"
 
   private def getIndentedText(testText: String, level: Int, includeIcon: Boolean) = {
     val formattedText =
@@ -82,6 +117,23 @@ trait StateSuite extends Suite {
     IndentedText(formattedText, testText, level)
   }
 
+  def indentation(level: Int) = "  " * level
+
+  private def reportTestIgnored(report: Reporter, tracker: Tracker, testName: String, testText: String, level: Int) {
+    val testSucceededIcon = "-"
+    val formattedText = indentation(level - 1) + (testSucceededIcon + " " + testText)
+    report(TestIgnored(tracker.nextOrdinal(), suiteName, suiteID, Some(getClass.getName), testName, testText, Some(IndentedText(formattedText, testText, level)),
+      Some(ToDoLocation)))
+
+  }
+
+  private def handleFailedTest(throwable: Throwable, testName: String,
+      report: Reporter, tracker: Tracker, duration: Long) {
+
+    val message = getMessageForException(throwable)
+    val formatter = getIndentedText(testName, 1, true)
+    report(TestFailed(tracker.nextOrdinal(), message, suiteName, suiteID, Some(getClass.getName), testName, testName, Some(throwable), Some(duration), Some(formatter), Some(ToDoLocation), None))
+  }
   override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
     reportTestStarting(this, reporter, tracker, testName, testName, None)
@@ -97,6 +149,32 @@ trait StateSuite extends Suite {
         else
           testStatuses(simpleName)(testName) = Succeeded
         reportTestPending(this, reporter, tracker, testName, testName, formatter)
+      case Ignored(remaining) =>
+        if (remaining > 1)
+          testStatuses(simpleName)(testName) = Ignored(remaining - 1)
+        else
+          testStatuses(simpleName)(testName) = Succeeded
+        reportTestIgnored(reporter, tracker, testName, testName, 1)
+      case Canceled(remaining) =>
+        if (remaining > 1)
+          testStatuses(simpleName)(testName) = Canceled(remaining - 1)
+        else
+          testStatuses(simpleName)(testName) = Succeeded
+          val duration = 20
+          val e = intercept[TestCanceledException] { cancel("Because of rain") }
+          val message = getMessageForException(e)
+          val formatter = getIndentedText(testName, 1, true)
+          reporter(TestCanceled(tracker.nextOrdinal(), message, suiteName, suiteID, Some(getClass.getName), testName, testName, Some(e), Some(duration), Some(formatter), Some(ToDoLocation), None))
+
+      case Failed(remaining) =>
+        if (remaining > 1)
+          testStatuses(simpleName)(testName) = Failed(remaining - 1)
+        else
+          testStatuses(simpleName)(testName) = Succeeded
+        val duration = 20
+        val e = intercept[TestFailedException] { fail("1 + 1 did not equal 3, even for very large values of 1") }
+        handleFailedTest(e, testName, reporter, tracker, duration)
+
       case _ => reportTestSucceeded(this, reporter, tracker, testName, testName, duration, formatter, None)
     }
   }
