@@ -153,7 +153,8 @@ trait StateSuite extends Suite {
   }
   override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    reportTestStarting(this, reporter, tracker, testName, testName, None)
+    if (!testStatuses(simpleName)(testName).isInstanceOf[Ignored])
+      reportTestStarting(this, reporter, tracker, testName, testName, None)
 
     val formatter = getIndentedText(testName, 1, true)
 
