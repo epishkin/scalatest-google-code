@@ -182,9 +182,17 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     writeRunFile(terminatingEvent)
     val thisRunXml = getThisRunXml
 
-    writeSummaryFile(terminatingEvent, oldSummaryXml, oldRunsXml, thisRunXml)
-
     durations.addTests(timestamp, thisRunXml)
+
+    writeDurationsFile(durations)
+    writeSummaryFile(
+      terminatingEvent, oldSummaryXml, oldRunsXml, thisRunXml, durations)
+  }
+
+  //
+  // Writes the durations.xml file.
+  //
+  def writeDurationsFile(durations: Durations) {
     writeFile("durations.xml", durations.toXml)
   }
 
@@ -192,7 +200,8 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
   // Writes the summary.xml file.
   //
   def writeSummaryFile(terminatingEvent: Event, oldSummaryXml: NodeSeq,
-                       oldRunsXml: NodeSeq, thisRunXml: NodeSeq)
+                       oldRunsXml: NodeSeq, thisRunXml: NodeSeq,
+                       durations: Durations)
   {
     val SummaryTemplate =
       """|<summary>
@@ -611,7 +620,7 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     }
 
     //
-    // Generates xml string representation of object.
+    // Generates xml string representation of SuiteRecord object.
     //
     def toXml: String = {
       val buf = new StringBuilder
