@@ -27,6 +27,8 @@ trait StateSuite extends Suite {
   import StateSuite.testCounts
   import StateSuite.testStatuses
 
+  private def anInitialDuration = Random.nextInt(20)
+
   private val simpleName = getClass.getSimpleName.replaceAll("\\$", "")
 
   override def testNames: Set[String] = allTestNames.take(testCounts(simpleName)).toSet
@@ -47,8 +49,8 @@ trait StateSuite extends Suite {
     val isPending = Random.nextInt(2) == 0
 
     testStatuses(simpleName)(nameOfNewTest) =
-      if (isPending) Pending(Random.nextInt(30)) // Maximum of 30 times pending before going to some other status
-      else Succeeded
+      if (isPending) Pending(anInitialDuration, Random.nextInt(30)) // Maximum of 30 times pending before going to some other status
+      else Succeeded(anInitialDuration)
     }
 
     val alterSucceededTests = Random.nextInt(10) == 0
@@ -56,11 +58,12 @@ trait StateSuite extends Suite {
     if (alterSucceededTests) {
       val nameOfTestToAlter = allTestNames(Random.nextInt(testCounts(simpleName)) )
       testStatuses(simpleName)(nameOfTestToAlter) match {
-        case Succeeded =>
+        case Succeeded(duration) =>
           val isIgnored = Random.nextInt(2) == 0
           val isCanceled = !isIgnored && (Random.nextInt(2) == 0) // If not ignored or canceled, then make it failed
           val remaining = Random.nextInt(if (isIgnored) 15 else 10)
-          testStatuses(simpleName)(nameOfTestToAlter) = if (isIgnored) Ignored(remaining) else if (isCanceled) Canceled(remaining) else Failed(remaining)
+          testStatuses(simpleName)(nameOfTestToAlter) =
+            if (isIgnored) Ignored(duration, remaining) else if (isCanceled) Canceled(duration, remaining) else Failed(duration, remaining)
         case _ =>
       }
     }
@@ -140,52 +143,50 @@ trait StateSuite extends Suite {
 
     val formatter = getIndentedText(testName, 1, true)
 
-    val duration = 20
-
     testStatuses(simpleName)(testName) match {
-      case Pending(remaining) =>
+      case Pending(duration, remaining) =>
         if (remaining > 1)
-          testStatuses(simpleName)(testName) = Pending(remaining - 1)
+          testStatuses(simpleName)(testName) = Pending(duration, remaining - 1)
         else
-          testStatuses(simpleName)(testName) = Succeeded
+          testStatuses(simpleName)(testName) = Succeeded(duration)
         reportTestPending(this, reporter, tracker, testName, testName, formatter)
-      case Ignored(remaining) =>
+      case Ignored(duration, remaining) =>
         if (remaining > 1)
-          testStatuses(simpleName)(testName) = Ignored(remaining - 1)
+          testStatuses(simpleName)(testName) = Ignored(duration, remaining - 1)
         else
-          testStatuses(simpleName)(testName) = Succeeded
+          testStatuses(simpleName)(testName) = Succeeded(duration)
         reportTestIgnored(reporter, tracker, testName, testName, 1)
-      case Canceled(remaining) =>
+      case Canceled(duration, remaining) =>
         if (remaining > 1)
-          testStatuses(simpleName)(testName) = Canceled(remaining - 1)
+          testStatuses(simpleName)(testName) = Canceled(duration, remaining - 1)
         else
-          testStatuses(simpleName)(testName) = Succeeded
-          val duration = 20
+          testStatuses(simpleName)(testName) = Succeeded(duration)
           val e = intercept[TestCanceledException] { cancel("Because of rain") }
           val message = getMessageForException(e)
           val formatter = getIndentedText(testName, 1, true)
           reporter(TestCanceled(tracker.nextOrdinal(), message, suiteName, suiteID, Some(getClass.getName), testName, testName, Some(e), Some(duration), Some(formatter), Some(ToDoLocation), None))
 
-      case Failed(remaining) =>
+      case Failed(duration, remaining) =>
         if (remaining > 1)
-          testStatuses(simpleName)(testName) = Failed(remaining - 1)
+          testStatuses(simpleName)(testName) = Failed(duration, remaining - 1)
         else
-          testStatuses(simpleName)(testName) = Succeeded
-        val duration = 20
+          testStatuses(simpleName)(testName) = Succeeded(duration)
         val e = intercept[TestFailedException] { fail("1 + 1 did not equal 3, even for very large values of 1") }
         handleFailedTest(e, testName, reporter, tracker, duration)
 
-      case _ => reportTestSucceeded(this, reporter, tracker, testName, testName, duration, formatter, None)
+      case Succeeded(duration) => reportTestSucceeded(this, reporter, tracker, testName, testName, duration, formatter, None)
     }
   }
 }
 
-abstract class Status
-case class Pending(remaining: Int) extends Status
-case object Succeeded extends Status
-case class Canceled(remaining: Int) extends Status
-case class Ignored(remaining: Int) extends Status
-case class Failed(remaining: Int) extends Status
+sealed abstract class Status {
+  val duration: Int
+}
+case class Pending(duration: Int, remaining: Int) extends Status
+case class Succeeded(duration: Int) extends Status
+case class Canceled(duration: Int, remaining: Int) extends Status
+case class Ignored(duration: Int, remaining: Int) extends Status
+case class Failed(duration: Int, remaining: Int) extends Status
 
 object StateSuite {
 
