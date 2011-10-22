@@ -952,18 +952,5 @@
             </or>
         </condition>
     </target>
-
-    <target name="gcbtest"
-            depends="compile-main,compile-tests,copyprops,taskdefscalatest">
-      <mkdir dir="flexrep" />
-      <scalatest runpath="${build.tests};${classes}" haltonfailure="true">
-        <reporter type="flex" directory="flexrep"/>
-        <reporter type="stdout" config="NF"/>
-        <jvmarg value="-XX:MaxPermSize=512m"/>
-
-        <suite classname="org.scalatest.FunSuiteSuite" />
-        <suite classname="org.scalatest.FunSuiteSpec" />
-      </scalatest>
-    </target>
 </project>
 
