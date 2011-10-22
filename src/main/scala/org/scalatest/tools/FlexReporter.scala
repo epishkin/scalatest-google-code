@@ -793,11 +793,24 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
       }
     }
 
+    object Duration {
+      def unapply(event: Event): Option[Long] =
+        event match {
+          case TestSucceeded(_, _, _, _, _, _, duration, _, _, _, _, _, _) => duration
+          case TestFailed(_, _, _, _, _, _, _, _, duration, _, _, _, _, _, _) => duration
+          case _ => None
+        }
+    }
+
     //
     // Generates initial <test> element of object's xml.
     //
     def formatTestStart: String = {
-      val duration = endEvent.timeStamp - startEvent.timeStamp
+      val duration = 
+        endEvent match {
+          case Duration(d) => d
+          case _ => endEvent.timeStamp - startEvent.timeStamp
+        }
 
       "<test index=\"" + nextIndex()                 + "\" " +
       "result=\""      + result                      + "\" " +
