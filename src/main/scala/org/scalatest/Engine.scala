@@ -208,7 +208,8 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     }
     catch { 
       case _: TestPendingException =>
-        reportTestPending(theSuite, report, tracker, testName, theTest.testText, formatter)
+        val duration = System.currentTimeMillis - testStartTime
+        reportTestPending(theSuite, report, tracker, testName, theTest.testText, duration, formatter)
         testWasPending = true // Set so info's printed out in the finally clause show up yellow
       case e: TestCanceledException =>
         val duration = System.currentTimeMillis - testStartTime

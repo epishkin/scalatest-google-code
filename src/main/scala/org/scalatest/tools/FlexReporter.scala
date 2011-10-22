@@ -798,6 +798,8 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
         event match {
           case TestSucceeded(_, _, _, _, _, _, duration, _, _, _, _, _, _) => duration
           case TestFailed(_, _, _, _, _, _, _, _, duration, _, _, _, _, _, _) => duration
+          case TestPending(_, _, _, _, _, _, duration, _, _, _, _, _) => duration
+          case TestCanceled(_, _, _, _, _, _, _, _, duration, _, _, _, _, _) => duration
           case _ => None
         }
     }

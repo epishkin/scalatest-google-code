@@ -602,7 +602,8 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
         val t = ite.getTargetException
         t match {
           case _: TestPendingException =>
-            reportTestPending(thisSuite, report, tracker, testName, testName, formatter)
+            val duration = System.currentTimeMillis - testStartTime
+            reportTestPending(thisSuite, report, tracker, testName, testName, duration, formatter)
             testWasPending = true // Set so info's printed out in the finally clause show up yellow
           case e: TestCanceledException =>
             val duration = System.currentTimeMillis - testStartTime

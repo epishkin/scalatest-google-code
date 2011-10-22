@@ -456,6 +456,7 @@ final case class TestIgnored (
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is pending
  * @param testName the name of the test that is pending
  * @param testText the text of the test that is pending (may be the test name, or a suffix of the test name)
+ * @param duration an optional amount of time, in milliseconds, that was required to run the test that is pending
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
@@ -473,6 +474,7 @@ final case class TestPending (
   suiteClassName: Option[String],
   testName: String,
   testText: String,
+  duration: Option[Long] = None,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
   payload: Option[Any] = None,
@@ -492,6 +494,8 @@ final case class TestPending (
     throw new NullPointerException("testName was null")
   if (testText == null)
     throw new NullPointerException("testText was null")
+  if (duration == null)
+    throw new NullPointerException("duration was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
   if (location == null)
@@ -531,6 +535,9 @@ final case class TestPending (
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that was canceled
  * @param testName the name of the test that was canceled
  * @param testText the text of the test that was canceled (may be the test name, or a suffix of the test name)
+ * @param throwable an optional <code>Throwable</code> that, if a <code>Some</code>, indicates why the test was canceled,
+ *        or a <code>Throwable</code> created to capture stack trace information about the problem.
+ * @param duration an optional amount of time, in milliseconds, that was required to run the test that was canceled
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
@@ -573,6 +580,8 @@ final case class TestCanceled (
     throw new NullPointerException("testName was null")
   if (testText == null)
     throw new NullPointerException("testText was null")
+  if (duration == null)
+    throw new NullPointerException("duration was null")
   if (throwable == null)
     throw new NullPointerException("throwable was null")
   if (duration == null)
@@ -2191,7 +2200,7 @@ object DeprecatedTestPending {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2217,7 +2226,7 @@ object DeprecatedTestPending {
     testName: String,
     formatter: Option[Formatter]
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2241,7 +2250,7 @@ object DeprecatedTestPending {
     suiteClassName: Option[String],
     testName: String
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 

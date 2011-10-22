@@ -78,7 +78,7 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
 
 // TODO: I dont see TestCanceled here. Probably need to add it
       // Closest thing we can do with pending is report an ignored test
-      case TestPending(ordinal, suiteName, suiteID, suiteClassName, testName, testText, formatter, location, payload, threadName, timeStamp) => 
+      case TestPending(ordinal, suiteName, suiteID, suiteClassName, testName, testText, duration, formatter, location, payload, threadName, timeStamp) => 
         runNotifier.fireTestIgnored(Description.createSuiteDescription(testDescriptionName(suiteName, suiteClassName, testName)))
 
       case SuiteAborted(ordinal, message, suiteName, suiteID, suiteClassName, throwable, duration, formatter, location, rerunnable, payload, threadName, timeStamp) => 

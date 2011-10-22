@@ -358,7 +358,7 @@ private[scalatest] class HtmlReporter(pw: PrintWriter, presentAllDurations: Bool
         val shouldBeYellow = isPending || wasCanceled
         for (line <- lines) printPossiblyInColor(line, if (shouldBeYellow) ansiYellow else ansiGreen)
 
-      case TestPending(ordinal, suiteName, suiteID, suiteClassName, testName, testText, formatter, location, payload, threadName, timeStamp) =>
+      case TestPending(ordinal, suiteName, suiteID, suiteClassName, testName, testText, duration, formatter, location, payload, threadName, timeStamp) =>
 
         val stringToPrint =
           formatter match {

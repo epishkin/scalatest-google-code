@@ -2071,7 +2071,8 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
         val t = ite.getTargetException
         t match {
           case _: TestPendingException =>
-            reportTestPending(this, report, tracker, testName, testName, formatter)
+            val duration = System.currentTimeMillis - testStartTime
+            reportTestPending(this, report, tracker, testName, testName, duration, formatter)
             testWasPending = true // Set so info's printed out in the finally clause show up yellow
           case e: TestCanceledException =>
             val duration = System.currentTimeMillis - testStartTime
@@ -2884,8 +2885,8 @@ used for test events like succeeded/failed, etc.
       Some(ToDoLocation), rerunnable))
   }
 
-  def reportTestPending(theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, testText: String, formatter: Formatter) {
-    report(TestPending(tracker.nextOrdinal(), theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName, testText, Some(formatter),
+  def reportTestPending(theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, testText: String, duration: Long, formatter: Formatter) {
+    report(TestPending(tracker.nextOrdinal(), theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName, testText, Some(duration), Some(formatter),
       Some(ToDoLocation)))
   }
 

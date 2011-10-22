@@ -929,7 +929,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerEvent(event)
           }
   
-        case TestPending(ordinal, suiteName, suiteID, suiteClassName, testName, testText, formatter, location, payload, threadName, timeStamp) =>
+        case TestPending(ordinal, suiteName, suiteID, suiteClassName, testName, testText, duration, formatter, location, payload, threadName, timeStamp) =>
 
           usingEventDispatchThread {
             testsCompletedCount += 1
@@ -1336,7 +1336,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerRerunEvent(event)
           }
 
-        case TestPending(ordinal, suiteName, suiteID, suiteClassName, testName, testText, formatter, location, payload, threadName, timeStamp) =>
+        case TestPending(ordinal, suiteName, suiteID, suiteClassName, testName, testText, duration, formatter, location, payload, threadName, timeStamp) =>
 
           usingEventDispatchThread {
             rerunColorBox.setValue(rerunTestsCompletedCount)

@@ -463,7 +463,7 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
 //println("Got markup: " + message)
         // Won't do anything here, because not reporting these events in the StringReporter.
 
-      case TestPending(ordinal, suiteName, suiteID, suiteClassName, testName, testText, formatter, location, payload, threadName, timeStamp) =>
+      case TestPending(ordinal, suiteName, suiteID, suiteClassName, testName, testText, duration, formatter, location, payload, threadName, timeStamp) =>
 
         val stringToPrint =
           formatter match {
