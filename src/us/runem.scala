@@ -6,7 +6,7 @@ object runem extends App {
     Runner.run(
       Array("-p", ".", "-oD", "-F", "dashboard", "-s", "UnitedStates")
     )
-    Thread.sleep(1000)
+    Thread.sleep(10)
   }
 }
 
