@@ -120,7 +120,6 @@ case class Durations(file: File) {
       archiveOldestDuration(test)
     }
   }
-}
 
   case class Suite(suiteID: String) {
     val tests = mutable.Set[Test]()
@@ -186,4 +185,6 @@ case class Durations(file: File) {
         replaceFirst("""\$millis\$""", millis.toString)
     }
   }
+
+}
 

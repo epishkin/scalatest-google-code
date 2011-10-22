@@ -387,7 +387,7 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     def genRecentlySlower(durations: Durations): String = {
       var slowRecords = List[SlowRecord]()
 
-      case class SlowRecord(suite: Suite, test: Test,
+      case class SlowRecord(suite: Durations#Suite, test: Durations#Test,
                             oldAvg: Int, newAvg: Int, percentSlower: Int)
       {
         def toXml: String = {
