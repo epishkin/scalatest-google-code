@@ -501,8 +501,8 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
         // Suite Summary: completed {0}, aborted {1}
         printPossiblyInColor(Resources("suiteSummary", suitesCompletedCount.toString, suitesAbortedCount.toString), ansiCyan)
 
-        // Test Summary: succeeded {0}, failed {1}, ignored, {2}, pending {3}
-        printPossiblyInColor(Resources("testSummary", testsSucceededCount.toString, testsFailedCount.toString, testsIgnoredCount.toString, testsPendingCount.toString), ansiCyan)
+        // Test Summary: succeeded {0}, failed {1}, ignored, {2}, pending {3}, canceled {4}
+        printPossiblyInColor(Resources("testSummary", testsSucceededCount.toString, testsFailedCount.toString, testsIgnoredCount.toString, testsPendingCount.toString, testsCanceledCount.toString), ansiCyan)
 
         // *** 1 SUITE ABORTED ***
         if (suitesAbortedCount == 1)
