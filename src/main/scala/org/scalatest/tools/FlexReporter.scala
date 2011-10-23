@@ -48,7 +48,7 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
   private val events = ListBuffer[Event]()
   private var index = 0
   private val timestamp =
-    new SimpleDateFormat("yyyy-MM-dd-HHmmss-S").format(new Date)
+    new SimpleDateFormat("yyyy-MM-dd-HHmmss-SSS").format(new Date)
 
   private val runsDir          = new File(directory + "/runs")
   private val durationsDir     = new File(directory + "/durations")

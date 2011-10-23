@@ -111,8 +111,8 @@ trait StateSuite extends Suite {
       Some(ToDoLocation), rerunnable))
   }
 
-  private def reportTestPending(theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, testText: String, formatter: Formatter) {
-    report(TestPending(tracker.nextOrdinal(), theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName, testText, Some(formatter),
+  private def reportTestPending(theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, testText: String, duration: Long, formatter: Formatter) {
+    report(TestPending(tracker.nextOrdinal(), theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName, testText, Some(duration), Some(formatter),
       Some(ToDoLocation)))
   }
 
@@ -164,7 +164,7 @@ trait StateSuite extends Suite {
           testStatuses(simpleName)(testName) = Pending(duration, remaining - 1)
         else
           testStatuses(simpleName)(testName) = Succeeded(duration)
-        reportTestPending(this, reporter, tracker, testName, testName, formatter)
+        reportTestPending(this, reporter, tracker, testName, testName, duration, formatter)
       case Ignored(duration, remaining) =>
         if (remaining > 1)
           testStatuses(simpleName)(testName) = Ignored(duration, remaining - 1)
