@@ -14,7 +14,8 @@ case class Durations(file: File) {
     val durationsXml = XML.loadFile(file)
 
     for (suiteXml <- durationsXml \ "suite") {
-      val suite = Suite("" + (suiteXml \ "@suiteID"))
+      val suite = Suite("" + (suiteXml \ "@suiteID"),
+                        "" + (suiteXml \ "@suiteName"))
       suites += suite
 
       for (testXml <- suiteXml \ "test") {
@@ -43,7 +44,8 @@ case class Durations(file: File) {
   //
   def addTests(run: String, runXml: NodeSeq) {
     for (suite <- runXml \\ "suite") {
-      val suiteID = (suite \ "@id").toString
+      val suiteID   = (suite \ "@id").toString
+      val suiteName = (suite \ "@name").toString
 
       for (test <- suite \ "test") {
         val result = (test \ "@result").toString
@@ -52,7 +54,7 @@ case class Durations(file: File) {
           val testName = (test \ "@name").toString
           val millis = (test \ "@duration").toString.toInt
 
-          addDuration(suiteID, testName, run, millis)
+          addDuration(suiteID, suiteName, testName, run, millis)
         }
       }
     }
@@ -72,8 +74,8 @@ case class Durations(file: File) {
                                    quoteReplacement(buf.toString))
   }
 
-  def addDuration(suiteID: String, testName: String, run: String,
-                  millis: Int)
+  def addDuration(suiteID: String, suiteName: String, testName: String,
+                  run: String, millis: Int)
   {
     def getSuite(): Suite = {
       val suiteOption = suites.find(suite => suite.suiteID == suiteID)
@@ -82,7 +84,7 @@ case class Durations(file: File) {
         suiteOption.get
       }
       else {
-        val newSuite = Suite(suiteID)
+        val newSuite = Suite(suiteID, suiteName)
         suites += newSuite
         newSuite
       }
@@ -121,12 +123,12 @@ case class Durations(file: File) {
     }
   }
 
-  case class Suite(suiteID: String) {
+  case class Suite(suiteID: String, suiteName: String) {
     val tests = mutable.Set[Test]()
 
     def toXml: String = {
       val SuiteTemplate =
-        """|  <suite suiteID="$suiteID$">
+        """|  <suite suiteID="$suiteID$" suiteName="$suiteName$">
            |$tests$  </suite>
            |""".stripMargin
 
@@ -135,8 +137,9 @@ case class Durations(file: File) {
       for (test <- tests) buf.append(test.toXml)
 
       SuiteTemplate.
-        replaceFirst("""\$suiteID\$""", quoteReplacement(suiteID)).
-        replaceFirst("""\$tests\$""",   quoteReplacement(buf.toString))
+        replaceFirst("""\$suiteID\$""",   quoteReplacement(suiteID)).
+        replaceFirst("""\$suiteName\$""", quoteReplacement(suiteName)).
+        replaceFirst("""\$tests\$""",     quoteReplacement(buf.toString))
     }
   }
 

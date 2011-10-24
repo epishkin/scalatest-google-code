@@ -36,8 +36,6 @@ import scala.xml.NodeSeq
 import scala.xml.Elem
 import scala.xml.Node
 
-import com.github.rjeschke.txtmark.Processor
-
 /**
  * A <code>Reporter</code> that writes test status information in xml format
  * for use by Flex formatter.
@@ -56,8 +54,6 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
   private val summaryFile      = new File(directory + "/summary.xml")
   private val durationsFile    = new File(directory + "/durations.xml")
   private val thisRunFile      = new File(runsDir, "run-" + timestamp + ".xml")
-  private val oldDurationsFile = new File(durationsDir + "/duration-" +
-                                          timestamp + ".xml")
 
   runsDir.mkdir()
   durationsDir.mkdir()
@@ -66,6 +62,8 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
   //
   // Records events as they are received.  Initiates processing once
   // a run-termination event comes in.
+  //
+  // Ignores info and markup events.
   //
   def apply(event: Event) {
     event match {
@@ -114,15 +112,6 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     df.format(new Date(timeStamp))
   }
 
-  def markdownToHtml(markdown: String): String = {
-      Processor.process(markdown)
-  }
-
-  def getPreviousRunTimestamp(oldRunsXml: NodeSeq): Option[String] = {
-    if (oldRunsXml.size > 0) Some("" + oldRunsXml(0) \ "@id")
-    else None
-  }
-
   //
   // Reads existing summary.xml file, or, if none exists, returns a <summary>
   // xml containing all empty elements.
@@ -146,7 +135,9 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
   // Ditto for the durations.xml file.
   //
   def archiveOldFiles(oldRunsXml: NodeSeq) {
-    val previousRunTimestamp = getPreviousRunTimestamp(oldRunsXml)
+    val previousRunTimestamp = 
+      if (oldRunsXml.size > 0) Some("" + oldRunsXml(0) \ "@id")
+      else None
 
     if (previousRunTimestamp.isDefined) {
       if (summaryFile.exists)
@@ -299,6 +290,7 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
       {
         "    <regressedTest " +
         "suiteID=\""       + (suite \ "@id")    + "\" " +
+        "suiteName=\""     + (suite \ "@name")  + "\" " +
         "testName=\""      + (test \ "@name")   + "\" " +
         "status=\""        + result             + "\" " +
         "lastSucceeded=\"" + lastSucceeded      + "\"/>\n"
@@ -393,14 +385,16 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
         def toXml: String = {
           val SlowerTestTemplate =
             """      <slowerTest suiteID="$suiteID$" """ +
-            """|testName="$testName$" oldAvg="$oldAvg$" newAvg="$newAvg$"/>
+            """suiteName="$suiteName$" testName="$testName$" """ +
+            """|oldAvg="$oldAvg$" newAvg="$newAvg$"/>
                |""".stripMargin
 
         SlowerTestTemplate.
-          replaceFirst("""\$suiteID\$""",  quoteReplacement(suite.suiteID)).
-          replaceFirst("""\$testName\$""", quoteReplacement(test.name)).
-          replaceFirst("""\$oldAvg\$""",   "" + oldAvg).
-          replaceFirst("""\$newAvg\$""",   "" + newAvg)
+          replaceFirst("""\$suiteID\$""",   quoteReplacement(suite.suiteID)).
+          replaceFirst("""\$suiteName\$""", quoteReplacement(suite.suiteName)).
+          replaceFirst("""\$testName\$""",  quoteReplacement(test.name)).
+          replaceFirst("""\$oldAvg\$""",    "" + oldAvg).
+          replaceFirst("""\$newAvg\$""",    "" + newAvg)
         }
       }
 
@@ -465,7 +459,10 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
   //
   // Writes timestamped output file to 'runs' subdirectory beneath specified
   // output dir.  Format of file name is, e.g. for timestamp
-  // "2011-01-07-143216", "run-2011-01-07-143216.xml".
+  // "2011-10-24-105759-563", "run-2011-10-24-105759-563.xml".
+  //
+  // We write the file piece-by-piece directly, instead of creating a string
+  // and writing that, 
   //
   def writeRunFile(event: Event) {
     index = 0
@@ -563,34 +560,6 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     pw.println("</doc>")
     pw.flush()
     pw.close()
-  }
-
-  //
-  // Generates xml for an InfoProvided event.
-  //
-  def formatInfoProvided(event: InfoProvided): String = {
-    "<info index=\"" + nextIndex()                 + "\" " +
-    "text=\""        + escape(event.message)       + "\" " +
-    "thread=\""      + event.threadName            + "\"/>\n"
-  }
-
-  //
-  // Generates xml for ScopeOpened event.
-  //
-  def formatScopeOpened(event: ScopeOpened): String = {
-    "<info index=\"" + nextIndex()                 + "\" " +
-    "text=\""        + escape(event.message)       + "\" " +
-    "thread=\""      + event.threadName            + "\">\n"
-  }
-
-  //
-  // Generates xml for a MarkupProvided event.
-  //
-  def formatMarkupProvided(event: MarkupProvided): String = {
-    "<markup index=\"" + nextIndex()                 + "\" "   +
-    "thread=\""        + event.threadName            + "\">\n" +
-    "<data><![CDATA["  + markdownToHtml(event.text)  + "]]></data>\n" +
-    "</markup>\n"
   }
 
   //
@@ -711,10 +680,6 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
         }
         else {
           element match {
-            case e: InfoProvided   => buf.append(formatInfoProvided(e))
-            case e: ScopeOpened    => buf.append(formatScopeOpened(e))
-            case e: ScopeClosed    => buf.append("</info>\n")
-            case e: MarkupProvided => buf.append(formatMarkupProvided(e))
             case e: TestIgnored    => buf.append(formatTestIgnored(e))
             case e: SuiteRecord    => buf.append(e.toXml)
             case e: TestStarting   => testRecord = new TestRecord(e)
@@ -738,24 +703,16 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
   // is received, this class's toXml method can be called to generate
   // the complete xml string for the <test> element.
   //
+  // (We no longer record info-provided or markup events for tests,
+  // so nested events within the TestRecord have been removed.)
+  //
   class TestRecord(startEvent: TestStarting) {
-    var nestedEvents = List[Event]()
     var endEvent: Event = null
 
     //
     // Adds specified event to object's list of nested events.
     //
     def addEvent(event: Event) {
-      def isNestedEvent: Boolean = {
-        event match {
-          case _: InfoProvided => true
-          case _: ScopeOpened => true
-          case _: ScopeClosed => true
-          case _: MarkupProvided => true
-          case _ => false
-        }
-      }
-
       def isEndEvent: Boolean = {
         event match {
           case _: TestSucceeded => true
@@ -766,9 +723,7 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
         }
       }
 
-      if (isNestedEvent)
-        nestedEvents ::= event
-      else if (isEndEvent)
+      if (isEndEvent)
         endEvent = event
       else
         unexpectedEvent(event)
@@ -796,10 +751,14 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
     object Duration {
       def unapply(event: Event): Option[Long] =
         event match {
-          case TestSucceeded(_, _, _, _, _, _, duration, _, _, _, _, _, _) => duration
-          case TestFailed(_, _, _, _, _, _, _, _, duration, _, _, _, _, _, _) => duration
-          case TestPending(_, _, _, _, _, _, duration, _, _, _, _, _) => duration
-          case TestCanceled(_, _, _, _, _, _, _, _, duration, _, _, _, _, _) => duration
+          case TestSucceeded(_, _, _, _, _, _, duration, _, _, _, _, _, _)
+            => duration
+          case TestFailed(_, _, _, _, _, _, _, _, duration, _, _, _, _, _, _) 
+            => duration
+          case TestPending(_, _, _, _, _, _, duration, _, _, _, _, _) 
+            => duration
+          case TestCanceled(_, _, _, _, _, _, _, _, duration, _, _, _, _, _) 
+            => duration
           case _ => None
         }
     }
@@ -879,9 +838,6 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
       }
       buf.append("</exception>\n")
 
-
-
-
       buf.toString
     }
 
@@ -895,16 +851,6 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
         throw new IllegalStateException("toXml called without endEvent")
 
       buf.append(formatTestStart)
-
-      for (event <- nestedEvents) {
-        event match {
-          case e: InfoProvided   => buf.append(formatInfoProvided(e))
-          case e: ScopeOpened    => buf.append(formatScopeOpened(e))
-          case e: ScopeClosed    => buf.append("</info>\n")
-          case e: MarkupProvided => buf.append(formatMarkupProvided(e))
-          case _ => unexpectedEvent(event)
-        }
-      }
 
       if (endEvent.isInstanceOf[TestFailed])
         buf.append(formatException(endEvent.asInstanceOf[TestFailed]))
