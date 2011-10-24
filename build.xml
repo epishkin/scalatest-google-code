@@ -341,11 +341,11 @@
       - Called from 'test' and 'testfromjar' targets.
       -->
     <target name="runtest" depends="compile,copyprops,taskdefscalatest">
-        <mkdir dir="target/flex" />
+        <mkdir dir="target/dash" />
         <scalatest fork="true" runpath="${test.runpath}" parallel="true" haltonfailure="true">
             <jvmarg value="-XX:MaxPermSize=512m"/>
             <reporter type="graphic"/>
-            <reporter type="flex" directory="target/flex"/>
+            <reporter type="dashboard" directory="target/dash"/>
             <reporter type="junitxml" directory="target"/>
             <reporter type="stdout" config="D"/>
             <membersonly package="org.scalatest" />

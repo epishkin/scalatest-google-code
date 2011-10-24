@@ -114,8 +114,8 @@ path&gt; [...]]
  *     the named file</li>
  * <li> <code><b>-u &lt;directory&gt;</b></code> - causes test results to be written to
  *      junit-style xml files in the named directory</li>
- * <li> <code><b>-F &lt;directory&gt;</b></code> - causes test results to be written to
- *      Flex files in the named directory</li>
+ * <li> <code><b>-d &lt;directory&gt;</b></code> - causes test results to be written to
+ *      dashboard files in the named directory</li>
  * <li> <code><b>-o[configs...]</b></code> - causes test results to be written to
  *     the standard output</li>
  * <li> <code><b>-e[configs...]</b></code> - causes test results to be written to
@@ -555,7 +555,7 @@ object Runner {
             None,
             fullReporterConfigurations.fileReporterConfigurationList,
             fullReporterConfigurations.junitXmlReporterConfigurationList,
-            fullReporterConfigurations.flexReporterConfigurationList,
+            fullReporterConfigurations.dashboardReporterConfigurationList,
             fullReporterConfigurations.xmlReporterConfigurationList,
             fullReporterConfigurations.standardOutReporterConfiguration,
             fullReporterConfigurations.standardErrReporterConfiguration,
@@ -619,7 +619,7 @@ object Runner {
       // Style advice
       // If it is multiple else ifs, then make it symetrical. If one needs an open curly brace, put it on all
       // If an if just has another if, a compound statement, go ahead and put the open curly brace's around the outer one
-      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-u") || s.startsWith("-F") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || /* s.startsWith("-x") || */ s.startsWith("-l") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
+      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-u") || s.startsWith("-d") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || /* s.startsWith("-x") || */ s.startsWith("-l") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
         if (it.hasNext)
           it.next
       }
@@ -700,7 +700,7 @@ object Runner {
         if (it.hasNext)
           reporters += it.next
       }
-      else if (s.startsWith("-F")) {
+      else if (s.startsWith("-d")) {
         reporters += s
         if (it.hasNext)
           reporters += it.next
@@ -860,7 +860,7 @@ object Runner {
         case Nil => false
 
         case "-u" :: directory :: list => argTooShort(list)
-        case "-F" :: directory :: list => argTooShort(list)
+        case "-d" :: directory :: list => argTooShort(list)
         case "-x" :: directory :: list => argTooShort(list)
 
         case x :: list =>
@@ -907,16 +907,16 @@ object Runner {
           else {
             throw new IllegalArgumentException("-u needs to be followed by a directory name arg: ")
           }
-        case "-F" =>
+        case "-d" =>
           if (it.hasNext) {
             val directory = it.next
             if (!(new File(directory).isDirectory))
               throw new IllegalArgumentException(
-                "arg for -F option is not a directory [" + directory + "]")
+                "arg for -d option is not a directory [" + directory + "]")
             else {}
           }
           else {
-            throw new IllegalArgumentException("-F needs to be followed by a directory name arg: ")
+            throw new IllegalArgumentException("-d needs to be followed by a directory name arg: ")
           }
         case "-x" =>
           if (it.hasNext) {
@@ -985,19 +985,19 @@ object Runner {
     val junitXmlReporterConfigurationList =
       buildJunitXmlReporterConfigurationList(args)
 
-    def buildFlexReporterConfigurationList(args: List[String]) = {
+    def buildDashboardReporterConfigurationList(args: List[String]) = {
       val it = args.iterator
-      val lb = new ListBuffer[FlexReporterConfiguration]
+      val lb = new ListBuffer[DashboardReporterConfiguration]
       while (it.hasNext) {
         val arg = it.next
-        if (arg.startsWith("-F"))
-          lb += new FlexReporterConfiguration(Set[ReporterConfigParam](),
-                                              it.next)
+        if (arg.startsWith("-d"))
+          lb += new DashboardReporterConfiguration(Set[ReporterConfigParam](),
+                                                   it.next)
       }
       lb.toList
     }
-    val flexReporterConfigurationList =
-      buildFlexReporterConfigurationList(args)
+    val dashboardReporterConfigurationList =
+      buildDashboardReporterConfigurationList(args)
 
     def buildXmlReporterConfigurationList(args: List[String]) = {
       val it = args.iterator
@@ -1065,7 +1065,7 @@ object Runner {
       graphicReporterConfigurationOption,
       fileReporterConfigurationList,
       junitXmlReporterConfigurationList,
-      flexReporterConfigurationList,
+      dashboardReporterConfigurationList,
       xmlReporterConfigurationList,
       standardOutReporterConfigurationOption,
       standardErrReporterConfigurationOption,
@@ -1326,8 +1326,8 @@ object Runner {
       case JunitXmlReporterConfiguration(configSet, directory) =>
         new JunitXmlReporter(directory)
 
-      case FlexReporterConfiguration(configSet, directory) =>
-        new FlexReporter(directory)
+      case DashboardReporterConfiguration(configSet, directory) =>
+        new DashboardReporter(directory)
 
       case XmlReporterConfiguration(configSet, directory) =>
         new XmlReporter(directory)

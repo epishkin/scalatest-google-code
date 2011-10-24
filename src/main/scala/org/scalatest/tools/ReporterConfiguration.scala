@@ -29,7 +29,7 @@ private[tools] case class StandardOutReporterConfiguration(configSet: Set[Report
 private[tools] case class StandardErrReporterConfiguration(configSet: Set[ReporterConfigParam]) extends ReporterConfiguration
 private[tools] case class FileReporterConfiguration(configSet: Set[ReporterConfigParam], fileName: String) extends ReporterConfiguration
 private[tools] case class JunitXmlReporterConfiguration(configSet: Set[ReporterConfigParam], fileName: String) extends ReporterConfiguration
-private[tools] case class FlexReporterConfiguration(configSet: Set[ReporterConfigParam], fileName: String) extends ReporterConfiguration
+private[tools] case class DashboardReporterConfiguration(configSet: Set[ReporterConfigParam], fileName: String) extends ReporterConfiguration
 private[tools] case class XmlReporterConfiguration(configSet: Set[ReporterConfigParam], fileName: String) extends ReporterConfiguration
 private[tools] case class HtmlReporterConfiguration(configSet: Set[ReporterConfigParam], fileName: String) extends ReporterConfiguration
 private[tools] case class CustomReporterConfiguration(configSet: Set[ReporterConfigParam], reporterClass: String) extends ReporterConfiguration
@@ -40,7 +40,7 @@ private[tools] case class ReporterConfigurations(
   val graphicReporterConfiguration: Option[GraphicReporterConfiguration],
   val fileReporterConfigurationList: List[FileReporterConfiguration],
   val junitXmlReporterConfigurationList: List[JunitXmlReporterConfiguration],
-  val flexReporterConfigurationList: List[FlexReporterConfiguration],
+  val dashboardReporterConfigurationList: List[DashboardReporterConfiguration],
   val xmlReporterConfigurationList: List[XmlReporterConfiguration],
   val standardOutReporterConfiguration: Option[StandardOutReporterConfiguration],
   val standardErrReporterConfiguration: Option[StandardErrReporterConfiguration],
@@ -53,7 +53,7 @@ private[tools] case class ReporterConfigurations(
       graphicReporterConfiguration.toList,
       fileReporterConfigurationList,
       junitXmlReporterConfigurationList,
-      flexReporterConfigurationList,
+      dashboardReporterConfigurationList,
       xmlReporterConfigurationList,
       standardOutReporterConfiguration.toList,
       standardErrReporterConfiguration.toList,

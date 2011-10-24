@@ -40,7 +40,8 @@ import scala.xml.Node
  * A <code>Reporter</code> that writes test status information in xml format
  * for use by Flex formatter.
  */
-private[scalatest] class FlexReporter(directory: String) extends Reporter {
+private[scalatest] class DashboardReporter(directory: String) extends Reporter
+{
   final val BufferSize = 4096
 
   private val events = ListBuffer[Event]()
@@ -160,7 +161,7 @@ private[scalatest] class FlexReporter(directory: String) extends Reporter {
   }
 
   //
-  // Writes flex reporter summary, duration, and run files at completion
+  // Writes dashboard reporter summary, duration, and run files at completion
   // of a run.  Archives old copies of summary and duration files into
   // summaries/ and durations/ subdirectories.
   //
