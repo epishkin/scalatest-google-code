@@ -115,6 +115,12 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
+ * For reporter type 'dashboard', an optional <code>numfiles</code> attribute may be
+ * included to specify the number of old summary and duration files to be archived.
+ * Default is 2.
+ * </p>
+ *
+ * <p>
  * Specify tags to include and/or exclude using <code>&lt;tagsToInclude&gt;</code> and
  * <code>&lt;tagsToExclude&gt;</code> elements, like this:
  * </p>
@@ -494,7 +500,7 @@ class ScalaTestAntTask extends Task {
   // directory as additional argument, e.g. "-d", "directory".
   //
   private def addDashboardReporter(args: ListBuffer[String],
-                              reporter: ReporterElement)
+                                   reporter: ReporterElement)
   {
     addReporterOption(args, reporter, "-d")
 
@@ -503,6 +509,11 @@ class ScalaTestAntTask extends Task {
         "reporter type 'dashboard' requires 'directory' attribute")
 
     args += reporter.getDirectory
+
+    if (reporter.getNumfiles >= 0) {
+      args += "-a"
+      args += reporter.getNumfiles.toString
+    }
   }
 
   //
@@ -853,17 +864,20 @@ class ScalaTestAntTask extends Task {
     private var filename  : String = null
     private var directory : String = null
     private var classname : String = null
+    private var numfiles  : Int    = -1
 
     def setType(rtype          : String) { this.rtype     = rtype     }
     def setConfig(config       : String) { this.config    = config    }
     def setFilename(filename   : String) { this.filename  = filename  }
     def setDirectory(directory : String) { this.directory = directory }
     def setClassName(classname : String) { this.classname = classname }
+    def setNumfiles(numfiles   : Int)    { this.numfiles  = numfiles  }
 
     def getType      = rtype
     def getConfig    = config
     def getFilename  = filename
     def getDirectory = directory
     def getClassName = classname
+    def getNumfiles  = numfiles
   }
 

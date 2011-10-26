@@ -40,7 +40,9 @@ import scala.xml.Node
  * A <code>Reporter</code> that writes test status information in xml format
  * for use by Flex formatter.
  */
-private[scalatest] class DashboardReporter(directory: String) extends Reporter
+private[scalatest] class DashboardReporter(directory: String,
+                                           numOldFilesToKeep: Int)
+  extends Reporter
 {
   final val BufferSize = 4096
 
@@ -48,6 +50,8 @@ private[scalatest] class DashboardReporter(directory: String) extends Reporter
   private var index = 0
   private val timestamp =
     new SimpleDateFormat("yyyy-MM-dd-HHmmss-SSS").format(new Date)
+
+  private final val TimestampPattern = """\d{4}-\d{2}-\d{2}-\d{6}-\d{3}"""
 
   private val runsDir          = new File(directory + "/runs")
   private val durationsDir     = new File(directory + "/durations")
@@ -150,7 +154,27 @@ private[scalatest] class DashboardReporter(directory: String) extends Reporter
         durationsFile.renameTo(
           new File(
             durationsDir + "/duration-" + previousRunTimestamp.get + ".xml"))
+
+      purgeDir(summariesDir, "summary-")
+      purgeDir(durationsDir, "duration-")
     }
+  }
+
+  //
+  // Deletes older files from specified archive directory.
+  //
+  // We keep timestamped old copies of summary.xml and durations.xml in
+  // summaries/ and durations/ subdirectories.  This method trims the
+  // oldest archived files from those directories to maintain a specified
+  // maximum number of archived copies.
+  //
+  def purgeDir(directory: File, prefix: String) {
+    directory.
+      listFiles().
+      filter(_.getName.matches(prefix + TimestampPattern + """\.xml""")).
+      sorted.
+      dropRight(numOldFilesToKeep).
+      foreach(_.delete())
   }
 
   //
@@ -529,9 +553,7 @@ private[scalatest] class DashboardReporter(directory: String) extends Reporter
     pw.println("<doc>")
     pw.print(formatSummary(event))
 
-    val sortedEvents = events.toList.sortWith((a, b) => a.ordinal < b.ordinal)
-
-    for (event <- sortedEvents) {
+    for (event <- events.sorted) {
       event match {
         case e: SuiteStarting  =>
           stack.push(suiteRecord)

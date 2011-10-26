@@ -116,6 +116,9 @@ path&gt; [...]]
  *      junit-style xml files in the named directory</li>
  * <li> <code><b>-d &lt;directory&gt;</b></code> - causes test results to be written to
  *      dashboard files in the named directory</li>
+ * <li> <code><b>-a &lt;number of files to archive&gt;</b></code> - causes specified number of old
+ *      summary and durations files to be archived (in summaries/ and durations/ subdirectories)
+ *      for dashboard reporter (default is two)</li>
  * <li> <code><b>-o[configs...]</b></code> - causes test results to be written to
  *     the standard output</li>
  * <li> <code><b>-e[configs...]</b></code> - causes test results to be written to
@@ -406,6 +409,8 @@ object Runner {
   private val RUNNER_JFRAME_START_X: Int = 150
   private val RUNNER_JFRAME_START_Y: Int = 100
 
+  private final val DefaultNumFilesToArchive = 2
+
   //                     TO
   // We always include a PassFailReporter on runs in order to determine
   // whether or not all tests passed.
@@ -619,7 +624,7 @@ object Runner {
       // Style advice
       // If it is multiple else ifs, then make it symetrical. If one needs an open curly brace, put it on all
       // If an if just has another if, a compound statement, go ahead and put the open curly brace's around the outer one
-      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-u") || s.startsWith("-d") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || /* s.startsWith("-x") || */ s.startsWith("-l") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
+      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-u") || s.startsWith("-d") || s.startsWith("-a") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || /* s.startsWith("-x") || */ s.startsWith("-l") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
         if (it.hasNext)
           it.next
       }
@@ -701,6 +706,11 @@ object Runner {
           reporters += it.next
       }
       else if (s.startsWith("-d")) {
+        reporters += s
+        if (it.hasNext)
+          reporters += it.next
+      }
+      else if (s.startsWith("-a")) {
         reporters += s
         if (it.hasNext)
           reporters += it.next
@@ -853,7 +863,8 @@ object Runner {
     //
     // Checks to see if any args are smaller than two characters in length.
     // Allows a one-character arg if it's a directory-name parameter, to
-    // permit use of "." for example.
+    // permit use of "." for example.  Allows a one-character arg if it's
+    // a number.
     //
     def argTooShort(args: List[String]): Boolean = {
       args match {
@@ -861,6 +872,7 @@ object Runner {
 
         case "-u" :: directory :: list => argTooShort(list)
         case "-d" :: directory :: list => argTooShort(list)
+        case "-a" :: number    :: list => argTooShort(list)
         case "-x" :: directory :: list => argTooShort(list)
 
         case x :: list =>
@@ -917,6 +929,20 @@ object Runner {
           }
           else {
             throw new IllegalArgumentException("-d needs to be followed by a directory name arg: ")
+          }
+        case "-a" =>
+          if (it.hasNext) {
+            def isValidInt(text: String): Boolean = 
+              try { text.toInt; true } catch { case _ => false }
+
+            val number = it.next
+            if (!(isValidInt(number)))
+              throw new IllegalArgumentException(
+                "arg for -a option is not a number [" + number + "]")
+            else {}
+          }
+          else {
+            throw new IllegalArgumentException("-a needs to be followed by a number arg: ")
           }
         case "-x" =>
           if (it.hasNext) {
@@ -986,13 +1012,26 @@ object Runner {
       buildJunitXmlReporterConfigurationList(args)
 
     def buildDashboardReporterConfigurationList(args: List[String]) = {
+      def fetchNumFilesArg: Int = {
+        var numFiles: Option[Int] = None
+        val it = args.iterator
+
+        while (!numFiles.isDefined && it.hasNext) {
+          val arg = it.next
+          if (arg.startsWith("-a"))
+            numFiles = Some(it.next.toInt)
+        }
+        numFiles.getOrElse(DefaultNumFilesToArchive)
+      }
+
+      val numFilesToArchive = fetchNumFilesArg
       val it = args.iterator
       val lb = new ListBuffer[DashboardReporterConfiguration]
       while (it.hasNext) {
         val arg = it.next
         if (arg.startsWith("-d"))
           lb += new DashboardReporterConfiguration(Set[ReporterConfigParam](),
-                                                   it.next)
+                                                   it.next, numFilesToArchive)
       }
       lb.toList
     }
@@ -1326,8 +1365,8 @@ object Runner {
       case JunitXmlReporterConfiguration(configSet, directory) =>
         new JunitXmlReporter(directory)
 
-      case DashboardReporterConfiguration(configSet, directory) =>
-        new DashboardReporter(directory)
+      case DashboardReporterConfiguration(configSet, directory, numFilesToArchive) =>
+        new DashboardReporter(directory, numFilesToArchive)
 
       case XmlReporterConfiguration(configSet, directory) =>
         new XmlReporter(directory)
