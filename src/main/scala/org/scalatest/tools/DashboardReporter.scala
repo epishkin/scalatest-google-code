@@ -311,14 +311,16 @@ private[scalatest] class DashboardReporter(directory: String,
       // Formats a <regressedTest> element.
       //
       def formatRegression(suite: Node, test: Node, result: String,
-                           lastSucceeded: String): String =
+                           lastSucceeded: String, firstRegressed: String):
+      String =
       {
         "    <regressedTest " +
-        "suiteID=\""       + (suite \ "@id")    + "\" " +
-        "suiteName=\""     + (suite \ "@name")  + "\" " +
-        "testName=\""      + (test \ "@name")   + "\" " +
-        "status=\""        + result             + "\" " +
-        "lastSucceeded=\"" + lastSucceeded      + "\"/>\n"
+        "suiteID=\""        + (suite \ "@id")    + "\" " +
+        "suiteName=\""      + (suite \ "@name")  + "\" " +
+        "testName=\""       + (test \ "@name")   + "\" " +
+        "status=\""         + result             + "\" " +
+        "firstRegressed=\"" + firstRegressed     + "\" " +
+        "lastSucceeded=\""  + lastSucceeded      + "\"/>\n"
       }
 
       //
@@ -393,8 +395,16 @@ private[scalatest] class DashboardReporter(directory: String,
               else
                 "never"
 
+            val firstRegressed =
+              if (oldRegression.isDefined)
+                "" + oldRegression.get \ "@firstRegressed"
+              else
+                timestamp
+
             if (!((result == "pending") && (lastSucceeded == "never")))
-              buf.append(formatRegression(suite, test, result, lastSucceeded))
+              buf.append(
+                formatRegression(
+                  suite, test, result, lastSucceeded, firstRegressed))
           }
         }
       }
