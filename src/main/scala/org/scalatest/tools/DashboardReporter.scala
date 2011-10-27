@@ -25,6 +25,7 @@ import java.io.BufferedOutputStream
 import java.io.FileOutputStream
 import java.io.File
 import java.util.Date
+import java.util.TimeZone
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher.quoteReplacement
 
@@ -48,8 +49,7 @@ private[scalatest] class DashboardReporter(directory: String,
 
   private val events = ListBuffer[Event]()
   private var index = 0
-  private val timestamp =
-    new SimpleDateFormat("yyyy-MM-dd-HHmmss-SSS").format(new Date)
+  private var timestamp = "" // gets set at RunStarting event
 
   private final val TimestampPattern = """\d{4}-\d{2}-\d{2}-\d{6}-\d{3}"""
 
@@ -58,7 +58,6 @@ private[scalatest] class DashboardReporter(directory: String,
   private val summariesDir     = new File(directory + "/summaries")
   private val summaryFile      = new File(directory + "/summary.xml")
   private val durationsFile    = new File(directory + "/durations.xml")
-  private val thisRunFile      = new File(runsDir, "run-" + timestamp + ".xml")
 
   runsDir.mkdir()
   durationsDir.mkdir()
@@ -72,7 +71,7 @@ private[scalatest] class DashboardReporter(directory: String,
   //
   def apply(event: Event) {
     event match {
-      case _: RunStarting    =>
+      case _: RunStarting    => timestamp = formatCurrentTime
       case _: InfoProvided   =>
       case _: ScopeOpened    =>
       case _: ScopeClosed    =>
@@ -82,6 +81,19 @@ private[scalatest] class DashboardReporter(directory: String,
       case _: RunAborted     => writeFiles(event)
       case _ => events += event
     }
+  }
+
+  //
+  // Formats current time for use as timestamp to identify current run.
+  //
+  // Uses GMT time zone to avoid sequencing errors that could occur with
+  // time shifts due to daylight savings time or laptop travel if local
+  // time zone were used.
+  //
+  def formatCurrentTime: String = {
+    val df = new SimpleDateFormat("yyyy-MM-dd-HHmmss-SSS")
+    df.setTimeZone(TimeZone.getTimeZone("GMT"))
+    df.format(new Date)
   }
 
   //
@@ -178,13 +190,6 @@ private[scalatest] class DashboardReporter(directory: String,
   }
 
   //
-  // Reads the xml from the run file for the current run.
-  //
-  def getThisRunXml: NodeSeq = {
-    XML.loadFile(thisRunFile)
-  }
-
-  //
   // Writes dashboard reporter summary, duration, and run files at completion
   // of a run.  Archives old copies of summary and duration files into
   // summaries/ and durations/ subdirectories.
@@ -196,8 +201,10 @@ private[scalatest] class DashboardReporter(directory: String,
 
     archiveOldFiles(oldRunsXml)
 
-    writeRunFile(terminatingEvent)
-    val thisRunXml = getThisRunXml
+    val thisRunFile = new File(runsDir, "run-" + timestamp + ".xml")
+
+    writeRunFile(terminatingEvent, thisRunFile)
+    val thisRunXml = XML.loadFile(thisRunFile)
 
     durations.addTests(timestamp, thisRunXml)
 
@@ -499,7 +506,7 @@ private[scalatest] class DashboardReporter(directory: String,
   // We write the file piece-by-piece directly, instead of creating a string
   // and writing that, 
   //
-  def writeRunFile(event: Event) {
+  def writeRunFile(event: Event, thisRunFile: File) {
     index = 0
     var suiteRecord: SuiteRecord = null
     val stack = new Stack[SuiteRecord]
