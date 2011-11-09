@@ -53,7 +53,7 @@ trait StateSuite extends Suite {
       else Succeeded(anInitialDuration)
     }
 
-    val alterSucceededTests = Random.nextInt(10) == 0
+    val alterSucceededTests = Random.nextInt(3) == 0
 
     if (alterSucceededTests) {
       val nameOfTestToAlter = allTestNames(Random.nextInt(testCounts(simpleName)) )
@@ -61,7 +61,7 @@ trait StateSuite extends Suite {
         case Succeeded(duration) =>
           val isIgnored = Random.nextInt(2) == 0
           val isCanceled = !isIgnored && (Random.nextInt(2) == 0) // If not ignored or canceled, then make it failed
-          val remaining = Random.nextInt(if (isIgnored) 15 else 10)
+          val remaining = Random.nextInt(if (isIgnored) 20 else 15)
           testStatuses(simpleName)(nameOfTestToAlter) =
             if (isIgnored) Ignored(duration, remaining) else if (isCanceled) Canceled(duration, remaining) else Failed(duration, remaining)
         case _ =>

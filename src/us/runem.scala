@@ -2,11 +2,11 @@
 import org.scalatest.tools.Runner
 
 object runem extends App {
-  for (i <- 1 to 200) {
+  for (i <- 1 to 135) {
     Runner.run(
-      Array("-p", ".", "-oD", "-F", "dashboard", "-s", "UnitedStates")
+      Array("-p", ".", "-oD", "-d", "dashboard", "-s", "UnitedStates")
     )
-    Thread.sleep(10)
+    Thread.sleep(1000)
   }
 }
 
