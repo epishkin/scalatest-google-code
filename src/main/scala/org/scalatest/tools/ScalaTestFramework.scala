@@ -133,29 +133,42 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
      */
     def run(testClassName: String, fingerprint: TestFingerprint, eventHandler: EventHandler, args: Array[String]) {
       val suiteClass = Class.forName(testClassName, true, testLoader).asSubclass(classOf[Suite])
-
-      // println("sbt args: " + args.toList)
+       //println("sbt args: " + args.toList)
       if (isAccessibleSuite(suiteClass)) {
 
         val (propertiesArgsList, includesArgsList,
-        excludesArgsList, repoArg) = parsePropsAndTags(args.filter(!_.equals("")))
+        excludesArgsList, repoArgsList) = parsePropsAndTags(args.filter(!_.equals("")))
         val configMap: Map[String, String] = parsePropertiesArgsIntoMap(propertiesArgsList)
         val tagsToInclude: Set[String] = parseCompoundArgIntoSet(includesArgsList, "-n")
         val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
         val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
-
-        val (presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces) =
-          repoArg match {
-            case Some(arg) => (
-              arg contains 'D',
-              !(arg contains 'W'),
-              arg contains 'S',
-              arg contains 'F'
-             )
-             case None => (false, true, false, false)
+        
+        val report:Reporter = 
+          if(repoArgsList.isEmpty) 
+            // If no reporters specified, just give them a default sbt reporter
+            new SbtReporter(eventHandler, false, true, false, false)
+          else {
+            val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(repoArgsList)
+            val reporterConfigs: ReporterConfigurations =
+              fullReporterConfigurations.graphicReporterConfiguration match {
+                case None => fullReporterConfigurations
+                case Some(grs) => {
+                  new ReporterConfigurations(
+                    None,
+                    fullReporterConfigurations.fileReporterConfigurationList,
+                    fullReporterConfigurations.junitXmlReporterConfigurationList,
+                    fullReporterConfigurations.dashboardReporterConfigurationList,
+                    fullReporterConfigurations.xmlReporterConfigurationList,
+                    fullReporterConfigurations.standardOutReporterConfiguration,
+                    fullReporterConfigurations.standardErrReporterConfiguration,
+                    fullReporterConfigurations.htmlReporterConfigurationList,
+                    fullReporterConfigurations.customReporterConfigurationList
+                  )
+               }
+              }
+            
+              Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)
           }
-
-        val report = new ScalaTestReporter(eventHandler, presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces)
 
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
@@ -206,7 +219,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
       }
     }
 
-    private class ScalaTestReporter(eventHandler: EventHandler, presentAllDurations: Boolean,
+    private class SbtReporter(eventHandler: EventHandler, presentAllDurations: Boolean,
         presentInColor: Boolean, presentShortStackTraces: Boolean, presentFullStackTraces: Boolean) extends StringReporter(
         presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces) {
 
@@ -256,7 +269,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
       val props = new ListBuffer[String]()
       val includes = new ListBuffer[String]()
       val excludes = new ListBuffer[String]()
-      var repoArg: Option[String] = None
+      var repoArgs = new ListBuffer[String]()
 
       val it = args.iterator
       while (it.hasNext) {
@@ -276,10 +289,46 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
           if (it.hasNext)
             excludes += it.next
         }
-        else if (s.startsWith("-o")) {
-          if (repoArg.isEmpty) // Just use first one. Ignore any others.
-            repoArg = Some(s)
-        }
+        else if (s.startsWith("-g")) {
+	        repoArgs += s
+	    }
+	    else if (s.startsWith("-o")) {
+	        repoArgs += s
+	    }
+	    else if (s.startsWith("-e")) {
+	        repoArgs += s
+	    }
+	    else if (s.startsWith("-f")) {
+	        repoArgs += s
+	        if (it.hasNext)
+	          repoArgs += it.next
+	    }
+	    else if (s.startsWith("-u")) {
+	        repoArgs += s
+	        if (it.hasNext)
+	          repoArgs += it.next
+	    }
+	    else if (s.startsWith("-d")) {
+	        repoArgs += s
+	        if (it.hasNext)
+	          repoArgs += it.next
+	    }
+	    else if (s.startsWith("-a")) {
+	        repoArgs += s
+	        if (it.hasNext)
+	          repoArgs += it.next
+	    }
+	    else if (s.startsWith("-x")) {
+	        repoArgs += s
+	        if (it.hasNext)
+	          repoArgs += it.next
+	    }
+	    else if (s.startsWith("-h")) {
+	        repoArgs += s
+	        if (it.hasNext)
+	          repoArgs += it.next
+	    }
+        
         //      else if (s.startsWith("-t")) {
         //
         //        testNGXMLFiles += s
@@ -290,7 +339,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
           throw new IllegalArgumentException("Unrecognized argument: " + s)
         }
       }
-      (props.toList, includes.toList, excludes.toList, repoArg)
+      (props.toList, includes.toList, excludes.toList, repoArgs.toList)
     }
   }
 }
