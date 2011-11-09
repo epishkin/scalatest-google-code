@@ -143,12 +143,8 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
         val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
         val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
         
-        val report:Reporter = 
-          if(repoArgsList.isEmpty) 
-            // If no reporters specified, just give them a default sbt reporter
-            new SbtReporter(eventHandler, false, true, false, false)
-          else {
-            val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(repoArgsList)
+        // If no reporters specified, just give them a default stdout reporter
+        val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) "-o" :: Nil else repoArgsList)
             val reporterConfigs: ReporterConfigurations =
               fullReporterConfigurations.graphicReporterConfiguration match {
                 case None => fullReporterConfigurations
@@ -166,9 +162,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
                   )
                }
               }
-            
-              Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)
-          }
+        val report:Reporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
 
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
@@ -218,22 +212,11 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
         case se: SecurityException => false
       }
     }
-
-    private class SbtReporter(eventHandler: EventHandler, presentAllDurations: Boolean,
-        presentInColor: Boolean, presentShortStackTraces: Boolean, presentFullStackTraces: Boolean) extends StringReporter(
-        presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces) {
-
+    
+    private class SbtReporter(eventHandler: EventHandler, report: Option[Reporter]) extends Reporter {
+      
       import org.scalatest.events._
-
-      protected def printPossiblyInColor(text: String, ansiColor: String) {
-        import PrintReporter.ansiReset
-        loggers.foreach { logger =>
-          logger.info(if (logger.ansiCodesSupported && presentInColor) colorizeLinesIndividually(text, ansiColor) else text)
-        }
-      }
-
-      def dispose() = ()
-
+      
       def fireEvent(tn: String, r: Result, e: Option[Throwable]) = {
         eventHandler.handle(
           new org.scalatools.testing.Event {
@@ -244,13 +227,12 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
           }
         )
       }
-
+      
       override def apply(event: Event) {
-
-        // Superclass will call printPossiblyInColor
-        super.apply(event)
-
-        // Logging done, all I need to do now is fire events
+        report match {
+          case Some(report) => report(event)
+          case None =>
+        }
         event match {
           // the results of running an actual test
           case t: TestPending => fireEvent(t.testName, Result.Skipped, None)
