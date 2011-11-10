@@ -132,37 +132,47 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
 
      */
     def run(testClassName: String, fingerprint: TestFingerprint, eventHandler: EventHandler, args: Array[String]) {
+
       val suiteClass = Class.forName(testClassName, true, testLoader).asSubclass(classOf[Suite])
-       //println("sbt args: " + args.toList)
+
       if (isAccessibleSuite(suiteClass)) {
 
-        val (propertiesArgsList, includesArgsList,
-        excludesArgsList, repoArgsList) = parsePropsAndTags(args.filter(!_.equals("")))
+        // Why are we getting rid of empty strings? Were empty strings coming in from sbt? -bv 11/09/2011
+        val (propertiesArgsList, includesArgsList, excludesArgsList, repoArgsList) = parsePropsAndTags(args.filter(!_.equals("")))
+
         val configMap: Map[String, String] = parsePropertiesArgsIntoMap(propertiesArgsList)
         val tagsToInclude: Set[String] = parseCompoundArgIntoSet(includesArgsList, "-n")
         val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
-        val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
-        
+        val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude) // Duplicate code
+
         // If no reporters specified, just give them a default stdout reporter
-        val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) "-o" :: Nil else repoArgsList)
-            val reporterConfigs: ReporterConfigurations =
-              fullReporterConfigurations.graphicReporterConfiguration match {
-                case None => fullReporterConfigurations
-                case Some(grs) => {
-                  new ReporterConfigurations(
-                    None,
-                    fullReporterConfigurations.fileReporterConfigurationList,
-                    fullReporterConfigurations.junitXmlReporterConfigurationList,
-                    fullReporterConfigurations.dashboardReporterConfigurationList,
-                    fullReporterConfigurations.xmlReporterConfigurationList,
-                    fullReporterConfigurations.standardOutReporterConfiguration,
-                    fullReporterConfigurations.standardErrReporterConfiguration,
-                    fullReporterConfigurations.htmlReporterConfigurationList,
-                    fullReporterConfigurations.customReporterConfigurationList
-                  )
-               }
-              }
-        val report:Reporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
+        val fullReporterConfigurations: ReporterConfigurations =
+          Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) "-o" :: Nil else repoArgsList)
+
+        val reporterConfigs: ReporterConfigurations =
+          fullReporterConfigurations.graphicReporterConfiguration match {
+            case None => fullReporterConfigurations
+            case Some(grs) => {
+              new ReporterConfigurations(
+                None,
+                fullReporterConfigurations.fileReporterConfigurationList,
+                fullReporterConfigurations.junitXmlReporterConfigurationList,
+                fullReporterConfigurations.dashboardReporterConfigurationList,
+                fullReporterConfigurations.xmlReporterConfigurationList,
+                fullReporterConfigurations.standardOutReporterConfiguration, // TODO: Chee Seng, I think this should robably be None. -o here means the SbtReporter. I think it doesn't make sense to have a standard out reporter going from withing sbt, since sbt is spitting out the same strings to standard out.
+                fullReporterConfigurations.standardErrReporterConfiguration,
+                fullReporterConfigurations.htmlReporterConfigurationList,
+                fullReporterConfigurations.customReporterConfigurationList
+              )
+           }
+          }
+
+// TODO: Chee Seng, when you add support for the graphic reporter, I think it makes sense to hold up the build tool until
+// the graphic reporter is exited. This is what we do in Runner for the ant task I think.
+// Actually, I wonder if don't want some kind of private[tools] run method in Runner that takes command line arguments
+// and a classloader, and this gets called by the public main and run methods. We can talk about that over the phone.
+
+        val report: Reporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
 
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
@@ -186,6 +196,8 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
 
             // TODO: Could not get this from Resources. Got:
             // java.util.MissingResourceException: Can't find bundle for base name org.scalatest.ScalaTestBundle, locale en_US
+            // TODO Chee Seng, I wonder why we couldn't access resources, and if that's still true. I'd rather get this stuff
+            // from the resource file so we can later localize.
             val rawString = "Exception encountered when attempting to run a suite with class name: " + suiteClass.getName
             val formatter = formatterForSuiteAborted(suite, rawString)
 
@@ -199,6 +211,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
 
     private val emptyClassArray = new Array[java.lang.Class[T] forSome {type T}](0)
 
+    // TODO: Chee Seng: At some point, please reuse the identical method in SuiteDiscoveryHelper instead
     private def isAccessibleSuite(clazz: java.lang.Class[_]): Boolean = {
       import java.lang.reflect.Modifier
 
@@ -272,44 +285,44 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
             excludes += it.next
         }
         else if (s.startsWith("-g")) {
-	        repoArgs += s
-	    }
-	    else if (s.startsWith("-o")) {
-	        repoArgs += s
-	    }
-	    else if (s.startsWith("-e")) {
-	        repoArgs += s
-	    }
-	    else if (s.startsWith("-f")) {
-	        repoArgs += s
-	        if (it.hasNext)
-	          repoArgs += it.next
-	    }
-	    else if (s.startsWith("-u")) {
-	        repoArgs += s
-	        if (it.hasNext)
-	          repoArgs += it.next
-	    }
-	    else if (s.startsWith("-d")) {
-	        repoArgs += s
-	        if (it.hasNext)
-	          repoArgs += it.next
-	    }
-	    else if (s.startsWith("-a")) {
-	        repoArgs += s
-	        if (it.hasNext)
-	          repoArgs += it.next
-	    }
-	    else if (s.startsWith("-x")) {
-	        repoArgs += s
-	        if (it.hasNext)
-	          repoArgs += it.next
-	    }
-	    else if (s.startsWith("-h")) {
-	        repoArgs += s
-	        if (it.hasNext)
-	          repoArgs += it.next
-	    }
+          repoArgs += s
+        }
+        else if (s.startsWith("-o")) {
+          repoArgs += s
+        }
+        else if (s.startsWith("-e")) {
+          repoArgs += s
+        }
+        else if (s.startsWith("-f")) {
+          repoArgs += s
+          if (it.hasNext)
+            repoArgs += it.next
+        }
+        else if (s.startsWith("-u")) {
+          repoArgs += s
+          if (it.hasNext)
+            repoArgs += it.next
+        }
+        else if (s.startsWith("-d")) {
+          repoArgs += s
+          if (it.hasNext)
+            repoArgs += it.next
+        }
+        else if (s.startsWith("-a")) {
+          repoArgs += s
+          if (it.hasNext)
+            repoArgs += it.next
+        }
+        else if (s.startsWith("-x")) {
+          repoArgs += s
+          if (it.hasNext)
+            repoArgs += it.next
+        }
+        else if (s.startsWith("-h")) {
+          repoArgs += s
+          if (it.hasNext)
+            repoArgs += it.next
+        }
         
         //      else if (s.startsWith("-t")) {
         //
