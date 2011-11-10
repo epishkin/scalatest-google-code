@@ -24,9 +24,13 @@ import java.lang.annotation.AnnotationFormatError
 // TODO: Make this private[scalatest]
 trait Eventually {
 
-  def eventually[T](f: => T): T = {
-    val maxAttempts = 100
-    val interval = 10
+  case class EventuallyConfig(maxAttempts: Int = 100, interval: Int = 10)
+
+  implicit val eventuallyConfig = EventuallyConfig()
+
+  def eventually[T](f: => T)(implicit config: EventuallyConfig): T = {
+    val maxAttempts = config.maxAttempts
+    val interval = config.interval
     var count = 0
     var cause: Throwable = null
     while (count < maxAttempts) {

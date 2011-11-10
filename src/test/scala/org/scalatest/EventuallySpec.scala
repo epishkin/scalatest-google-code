@@ -60,7 +60,7 @@ class EventuallySpec extends Spec with ShouldMatchers with ValueOnOption {
       count should equal (5)
     }
 
-    it("should eventually blow up with a TFE if the by-name continuosly throws an exception") {
+    it("should eventually blow up with a TFE if the by-name continuously throws an exception") {
 
       val caught = evaluating {
         eventually { 1 + 1 should equal (3) }
@@ -69,6 +69,31 @@ class EventuallySpec extends Spec with ShouldMatchers with ValueOnOption {
       caught.message.value should be ("The code passed to eventually never returned normally.")
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 4)
       caught.failedCodeFileName.value should be ("EventuallySpec.scala")
+    }
+
+    it("should by default invoke an always-failing by-name 100 times") {
+      var count = 0
+      evaluating {
+        eventually {
+          count += 1
+          1 + 1 should equal (3)
+        }
+      } should produce [TestFailedException]
+      count should equal (100)
+    }
+
+    it("should, if an alternate implicit MaxAttempts is provided, invoke an always-failing by-name by the specified number of times") {
+
+      implicit val eventuallyConfig = EventuallyConfig(maxAttempts = 88)
+
+      var count = 0
+      evaluating {
+        eventually {
+          count += 1
+          1 + 1 should equal (3)
+        }
+      } should produce [TestFailedException]
+      count should equal (88)
     }
   }
 
