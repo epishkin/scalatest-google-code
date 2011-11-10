@@ -1403,8 +1403,8 @@ object Runner {
     }
 
     val reporterSeq =
-      (for (spec <- reporterSpecs)
-        yield getReporterFromConfiguration(spec))
+      for (spec <- reporterSpecs) yield
+        getReporterFromConfiguration(spec)
 
     val almostFullReporterList: List[Reporter] =
       graphicReporter match {
