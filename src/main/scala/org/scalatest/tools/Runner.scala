@@ -1753,3 +1753,37 @@ println("DEBUG: Discovery Completed: " + discoveryDuration + " milliseconds")
     )
   }
 }
+
+/*
+Runner command line arguments:
+
+a
+b - sbt reporter (only used inside ScalaTestFramework)
+c - parallel execution
+d
+e - standard error reporter
+f - file reporter
+g - graphical reporter
+h - HTML Reporter
+i
+j - run a JUnit tests class
+k
+l - tags to exclude
+m - members only path
+n - tags to include
+o - standard out reporter
+p - space-separated runpath
+q
+r - custom reporter
+s - suite class name
+t - testNG XML config file
+u - junit xml reporter
+v
+w - wildcard path
+x (saving this for a native xml reporter)
+y
+z
+
+D - configMap pair, key=value
+
+*/
