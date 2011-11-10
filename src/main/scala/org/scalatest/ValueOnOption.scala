@@ -15,12 +15,23 @@
  */
 package org.scalatest
 
+import java.util.NoSuchElementException
+
+// TODO: Make this private[scalatest]
 trait ValueOnOption {
 
   implicit def covertToValuable[T](opt: Option[T]) = new Valuable(opt)
 
   class Valuable[T](opt: Option[T]) {
-    def value: T = opt.get
+    def value: T = {
+      try {
+        opt.get
+      }
+      catch {
+        case cause: NoSuchElementException =>
+          throw new TestFailedException(cause, 1)
+      }
+    }
   }
 }
 
