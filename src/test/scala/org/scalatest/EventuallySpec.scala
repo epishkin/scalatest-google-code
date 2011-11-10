@@ -18,9 +18,9 @@ package org.scalatest
 import org.scalatest.Eventually._
 import org.scalatest.matchers.ShouldMatchers
 
-class EventuallySpec extends Spec with ShouldMatchers {
+class EventuallySpec extends Spec with ShouldMatchers with ValueOnOption {
 
-  describe("eventually") {
+  describe("The eventually construct") {
 
     it("should just return if the by-name returns normally") {
 
@@ -35,6 +35,40 @@ class EventuallySpec extends Spec with ShouldMatchers {
         1 + 1 should equal (2)
       }
       count should equal (1)
+    }
+
+    it("should invoke the function just once and return the result if the by-name returns normally the first time") {
+
+      var count = 0
+      val result =
+        eventually {
+          count += 1
+          99
+        }
+      count should equal (1)
+      result should equal (99)
+    }
+
+    it("should invoke the function five times if the by-name throws an exception four times before finally returning normally the fifth time") {
+
+      var count = 0
+      eventually {
+        count += 1
+        if (count < 5) throw new Exception
+        1 + 1 should equal (2)
+      }
+      count should equal (5)
+    }
+
+    it("should eventually blow up with a TFE if the by-name continuosly throws an exception") {
+
+      val caught = evaluating {
+        eventually { 1 + 1 should equal (3) }
+      } should produce [TestFailedException]
+
+      caught.message.value should be ("The code passed to eventually never returned normally.")
+      caught.failedCodeLineNumber.value should equal (thisLineNumber - 4)
+      caught.failedCodeFileName.value should be ("EventuallySpec.scala")
     }
   }
 
