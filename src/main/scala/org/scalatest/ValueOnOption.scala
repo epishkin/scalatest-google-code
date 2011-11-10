@@ -29,6 +29,7 @@ trait ValueOnOption {
       }
       catch {
         case cause: NoSuchElementException => // TODO: Grab the string from the resource file
+          // TODO: Verify and possibly be smarter about stack depth
           throw new TestFailedException("The Option on which value was invoked was not defined.", cause, 1)
       }
     }

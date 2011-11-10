@@ -40,11 +40,6 @@ class ValueOnOptionSpec extends Spec with ShouldMatchers {
       caught.failedCodeFileName.value should be ("ValueOnOptionSpec.scala")
       caught.message.value should be ("The Option on which value was invoked was not defined.")
     }
-
-    it("testing 1, 2, 3") {
-      val o: Option[String] = None
-      o.value should startWith ("hi")
-    }
   }
 
    // TODO: This is copied and pasted from TestFailedExceptionSpec. Eventually
