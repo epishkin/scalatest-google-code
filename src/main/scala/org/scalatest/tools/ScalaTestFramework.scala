@@ -132,47 +132,43 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
 
      */
     def run(testClassName: String, fingerprint: TestFingerprint, eventHandler: EventHandler, args: Array[String]) {
-
       val suiteClass = Class.forName(testClassName, true, testLoader).asSubclass(classOf[Suite])
-
+       //println("sbt args: " + args.toList)
       if (isAccessibleSuite(suiteClass)) {
 
         // Why are we getting rid of empty strings? Were empty strings coming in from sbt? -bv 11/09/2011
         val (propertiesArgsList, includesArgsList, excludesArgsList, repoArgsList) = parsePropsAndTags(args.filter(!_.equals("")))
-
+        
         val configMap: Map[String, String] = parsePropertiesArgsIntoMap(propertiesArgsList)
         val tagsToInclude: Set[String] = parseCompoundArgIntoSet(includesArgsList, "-n")
         val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
-        val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude) // Duplicate code
-
+        val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
+        
         // If no reporters specified, just give them a default stdout reporter
-        val fullReporterConfigurations: ReporterConfigurations =
-          Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) "-o" :: Nil else repoArgsList)
-
-        val reporterConfigs: ReporterConfigurations =
-          fullReporterConfigurations.graphicReporterConfiguration match {
-            case None => fullReporterConfigurations
-            case Some(grs) => {
-              new ReporterConfigurations(
-                None,
-                fullReporterConfigurations.fileReporterConfigurationList,
-                fullReporterConfigurations.junitXmlReporterConfigurationList,
-                fullReporterConfigurations.dashboardReporterConfigurationList,
-                fullReporterConfigurations.xmlReporterConfigurationList,
-                fullReporterConfigurations.standardOutReporterConfiguration, // TODO: Chee Seng, I think this should robably be None. -o here means the SbtReporter. I think it doesn't make sense to have a standard out reporter going from withing sbt, since sbt is spitting out the same strings to standard out.
-                fullReporterConfigurations.standardErrReporterConfiguration,
-                fullReporterConfigurations.htmlReporterConfigurationList,
-                fullReporterConfigurations.customReporterConfigurationList
-              )
-           }
-          }
-
-// TODO: Chee Seng, when you add support for the graphic reporter, I think it makes sense to hold up the build tool until
-// the graphic reporter is exited. This is what we do in Runner for the ant task I think.
-// Actually, I wonder if don't want some kind of private[tools] run method in Runner that takes command line arguments
-// and a classloader, and this gets called by the public main and run methods. We can talk about that over the phone.
-
-        val report: Reporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
+        val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) "-o" :: Nil else repoArgsList)
+          val reporterConfigs: ReporterConfigurations =
+            fullReporterConfigurations.graphicReporterConfiguration match {
+              case None => fullReporterConfigurations
+              case Some(grs) => {
+                new ReporterConfigurations(
+                  None,
+                  fullReporterConfigurations.fileReporterConfigurationList,
+                  fullReporterConfigurations.junitXmlReporterConfigurationList,
+                  fullReporterConfigurations.dashboardReporterConfigurationList,
+                  fullReporterConfigurations.xmlReporterConfigurationList,
+                  fullReporterConfigurations.standardOutReporterConfiguration,
+                  fullReporterConfigurations.standardErrReporterConfiguration,
+                  fullReporterConfigurations.htmlReporterConfigurationList,
+                  fullReporterConfigurations.customReporterConfigurationList
+                )
+             }
+            }
+        
+        // TODO: Chee Seng, when you add support for the graphic reporter, I think it makes sense to hold up the build tool until
+        // the graphic reporter is exited. This is what we do in Runner for the ant task I think.
+        // Actually, I wonder if don't want some kind of private[tools] run method in Runner that takes command line arguments
+        // and a classloader, and this gets called by the public main and run methods. We can talk about that over the phone.
+        val report:Reporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
 
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
@@ -256,6 +252,89 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
         }
       }
     }
+    
+    private[scalatest] def parseUntilFound(value:String, endsWith:String, it:Iterator[String]):String = {
+      if(it.hasNext) {
+        val next = it.next()
+        if(next.endsWith(endsWith))
+          value + next
+        else
+          parseUntilFound(value + next, endsWith, it)
+      }
+      else
+        throw new IllegalArgumentException("Unable to find '" + endsWith + "'")
+    }
+    
+    private[scalatest] def parseParams(rawParamsStr:String, it:Iterator[String], validParamSet:Set[String], expected:String):Map[String, String] = {
+      
+      if(rawParamsStr.length() > 0) {
+        if(!rawParamsStr.startsWith("("))
+          throw new IllegalArgumentException("Invalid configuration, example valid configuration: " + expected)
+      
+        val paramsStr = 
+         if(rawParamsStr.endsWith(")"))
+           rawParamsStr
+         else 
+           parseUntilFound(rawParamsStr, ")", it)
+      
+        val configsArr:Array[String] = paramsStr.substring(1, paramsStr.length() - 1).split(",")
+        val tuples = for(configStr <- configsArr) yield {
+          val keyValueArr = configStr.trim().split("=")
+          if(keyValueArr.length == 2) {
+            // Value config param
+            val key:String = keyValueArr(0).trim()
+            if(!validParamSet.contains(key))
+              throw new IllegalArgumentException("Invalid configuration: " + key)
+            val rawValue = keyValueArr(1).trim()
+            val value:String = 
+              if(rawValue.startsWith("\"") && rawValue.endsWith("\"") && rawValue.length() > 1) 
+                rawValue.substring(1, rawValue.length() - 1)
+              else
+                rawValue
+            (key -> value)
+          }
+          else
+            throw new IllegalArgumentException("Invalid configuration: " + configStr)
+        }
+        Map[String, String]() ++ tuples
+      }
+      else
+        Map[String, String]()
+    }
+    
+    private[scalatest] val validConfigMap = Map(
+                                             "dropteststarting" -> "N", 
+                                             "doptestsucceeded" -> "C", 
+                                             "droptestignored" -> "X", 
+                                             "droptestpending" -> "E", 
+                                             "dropsuitestarting" -> "H", 
+                                             "dropsuitecompleted" -> "L", 
+                                             "dropinfoprovided" -> "O", 
+                                             "nocolor" -> "W", 
+                                             "shortstacks" -> "S", 
+                                             "fullstacks" -> "F", 
+                                             "durations" -> "D"
+                                           )
+    
+    private[scalatest] def translateConfigs(rawConfigs:String):String = {
+      val configArr = rawConfigs.split(" ")
+      val translatedArr = configArr.map {config => 
+            val translatedOpt:Option[String] = validConfigMap.get(config)
+            translatedOpt match {
+              case Some(translated) => translated
+              case None => throw new IllegalArgumentException("Invalid config value: " + config)
+            }
+          }
+      translatedArr.mkString
+    }
+    
+    private[scalatest] def getTranslatedConfig(paramsMap:Map[String, String]):String = {
+      val configOpt:Option[String] = paramsMap.get("config")
+	  configOpt match {
+	    case Some(configStr) => translateConfigs(configStr)
+	    case None => ""
+	  }
+    }
 
     private[scalatest] def parsePropsAndTags(args: Array[String]) = {
 
@@ -285,44 +364,74 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
             excludes += it.next
         }
         else if (s.startsWith("-g")) {
-          repoArgs += s
-        }
-        else if (s.startsWith("-o")) {
-          repoArgs += s
-        }
-        else if (s.startsWith("-e")) {
-          repoArgs += s
-        }
-        else if (s.startsWith("-f")) {
-          repoArgs += s
-          if (it.hasNext)
-            repoArgs += it.next
-        }
-        else if (s.startsWith("-u")) {
-          repoArgs += s
-          if (it.hasNext)
-            repoArgs += it.next
-        }
-        else if (s.startsWith("-d")) {
-          repoArgs += s
-          if (it.hasNext)
-            repoArgs += it.next
-        }
-        else if (s.startsWith("-a")) {
-          repoArgs += s
-          if (it.hasNext)
-            repoArgs += it.next
-        }
-        else if (s.startsWith("-x")) {
-          repoArgs += s
-          if (it.hasNext)
-            repoArgs += it.next
-        }
-        else if (s.startsWith("-h")) {
-          repoArgs += s
-          if (it.hasNext)
-            repoArgs += it.next
-        }
+	      repoArgs += s
+	    }
+	    else if (s.startsWith("-o")) {
+	      println("-o is deprecated, use stdout instead.")
+	      repoArgs += s
+	    }
+	    else if (s.startsWith("stdout")) {
+	      val paramsMap:Map[String, String] = parseParams(s.substring("stdout".length()), it, Set("config"), "stdout")
+	      repoArgs += "-o" + getTranslatedConfig(paramsMap:Map[String, String])
+	    }
+	    else if (s.startsWith("-e")) {
+	      println("-e is deprecated, use stderr instead.")
+	      repoArgs += s
+	    }
+        else if (s.startsWith("stderr")) {
+	      val paramsMap:Map[String, String] = parseParams(s.substring("stderr".length()), it, Set("config"), "stderr")
+	      repoArgs += "-e" + getTranslatedConfig(paramsMap:Map[String, String])
+	    }
+	    else if (s.startsWith("-f")) {
+	      println("-f is deprecated, use file(directory=\"xxx\") instead.")
+	      repoArgs += s
+	      if (it.hasNext)
+	        repoArgs += it.next
+	    }
+	    else if (s.startsWith("file")) {
+	      val paramsMap:Map[String, String] = parseParams(s.substring("file".length()), it, Set("filename", "config"), "junitxml(directory=\"xxx\")")
+	      repoArgs += "-f" + getTranslatedConfig(paramsMap:Map[String, String])
+	      val filenameOpt:Option[String] = paramsMap.get("filename")
+	      filenameOpt match {
+	        case Some(filename) => repoArgs += filename
+	        case None => throw new IllegalArgumentException("file requires filename to be specified, example: file(filename=\"xxx\")")
+	      }
+	    }
+	    else if (s.startsWith("-u")) {
+	        println("-u is deprecated, use junitxml(directory=\"xxx\") instead.")
+	        repoArgs += s
+	        if (it.hasNext)
+	          repoArgs += it.next
+	    }
+	    else if(s.startsWith("junitxml")) {
+	        repoArgs += "-u"
+	        val paramsMap:Map[String, String] = parseParams(s.substring("junitxml".length()), it, Set("directory"), "junitxml(directory=\"xxx\")")
+	        val directoryOpt:Option[String] = paramsMap.get("directory")
+	        directoryOpt match {
+	          case Some(dir) => repoArgs += dir
+	          case None => throw new IllegalArgumentException("junitxml requires directory to be specified, example: junitxml(directory=\"xxx\")")
+	        }
+	    }
+	    else if (s.startsWith("-d")) {
+	        repoArgs += s
+	        if (it.hasNext)
+	          repoArgs += it.next
+	    }
+	    else if (s.startsWith("-a")) {
+	        repoArgs += s
+	        if (it.hasNext)
+	          repoArgs += it.next
+	    }
+	    else if (s.startsWith("-x")) {
+	        repoArgs += s
+	        if (it.hasNext)
+	          repoArgs += it.next
+	    }
+	    else if (s.startsWith("-h")) {
+	        repoArgs += s
+	        if (it.hasNext)
+	          repoArgs += it.next
+	    }
         
         //      else if (s.startsWith("-t")) {
         //

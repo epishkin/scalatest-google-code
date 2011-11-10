@@ -46,6 +46,92 @@ class ScalaTestFrameworkSuite extends FunSuite{
     assert(runner.testLoader == currentThread.getContextClassLoader)
     assert(runner.loggers === loggers)
   }
+  
+  def getRepoArgsList(args:Array[String]):List[String] = {
+    val framework = new ScalaTestFramework
+    import framework.ScalaTestRunner
+    
+    val loggers: Array[Logger] = Array(new TestLogger)
+    val runner = framework.testRunner(currentThread.getContextClassLoader, loggers).asInstanceOf[ScalaTestRunner]
+    val (propertiesArgsList, includesArgsList,
+        excludesArgsList, repoArgsList) = runner.parsePropsAndTags(args.filter(!_.equals("")))
+    repoArgsList
+  }
+  
+  def shouldFailWithIllegalArgumentException(arg:String) {
+    intercept[IllegalArgumentException] {
+      getRepoArgsList(Array(arg))
+    }
+  }
+  
+  test("parse argument junitxml(directory=\"test\")") {
+    val repoArgsList = getRepoArgsList(Array("junitxml(directory=\"test\")"))
+    assert(repoArgsList.length == 2)
+    assert(repoArgsList(0) == "-u")
+    assert(repoArgsList(1) == "test")
+  }
+  
+  test("parse argument junitxml should fail with IllegalArgumentException") {
+    shouldFailWithIllegalArgumentException("junitxml")
+  }
+  
+  test("parse argument junitxml (directory=\"test\") should fail with IllegalArgumentException") {
+    shouldFailWithIllegalArgumentException("junitxml (directory=\"test\")")
+  }
+  
+  test("parse argument junitxml directory=\"test\" should fail with IllegalArgumentException") {
+    shouldFailWithIllegalArgumentException("junitxml directory=\"test\"")
+  }
+  
+  test("parse argument junitxml(directory=\"test\" should fail with IllegalArgumentException") {
+    shouldFailWithIllegalArgumentException("junitxml(directory=\"test\"")
+  }
+  
+  test("parse argument junitxmldirectory=\"test\") should fail with IllegalArgumentException") {
+    shouldFailWithIllegalArgumentException("junitxmldirectory=\"test\")")
+  }
+  
+  test("parse argument junitxml(director=\"test\") should fail with IllegalArgumentException") {
+    shouldFailWithIllegalArgumentException("junitxml(director=\"test\")")
+  }
+  
+  test("parse argument file(filename=\"test.xml\")") {
+    val repoArgsList = getRepoArgsList(Array("file(filename=\"test.xml\")"))
+    assert(repoArgsList.length == 2)
+    assert(repoArgsList(0) == "-f")
+    assert(repoArgsList(1) == "test.xml")
+  }
+  
+  test("parse argument file(filename=\"test.xml\", config=\"durations shortstacks dropteststarting\")") {
+    val repoArgsList = getRepoArgsList(Array("file(filename=\"test.xml\", config=\"durations shortstacks dropteststarting\")"))
+    assert(repoArgsList.length == 2)
+    assert(repoArgsList(0) == "-fDSN")
+    assert(repoArgsList(1) == "test.xml")
+  }
+  
+  test("parse argument stdout") {
+    val repoArgsList = getRepoArgsList(Array("stdout"))
+    assert(repoArgsList.length == 1)
+    assert(repoArgsList(0) == "-o")
+  }
+  
+  test("parse argument stdout(config=\"nocolor fullstacks doptestsucceeded\")") {
+    val repoArgsList = getRepoArgsList(Array("stdout(config=\"nocolor fullstacks doptestsucceeded\")"))
+    assert(repoArgsList.length == 1)
+    assert(repoArgsList(0) == "-oWFC")
+  }
+  
+  test("parse argument stderr") {
+    val repoArgsList = getRepoArgsList(Array("stderr"))
+    assert(repoArgsList.length == 1)
+    assert(repoArgsList(0) == "-e")
+  }
+  
+  test("parse argument stderr(config=\"dropinfoprovided dropsuitestarting droptestignored\")") {
+    val repoArgsList = getRepoArgsList(Array("stderr(config=\"dropinfoprovided dropsuitestarting droptestignored\")"))
+    assert(repoArgsList.length == 1)
+    assert(repoArgsList(0) == "-eOHX")
+  }
 
   class TestLogger extends Logger{
     def trace(t:Throwable){}
