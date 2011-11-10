@@ -42,6 +42,7 @@ trait Eventually {
           count += 1
           cause = e
       }
+      Thread.sleep(interval)
     }
     // TODO: Get string from resource file
     // TODO: Verify and possibly be smarter about stack depth
