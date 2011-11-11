@@ -18,8 +18,19 @@ package org.scalatest
 // TODO: Make this private[scalatest]
 trait Inside {
   def inside[T](value: T)(pf: PartialFunction[T, Unit]) {
+    def appendInsideMessage(currentMessage: Option[String]) =
+      currentMessage match { // TODO, grab strings from resource file and maybe zap trailing white space before appending ", inside ..."
+        case Some(msg) => Some(msg + ", inside " + value)
+        case None => Some("An exception was thrown, inside " + value)
+      }
     if (pf.isDefinedAt(value)) {
-      pf(value)
+      try {
+        pf(value)
+      }
+      catch {
+        case e: ModifiableMessage[_] =>
+          throw e.modifyMessage(appendInsideMessage)
+      }
     }
     else // TODO: Get string from resource file, and verify and maybe be smarter about stack depth
       throw new TestFailedException("The partial function passed as the second parameter to inside was not defined at the value passed as the first parameter to inside, which was: " + value, 2)

@@ -60,7 +60,7 @@ class InsideSpec extends Spec with ShouldMatchers with ValueOnOption {
       caught.failedCodeFileName.value should be ("InsideSpec.scala")
     }
 
-    ignore("should include an inside clause when a matcher fails inside") {
+    it("should include an inside clause when a matcher fails inside") {
       val caught = evaluating {
         inside (rec) { case Record(_, _, age) =>
           age should be <= 21
@@ -68,6 +68,19 @@ class InsideSpec extends Spec with ShouldMatchers with ValueOnOption {
       } should produce [TestFailedException]
       caught.message.value should be ("29 was not less than or equal to 21, inside Record(Name(Sally,Mary,Jones),Address(123 Main St,Bluesville,KY,12345),29)")
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 4)
+      caught.failedCodeFileName.value should be ("InsideSpec.scala")
+    }
+
+    it("should include a nested inside clause when a matcher fails inside a nested inside") {
+      val caught = evaluating {
+        inside (rec) { case Record(name, _, _) =>
+          inside (name) { case Name(first, _, _) =>
+            first should be ("Harry")
+          }
+        }
+      } should produce [TestFailedException]
+      caught.message.value should be ("\"[Sall]y\" was not equal to \"[Harr]y\", inside Name(Sally,Mary,Jones), inside Record(Name(Sally,Mary,Jones),Address(123 Main St,Bluesville,KY,12345),29)")
+      caught.failedCodeLineNumber.value should equal (thisLineNumber - 5)
       caught.failedCodeFileName.value should be ("InsideSpec.scala")
     }
   }
