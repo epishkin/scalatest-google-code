@@ -95,6 +95,30 @@ class EventuallySpec extends Spec with ShouldMatchers with ValueOnOption {
       } should produce [TestFailedException]
       count should equal (88)
     }
+
+    it("should, if an alternate explicit max attempts is provided, invoke an always-failing by-name by the specified number of times") {
+
+      var count = 0
+      evaluating {
+        eventually {
+          count += 1
+          1 + 1 should equal (3)
+        } (maxAttempts(77))
+      } should produce [TestFailedException]
+      count should equal (77)
+    }
+
+    it("should, if an alternate explicit max attempts is provided along with an explicit interval, invoke an always-failing by-name by the specified number of times, even if a different implicit is provided") {
+
+      var count = 0
+      evaluating {
+        eventually {
+          count += 1
+          1 + 1 should equal (3)
+        } (maxAttempts(78), interval(1))
+      } should produce [TestFailedException]
+      count should equal (78)
+    }
   }
 
   // TODO: This is copied and pasted from TestFailedExceptionSpec. Eventually

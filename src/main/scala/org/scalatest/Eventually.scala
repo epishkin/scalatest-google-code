@@ -25,8 +25,23 @@ import java.lang.annotation.AnnotationFormatError
 trait Eventually {
 
   case class EventuallyConfig(maxAttempts: Int = 100, interval: Int = 10)
+  class MaxAttemptsConfig(maxAttempts: Int, interval: Int) extends EventuallyConfig(maxAttempts = maxAttempts)
+  class IntervalConfig(maxAttempts: Int, interval: Int) extends EventuallyConfig(interval = interval)
 
   implicit val eventuallyConfig = EventuallyConfig()
+
+  def maxAttempts(value: Int)(implicit config: EventuallyConfig) = new MaxAttemptsConfig(maxAttempts = value, interval = config.interval)
+
+  def interval(value: Int)(implicit config: EventuallyConfig) = new IntervalConfig(maxAttempts = config.maxAttempts, interval = value)
+
+/*
+This compiled but is ugly. I think config should be at the end in this case.
+  def eventually[T](config: EventuallyConfig)(f: => T): T = eventually(f)(config)
+*/
+  implicit def uglyConversion(pair: (MaxAttemptsConfig, IntervalConfig)): EventuallyConfig = {
+    val (maxAttemptsConfig, intervalConfig) = pair
+    EventuallyConfig(maxAttemptsConfig.maxAttempts, intervalConfig.interval)
+  }
 
   def eventually[T](f: => T)(implicit config: EventuallyConfig): T = {
     val maxAttempts = config.maxAttempts
