@@ -576,11 +576,6 @@ import org.scalacheck.Test.Params
  */
 trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
 
-  /** TODO delete me if moving it to configuration worked
-   * Implicit <code>PropertyCheckConfig</code> value providing default configuration values. 
-   */
-  //implicit val generatorDrivenConfig = PropertyCheckConfig()
-
   /**
    * Performs a property check by applying the specified property check function to arguments
    * supplied by implicitly passed generators, modifying the values in the implicitly passed 
