@@ -134,7 +134,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
     def run(testClassName: String, fingerprint: TestFingerprint, eventHandler: EventHandler, args: Array[String]) {
       val suiteClass = Class.forName(testClassName, true, testLoader).asSubclass(classOf[Suite])
        //println("sbt args: " + args.toList)
-      if (isAccessibleSuite(suiteClass)) {
+      if (SuiteDiscoveryHelper.isAccessibleSuite(suiteClass)) {
 
         // Why are we getting rid of empty strings? Were empty strings coming in from sbt? -bv 11/09/2011
         val (propertiesArgsList, includesArgsList, excludesArgsList, repoArgsList) = parsePropsAndTags(args.filter(!_.equals("")))
@@ -168,6 +168,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
         // the graphic reporter is exited. This is what we do in Runner for the ant task I think.
         // Actually, I wonder if don't want some kind of private[tools] run method in Runner that takes command line arguments
         // and a classloader, and this gets called by the public main and run methods. We can talk about that over the phone.
+        // After discussion -> TODO this in the custom task.
         val report:Reporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
 
         val tracker = new Tracker
@@ -206,21 +207,6 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
     }
 
     private val emptyClassArray = new Array[java.lang.Class[T] forSome {type T}](0)
-
-    // TODO: Chee Seng: At some point, please reuse the identical method in SuiteDiscoveryHelper instead
-    private def isAccessibleSuite(clazz: java.lang.Class[_]): Boolean = {
-      import java.lang.reflect.Modifier
-
-      try {
-        classOf[Suite].isAssignableFrom(clazz) &&
-                Modifier.isPublic(clazz.getModifiers) &&
-                !Modifier.isAbstract(clazz.getModifiers) &&
-                Modifier.isPublic(clazz.getConstructor(emptyClassArray: _*).getModifiers)
-      } catch {
-        case nsme: NoSuchMethodException => false
-        case se: SecurityException => false
-      }
-    }
     
     private class SbtReporter(eventHandler: EventHandler, report: Option[Reporter]) extends Reporter {
       
@@ -253,6 +239,16 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
       }
     }
     
+    private [scalatest] def extractContentInBracket(raw:String, it:Iterator[String], expected:String):String = {
+      if(!raw.startsWith("("))
+          throw new IllegalArgumentException("Invalid configuration, example valid configuration: " + expected)
+      val withBrackets = if(raw.endsWith(")"))
+                           raw
+                         else 
+                           parseUntilFound(raw, ")", it)
+      withBrackets.substring(1, withBrackets.length() - 1)
+    }
+    
     private[scalatest] def parseUntilFound(value:String, endsWith:String, it:Iterator[String]):String = {
       if(it.hasNext) {
         val next = it.next()
@@ -265,19 +261,27 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
         throw new IllegalArgumentException("Unable to find '" + endsWith + "'")
     }
     
+    private[scalatest] def parseCompoundParams(rawParamsStr:String, it:Iterator[String], expected:String):Array[String] = {
+      val rawClassArr = extractContentInBracket(rawParamsStr, it, expected).split(",")
+      for(rawClass <- rawClassArr) yield {
+        val trimmed = rawClass.trim()
+        if(trimmed.length() > 1 && trimmed.startsWith("\"") && trimmed.endsWith("\""))
+          trimmed.substring(1, trimmed.length() - 1)
+        else
+          trimmed
+      }
+    }
+    
+    private[scalatest] def translateCompoundParams(rawParamsStr:String, it:Iterator[String], expected:String):String = {
+      val paramsArr = parseCompoundParams(rawParamsStr, it, expected)
+      paramsArr.mkString(" ")
+    }
+    
     private[scalatest] def parseParams(rawParamsStr:String, it:Iterator[String], validParamSet:Set[String], expected:String):Map[String, String] = {
       
       if(rawParamsStr.length() > 0) {
-        if(!rawParamsStr.startsWith("("))
-          throw new IllegalArgumentException("Invalid configuration, example valid configuration: " + expected)
-      
-        val paramsStr = 
-         if(rawParamsStr.endsWith(")"))
-           rawParamsStr
-         else 
-           parseUntilFound(rawParamsStr, ")", it)
-      
-        val configsArr:Array[String] = paramsStr.substring(1, paramsStr.length() - 1).split(",")
+        val paramsStr = extractContentInBracket(rawParamsStr, it, expected)
+        val configsArr:Array[String] = paramsStr.split(",")
         val tuples = for(configStr <- configsArr) yield {
           val keyValueArr = configStr.trim().split("=")
           if(keyValueArr.length == 2) {
@@ -304,7 +308,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
     
     private[scalatest] val validConfigMap = Map(
                                              "dropteststarting" -> "N", 
-                                             "doptestsucceeded" -> "C", 
+                                             "droptestsucceeded" -> "C", 
                                              "droptestignored" -> "X", 
                                              "droptestpending" -> "E", 
                                              "dropsuitestarting" -> "H", 
@@ -354,19 +358,27 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
           props += s
         }
         else if (s.startsWith("-n")) {
+          println("-n is deprecated, use include instead.")
           includes += s
           if (it.hasNext)
             includes += it.next
         }
+        else if (s.startsWith("include")) {
+          includes += "-n" 
+          includes += translateCompoundParams(s.substring("include".length()), it, "include(a, b, c)")
+        }
         else if (s.startsWith("-l")) {
+          println("-l is deprecated, use exclude instead.")
           excludes += s
           if (it.hasNext)
             excludes += it.next
         }
-        else if (s.startsWith("-g")) {
-	      repoArgs += s
-	    }
+        else if (s.startsWith("exclude")) {
+          excludes += "-l"
+          excludes += translateCompoundParams(s.substring("exclude".length()), it, "exclude(a, b, c)")
+        }
 	    else if (s.startsWith("-o")) {
+	      // May be we can use a logger later
 	      println("-o is deprecated, use stdout instead.")
 	      repoArgs += s
 	    }
@@ -381,6 +393,11 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
         else if (s.startsWith("stderr")) {
 	      val paramsMap:Map[String, String] = parseParams(s.substring("stderr".length()), it, Set("config"), "stderr")
 	      repoArgs += "-e" + getTranslatedConfig(paramsMap:Map[String, String])
+	    }
+        // Not to enable until we have the pararrel execution problem sorted out.
+	    /*
+	    else if (s.startsWith("-g")) {
+	      repoArgs += s
 	    }
 	    else if (s.startsWith("-f")) {
 	      println("-f is deprecated, use file(directory=\"xxx\") instead.")
@@ -431,7 +448,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
 	        repoArgs += s
 	        if (it.hasNext)
 	          repoArgs += it.next
-	    }
+	    }*/
         
         //      else if (s.startsWith("-t")) {
         //

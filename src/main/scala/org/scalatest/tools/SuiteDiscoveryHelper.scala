@@ -115,7 +115,7 @@ private[scalatest] object SuiteDiscoveryHelper {
 
   private val emptyClassArray = new Array[java.lang.Class[T] forSome { type T }](0)
 
-  private def isAccessibleSuite(clazz: java.lang.Class[_]): Boolean = {
+  private[scalatest] def isAccessibleSuite(clazz: java.lang.Class[_]): Boolean = {
       try {
         classOf[Suite].isAssignableFrom(clazz) && 
           Modifier.isPublic(clazz.getModifiers) &&
