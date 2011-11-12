@@ -1246,7 +1246,6 @@ final case class InfoProvided (
  *        in the context of which the information was provided
  * @param aboutAPendingTest indicates whether the information being provided via this event is about a pending test
  * @param aboutACanceledTest indicates whether the information being provided via this event is about a canceled test
- * @param throwable an optional <code>Throwable</code>
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
@@ -1263,7 +1262,6 @@ final case class MarkupProvided (
   nameInfo: Option[NameInfo],
   aboutAPendingTest: Option[Boolean] = None,
   aboutACanceledTest: Option[Boolean] = None,
-  throwable: Option[Throwable] = None, // TODO: Do we really need this throwable in here? Not sure how it would be formatted. 
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
   payload: Option[Any] = None,
@@ -1281,8 +1279,6 @@ final case class MarkupProvided (
     throw new NullPointerException("aboutAPendingTest was null")
   if (aboutACanceledTest == null)
     throw new NullPointerException("aboutACanceledTest was null")
-  if (throwable == null)
-    throw new NullPointerException("throwable was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
   if (location == null)

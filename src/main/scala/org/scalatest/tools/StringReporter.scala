@@ -475,7 +475,7 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
           case None =>
         }
 
-      case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+      case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, formatter, location, payload, threadName, timeStamp) =>
 //println("Got markup: " + message)
         // Won't do anything here, because not reporting these events in the StringReporter.
 

@@ -993,7 +993,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerEvent(event)
           }
 
-        case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+        case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, formatter, location, payload, threadName, timeStamp) =>
       }
     }
   }
@@ -1389,7 +1389,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             registerRerunEvent(event)
           }
   
-        case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+        case MarkupProvided(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, formatter, location, payload, threadName, timeStamp) =>
       }
     }
   }
