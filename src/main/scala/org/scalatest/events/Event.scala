@@ -1263,7 +1263,7 @@ final case class MarkupProvided (
   nameInfo: Option[NameInfo],
   aboutAPendingTest: Option[Boolean] = None,
   aboutACanceledTest: Option[Boolean] = None,
-  throwable: Option[Throwable] = None,
+  throwable: Option[Throwable] = None, // TODO: Do we really need this throwable in here? Not sure how it would be formatted. 
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
   payload: Option[Any] = None,
@@ -1320,7 +1320,6 @@ final case class MarkupProvided (
  *        in the context of which the scope was opened
  * @param aboutAPendingTest indicates whether the scope was opened in the context of a pending test
  * @param aboutACanceledTest indicates whether the scope was opened in the context of a canceled test
- * @param throwable an optional <code>Throwable</code>
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
@@ -1337,7 +1336,6 @@ final case class ScopeOpened (
   nameInfo: NameInfo,
   aboutAPendingTest: Option[Boolean] = None,
   aboutACanceledTest: Option[Boolean] = None,
-  throwable: Option[Throwable] = None,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
   payload: Option[Any] = None,
@@ -1355,8 +1353,6 @@ final case class ScopeOpened (
     throw new NullPointerException("aboutAPendingTest was null")
   if (aboutACanceledTest == null)
     throw new NullPointerException("aboutACanceledTest was null")
-  if (throwable == null)
-    throw new NullPointerException("throwable was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
   if (location == null)
@@ -1394,7 +1390,6 @@ final case class ScopeOpened (
  *        in the context of which the scope was closed
  * @param aboutAPendingTest indicates whether the scope was closed in the context of a pending test
  * @param aboutACanceledTest indicates whether the scope was closed in the context of a canceled test
- * @param throwable an optional <code>Throwable</code>
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
@@ -1411,7 +1406,6 @@ final case class ScopeClosed (
   nameInfo: NameInfo,
   aboutAPendingTest: Option[Boolean] = None,
   aboutACanceledTest: Option[Boolean] = None,
-  throwable: Option[Throwable] = None,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
   payload: Option[Any] = None,
@@ -1429,8 +1423,6 @@ final case class ScopeClosed (
     throw new NullPointerException("aboutAPendingTest was null")
   if (aboutACanceledTest == null)
     throw new NullPointerException("aboutACanceledTest was null")
-  if (throwable == null)
-    throw new NullPointerException("throwable was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
   if (location == null)

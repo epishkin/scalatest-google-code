@@ -1371,26 +1371,50 @@ object Runner {
       case XmlReporterConfiguration(configSet, directory) =>
         new XmlReporter(directory)
 
-        case HtmlReporterConfiguration(configSet, fileName) =>
-          if (configSetMinusNonFilterParams(configSet).isEmpty)
+      // TODO: For now do this so I don't have to keep fixing HtmlReporter which is just a copy of StringReporter.
+      // I think in the future we need to have HTMLReporter supply a directory not a file name
+      case HtmlReporterConfiguration(configSet, fileName) =>
+        if (configSetMinusNonFilterParams(configSet).isEmpty)
+          new FileReporter(
+            fileName,
+            configSet.contains(PresentAllDurations),
+            !configSet.contains(PresentWithoutColor),
+            configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
+            configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
+          )
+        else
+          new FilterReporter(
+            new FileReporter(
+              fileName,
+              configSet.contains(PresentAllDurations),
+              !configSet.contains(PresentWithoutColor),
+              configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
+              configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
+            ),
+            configSet
+          )
+/*
+      case HtmlReporterConfiguration(configSet, fileName) =>
+        if (configSetMinusNonFilterParams(configSet).isEmpty)
+          new HtmlReporter(
+            fileName,
+            configSet.contains(PresentAllDurations),
+            !configSet.contains(PresentWithoutColor),
+            configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
+            configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
+          )
+        else
+          new FilterReporter(
             new HtmlReporter(
               fileName,
               configSet.contains(PresentAllDurations),
               !configSet.contains(PresentWithoutColor),
               configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
               configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-            )
-          else
-            new FilterReporter(
-              new HtmlReporter(
-                fileName,
-                configSet.contains(PresentAllDurations),
-                !configSet.contains(PresentWithoutColor),
-                configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
-                configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-              ),
-              configSet
-            )
+            ),
+            configSet
+          )
+*/
 
       case CustomReporterConfiguration(configSet, reporterClassName) => {
         val customReporter = getCustomReporter(reporterClassName, loader, "-r... " + reporterClassName)

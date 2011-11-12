@@ -2993,7 +2993,6 @@ used for test events like succeeded/failed, etc.
         NameInfo(theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName),
         aboutAPendingTest,
         aboutACanceledTest,
-        None,
         Some(getIndentedTextForInfo(message, level, includeIcon, testName.isDefined))
       )
     )
@@ -3018,10 +3017,6 @@ used for test events like succeeded/failed, etc.
         NameInfo(theSuite.suiteName, theSuite.suiteID, Some(theSuite.getClass.getName), testName),
         aboutAPendingTest,
         aboutACanceledTest,
-        None,
-// I think this may be a bug. Is scope closed ever supposed to be output? I'm going to try a MotionToSuppress and see
-// if anything breaks. -bv Nov 10, 2011
-        // Some(getIndentedTextForInfo(message, level, includeIcon, testName.isDefined))
         Some(MotionToSuppress)
       )
     )

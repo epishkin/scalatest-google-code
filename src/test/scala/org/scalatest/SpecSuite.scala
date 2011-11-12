@@ -244,7 +244,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, formatter, location, payload, threadName, timeStamp) =>
             // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             scopeOpenedHasBeenInvoked = true
@@ -303,7 +303,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, formatter, location, payload, threadName, timeStamp) =>
             // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             scopeOpenedHasBeenInvoked = true
@@ -362,7 +362,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, formatter, location, payload, threadName, timeStamp) =>
             // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             scopeOpenedHasBeenInvoked = true
@@ -424,7 +424,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, formatter, location, payload, threadName, timeStamp) =>
             // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             if (!scopeOpenedHasBeenInvokedOnce) { 
@@ -501,7 +501,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, formatter, location, payload, threadName, timeStamp) =>
             // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             if (!scopeOpenedHasBeenInvokedOnce) { 
@@ -719,7 +719,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, throwable, formatter, location, payload, threadName, timeStamp) =>
+          case ScopeOpened(ordinal, message, nameInfo, aboutAPendingTest, aboutACanceledTest, formatter, location, payload, threadName, timeStamp) =>
             // scopeOpened should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             scopeOpenedHasBeenInvoked = true
