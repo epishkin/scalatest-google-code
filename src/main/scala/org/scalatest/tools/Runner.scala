@@ -33,6 +33,7 @@ import org.scalatest.events._
 import org.scalatest.junit.JUnitWrapperSuite
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
+import scala.collection.mutable.ArrayBuffer
 
 /**
  * <p>
@@ -500,6 +501,15 @@ object Runner {
    */
   def run(args: Array[String]): Boolean = {
     runOptionallyWithPassFailReporter(args, true)
+  }
+  
+  def parseFriendlyParams(friendlyArgs:String): Array[String] = {
+    val (propsList, includesList, excludesList, repoArgsList, concurrentList, memberOnlyList, wildcardList, suiteList, junitList, testngList) = 
+      new FriendlyParamsTranslator().parsePropsAndTags(friendlyArgs.split(" "))
+    val arrayBuffer = new ArrayBuffer[String]()
+    arrayBuffer ++= propsList ::: includesList ::: excludesList ::: repoArgsList ::: concurrentList ::: memberOnlyList ::: wildcardList :::
+                    suiteList ::: junitList ::: testngList
+    arrayBuffer.toArray
   }
 
   private def runOptionallyWithPassFailReporter(args: Array[String], runWithPassFailReporter: Boolean): Boolean = {

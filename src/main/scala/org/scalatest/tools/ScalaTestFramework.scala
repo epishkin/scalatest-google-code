@@ -138,7 +138,8 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
 
         // Why are we getting rid of empty strings? Were empty strings coming in from sbt? -bv 11/09/2011
         val translator = new SbtFriendlyParamsTranslator();
-        val (propertiesArgsList, includesArgsList, excludesArgsList, repoArgsList) = translator.parsePropsAndTags(args.filter(!_.equals("")))
+        val (propertiesArgsList, includesArgsList, excludesArgsList, repoArgsList, concurrentList, memberOnlyList, wildcardList, 
+            suiteList, junitList, testngList) = translator.parsePropsAndTags(args.filter(!_.equals("")))
         
         val configMap: Map[String, String] = parsePropertiesArgsIntoMap(propertiesArgsList)
         val tagsToInclude: Set[String] = parseCompoundArgIntoSet(includesArgsList, "-n")
@@ -244,15 +245,19 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
 
 private[scalatest] class SbtFriendlyParamsTranslator extends FriendlyParamsTranslator {
   override private[scalatest] def validateSupportedPropsAndTags(s:String) {
-    if(s.startsWith("-g") || 
-       s.startsWith("-f") || 
-       s.startsWith("file") || 
-       s.startsWith("-u") || 
-       s.startsWith("junitxml") || 
-       s.startsWith("-d") || 
-       s.startsWith("-a") || 
-       s.startsWith("-x") || 
-       s.startsWith("-h"))
+    if(s.startsWith("-g") || s.startsWith("graphic") || 
+       s.startsWith("-f") || s.startsWith("file") || 
+       s.startsWith("-u") || s.startsWith("junitxml") || 
+       s.startsWith("-d") || s.startsWith("-a") || s.startsWith("dashboard") || 
+       s.startsWith("-x") || s.startsWith("xml") || 
+       s.startsWith("-h") || s.startsWith("html") || 
+       s.startsWith("-r") || s.startsWith("reporterclass") || 
+       s == "-c" || s == "concurrent" || 
+       s == "-m" || s.startsWith("memberonly") || 
+       s == "-w" || s.startsWith("wildcard") || 
+       s == "-s" || s.startsWith("suite") || 
+       s == "-j" || s.startsWith("junit") || 
+       s == "-t" || s.startsWith("testng"))
       throw new IllegalArgumentException("Argument '" + s + "' is not supported using test/test-only, use scalatest task instead.")
     
   }
