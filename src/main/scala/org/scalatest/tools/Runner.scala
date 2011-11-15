@@ -504,8 +504,12 @@ object Runner {
   }
   
   def parseFriendlyParams(friendlyArgs:String): Array[String] = {
+    parseFriendlyParams(friendlyArgs.split(" "))
+  }
+
+  def parseFriendlyParams(friendlyArgs:Array[String]): Array[String] = {
     val (propsList, includesList, excludesList, repoArgsList, concurrentList, memberOnlyList, wildcardList, suiteList, junitList, testngList) = 
-      new FriendlyParamsTranslator().parsePropsAndTags(friendlyArgs.split(" "))
+      new FriendlyParamsTranslator().parsePropsAndTags(friendlyArgs)
     val arrayBuffer = new ArrayBuffer[String]()
     arrayBuffer ++= propsList ::: includesList ::: excludesList ::: repoArgsList ::: concurrentList ::: memberOnlyList ::: wildcardList :::
                     suiteList ::: junitList ::: testngList

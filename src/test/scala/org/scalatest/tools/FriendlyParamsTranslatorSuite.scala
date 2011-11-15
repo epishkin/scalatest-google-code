@@ -256,14 +256,14 @@ class FriendlyParamsTranslatorSuite extends FunSuite {
     intercept[IllegalArgumentException] { getRepoArgsList("dashboard()") }
   }
   
-  test("parse argument xml(directory=\"test\")") {
+  ignore("parse argument xml(directory=\"test\")") {
     val repoArgsList = getRepoArgsList("xml(directory=\"test\")")
     assert(repoArgsList.length == 2)
     assert(repoArgsList(0) == "-x")
     assert(repoArgsList(1) == "test")
   }
   
-  test("parse argument xml should fail with IllegalArgumentException") {
+  ignore("parse argument xml should fail with IllegalArgumentException") {
     intercept[IllegalArgumentException] { getRepoArgsList("xml") }
   }
   
