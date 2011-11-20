@@ -922,7 +922,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     def prepend(currentMessage: Option[String]) =
       currentMessage match {
         case Some(msg) =>
-          if (clue.toString.last.isWhitespace)
+          if (clue.toString.last.isWhitespace) // TODO: shouldn't I also check if the head of msg isWhite?
             Some(clue.toString + msg)
           else 
             Some(clue.toString + " " + msg)
