@@ -33,6 +33,7 @@ import org.scalatest.events._
 import org.scalatest.junit.JUnitWrapperSuite
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
+import scala.collection.mutable.ArrayBuffer
 
 /**
  * <p>
@@ -500,6 +501,19 @@ object Runner {
    */
   def run(args: Array[String]): Boolean = {
     runOptionallyWithPassFailReporter(args, true)
+  }
+  
+  def parseFriendlyParams(friendlyArgs:String): Array[String] = {
+    parseFriendlyParams(friendlyArgs.split(" "))
+  }
+
+  def parseFriendlyParams(friendlyArgs:Array[String]): Array[String] = {
+    val (propsList, includesList, excludesList, repoArgsList, concurrentList, memberOnlyList, wildcardList, suiteList, junitList, testngList) = 
+      new FriendlyParamsTranslator().parsePropsAndTags(friendlyArgs)
+    val arrayBuffer = new ArrayBuffer[String]()
+    arrayBuffer ++= propsList ::: includesList ::: excludesList ::: repoArgsList ::: concurrentList ::: memberOnlyList ::: wildcardList :::
+                    suiteList ::: junitList ::: testngList
+    arrayBuffer.toArray
   }
 
   private def runOptionallyWithPassFailReporter(args: Array[String], runWithPassFailReporter: Boolean): Boolean = {
@@ -1427,8 +1441,8 @@ object Runner {
     }
 
     val reporterSeq =
-      (for (spec <- reporterSpecs)
-        yield getReporterFromConfiguration(spec))
+      for (spec <- reporterSpecs) yield
+        getReporterFromConfiguration(spec)
 
     val almostFullReporterList: List[Reporter] =
       graphicReporter match {
@@ -1777,3 +1791,37 @@ println("DEBUG: Discovery Completed: " + discoveryDuration + " milliseconds")
     )
   }
 }
+
+/*
+Runner command line arguments:
+
+a
+b - sbt reporter (only used inside ScalaTestFramework)
+c - parallel execution
+d
+e - standard error reporter
+f - file reporter
+g - graphical reporter
+h - HTML Reporter
+i
+j - run a JUnit tests class
+k
+l - tags to exclude
+m - members only path
+n - tags to include
+o - standard out reporter
+p - space-separated runpath
+q
+r - custom reporter
+s - suite class name
+t - testNG XML config file
+u - junit xml reporter
+v
+w - wildcard path
+x (saving this for a native xml reporter)
+y
+z
+
+D - configMap pair, key=value
+
+*/

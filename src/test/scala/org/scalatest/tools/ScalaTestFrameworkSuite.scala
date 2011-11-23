@@ -17,7 +17,10 @@ package org.scalatest.tools
 
 import org.scalatest.FunSuite
 import org.scalatools.testing.Logger
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class ScalaTestFrameworkSuite extends FunSuite{
 
   test("framework name"){
@@ -45,6 +48,119 @@ class ScalaTestFrameworkSuite extends FunSuite{
     val runner = framework.testRunner(currentThread.getContextClassLoader, loggers).asInstanceOf[ScalaTestRunner]
     assert(runner.testLoader == currentThread.getContextClassLoader)
     assert(runner.loggers === loggers)
+  }
+  
+  private def parsePropsAndTags(rawargs:String) = {
+    val translator = new SbtFriendlyParamsTranslator()
+    translator.parsePropsAndTags(Array(rawargs).filter(!_.equals("")))
+  }
+  
+  test("-g not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-g") }
+  }
+  
+  test("graphic not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("graphic") }
+  }
+  
+  test("-f not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-f test.xml") }
+  }
+  
+  test("file not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("file(filename=\"test.xml\")") }
+  }
+  
+  test("-u not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-u test") }
+  }
+  
+  test("junitxml not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("junitxml(directory=\"test\")") }
+  }
+  
+  test("-d not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-d test") }
+  }
+  
+  test("-a not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-a 99") }
+  }
+  
+  test("dashboard not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("dashboard(directory=\"test\", archive=\"99\")") }
+  }
+  
+  test("-x not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-x test") }
+  }
+  
+  test("xml not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("xml(directory=\"test\")") }
+  }
+  
+  test("-h not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-h test.html") }
+  }
+  
+  test("html not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("html(filename=\"test.html\")") }
+  }
+  
+  test("-r not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-r a.b.c") }
+  }
+  
+  test("reporterclass not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("reporterclass(classname=\"a.b.c\")") }
+  }
+  
+  test("-c not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-c") }
+  }
+  
+  test("concurrent not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("concurrent") }
+  }
+  
+  test("-m not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-m a.b.c") }
+  }
+  
+  test("memberonly not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("memberonly(a.b.c, a.b.d)") }
+  }
+  
+  test("-w not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-w a.b.c") }
+  }
+  
+  test("wildcard not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("wildcard(a.b.c, a.b.d)") }
+  }
+  
+  test("-s not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-s a.b.c") }
+  }
+  
+  test("suite not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("suite(a.b.c, a.b.d)") }
+  }
+  
+  test("-j not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-j a.b.c") }
+  }
+  
+  test("junit not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("junit(a.b.c, a.b.d)") }
+  }
+  
+  test("-t not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("-t a.b.c") }
+  }
+  
+  test("testng not supported when runs in SBT test-framework") {
+    intercept[IllegalArgumentException] { parsePropsAndTags("testng(a.b.c, a.b.d)") }
   }
 
   class TestLogger extends Logger{
