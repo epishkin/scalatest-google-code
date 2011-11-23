@@ -197,9 +197,11 @@ import Assertions.areEqualComparingArraysStructurally
  * }
  * </pre>
  *
+ * <p>
  * The <code>withClue</code> method will only prepend the clue string to the detail
  * message of exception types that mix in the <code>ModifiableMessage</code> trait.
  * See the documentation for <a href="ModifiableMessage.html"><code>ModifiableMessage</code></a> for more information.
+ * </p>
  *
  * @author Bill Venners
  */
@@ -887,7 +889,6 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     throw newTestCanceledException(None, Some(cause), 3)
   }
   
-
   /**
    * Executes the block of code passed as the second parameter, and, if it
    * completes abruptly with a <code>ModifiableMessage</code> exception,
