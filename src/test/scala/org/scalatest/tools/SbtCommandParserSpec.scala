@@ -6,24 +6,28 @@ import org.scalatest.matchers.ShouldMatchers
 
 class SbtCommandParserSpec extends Spec with ShouldMatchers {
 
+  val parser = new SbtCommandParser
+
+  def canParsePhrase(s: String) {
+      val result = parser.parseResult(s)
+      result match {
+        case ns: parser.NoSuccess => fail(ns.toString)
+        case _ => 
+      }
+  }
+
+  def cannotParsePhrase(s: String) {
+      val result = parser.parseResult(s)
+      result match {
+        case parser.Success(result, _) => fail("wasn't supposed to, but parsed: " + result)
+        case _ =>
+      }
+  }
+
   describe("the cmd terminal?") {
     it("should parse 'st'") {
-
-      val parser = new SbtCommandParser
-      val result = parser.parseResult("""st""")
-      result match {
-        case parser.Success(result, _) => println("success: " + result)
-        case ns: parser.NoSuccess => fail(ns.toString)
-      }
-    }
-    it("should parse 'st --'") {
-
-      val parser = new SbtCommandParser
-      val result = parser.parseResult("""st --""")
-      result match {
-        case parser.Success(result, _) => println("success: " + result)
-        case ns: parser.NoSuccess => fail(ns.toString)
-      }
+      canParsePhrase("""st""")
+      canParsePhrase("""st --""")
     }
   }
 }
