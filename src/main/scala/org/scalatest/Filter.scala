@@ -2,6 +2,15 @@ package org.scalatest
 
 import Filter.IgnoreTag
 
+/*
+dynamicTags: Option[(suiteID: String, testName: String) -> Set[String]]
+
+Then to apply, I need to add the suiteID. So backwards compatibility is a question.
+If I don't have a suiteID, then I can't really... Well if I don't have a suiteID, 
+could I simply ignore the dynamic tags. That could be deprecated behavior.
+Probably good enough.
+*/
+
 /**
  * Filter whose <code>apply</code> method determines which of the passed tests to run and ignore based on tags to include and exclude passed as
  * as class parameters.
