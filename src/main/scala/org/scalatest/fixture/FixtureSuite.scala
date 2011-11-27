@@ -520,7 +520,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     val (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime) =
       getSuiteRunTestGoodies(stopper, reporter, testName)
 
-    reportTestStarting(thisSuite, report, tracker, testName, testName, rerunnable)
+    reportTestStarting(thisSuite, report, tracker, testName, testName, getDecodedName(testName), rerunnable)
 
     val formatter = getIndentedText(testName, 1, true)
 
@@ -595,7 +595,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
       }
 
       val duration = System.currentTimeMillis - testStartTime
-      reportTestSucceeded(thisSuite, report, tracker, testName, testName, duration, formatter, rerunnable)
+      reportTestSucceeded(thisSuite, report, tracker, testName, testName, getDecodedName(testName), duration, formatter, rerunnable)
     }
     catch { 
       case ite: InvocationTargetException =>
@@ -603,13 +603,13 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
         t match {
           case _: TestPendingException =>
             val duration = System.currentTimeMillis - testStartTime
-            reportTestPending(thisSuite, report, tracker, testName, testName, duration, formatter)
+            reportTestPending(thisSuite, report, tracker, testName, testName, getDecodedName(testName), duration, formatter)
             testWasPending = true // Set so info's printed out in the finally clause show up yellow
           case e: TestCanceledException =>
             val duration = System.currentTimeMillis - testStartTime
             val message = getMessageForException(e)
             val formatter = getIndentedText(testName, 1, true)
-            report(TestCanceled(tracker.nextOrdinal(), message, thisSuite.suiteName, thisSuite.suiteID, Some(thisSuite.getClass.getName), testName, testName, Some(e), Some(duration), Some(formatter), Some(ToDoLocation), rerunnable))
+            report(TestCanceled(tracker.nextOrdinal(), message, thisSuite.suiteName, thisSuite.suiteID, Some(thisSuite.getClass.getName), thisSuite.decodedSuiteName, testName, testName, getDecodedName(testName), Some(e), Some(duration), Some(formatter), Some(ToDoLocation), rerunnable))
             // Set so info's printed out in the finally clause show up yellow
             testWasCanceled = true // Set so info's printed out in the finally clause show up yellow
           case e if !anErrorThatShouldCauseAnAbort(e) =>

@@ -105,8 +105,10 @@ sealed abstract class Event extends Ordered[Event] {
  * @param suiteName a localized name identifying the suite containing the test that is starting, suitable for presenting to the user
  * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is starting
+ * @param decodedSuiteName the decoded suite name, in case the suite name is put between backticks.  None if it is same as suiteName.
  * @param testName the name of the test that is starting
  * @param testText the text of the test that is starting (may be the test name, or a suffix of the test name)
+ * @param decodedTestName the decoded name of the test, in case the name is put between backticks.  None if it is same as testName.
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
@@ -124,8 +126,10 @@ final case class TestStarting (
   suiteName: String,
   suiteID: String,
   suiteClassName: Option[String],
+  decodedSuiteName: Option[String],
   testName: String,
   testText: String,
+  decodedTestName: Option[String],
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
   rerunner: Option[Rerunner] = None,
@@ -191,8 +195,10 @@ final case class TestStarting (
  * @param suiteName a localized name identifying the suite containing the test that has succeeded, suitable for presenting to the user
  * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has succeeded
+ * @param decodedSuiteName the decoded suite name, in case the suite name is put between backticks.  None if it is same as suiteName.
  * @param testName the name of the test that has succeeded
  * @param testText the text of the test that has succeeded (may be the test name, or a suffix of the test name)
+ * @param decodedTestName the decoded name of the test, in case the name is put between backticks.  None if it is same as testName.
  * @param duration an optional amount of time, in milliseconds, that was required to run the test that has succeeded
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
@@ -211,8 +217,10 @@ final case class TestSucceeded (
   suiteName: String,
   suiteID: String,
   suiteClassName: Option[String],
+  decodedSuiteName: Option[String], 
   testName: String,
   testText: String,
+  decodedTestName: Option[String],
   duration: Option[Long] = None,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
@@ -281,8 +289,10 @@ final case class TestSucceeded (
  * @param suiteName a localized name identifying the suite containing the test that has failed, suitable for presenting to the user
  * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has failed
+ * @param decodedSuiteName the decoded suite name, in case the suite name is put between backticks.  None if it is same as suiteName.
  * @param testName the name of the test that has failed
  * @param testText the text of the test that has failed (may be the test name, or a suffix of the test name)
+ * @param decodedTestName the decoded name of the test, in case the name is put between backticks.  None if it is same as testName.
  * @param throwable an optional <code>Throwable</code> that, if a <code>Some</code>, indicates why the test has failed,
  *        or a <code>Throwable</code> created to capture stack trace information about the problem.
  * @param duration an optional amount of time, in milliseconds, that was required to run the test that has failed
@@ -304,8 +314,10 @@ final case class TestFailed (
   suiteName: String,
   suiteID: String,
   suiteClassName: Option[String],
+  decodedSuiteName: Option[String],
   testName: String,
   testText: String,
+  decodedTestName: Option[String],
   throwable: Option[Throwable] = None,
   duration: Option[Long] = None,
   formatter: Option[Formatter] = None,
@@ -379,8 +391,10 @@ final case class TestFailed (
  * @param suiteName a localized name identifying the suite containing the test that was ignored, suitable for presenting to the user
  * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that was ignored
+ * @param decodedSuiteName the decoded suite name, in case the suite name is put between backticks.  None if it is same as suiteName.
  * @param testName the name of the test that was ignored
  * @param testText the text of the test that was ignored (may be the test name, or a suffix of the test name)
+ * @param decodedTestName the decoded name of the test, in case the name is put between backticks.  None if it is same as testName.
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
@@ -396,8 +410,10 @@ final case class TestIgnored (
   suiteName: String,
   suiteID: String,
   suiteClassName: Option[String],
+  decodedSuiteName: Option[String],
   testName: String,
   testText: String,
+  decodedTestName: Option[String],
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
   payload: Option[Any] = None,
@@ -454,8 +470,10 @@ final case class TestIgnored (
  * @param suiteName a localized name identifying the suite containing the test that is pending, suitable for presenting to the user
  * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is pending
+ * @param decodedSuiteName the decoded suite name, in case the suite name is put between backticks.  None if it is same as suiteName.
  * @param testName the name of the test that is pending
  * @param testText the text of the test that is pending (may be the test name, or a suffix of the test name)
+ * @param decodedTestName the decoded name of the test, in case the name is put between backticks.  None if it is same as testName.
  * @param duration an optional amount of time, in milliseconds, that was required to run the test that is pending
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
@@ -472,8 +490,10 @@ final case class TestPending (
   suiteName: String,
   suiteID: String,
   suiteClassName: Option[String],
+  decodedSuiteName: Option[String],
   testName: String,
   testText: String,
+  decodedTestName: Option[String],
   duration: Option[Long] = None,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
@@ -533,8 +553,10 @@ final case class TestPending (
  * @param suiteName a localized name identifying the suite containing the test that was canceled, suitable for presenting to the user
  * @param suiteID a string ID for the suite containing the test that is starting, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that was canceled
+ * @param decodedSuiteName the decoded suite name, in case the suite name is put between backticks.  None if it is same as suiteName.
  * @param testName the name of the test that was canceled
  * @param testText the text of the test that was canceled (may be the test name, or a suffix of the test name)
+ * @param decodedTestName the decoded name of the test, in case the name is put between backticks.  None if it is same as testName.
  * @param throwable an optional <code>Throwable</code> that, if a <code>Some</code>, indicates why the test was canceled,
  *        or a <code>Throwable</code> created to capture stack trace information about the problem.
  * @param duration an optional amount of time, in milliseconds, that was required to run the test that was canceled
@@ -555,8 +577,10 @@ final case class TestCanceled (
   suiteName: String,
   suiteID: String,
   suiteClassName: Option[String],
+  decodedSuiteName: Option[String],
   testName: String,
   testText: String,
+  decodedTestName: Option[String],
   throwable: Option[Throwable] = None,
   duration: Option[Long] = None,
   formatter: Option[Formatter] = None,
@@ -628,6 +652,7 @@ final case class TestCanceled (
  * @param suiteName a localized name identifying the suite that is starting, suitable for presenting to the user
  * @param suiteID a string ID for the suite that is starting, intended to be unique across all suites in a run XXX 
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name of the suite that is starting
+ * @param decodedSuiteName the decoded suite name, in case the suite name is put between backticks.  None if it is same as suiteName.
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param location An optional location that provides information indicating where in the source code an event originated.
@@ -645,6 +670,7 @@ final case class SuiteStarting (
   suiteName: String,
   suiteID: String,
   suiteClassName: Option[String],
+  decodedSuiteName: Option[String],
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
   rerunner: Option[Rerunner] = None,
@@ -706,6 +732,7 @@ final case class SuiteStarting (
  * @param suiteName a localized name identifying the suite that has completed, suitable for presenting to the user
  * @param suiteID a string ID for the suite that has completed, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has completed
+ * @param decodedSuiteName the decoded suite name, in case the suite name is put between backticks.  None if it is same as suiteName.
  * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has completed
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
@@ -724,6 +751,7 @@ final case class SuiteCompleted (
   suiteName: String,
   suiteID: String,
   suiteClassName: Option[String],
+  decodedSuiteName: Option[String],
   duration: Option[Long] = None,
   formatter: Option[Formatter] = None,
   location: Option[Location] = None,
@@ -792,6 +820,7 @@ final case class SuiteCompleted (
  * @param suiteName a localized name identifying the suite that has aborted, suitable for presenting to the user
  * @param suiteID a string ID for the suite that has aborted, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has aborted
+ * @param decodedSuiteName the decoded suite name, in case the suite name is put between backticks.  None if it is same as suiteName.
  * @param throwable an optional <code>Throwable</code> that, if a <code>Some</code>, indicates why the suite has aborted,
  *        or a <code>Throwable</code> created to capture stack trace information about the problem.
  * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has aborted
@@ -813,6 +842,7 @@ final case class SuiteAborted (
   suiteName: String,
   suiteID: String,
   suiteClassName: Option[String],
+  decodedSuiteName: Option[String], 
   throwable: Option[Throwable] = None,
   duration: Option[Long] = None,
   formatter: Option[Formatter] = None,
@@ -1619,7 +1649,7 @@ object DeprecatedTestStarting {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1648,7 +1678,7 @@ object DeprecatedTestStarting {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1675,7 +1705,7 @@ object DeprecatedTestStarting {
     testName: String,
     formatter: Option[Formatter]
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1699,7 +1729,7 @@ object DeprecatedTestStarting {
     suiteClassName: Option[String],
     testName: String
   ): TestStarting = {
-    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -1750,7 +1780,7 @@ object DeprecatedTestSucceeded {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1781,7 +1811,7 @@ object DeprecatedTestSucceeded {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1810,7 +1840,7 @@ object DeprecatedTestSucceeded {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1836,7 +1866,7 @@ object DeprecatedTestSucceeded {
     testName: String,
     duration: Option[Long]
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1860,7 +1890,7 @@ object DeprecatedTestSucceeded {
     suiteClassName: Option[String],
     testName: String
   ): TestSucceeded = {
-    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestSucceeded(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -1916,7 +1946,7 @@ object DeprecatedTestFailed {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1952,7 +1982,7 @@ object DeprecatedTestFailed {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1986,7 +2016,7 @@ object DeprecatedTestFailed {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2017,7 +2047,7 @@ object DeprecatedTestFailed {
     throwable: Option[Throwable],
     duration: Option[Long]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2046,7 +2076,7 @@ object DeprecatedTestFailed {
     testName: String,
     throwable: Option[Throwable]
   ): TestFailed = {
-    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestFailed(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -2092,7 +2122,7 @@ object DeprecatedTestIgnored {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): TestIgnored = {
-    TestIgnored(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestIgnored(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2118,7 +2148,7 @@ object DeprecatedTestIgnored {
     testName: String,
     formatter: Option[Formatter]
   ): TestIgnored = {
-    TestIgnored(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestIgnored(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2142,7 +2172,7 @@ object DeprecatedTestIgnored {
     suiteClassName: Option[String],
     testName: String
   ): TestIgnored = {
-    TestIgnored(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestIgnored(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -2188,7 +2218,7 @@ object DeprecatedTestPending {
     formatter: Option[Formatter],
     payload: Option[Any]
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, None, formatter, None, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2214,7 +2244,7 @@ object DeprecatedTestPending {
     testName: String,
     formatter: Option[Formatter]
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, None, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2238,7 +2268,7 @@ object DeprecatedTestPending {
     suiteClassName: Option[String],
     testName: String
   ): TestPending = {
-    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, testName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    TestPending(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, testName, testName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -2286,7 +2316,7 @@ object DeprecatedSuiteStarting {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): SuiteStarting = {
-    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2314,7 +2344,7 @@ object DeprecatedSuiteStarting {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): SuiteStarting = {
-    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2340,7 +2370,7 @@ object DeprecatedSuiteStarting {
     suiteClassName: Option[String],
     formatter: Option[Formatter]
   ): SuiteStarting = {
-    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2363,7 +2393,7 @@ object DeprecatedSuiteStarting {
     suiteName: String,
     suiteClassName: Option[String]
   ): SuiteStarting = {
-    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteStarting(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -2412,7 +2442,7 @@ object DeprecatedSuiteCompleted {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): SuiteCompleted = {
-    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2441,7 +2471,7 @@ object DeprecatedSuiteCompleted {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): SuiteCompleted = {
-    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2468,7 +2498,7 @@ object DeprecatedSuiteCompleted {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): SuiteCompleted = {
-    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2492,7 +2522,7 @@ object DeprecatedSuiteCompleted {
     suiteClassName: Option[String],
     duration: Option[Long]
   ): SuiteCompleted = {
-    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2516,7 +2546,7 @@ object DeprecatedSuiteCompleted {
     suiteName: String,
     suiteClassName: Option[String]
   ): SuiteCompleted = {
-    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteCompleted(ordinal, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -2572,7 +2602,7 @@ object DeprecatedSuiteAborted {
     rerunner: Option[Rerunner],
     payload: Option[Any]
   ): SuiteAborted = {
-    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
+    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, throwable, duration, formatter, None, rerunner, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2606,7 +2636,7 @@ object DeprecatedSuiteAborted {
     formatter: Option[Formatter],
     rerunner: Option[Rerunner]
   ): SuiteAborted = {
-    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, throwable, duration, formatter, None, rerunner, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2638,7 +2668,7 @@ object DeprecatedSuiteAborted {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): SuiteAborted = {
-    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, throwable, duration, formatter, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2667,7 +2697,7 @@ object DeprecatedSuiteAborted {
     throwable: Option[Throwable],
     duration: Option[Long]
   ): SuiteAborted = {
-    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, throwable, duration, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2694,7 +2724,7 @@ object DeprecatedSuiteAborted {
     suiteClassName: Option[String],
     throwable: Option[Throwable]
   ): SuiteAborted = {
-    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    SuiteAborted(ordinal, message, suiteName, suiteClassName getOrElse suiteName, suiteClassName, None, throwable, None, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 

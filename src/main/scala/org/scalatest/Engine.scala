@@ -176,7 +176,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
 
     val theTest = atomic.get.testsMap(testName)
 
-    reportTestStarting(theSuite, report, tracker, testName, theTest.testText, rerunnable)
+    reportTestStarting(theSuite, report, tracker, testName, theTest.testText, None, rerunnable)
 
     val testTextWithOptionalPrefix = prependChildPrefix(theTest.parent, theTest.testText)
     val formatter = getIndentedText(testTextWithOptionalPrefix, theTest.indentationLevel, includeIcon)
@@ -204,20 +204,20 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
       invokeWithFixture(theTest)
 
       val duration = System.currentTimeMillis - testStartTime
-      reportTestSucceeded(theSuite, report, tracker, testName, theTest.testText, duration, formatter, rerunnable)
+      reportTestSucceeded(theSuite, report, tracker, testName, theTest.testText, None, duration, formatter, rerunnable)
     }
     catch { 
       case _: TestPendingException =>
         val duration = System.currentTimeMillis - testStartTime
-        reportTestPending(theSuite, report, tracker, testName, theTest.testText, duration, formatter)
+        reportTestPending(theSuite, report, tracker, testName, theTest.testText, None, duration, formatter)
         testWasPending = true // Set so info's printed out in the finally clause show up yellow
       case e: TestCanceledException =>
         val duration = System.currentTimeMillis - testStartTime
-        reportTestCanceled(theSuite, report, e, testName, theTest.testText, rerunnable, tracker, duration, theTest.indentationLevel, includeIcon)
+        reportTestCanceled(theSuite, report, e, testName, theTest.testText, None, rerunnable, tracker, duration, theTest.indentationLevel, includeIcon)
         testWasCanceled = true // Set so info's printed out in the finally clause show up yellow
       case e if !anErrorThatShouldCauseAnAbort(e) =>
         val duration = System.currentTimeMillis - testStartTime
-        reportTestFailed(theSuite, report, e, testName, theTest.testText, rerunnable, tracker, duration, theTest.indentationLevel, includeIcon)
+        reportTestFailed(theSuite, report, e, testName, theTest.testText, None, rerunnable, tracker, duration, theTest.indentationLevel, includeIcon)
       case e => throw e
     }
     finally {
@@ -265,7 +265,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
               if (!filterTest)
                 if (ignoreTest) {
                   val testTextWithOptionalPrefix = prependChildPrefix(branch, testText)
-                  reportTestIgnored(theSuite, report, tracker, testName, testTextWithOptionalPrefix, testLeaf.indentationLevel)
+                  reportTestIgnored(theSuite, report, tracker, testName, testTextWithOptionalPrefix, None, testLeaf.indentationLevel)
                 }
                 else
                   runTest(testName, report, stopRequested, configMap, tracker)

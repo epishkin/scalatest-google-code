@@ -180,7 +180,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
 
         val formatter = formatterForSuiteStarting(suite)
 
-        report(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, suite.suiteID, Some(suiteClass.getName), formatter, None))
+        report(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, suite.suiteID, Some(suiteClass.getName), suite.decodedSuiteName, formatter, None))
 
         try {
           suite.run(None, report, new Stopper {}, filter, configMap, None, tracker)
@@ -188,7 +188,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
           val formatter = formatterForSuiteCompleted(suite)
 
           val duration = System.currentTimeMillis - suiteStartTime
-          report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, suite.suiteID, Some(suiteClass.getName), Some(duration), formatter, None))
+          report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, suite.suiteID, Some(suiteClass.getName), suite.decodedSuiteName, Some(duration), formatter, None))
         }
         catch {       
           case e: Exception => {
@@ -201,7 +201,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
             val formatter = formatterForSuiteAborted(suite, rawString)
 
             val duration = System.currentTimeMillis - suiteStartTime
-            report(SuiteAborted(tracker.nextOrdinal(), rawString, suite.suiteName, suite.suiteID, Some(suiteClass.getName), Some(e), Some(duration), formatter, None))
+            report(SuiteAborted(tracker.nextOrdinal(), rawString, suite.suiteName, suite.suiteID, Some(suiteClass.getName), suite.decodedSuiteName, Some(e), Some(duration), formatter, None))
           }
         }
       }

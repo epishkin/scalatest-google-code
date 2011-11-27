@@ -30,6 +30,7 @@ import org.scalatest.events.TestSucceeded
 import org.scalatest.events.TestFailed
 import org.scalatest.events.MotionToSuppress
 import Suite.getIndentedText
+import Suite.getDecodedName
 
 /**
  * A <code>Suite</code> that is also a <code>junit.framework.TestCase</code>. 
@@ -348,7 +349,8 @@ private[scalatest] class MyTestListener(report: Reporter, tracker: Tracker) exte
   def startTest(testCase: Test) {
     if (testCase == null)
       throw new NullPointerException("testCase was null")
-    report(TestStarting(tracker.nextOrdinal(), getSuiteNameForTestCase(testCase), testCase.getClass.getName, Some(testCase.getClass.getName), testCase.toString, testCase.toString, Some(MotionToSuppress), None))
+    val suiteName = getSuiteNameForTestCase(testCase)
+    report(TestStarting(tracker.nextOrdinal(), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), Some(MotionToSuppress), None))
   }
   
   def addError(testCase: Test, throwable: Throwable) {
@@ -359,7 +361,8 @@ private[scalatest] class MyTestListener(report: Reporter, tracker: Tracker) exte
       throw new NullPointerException("throwable was null")
 
     val formatter = getIndentedText(testCase.toString, 1, true)
-    report(TestFailed(tracker.nextOrdinal(), getMessageGivenThrowable(throwable, false), getSuiteNameForTestCase(testCase), testCase.getClass.getName, Some(testCase.getClass.getName), testCase.toString, testCase.toString, Some(throwable), None, Some(formatter), None))
+    val suiteName = getSuiteNameForTestCase(testCase)
+    report(TestFailed(tracker.nextOrdinal(), getMessageGivenThrowable(throwable, false), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), Some(throwable), None, Some(formatter), None))
 
     failedTestsSet += testCase
   }
@@ -372,7 +375,8 @@ private[scalatest] class MyTestListener(report: Reporter, tracker: Tracker) exte
       throw new NullPointerException("throwable was null")
 
     val formatter = getIndentedText(testCase.toString, 1, true)
-    report(TestFailed(tracker.nextOrdinal(), getMessageGivenThrowable(assertionFailedError, true), getSuiteNameForTestCase(testCase), testCase.getClass.getName, Some(testCase.getClass.getName), testCase.toString, testCase.toString, Some(assertionFailedError), None, Some(formatter), None))
+    val suiteName = getSuiteNameForTestCase(testCase)
+    report(TestFailed(tracker.nextOrdinal(), getMessageGivenThrowable(assertionFailedError, true), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), Some(assertionFailedError), None, Some(formatter), None))
 
     failedTestsSet += testCase
   }
@@ -385,7 +389,8 @@ private[scalatest] class MyTestListener(report: Reporter, tracker: Tracker) exte
       if (testCase == null)
         throw new NullPointerException("testCase was null")
       val formatter = getIndentedText(testCase.toString, 1, true)
-      report(TestSucceeded(tracker.nextOrdinal(), getSuiteNameForTestCase(testCase), testCase.getClass.getName, Some(testCase.getClass.getName), testCase.toString, testCase.toString, None, Some(formatter), None))
+      val suiteName = getSuiteNameForTestCase(testCase)
+      report(TestSucceeded(tracker.nextOrdinal(), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), None, Some(formatter), None))
     }
     else {
       failedTestsSet -= testCase  

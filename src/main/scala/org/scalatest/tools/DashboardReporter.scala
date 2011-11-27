@@ -791,13 +791,13 @@ private[scalatest] class DashboardReporter(directory: String,
     object Duration {
       def unapply(event: Event): Option[Long] =
         event match {
-          case TestSucceeded(_, _, _, _, _, _, duration, _, _, _, _, _, _)
+          case TestSucceeded(_, _, _, _, _, _, _, _, duration, _, _, _, _, _, _)
             => duration
-          case TestFailed(_, _, _, _, _, _, _, _, duration, _, _, _, _, _, _) 
+          case TestFailed(_, _, _, _, _, _, _, _, _, _, duration, _, _, _, _, _, _) 
             => duration
-          case TestPending(_, _, _, _, _, _, duration, _, _, _, _, _) 
+          case TestPending(_, _, _, _, _, _, _, _, duration, _, _, _, _, _) 
             => duration
-          case TestCanceled(_, _, _, _, _, _, _, _, duration, _, _, _, _, _) 
+          case TestCanceled(_, _, _, _, _, _, _, _, _, _, duration, _, _, _, _, _) 
             => duration
           case _ => None
         }

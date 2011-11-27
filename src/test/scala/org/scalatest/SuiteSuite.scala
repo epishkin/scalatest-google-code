@@ -328,5 +328,85 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     assert(!s6.theTestThisConfigMapWasEmpty)
     assert(s6.theTestThatConfigMapWasEmpty)
   }
+  
+  def testDecodedSuiteName() {
+    expect("My Test") { new My$u0020Test().decodedSuiteName.get }
+    expect(None) { new SuiteSuite().decodedSuiteName }
+  }
+  
+  def testDecodedTestName() {
+    
+    class NormalSuite extends Suite {
+      def testSucceed() = {}
+      def testFail() = { fail }
+      def testPending() = { pending }
+      @Ignore
+      def testIgnore() = {}
+    }
+    
+    val normalSuite = new NormalSuite
+    val normalReporter = new EventRecordingReporter
+    normalSuite.run(None, normalReporter, new Stopper {}, Filter(), Map(), None, new Tracker(new Ordinal(99)))
+    val normalEventList:List[Event] = normalReporter.eventsReceived
+    expect(7) { normalEventList.size }
+    normalEventList.foreach {event =>
+      event match {
+        case testStarting:TestStarting => 
+          expect(None) { testStarting.decodedTestName }
+          expect(None) { testStarting.decodedSuiteName }
+        case testSucceed:TestSucceeded => 
+          expect("testSucceed") { testSucceed.testName }
+          expect(None) { testSucceed.decodedTestName }
+        case testFail:TestFailed =>
+          expect("testFail") { testFail.testName }
+          expect(None) { testFail.decodedTestName }
+        case testPending:TestPending =>
+          expect("testPending") { testPending.testName }
+          expect(None) { testPending.decodedTestName }
+        case testIgnore:TestIgnored => 
+          expect("testIgnore") { testIgnore.testName }
+          expect(None) { testIgnore.decodedTestName }
+        case _ =>
+      }
+    }
+    
+    class DecodedSuite extends Suite {
+      def `test Succeed`() {}
+      def `test Fail`() = { fail }
+      def `test Pending`() = { pending }
+      @Ignore
+      def `test Ignore`() = {}
+    }
+    
+    val decodedSuite = new DecodedSuite
+    val decodedReporter = new EventRecordingReporter
+    decodedSuite.run(None, decodedReporter, new Stopper {}, Filter(), Map(), None, new Tracker(new Ordinal(99)))
+    val decodedEventList:List[Event] = decodedReporter.eventsReceived
+    expect(7) { decodedEventList.size }
+    decodedEventList.foreach {event =>
+      event match {
+        case testStarting:TestStarting => 
+          testStarting.decodedTestName match {
+            case Some(name) => assert(name.length() > 0, "decodedTestName should not be empty.")
+            case None => fail("decodedTestName should not be empty.")
+          }
+          expect(None) { testStarting.decodedSuiteName }
+        case testSucceed:TestSucceeded => 
+          expect("test$u0020Succeed") { testSucceed.testName }
+          expect(Some("test Succeed")) { testSucceed.decodedTestName }
+        case testFail:TestFailed =>
+          expect("test$u0020Fail") { testFail.testName }
+          expect(Some("test Fail")) { testFail.decodedTestName }
+        case testPending:TestPending =>
+          expect("test$u0020Pending") { testPending.testName }
+          expect(Some("test Pending")) { testPending.decodedTestName }
+        case testIgnore:TestIgnored => 
+          expect("test$u0020Ignore") { testIgnore.testName }
+          expect(Some("test Ignore")) { testIgnore.decodedTestName }
+        case _ =>
+      }
+    }
+  }
 }
 
+class `My Test` extends Suite {}

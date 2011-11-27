@@ -18,6 +18,14 @@ package org.scalatest.events
 import org.scalatest._
 
 /**
+ * Class that holds information about test name.
+ * 
+ * @param testName a name of the test about which the information was provided.
+ * @param decodedTestName the decoded name of the test, in case the name is put between backticks.  None if it is same as testName.
+ */
+case class TestNameInfo(testName: String, decodedTestName: Option[String])
+
+/**
  * Class that holds information about names for the <em>information events</em> <code>InfoProvided</code>, <code>MarkupProvided</code>,
  * <code>ScopeOpened</code>, and <code>ScopeClosed</code>.
  *
@@ -44,11 +52,13 @@ import org.scalatest._
  * @param suiteName an optional name of the suite about which an information event was fired
  * @param suiteID an optional string ID for the suite about which an information event was fired, intended to be unique across all suites in a run
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name about which the information was provided
- * @param testName an optional name of the test about which the information was provided
+ * @param decodedSuiteName the decoded suite name, in case the suite name is put between backticks.  None if it is same as suiteName.
+ * @param testName an optional test name information
  *
  * @author Bill Venners
  */
-final case class NameInfo(suiteName: String, suiteID: String, suiteClassName: Option[String], testName: Option[String])
+final case class NameInfo(suiteName: String, suiteID: String, suiteClassName: Option[String], decodedSuiteName:Option[String],  testName: Option[TestNameInfo])
+// TODO: to put in an auxiliary constructor for existing code to go through.
 
 /**
  * Companion object for case class <a href="NameInfo.html"><code>NameInfo</code></a>.
@@ -56,12 +66,16 @@ final case class NameInfo(suiteName: String, suiteID: String, suiteClassName: Op
 object NameInfo {
   /**
    * <strong>This factory method has been deprecated and will be removed in a future version of ScalaTest. Please use
-   * the factory method taking four parameters (including the suiteID, added in ScalaTest 2.0) instead.</strong>
+   * the factory method taking five parameters (including the suiteID, added in ScalaTest 2.0) instead.</strong>
    */
-  @deprecated("Use the factory method taking four parameters (including the suiteID, added in ScalaTest 2.0) instead.")
+  @deprecated("Use the factory method taking five parameters (including the suiteID, added in ScalaTest 2.0) instead.")
   def apply(suiteName: String, suiteClassName: Option[String], testName: Option[String]): NameInfo = {
     val suiteID = suiteClassName getOrElse suiteName
-    apply(suiteName, suiteID, suiteClassName, testName)
+    apply(suiteName, suiteID, suiteClassName, None, testName match {
+                                                      case Some(name) => Some(TestNameInfo(name, None))
+                                                      case None => None
+                                                    }  
+    )
   }
 }
 
@@ -76,9 +90,9 @@ object DeprecatedNameInfo {
 
   /**
    * <strong>This extractor has been deprecated and will be removed in a future version of ScalaTest. Please use
-   * the extractor returning four parameters (including the suiteID, added in ScalaTest 2.0) instead.</strong>
+   * the extractor returning five parameters (including the suiteID, added in ScalaTest 2.0) instead.</strong>
    */
-  @deprecated("Use the extractor returning four parameters (including the suiteID, added in ScalaTest 2.0) instead.")
-  def unapply(ni: NameInfo): Option[(String, Option[String], Option[String])] = Some(ni.suiteName, ni.suiteClassName, ni.testName)
+  @deprecated("Use the extractor returning five parameters (including the suiteID, added in ScalaTest 2.0) instead.")
+  def unapply(ni: NameInfo): Option[(String, String, Option[String], Option[String], Option[TestNameInfo])] = Some(ni.suiteName, ni.suiteID, ni.suiteClassName, ni.decodedSuiteName, ni.testName)
 }
 
