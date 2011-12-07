@@ -57,6 +57,13 @@ class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper.type) {
     m.setAccessible(true)
     m.invoke(sdt, Array[Object](file, new java.lang.Character(fileSeparator)): _*).asInstanceOf[Set[String]]
   }
+  
+  def isDiscoverableSuite(clazz: java.lang.Class[_]): Boolean = {
+    val m = Class.forName("org.scalatest.tools.SuiteDiscoveryHelper$").getDeclaredMethod("isDiscoverableSuite",
+      Array(classOf[Class[_]]): _*)
+    m.setAccessible(true)
+    m.invoke(sdt, Array[Object](clazz): _*).asInstanceOf[Boolean]
+  }
 }
 
 class SuiteDiscoveryHelperSuite extends Suite {
@@ -157,5 +164,11 @@ class SuiteDiscoveryHelperSuite extends Suite {
     assert(sdtf.getFileNamesSetFromFile(new File("harness/fnIteratorTest"), '/') === Set("subDir2/inSubDir2.class",
       "subDir2/subSubDir/inSubSubDir.class", "empty.txt", "empty.class", "subDir1/inSubDir1.class"))
     */
+  }
+  
+  def testIsDiscoverableSuite() {
+    assert(sdtf.isDiscoverableSuite(classOf[SuiteDiscoveryHelperSuite])) 
+    @DoNotDiscover class NotDiscoverable {}
+    assert(!sdtf.isDiscoverableSuite(classOf[NotDiscoverable]))
   }
 }

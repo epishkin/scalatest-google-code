@@ -159,9 +159,9 @@ trait SharedHelpers extends Assertions {
     val infoProvidedOption = indexedList.find(_._1.isInstanceOf[InfoProvided])
     val testSucceededOption = indexedList.find(_._1.isInstanceOf[TestSucceeded])
 
-    assert(testStartingOption.isDefined)
-    assert(infoProvidedOption.isDefined)
-    assert(testSucceededOption.isDefined)
+    assert(testStartingOption.isDefined, "TestStarting for Suite='" + suite.suiteID + "', testName='" + testName + "' not defined.")
+    assert(infoProvidedOption.isDefined, "InfoProvided for Suite='" + suite.suiteID + "', testName='" + testName + "' not defined.")
+    assert(testSucceededOption.isDefined, "TestSucceeded for Suite='" + suite.suiteID + "', testName='" + testName + "' not defined.")
 
     val testStartingIndex = testStartingOption.get._2
     val infoProvidedIndex = infoProvidedOption.get._2
@@ -171,9 +171,9 @@ trait SharedHelpers extends Assertions {
     val infoProvided = infoProvidedOption.get._1.asInstanceOf[InfoProvided]
     val testSucceeded = testSucceededOption.get._1.asInstanceOf[TestSucceeded]
 
-    assert(testStarting.testName === testName)
-    assert(infoProvided.message === infoMsg)
-    assert(testSucceeded.testName === testName)
+    assert(testStarting.testName === testName, "TestStarting.testName expected to be '" + testName + "', but got '" + testStarting.testName + "'.")
+    assert(infoProvided.message === infoMsg, "InfoProvide.message expected to be '" + infoMsg + "', but got '" + infoProvided.message + "'.")
+    assert(testSucceeded.testName === testName, "TestSucceeded.testName expected to be '" + testName + "', but got '" + testSucceeded.testName + "'.")
 
     (infoProvidedIndex, testStartingIndex, testSucceededIndex)
   }
@@ -214,6 +214,15 @@ trait SharedHelpers extends Assertions {
         case _ =>
       }
     }
+  }
+  
+  def thisLineNumber = {
+    val st = Thread.currentThread.getStackTrace
+
+    if (!st(2).getMethodName.contains("thisLineNumber"))
+      st(2).getLineNumber
+    else
+      st(3).getLineNumber
   }
 }
 

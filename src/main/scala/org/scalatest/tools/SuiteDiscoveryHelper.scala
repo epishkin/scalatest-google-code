@@ -137,6 +137,20 @@ private[scalatest] object SuiteDiscoveryHelper {
       case e: NoClassDefFoundError => false
     }
   }
+  
+  private[scalatest] def isDiscoverableSuite(clazz: java.lang.Class[_]): Boolean = {
+    !clazz.isAnnotationPresent(classOf[DoNotDiscover])
+  }
+  
+  private def isDiscoverableSuite(className: String, loader: ClassLoader): Boolean = {
+    try {
+      isDiscoverableSuite(loader.loadClass(className))
+    }
+    catch {
+      case e: ClassNotFoundException => false
+      case e: NoClassDefFoundError => false
+    }
+  }
 
   // Returns Some(<class name>) if processed, else None
   //
@@ -147,7 +161,9 @@ private[scalatest] object SuiteDiscoveryHelper {
   private def processClassName(className: String, loader: ClassLoader, dollar: Boolean): Option[String] = {
     if ((dollar || className.indexOf('$') == -1)
         &&
-        isAccessibleSuite(className, loader))
+        isAccessibleSuite(className, loader)
+        && 
+        isDiscoverableSuite(className, loader))
     {
       Some(className)
     }

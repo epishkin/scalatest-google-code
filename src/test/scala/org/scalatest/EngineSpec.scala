@@ -17,6 +17,7 @@ package org.scalatest
 
 import events.InfoProvided
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.events.LineInFile
 
 class EngineSpec extends FlatSpec with SharedHelpers with ShouldMatchers {
 
@@ -29,7 +30,7 @@ class EngineSpec extends FlatSpec with SharedHelpers with ShouldMatchers {
   it should "return empty string for direct children of Trunk" in {
     val engine = new Engine("concurrentFunSuiteBundleMod", "FunSuite")
     import engine._
-    val child = DescriptionBranch(Trunk, "Catherine", Some("child prefix"))
+    val child = DescriptionBranch(Trunk, "Catherine", Some("child prefix"), None)
     Trunk.subNodes ::= child
     getTestNamePrefix(child) should be ("Catherine child prefix")
   }
@@ -37,9 +38,9 @@ class EngineSpec extends FlatSpec with SharedHelpers with ShouldMatchers {
   it should "return the parent's description name for DescriptionBranch grandchildren of trunk" in {
     val engine = new Engine("concurrentFunSuiteBundleMod", "FunSuite")
     import engine._
-    val child = DescriptionBranch(Trunk, "child", Some("child prefix"))
+    val child = DescriptionBranch(Trunk, "child", Some("child prefix"), None)
     Trunk.subNodes ::= child
-    val grandchild = DescriptionBranch(child, "grandchild", None)
+    val grandchild = DescriptionBranch(child, "grandchild", None, None)
     child.subNodes ::= grandchild
     getTestNamePrefix(grandchild) should be ("child child prefix grandchild")
   }
@@ -47,24 +48,24 @@ class EngineSpec extends FlatSpec with SharedHelpers with ShouldMatchers {
   "EngineSpec.getTestName" should "return the prefix, a space, and the testText" in {
     val engine = new Engine("concurrentFunSuiteBundleMod", "FunSuite")
     import engine._
-    val child = DescriptionBranch(Trunk, "child", Some("child prefix"))
+    val child = DescriptionBranch(Trunk, "child", Some("child prefix"), None)
     Trunk.subNodes ::= child
-    val grandchild = DescriptionBranch(child, "grandchild", None)
+    val grandchild = DescriptionBranch(child, "grandchild", None, None)
     child.subNodes ::= grandchild
     getTestName("howdy there", grandchild) should be ("child child prefix grandchild howdy there")
   }
   "EngineSpec.getIndentationLevelForNode" should "return the indentation level for a test" in {
     val engine = new Engine("concurrentFunSuiteBundleMod", "FunSuite")
     import engine._
-    val child = DescriptionBranch(Trunk, "child", Some("child prefix"))
+    val child = DescriptionBranch(Trunk, "child", Some("child prefix"), None)
     Trunk.subNodes ::= child
-    val childTest = TestLeaf(Trunk, "child test", "child test", () => ())
+    val childTest = TestLeaf(Trunk, "child test", "child test", () => (), None)
     Trunk.subNodes ::= childTest
-    val grandchild = DescriptionBranch(child, "grandchild", None)
+    val grandchild = DescriptionBranch(child, "grandchild", None, None)
     child.subNodes ::= grandchild
-    val grandchildTest = TestLeaf(child, "grandchild test", "grandchild test", () => ())
+    val grandchildTest = TestLeaf(child, "grandchild test", "grandchild test", () => (), None)
     child.subNodes ::= grandchildTest
-    val greatGrandchildTest = TestLeaf(grandchild, "great-grandchild test", "great-grandchild test", () => ())
+    val greatGrandchildTest = TestLeaf(grandchild, "great-grandchild test", "great-grandchild test", () => (), None)
     grandchild.subNodes ::= greatGrandchildTest
     Trunk.indentationLevel should be (0)
     child.indentationLevel should be (0)

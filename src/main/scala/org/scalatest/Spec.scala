@@ -1262,6 +1262,7 @@ import Suite.reportTestIgnored
 trait Spec extends Suite { thisSuite =>
 
   private final val engine = new Engine("concurrentSpecMod", "Spec")
+  private final val stackDepth = 3
   import engine._
 
   /**
@@ -1331,7 +1332,7 @@ trait Spec extends Suite { thisSuite =>
      * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
      */
     def apply(specText: String, testTags: Tag*)(testFun: => Unit) {
-      registerTest(specText, testFun _, "itCannotAppearInsideAnotherIt", "Spec.scala", "apply", testTags: _*)
+      registerTest(specText, testFun _, "itCannotAppearInsideAnotherIt", "Spec.scala", "apply", stackDepth, testTags: _*)
     }
 
     /**
@@ -1415,7 +1416,7 @@ trait Spec extends Suite { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(testText: String, testTags: Tag*)(testFun: => Unit) {
-    registerIgnoredTest(testText, testFun _, "ignoreCannotAppearInsideAnIt", "Spec.scala", "ignore", testTags: _*)
+    registerIgnoredTest(testText, testFun _, "ignoreCannotAppearInsideAnIt", "Spec.scala", "ignore", stackDepth + 1, testTags: _*)
   }
 
   /**
@@ -1426,7 +1427,7 @@ trait Spec extends Suite { thisSuite =>
    */
   protected def describe(description: String)(fun: => Unit) {
 
-    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", "Spec.scala", "describe")
+    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", "Spec.scala", "describe", stackDepth + 1)
   }
 
   /**

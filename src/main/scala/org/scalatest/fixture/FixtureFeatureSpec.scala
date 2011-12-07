@@ -377,6 +377,7 @@ import Suite.anErrorThatShouldCauseAnAbort
 trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
 
   private final val engine = new FixtureEngine[FixtureParam]("concurrentFeatureSpecMod", "FixtureFeatureSpec")
+  private final val stackDepth = 4
   import engine._
 
   /**
@@ -409,7 +410,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    */
   protected def scenario(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
 
-    registerTest(Resources("scenario", specText), testFun, "scenarioCannotAppearInsideAnotherScenario", "FixtureFeatureSpec.scala", "scenario", testTags: _*)
+    registerTest(Resources("scenario", specText), testFun, "scenarioCannotAppearInsideAnotherScenario", "FixtureFeatureSpec.scala", "scenario", stackDepth, testTags: _*)
   }
 
   /**
@@ -431,7 +432,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-    registerIgnoredTest(Resources("scenario", specText), testFun , "ignoreCannotAppearInsideAScenario", "FixtureFeatureSpec.scala", "ignore", testTags: _*)
+    registerIgnoredTest(Resources("scenario", specText), testFun , "ignoreCannotAppearInsideAScenario", "FixtureFeatureSpec.scala", "ignore", stackDepth, testTags: _*)
   }
 
   /**
@@ -445,7 +446,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     if (!currentBranchIsTrunk)
       throw new NotAllowedException(Resources("cantNestFeatureClauses"), getStackDepth("FixtureFeatureSpec.scala", "feature"))
 
-    registerNestedBranch(description, None, fun, "featureCannotAppearInsideAScenario", "FixtureFeatureSpec.scala", "feature")
+    registerNestedBranch(description, None, fun, "featureCannotAppearInsideAScenario", "FixtureFeatureSpec.scala", "feature", stackDepth)
   }
 
   /**

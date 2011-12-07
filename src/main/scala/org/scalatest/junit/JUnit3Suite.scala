@@ -31,6 +31,8 @@ import org.scalatest.events.TestFailed
 import org.scalatest.events.MotionToSuppress
 import Suite.getIndentedText
 import Suite.getDecodedName
+import org.scalatest.events.TopOfMethod
+import org.scalatest.events.SeeStackDepthException
 
 /**
  * A <code>Suite</code> that is also a <code>junit.framework.TestCase</code>. 
@@ -341,6 +343,8 @@ private[scalatest] class MyTestListener(report: Reporter, tracker: Tracker) exte
     else
       throwable.getMessage
 
+  def getTopOfMethod(className: String, methodName: String) = Some(TopOfMethod(className, "public void " + className + "." + methodName + "()"))
+
   // The Test passed to these methods is an instance of the JUnit3Suite class, Calling
   // test.getClass.getName on it gets the fully qualified name of the class
   // test.asInstanceOf[TestCase].getName gives you the name of the test method, without any parens
@@ -350,7 +354,7 @@ private[scalatest] class MyTestListener(report: Reporter, tracker: Tracker) exte
     if (testCase == null)
       throw new NullPointerException("testCase was null")
     val suiteName = getSuiteNameForTestCase(testCase)
-    report(TestStarting(tracker.nextOrdinal(), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), Some(MotionToSuppress), None))
+    report(TestStarting(tracker.nextOrdinal(), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), Some(MotionToSuppress), getTopOfMethod(testCase.getClass.getName, testCase.asInstanceOf[TestCase].getName)))
   }
   
   def addError(testCase: Test, throwable: Throwable) {
@@ -362,7 +366,7 @@ private[scalatest] class MyTestListener(report: Reporter, tracker: Tracker) exte
 
     val formatter = getIndentedText(testCase.toString, 1, true)
     val suiteName = getSuiteNameForTestCase(testCase)
-    report(TestFailed(tracker.nextOrdinal(), getMessageGivenThrowable(throwable, false), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), Some(throwable), None, Some(formatter), None))
+    report(TestFailed(tracker.nextOrdinal(), getMessageGivenThrowable(throwable, false), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), Some(throwable), None, Some(formatter), Some(SeeStackDepthException)))
 
     failedTestsSet += testCase
   }
@@ -376,7 +380,7 @@ private[scalatest] class MyTestListener(report: Reporter, tracker: Tracker) exte
 
     val formatter = getIndentedText(testCase.toString, 1, true)
     val suiteName = getSuiteNameForTestCase(testCase)
-    report(TestFailed(tracker.nextOrdinal(), getMessageGivenThrowable(assertionFailedError, true), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), Some(assertionFailedError), None, Some(formatter), None))
+    report(TestFailed(tracker.nextOrdinal(), getMessageGivenThrowable(assertionFailedError, true), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), Some(assertionFailedError), None, Some(formatter), Some(SeeStackDepthException)))
 
     failedTestsSet += testCase
   }
@@ -390,7 +394,7 @@ private[scalatest] class MyTestListener(report: Reporter, tracker: Tracker) exte
         throw new NullPointerException("testCase was null")
       val formatter = getIndentedText(testCase.toString, 1, true)
       val suiteName = getSuiteNameForTestCase(testCase)
-      report(TestSucceeded(tracker.nextOrdinal(), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), None, Some(formatter), None))
+      report(TestSucceeded(tracker.nextOrdinal(), suiteName, testCase.getClass.getName, Some(testCase.getClass.getName), getDecodedName(suiteName), testCase.toString, testCase.toString, getDecodedName(testCase.toString), None, Some(formatter), getTopOfMethod(testCase.getClass.getName, testCase.asInstanceOf[TestCase].getName)))
     }
     else {
       failedTestsSet -= testCase  

@@ -387,6 +387,7 @@ import FunSuite.IgnoreTagName
 trait FixtureSpec extends FixtureSuite { thisSuite =>
 
   private final val engine = new FixtureEngine[FixtureParam]("concurrentFixtureSpecMod", "FixtureSpec")
+  private final val stackDepth = 3
   import engine._
 
   /**
@@ -442,7 +443,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
      * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
      */
     def apply(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-      registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "FixtureSpec.scala", "apply", testTags: _*)
+      registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "FixtureSpec.scala", "apply", stackDepth, testTags: _*)
     }
 
     /**
@@ -527,7 +528,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", "FixtureSpec.scala", "ignore", testTags: _*)
+    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", "FixtureSpec.scala", "ignore", stackDepth + 3, testTags: _*)
   }
 
   /**
@@ -560,7 +561,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
    * description string and immediately invoke the passed function.
    */
   protected def describe(description: String)(fun: => Unit) {
-    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", "FixtureSpec.scala", "describe")
+    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", "FixtureSpec.scala", "describe", stackDepth + 1)
   }
 
   /**

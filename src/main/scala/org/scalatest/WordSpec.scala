@@ -1608,6 +1608,7 @@ import Suite.anErrorThatShouldCauseAnAbort
 trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
   private final val engine = new Engine("concurrentWordSpecMod", "WordSpec")
+  private final val stackDepth = 4
   import engine._
 
   /**
@@ -1642,15 +1643,17 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
+   * @param methodName Method name of the caller
    * @param testTags the optional list of tags for this test
    * @param testFun the test function
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: () => Unit) {
+  private def registerTestToRun(specText: String, methodName: String, testTags: List[Tag], testFun: () => Unit) {
     // TODO: This is what was being used before but it is wrong
-    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "WordSpec.scala", "it", testTags: _*)
+    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "WordSpec.scala", 
+                 methodName, stackDepth, testTags: _*)
   }
 
   /**
@@ -1665,22 +1668,23 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
+   * @param methodName Method name of the caller
    * @param testTags the optional list of tags for this test
    * @param testFun the test function
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: () => Unit) {
+  private def registerTestToIgnore(specText: String, methodName: String, testTags: List[Tag], testFun: () => Unit) {
 
     // TODO: This is how these were, but it needs attention. Mentions "it".
-    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", "WordSpec.scala", "ignore", testTags: _*)
+    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", "WordSpec.scala", methodName, stackDepth, testTags: _*)
   }
 
   private def registerBranch(description: String, childPrefix: Option[String], fun: () => Unit) {
 
     // TODO: Fix the resource name and method name
-    registerNestedBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", "WordSpec.scala", "describe")
+    registerNestedBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", "WordSpec.scala", "describe", stackDepth + 1)
   }
 
   /**
@@ -1712,7 +1716,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * </p>
      */
     def in(testFun: => Unit) {
-      registerTestToRun(specText, tags, testFun _)
+      registerTestToRun(specText, "in", tags, testFun _)
     }
 
     /**
@@ -1732,7 +1736,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * </p>
      */
     def is(testFun: => PendingNothing) {
-      registerTestToRun(specText, tags, testFun _)
+      registerTestToRun(specText, "is", tags, testFun _)
     }
 
     /**
@@ -1752,7 +1756,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * </p>
      */
     def ignore(testFun: => Unit) {
-      registerTestToIgnore(specText, tags, testFun _)
+      registerTestToIgnore(specText, "ignore", tags, testFun _)
     }
   }       
 
@@ -1790,7 +1794,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * </p>
      */
     def in(f: => Unit) {
-      registerTestToRun(string, List(), f _)
+      registerTestToRun(string, "in", List(), f _)
     }
 
     /**
@@ -1810,7 +1814,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * </p>
      */
     def ignore(f: => Unit) {
-      registerTestToIgnore(string, List(), f _)
+      registerTestToIgnore(string, "ignore", List(), f _)
     }
 
     /**
@@ -1830,7 +1834,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * </p>
      */
     def is(f: => PendingNothing) {
-      registerTestToRun(string, List(), f _)
+      registerTestToRun(string, "is", List(), f _)
     }
 
     /**

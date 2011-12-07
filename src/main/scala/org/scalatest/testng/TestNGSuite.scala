@@ -231,6 +231,8 @@ trait TestNGSuite extends Suite { thisSuite =>
     
     private val className = TestNGSuite.this.getClass.getName
 
+    def getTopOfMethod(className: String, methodName: String) = Some(TopOfMethod(className, "public void " + className + "." + methodName + "()"))
+
     /**
      * This method is called when TestNG starts, and maps to ScalaTest's suiteStarting. 
      * @TODO TestNG doesn't seem to know how many tests are going to be executed.
@@ -239,7 +241,7 @@ trait TestNGSuite extends Suite { thisSuite =>
      */
     override def onStart(itc: ITestContext) = {
       val formatter = formatterForSuiteStarting(thisSuite)
-      report(SuiteStarting(tracker.nextOrdinal(), thisSuite.suiteName, thisSuite.getClass.getName, Some(thisSuite.getClass.getName), thisSuite.decodedSuiteName, formatter))
+      report(SuiteStarting(tracker.nextOrdinal(), thisSuite.suiteName, thisSuite.getClass.getName, Some(thisSuite.getClass.getName), thisSuite.decodedSuiteName, formatter, Some(TopOfClass(thisSuite.getClass.getName))))
     }
 
     /**
@@ -249,7 +251,7 @@ trait TestNGSuite extends Suite { thisSuite =>
      */
     override def onFinish(itc: ITestContext) = {
       val formatter = formatterForSuiteCompleted(thisSuite)
-      report(SuiteCompleted(tracker.nextOrdinal(), thisSuite.suiteName, thisSuite.getClass.getName, Some(thisSuite.getClass.getName), thisSuite.decodedSuiteName, None, formatter))
+      report(SuiteCompleted(tracker.nextOrdinal(), thisSuite.suiteName, thisSuite.getClass.getName, Some(thisSuite.getClass.getName), thisSuite.decodedSuiteName, None, formatter, Some(TopOfClass(thisSuite.getClass.getName))))
     }
     
     /**
@@ -258,7 +260,7 @@ trait TestNGSuite extends Suite { thisSuite =>
      */
     override def onTestStart(result: ITestResult) = {
       report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, thisSuite.getClass.getName, Some(thisSuite.getClass.getName), thisSuite.decodedSuiteName, result.getName + params(result), result.getName + params(result),
-             getDecodedName(result.getName + params(result)), Some(MotionToSuppress), Some(TopOfMethod(thisSuite.getClass.getName, result.getName)), Some(new TestRerunner(className, result.getName))))
+             getDecodedName(result.getName + params(result)), Some(MotionToSuppress), getTopOfMethod(thisSuite.getClass.getName, result.getName), Some(new TestRerunner(className, result.getName))))
     }
 
     /**
@@ -269,7 +271,7 @@ trait TestNGSuite extends Suite { thisSuite =>
       val testName = result.getName + params(result)
       val formatter = getIndentedText(testName, 1, true)
       report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, thisSuite.getClass.getName, thisSuite.decodedSuiteName, Some(thisSuite.getClass.getName), testName, testName, 
-          getDecodedName(testName), None, Some(formatter), Some(TopOfMethod(thisSuite.getClass.getName, result.getName)), Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
+          getDecodedName(testName), None, Some(formatter), getTopOfMethod(thisSuite.getClass.getName, result.getName), Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
     }
 
     /**
@@ -279,7 +281,7 @@ trait TestNGSuite extends Suite { thisSuite =>
     override def onTestSkipped(result: ITestResult) = {
       val testName = result.getName + params(result)
       val formatter = getIndentedText(testName, 1, true)
-      report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, thisSuite.getClass.getName, Some(thisSuite.getClass.getName), thisSuite.decodedSuiteName, testName, testName, getDecodedName(testName), Some(formatter)))
+      report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, thisSuite.getClass.getName, Some(thisSuite.getClass.getName), thisSuite.decodedSuiteName, testName, testName, getDecodedName(testName), Some(formatter), getTopOfMethod(thisSuite.getClass.getName, result.getName)))
     }
 
     /**
@@ -305,7 +307,7 @@ trait TestNGSuite extends Suite { thisSuite =>
       val throwable = if (throwableOrNull != null) Some(throwableOrNull) else None
       val message = if (throwableOrNull != null && throwableOrNull.getMessage != null) throwableOrNull.getMessage else Resources("testNGConfigFailed")
       val formatter = formatterForSuiteAborted(thisSuite, message)
-      report(SuiteAborted(tracker.nextOrdinal(), message, thisSuite.suiteName, thisSuite.getClass.getName, Some(thisSuite.getClass.getName), thisSuite.decodedSuiteName, throwable, None, formatter))
+      report(SuiteAborted(tracker.nextOrdinal(), message, thisSuite.suiteName, thisSuite.getClass.getName, Some(thisSuite.getClass.getName), thisSuite.decodedSuiteName, throwable, None, formatter, Some(SeeStackDepthException)))
     }
 
     /**

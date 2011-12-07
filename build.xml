@@ -198,6 +198,7 @@
         <!-- Compile the Java code from ${javasrc} into ${classes}  Needs to go first because TagAnnotation used in Suite -->
         <javac srcdir="${javasrc}" destdir="${classes}" compiler="javac1.5" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
             <include name="org/scalatest/Ignore.java" />
+            <include name="org/scalatest/DoNotDiscover.java" />
             <include name="org/scalatest/tools/ScalaTestTask.java" />
         </javac>
 

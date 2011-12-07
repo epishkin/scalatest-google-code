@@ -28,12 +28,14 @@ import java.util.HashSet
 import java.util.regex.Pattern
 import Suite.getIndentedText
 import Suite.getDecodedName
+import org.scalatest.events.TopOfMethod
 
   private[junit] class MyRunListener(report: Reporter,
                                      config: Map[String, Any],
                                      theTracker: Tracker)
   extends RunListener {
     val failedTests = Collections.synchronizedSet(new HashSet[String])
+    def getTopOfMethod(className: String, methodName: String) = Some(TopOfMethod(className, "public void " + className + "." + methodName + "()"))
 
     override def testFailure(failure: Failure) {
       failedTests.add(failure.getDescription.getDisplayName)
@@ -53,7 +55,7 @@ import Suite.getDecodedName
           Resources("jUnitTestFailed")
 
       val formatter = getIndentedText(testName, 1, true)
-      report(TestFailed(theTracker.nextOrdinal(), message, testClassName, testClass, Some(testClass), getDecodedName(testClassName), testName, testName, getDecodedName(testName), throwable, None, Some(formatter), None))
+      report(TestFailed(theTracker.nextOrdinal(), message, testClassName, testClass, Some(testClass), getDecodedName(testClassName), testName, testName, getDecodedName(testName), throwable, None, Some(formatter), Some(SeeStackDepthException)))
       // TODO: can I add a duration?
     }
 
@@ -62,7 +64,7 @@ import Suite.getDecodedName
         val (testName, testClass, testClassName) =
           parseTestDescription(description)
         val formatter = getIndentedText(testName, 1, true)
-        report(TestSucceeded(theTracker.nextOrdinal(), testClassName, testClass, Some(testClass), getDecodedName(testClassName), testName, testName, getDecodedName(testName), None, Some(formatter), None))
+        report(TestSucceeded(theTracker.nextOrdinal(), testClassName, testClass, Some(testClass), getDecodedName(testClassName), testName, testName, getDecodedName(testName), None, Some(formatter), getTopOfMethod(testClass, testName)))
         // TODO: can I add a duration?
       }
     }
@@ -72,7 +74,7 @@ import Suite.getDecodedName
         parseTestDescription(description)
       val testSucceededIcon = Resources("testSucceededIconChar")
       val formattedText = Resources("iconPlusShortName", testSucceededIcon, testName)
-      report(TestIgnored(theTracker.nextOrdinal(), testClassName, testClass, Some(testClass), getDecodedName(testClassName), testName, testName, getDecodedName(testName), Some(IndentedText(formattedText, testName, 1))))
+      report(TestIgnored(theTracker.nextOrdinal(), testClassName, testClass, Some(testClass), getDecodedName(testClassName), testName, testName, getDecodedName(testName), Some(IndentedText(formattedText, testName, 1)), getTopOfMethod(testClass, testName)))
     }
 
     override def testRunFinished(result: Result) {
@@ -86,7 +88,7 @@ import Suite.getDecodedName
     override def testStarted(description: Description) {
       val (testName, testClass, testClassName) =
         parseTestDescription(description)
-      report(TestStarting(theTracker.nextOrdinal(), testClassName, testClass, Some(testClass), getDecodedName(testClassName), testName, testName, getDecodedName(testName), Some(MotionToSuppress), None))
+      report(TestStarting(theTracker.nextOrdinal(), testClassName, testClass, Some(testClass), getDecodedName(testClassName), testName, testName, getDecodedName(testName), Some(MotionToSuppress), getTopOfMethod(testClass, testName)))
     }
 
     //
