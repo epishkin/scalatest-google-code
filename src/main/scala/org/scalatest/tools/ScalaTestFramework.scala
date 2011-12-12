@@ -124,23 +124,25 @@ write a sbt plugin to deploy the task.
         
         // If no reporters specified, just give them a default stdout reporter
         val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) "-o" :: Nil else repoArgsList)
-          val reporterConfigs: ReporterConfigurations =
-            fullReporterConfigurations.graphicReporterConfiguration match {
-              case None => fullReporterConfigurations
-              case Some(grs) => {
-                new ReporterConfigurations(
-                  None,
-                  fullReporterConfigurations.fileReporterConfigurationList,
-                  fullReporterConfigurations.xmlReporterConfigurationList,
-                  fullReporterConfigurations.standardOutReporterConfiguration,
-                  fullReporterConfigurations.standardErrReporterConfiguration,
-                  fullReporterConfigurations.htmlReporterConfigurationList,
-                  fullReporterConfigurations.customReporterConfigurationList
-                )
-             }
-            }
+
+        // For 1.6.3, this will never return a Some(grs). Could just as well throw an exception if Some(grs).
+        val reporterConfigs: ReporterConfigurations =
+          fullReporterConfigurations.graphicReporterConfiguration match {
+            case None => fullReporterConfigurations
+            case Some(grs) => {
+              new ReporterConfigurations(
+                None,
+                fullReporterConfigurations.fileReporterConfigurationList,
+                fullReporterConfigurations.xmlReporterConfigurationList,
+                fullReporterConfigurations.standardOutReporterConfiguration,
+                fullReporterConfigurations.standardErrReporterConfiguration,
+                fullReporterConfigurations.htmlReporterConfigurationList,
+                fullReporterConfigurations.customReporterConfigurationList
+              )
+           }
+          }
         
-        val report:Reporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
+        val report: Reporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
 
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
