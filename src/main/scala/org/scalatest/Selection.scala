@@ -15,8 +15,6 @@
  */
 package org.scalatest
 
-import org.scalatest.events.Location
-
 sealed abstract class Selection
 
 final case class SingleLineSelection(lineNum: Int)
