@@ -116,24 +116,31 @@ write a sbt plugin to deploy the task.
       if (isAccessibleSuite(suiteClass)) {
 
         val (propertiesArgsList, includesArgsList,
-        excludesArgsList, repoArg) = parsePropsAndTags(args.filter(!_.equals("")))
+        excludesArgsList, repoArgsList) = parsePropsAndTags(args.filter(!_.equals("")))
         val configMap: Map[String, String] = parsePropertiesArgsIntoMap(propertiesArgsList)
         val tagsToInclude: Set[String] = parseCompoundArgIntoSet(includesArgsList, "-n")
         val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
         val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
-
-        val (presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces) =
-          repoArg match {
-            case Some(arg) => (
-              arg contains 'D',
-              !(arg contains 'W'),
-              arg contains 'S',
-              arg contains 'F'
-             )
-             case None => (false, true, false, false)
-          }
-
-        val report = new ScalaTestReporter(eventHandler, presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces)
+        
+        // If no reporters specified, just give them a default stdout reporter
+        val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) "-o" :: Nil else repoArgsList)
+          val reporterConfigs: ReporterConfigurations =
+            fullReporterConfigurations.graphicReporterConfiguration match {
+              case None => fullReporterConfigurations
+              case Some(grs) => {
+                new ReporterConfigurations(
+                  None,
+                  fullReporterConfigurations.fileReporterConfigurationList,
+                  fullReporterConfigurations.xmlReporterConfigurationList,
+                  fullReporterConfigurations.standardOutReporterConfiguration,
+                  fullReporterConfigurations.standardErrReporterConfiguration,
+                  fullReporterConfigurations.htmlReporterConfigurationList,
+                  fullReporterConfigurations.customReporterConfigurationList
+                )
+             }
+            }
+        
+        val report:Reporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
 
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
@@ -183,22 +190,11 @@ write a sbt plugin to deploy the task.
         case se: SecurityException => false
       }
     }
-
-    private class ScalaTestReporter(eventHandler: EventHandler, presentAllDurations: Boolean,
-        presentInColor: Boolean, presentShortStackTraces: Boolean, presentFullStackTraces: Boolean) extends StringReporter(
-        presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces) {
-
+    
+    private class SbtReporter(eventHandler: EventHandler, report: Option[Reporter]) extends Reporter {
+      
       import org.scalatest.events._
-
-      protected def printPossiblyInColor(text: String, ansiColor: String) {
-        import PrintReporter.ansiReset
-        loggers.foreach { logger =>
-          logger.info(if (logger.ansiCodesSupported && presentInColor) colorizeLinesIndividually(text, ansiColor) else text)
-        }
-      }
-
-      def dispose() = ()
-
+      
       def fireEvent(tn: String, r: Result, e: Option[Throwable]) = {
         eventHandler.handle(
           new org.scalatools.testing.Event {
@@ -209,13 +205,12 @@ write a sbt plugin to deploy the task.
           }
         )
       }
-
+      
       override def apply(event: Event) {
-
-        // Superclass will call printPossiblyInColor
-        super.apply(event)
-
-        // Logging done, all I need to do now is fire events
+        report match {
+          case Some(report) => report(event)
+          case None =>
+        }
         event match {
           // the results of running an actual test
           case t: TestPending => fireEvent(t.testName, Result.Skipped, None)
@@ -234,7 +229,7 @@ write a sbt plugin to deploy the task.
       val props = new ListBuffer[String]()
       val includes = new ListBuffer[String]()
       val excludes = new ListBuffer[String]()
-      var repoArg: Option[String] = None
+      var repoArgs = new ListBuffer[String]()
 
       val it = args.iterator
       while (it.hasNext) {
@@ -255,8 +250,12 @@ write a sbt plugin to deploy the task.
             excludes += it.next
         }
         else if (s.startsWith("-o")) {
-          if (repoArg.isEmpty) // Just use first one. Ignore any others.
-            repoArg = Some(s)
+          repoArgs += s
+        }
+        else if (s.startsWith("-u")) {
+          repoArgs += s
+          if (it.hasNext)
+            repoArgs += it.next
         }
         //      else if (s.startsWith("-t")) {
         //
@@ -268,7 +267,7 @@ write a sbt plugin to deploy the task.
           throw new IllegalArgumentException("Unrecognized argument: " + s)
         }
       }
-      (props.toList, includes.toList, excludes.toList, repoArg)
+      (props.toList, includes.toList, excludes.toList, repoArgs.toList)
     }
   }
 }
