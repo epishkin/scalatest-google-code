@@ -7,7 +7,7 @@
              classpathref="maven-ant-tasks.classpath" />
 
     <!-- set global properties for this build -->
-    <property name="release" value="2.0" />
+    <property name="release" value="2.0-SNAPSHOT" />
     <property name="scala.version" value="2.9.0" />
 
     <property name="scalasrc" value="src/main/scala" />
@@ -42,7 +42,7 @@
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
 
-    <property name="jvmargs" value="-Xmx2000M -Xss10M"/>
+    <property name="jvmargs" value="-Xmx3000M -Xss10M"/>
 
   <!--
   <property name="build.compiler" value="jikes"/>
