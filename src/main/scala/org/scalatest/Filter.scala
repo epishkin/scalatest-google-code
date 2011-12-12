@@ -9,6 +9,9 @@ Then to apply, I need to add the suiteID. So backwards compatibility is a questi
 If I don't have a suiteID, then I can't really... Well if I don't have a suiteID, 
 could I simply ignore the dynamic tags. That could be deprecated behavior.
 Probably good enough.
+
+A filter can contain a set of dynamic tags. So that's the first thing. Provide a method on filter
+that returns the same filter, but with dynamic tags added?
 */
 
 /**
