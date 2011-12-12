@@ -1463,7 +1463,11 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
   * this method returns an empty <code>List</code>. This trait's implementation of this method returns an empty <code>List</code>.
   */
   def nestedSuites: List[Suite] = Nil
-  
+
+  def suiteStructure: SuiteStructure = null // TODO: Fill this in
+
+  def filterSelections(selections: List[Selection]): Filter = null // TODO: Fill this in
+
   /**
    * Executes this <code>Suite</code>, printing results to the standard output.
    *
