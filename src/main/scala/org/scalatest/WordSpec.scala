@@ -170,7 +170,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * Sometimes you may wish to eliminate repeated phrases inside the block following a <code>verb</code>. Here's an example
- * in which the phrase "provide an and/or operator that" is repeated:
+ * in which the phrase "provide an and/or operator, which" is repeated:
  * </p>
  *
  * <pre class="stHighlight">
@@ -179,14 +179,14 @@ import Suite.anErrorThatShouldCauseAnAbort
  * class AndOrSpec extends WordSpec {
  * 
  *   "The ScalaTest Matchers DSL" should {
- *     "provide an and operator that returns silently when evaluating true and true" in {}
- *     "provide an and operator that throws a TestFailedException when evaluating true and false" in {}
- *     "provide an and operator that throws a TestFailedException when evaluating false and true" in {}
- *     "provide an and operator that throws a TestFailedException when evaluating false and false" in {}
- *     "provide an or operator that returns silently when evaluating true or true" in {}
- *     "provide an or operator that returns silently when evaluating true or false" in {}
- *     "provide an or operator that returns silently when evaluating false or true" in {}
- *     "provide an or operator that throws a TestFailedException when evaluating false or false" in {}
+ *     "provide an and operator, which returns silently when evaluating true and true" in {}
+ *     "provide an and operator, which throws a TestFailedException when evaluating true and false" in {}
+ *     "provide an and operator, which throws a TestFailedException when evaluating false and true" in {}
+ *     "provide an and operator, which throws a TestFailedException when evaluating false and false" in {}
+ *     "provide an or operator, which returns silently when evaluating true or true" in {}
+ *     "provide an or operator, which returns silently when evaluating true or false" in {}
+ *     "provide an or operator, which returns silently when evaluating false or true" in {}
+ *     "provide an or operator, which throws a TestFailedException when evaluating false or false" in {}
  *   }
  * }
  * </pre>
@@ -201,13 +201,13 @@ import Suite.anErrorThatShouldCauseAnAbort
  * class AndOrSpec extends WordSpec {
  *
  *   "The ScalaTest Matchers DSL" should {
- *     "provide an and operator" which {
+ *     "provide an and operator," which {
  *       "returns silently when evaluating true and true" in {}
  *       "throws a TestFailedException when evaluating true and false" in {}
  *       "throws a TestFailedException when evaluating false and true" in {}
  *       "throws a TestFailedException when evaluating false and false" in {}
  *     }
- *     "provide an or operator" which {
+ *     "provide an or operator," which {
  *       "returns silently when evaluating true or true" in {}
  *       "returns silently when evaluating true or false" in {}
  *       "returns silently when evaluating false or true" in {}
@@ -225,12 +225,12 @@ import Suite.anErrorThatShouldCauseAnAbort
  * scala> (new AndOrSpec).execute()
  * <span class="stGreen">AndOrSpec:
  * The ScalaTest Matchers DSL
- *   should provide an and operator that
+ *   should provide an and operator, which
  * &nbsp; - returns silently when evaluating true and true
  * &nbsp; - throws a TestFailedException when evaluating true and false
  * &nbsp; - throws a TestFailedException when evaluating false and true
  * &nbsp; - throws a TestFailedException when evaluating false and false
- * &nbsp; should provide an or operator that
+ * &nbsp; should provide an or operator, which
  * &nbsp; - returns silently when evaluating true or true
  * &nbsp; - returns silently when evaluating true or false
  * &nbsp; - returns silently when evaluating false or true
@@ -259,13 +259,13 @@ import Suite.anErrorThatShouldCauseAnAbort
  *    def provide = afterWord("provide")
  * 
  *   "The ScalaTest Matchers DSL" should provide {
- *     "an and operator" which {
+ *     "an and operator," which {
  *       "returns silently when evaluating true and true" in {}
  *       "throws a TestFailedException when evaluating true and false" in {}
  *       "that throws a TestFailedException when evaluating false and true" in {}
  *       "throws a TestFailedException when evaluating false and false" in {}
  *     }
- *     "an or operator" which {
+ *     "an or operator," which {
  *       "returns silently when evaluating true or true" in {}
  *       "returns silently when evaluating true or false" in {}
  *       "returns silently when evaluating false or true" in {}
@@ -284,12 +284,12 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <span class="stGreen">AndOrSpec:
  * The ScalaTest Matchers DSL
  *   should provide
- *     an and operator that
+ *     an and operator, which
  * &nbsp;   - returns silently when evaluating true and true
  * &nbsp;   - throws a TestFailedException when evaluating true and false
  * &nbsp;   - that throws a TestFailedException when evaluating false and true
  * &nbsp;   - throws a TestFailedException when evaluating false and false
- * &nbsp;   an or operator that
+ * &nbsp;   an or operator, which
  * &nbsp;   - returns silently when evaluating true or true
  * &nbsp;   - returns silently when evaluating true or false
  * &nbsp;   - returns silently when evaluating false or true
@@ -317,7 +317,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     "clicks on an event report in the list box" should display {
  *       "a blue background in the clicked-on row in the list box" in {}
  *       "the details for the event in the details area" in {}
- *       "a rerun button" which is {
+ *       "a rerun button," which is {
  *         "enabled if the clicked-on event is rerunnable" in {}
  *         "disabled if the clicked-on event is not rerunnable" in {}
  *       }
@@ -338,7 +338,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     should display
  * &nbsp;   - a blue background in the clicked-on row in the list box
  * &nbsp;   - the details for the event in the details area
- * &nbsp;     a rerun button which is
+ * &nbsp;     a rerun button, which is
  * &nbsp;     - enabled if the clicked-on event is rerunnable
  * &nbsp;     - disabled if the clicked-on event is not rerunnable</span>
  * </pre>
@@ -1887,26 +1887,14 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     }
 
     /**
-     * Registers a <code>that</code> clause.
-     *
-     * <p>
-     * For example, this method supports syntax such as the following:
-     * </p>
-     *
-     * <pre class="stHighlight">
-     * "a rerun button" that {
-     *                  ^
-     * </pre>
-     *
-     * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
-     * </p>
+     * <b><code>that</code> has been deprecated and will be used for a different purpose in a future version of ScalaTest. Please
+     * use <code>which</code> instead. (Warning: this change will likely have a shorter than usual deprecation cycle: less than a year.)</b>
      */
-    @deprecated("that has been deprecated and will be used for a different purpose in a future version of ScalaTest. Please use which instead. (Warning: this change will likely have a shorter than usual deprecation cycle: a matter of months not years.)", "1.6.3")
+    @deprecated("Please use \"which\" instead of \"that\".")
     def that(f: => Unit) {
       registerBranch(string + " that", None, f _)
     }
-    
+
     /**
      * Registers a <code>which</code> clause.
      *
@@ -1928,24 +1916,10 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     }
 
     /**
-     * Registers a <code>that</code> clause that is followed by an <em>after word</em>.
-     *
-     * <p>
-     * For example, this method supports syntax such as the following:
-     * </p>
-     *
-     * <pre class="stHighlight">
-     * def is = afterWord("is")
-     *
-     * "a rerun button" that is {
-     *                  ^
-     * </pre>
-     *
-     * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
-     * </p>
+     * <b><code>that</code> has been deprecated and will be used for a different purpose in a future version of ScalaTest. Please
+     * use <code>which</code> instead. (Warning: this change will likely have a shorter than usual deprecation cycle: less than a year.)</b>
      */
-    @deprecated("that has been deprecated and will be used for a different purpose in a future version of ScalaTest. Please use which instead. (Warning: this change will likely have a shorter than usual deprecation cycle: a matter of months not years.)", "1.6.3")
+    @deprecated("Please use \"which\" instead of \"that\".")
     def that(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
       registerBranch(string + " that " + resultOfAfterWordApplication.text, None, resultOfAfterWordApplication.f)
     }
