@@ -23,6 +23,18 @@ private class VariousWordSpec {} // prevents unnecessary recompilation
 class AmpersandWordSpec extends WordSpec with ShouldMatchers {
 
   "The Scala language" should {
+    "provide an && operator" which {
+      "returns true for true && true" in { true && true should be (true) }
+      "returns false for true && false" in { true && false should be (false) }
+      "returns false for false && true" in { true && false should be (false) }
+      "returns false for false && false" in { false && false should be (false) }
+    }
+  }
+  
+  /**
+   * The following test should be removed once the 'that' word is removed.
+   */
+  "The Scala language" should {
     "provide an && operator" that {
       "returns true for true && true" in { true && true should be (true) }
       "returns false for true && false" in { true && false should be (false) }
@@ -41,6 +53,10 @@ class LoginUiWordSpec extends WordSpec {
   "The login screen" when theUser {
     "first enters it" should have {
       "an empty username field" is (pending)
+      "a password field" which is {
+        "empty" is (pending)
+        "disabled" is (pending)
+      }
       "a password field" that is {
         "empty" is (pending)
         "disabled" is (pending)
@@ -48,7 +64,11 @@ class LoginUiWordSpec extends WordSpec {
       "a login button that is disabled" is (pending)
     }
     "enters his or her username" should have {
-      "a username field that contains the entered username" is (pending)
+      "a username field which contains the entered username" is (pending)
+      "a password field" which is {
+        "empty" is (pending)
+        "enabled" is (pending)
+      }
       "a password field" that is {
         "empty" is (pending)
         "enabled" is (pending)
@@ -64,5 +84,9 @@ class LoginUiWordSpec extends WordSpec {
       "attempt to log the user in" is (pending)
     }
   }
+  
+  /**
+   * The following test should be removed once the 'that' word is removed.
+   */
 }
 

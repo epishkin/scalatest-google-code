@@ -192,7 +192,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * In such situations you can place <code>that</code> clauses inside the verb clause, like this:
+ * In such situations you can place <code>which</code> clauses inside the verb clause, like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -201,13 +201,13 @@ import Suite.anErrorThatShouldCauseAnAbort
  * class AndOrSpec extends WordSpec {
  *
  *   "The ScalaTest Matchers DSL" should {
- *     "provide an and operator" that {
+ *     "provide an and operator" which {
  *       "returns silently when evaluating true and true" in {}
  *       "throws a TestFailedException when evaluating true and false" in {}
  *       "throws a TestFailedException when evaluating false and true" in {}
  *       "throws a TestFailedException when evaluating false and false" in {}
  *     }
- *     "provide an or operator" that {
+ *     "provide an or operator" which {
  *       "returns silently when evaluating true or true" in {}
  *       "returns silently when evaluating true or false" in {}
  *       "returns silently when evaluating false or true" in {}
@@ -238,7 +238,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  * 
  * <p>
- * Note that unlike <code>when</code> and <code>should</code>/<code>must</code>/<code>can</code>, a <code>that</code> appears
+ * Note that unlike <code>when</code> and <code>should</code>/<code>must</code>/<code>can</code>, a <code>which</code> appears
  * in the output right where you put it in the input, at the end of the line, to maximize readability.
  * </p>
  *
@@ -246,7 +246,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <a name="AfterWords">If</a> a word or phrase is repeated at the beginning of each string contained in a block, you can eliminate
  * that repetition by using an <em>after word</em>. An after word is a word or phrase that you can place
  * after <code>when</code>, a verb, or
- * <code>that</code>. For example, in the previous <code>WordSpec</code>, the word "provide" is repeated
+ * <code>which</code>. For example, in the previous <code>WordSpec</code>, the word "provide" is repeated
  * at the beginning of each string inside the <code>should</code> block. You can factor out this duplication
  * like this:
  * </p>
@@ -259,13 +259,13 @@ import Suite.anErrorThatShouldCauseAnAbort
  *    def provide = afterWord("provide")
  * 
  *   "The ScalaTest Matchers DSL" should provide {
- *     "an and operator" that {
+ *     "an and operator" which {
  *       "returns silently when evaluating true and true" in {}
  *       "throws a TestFailedException when evaluating true and false" in {}
  *       "that throws a TestFailedException when evaluating false and true" in {}
  *       "throws a TestFailedException when evaluating false and false" in {}
  *     }
- *     "an or operator" that {
+ *     "an or operator" which {
  *       "returns silently when evaluating true or true" in {}
  *       "returns silently when evaluating true or false" in {}
  *       "returns silently when evaluating false or true" in {}
@@ -299,7 +299,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <p>
  * Once you've defined an after word, you can place it after <code>when</code>, a verb
  * (<code>should</code>, <code>must</code>, or <code>can</code>), or
- * <code>that</code>. (You can't place one after <code>in</code> or <code>is</code>, the
+ * <code>which</code>. (You can't place one after <code>in</code> or <code>is</code>, the
  * words that introduce a test.) Here's an example that has after words used in all three
  * places:
  * </p>
@@ -317,7 +317,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     "clicks on an event report in the list box" should display {
  *       "a blue background in the clicked-on row in the list box" in {}
  *       "the details for the event in the details area" in {}
- *       "a rerun button" that is {
+ *       "a rerun button" which is {
  *         "enabled if the clicked-on event is rerunnable" in {}
  *         "disabled if the clicked-on event is not rerunnable" in {}
  *       }
@@ -338,7 +338,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     should display
  * &nbsp;   - a blue background in the clicked-on row in the list box
  * &nbsp;   - the details for the event in the details area
- * &nbsp;     a rerun button that is
+ * &nbsp;     a rerun button which is
  * &nbsp;     - enabled if the clicked-on event is rerunnable
  * &nbsp;     - disabled if the clicked-on event is not rerunnable</span>
  * </pre>
@@ -1582,7 +1582,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime
  * complaining that multiple tests are being registered with the same test name. A good way to solve this problem in a <code>WordSpec</code> is to make sure
  * each invocation of a behavior function is in the context of a different surrounding <code>when</code>, 
- * <code>should</code>/<code>must</code>/<code>can</code>, or <code>that</code> clause, because a test's name is the concatenation of its
+ * <code>should</code>/<code>must</code>/<code>can</code>, or <code>which</code> clause, because a test's name is the concatenation of its
  * surrounding clauses and after words, followed by the "spec text".
  * For example, the following code in a <code>WordSpec</code> would register a test with the name <code>"A Stack when empty should be empty"</code>:
  * </p>
@@ -1748,7 +1748,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
   /**
    * A class that via an implicit conversion (named <code>convertToWordSpecStringWrapper</code>) enables
-   * methods <code>when</code>, <code>that</code>, <code>in</code>, <code>is</code>, <code>taggedAs</code>
+   * methods <code>when</code>, <code>which</code>, <code>in</code>, <code>is</code>, <code>taggedAs</code>
    * and <code>ignore</code> to be invoked on <code>String</code>s.
    *
    * <p>
@@ -1902,8 +1902,29 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
      * </p>
      */
+    @deprecated("that has been deprecated and will be used for a different purpose in a future version of ScalaTest. Please use which instead. (Warning: this change will likely have a shorter than usual deprecation cycle: a matter of months not years.)", "1.6.3")
     def that(f: => Unit) {
       registerBranch(string + " that", None, f _)
+    }
+    
+    /**
+     * Registers a <code>which</code> clause.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre class="stHighlight">
+     * "a rerun button" which {
+     *                  ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
+    def which(f: => Unit) {
+      registerBranch(string + " which", None, f _)
     }
 
     /**
@@ -1924,8 +1945,31 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
      * </p>
      */
+    @deprecated("that has been deprecated and will be used for a different purpose in a future version of ScalaTest. Please use which instead. (Warning: this change will likely have a shorter than usual deprecation cycle: a matter of months not years.)", "1.6.3")
     def that(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
       registerBranch(string + " that " + resultOfAfterWordApplication.text, None, resultOfAfterWordApplication.f)
+    }
+    
+    /**
+     * Registers a <code>which</code> clause that is followed by an <em>after word</em>.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre class="stHighlight">
+     * def is = afterWord("is")
+     *
+     * "a rerun button" which is {
+     *                  ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
+    def which(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
+      registerBranch(string + " which " + resultOfAfterWordApplication.text, None, resultOfAfterWordApplication.f)
     }
   }
 
@@ -1938,7 +1982,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * You create an after word by passing the repeated word or phrase to the <code>afterWord</code> method.
    * Once created, you can place the after word after <code>when</code>, a verb
    * (<code>should</code>, <code>must</code>, or <code>can</code>), or
-   * <code>that</code>. (You can't place one after <code>in</code> or <code>is</code>, the
+   * <code>which</code>. (You can't place one after <code>in</code> or <code>is</code>, the
    * words that introduce a test.) Here's an example that has after words used in all three
    * places:
    * </p>
@@ -1956,7 +2000,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    *     "clicks on an event report in the list box" should display {
    *       "a blue background in the clicked-on row in the list box" in {}
    *       "the details for the event in the details area" in {}
-   *       "a rerun button" that is {
+   *       "a rerun button" which is {
    *         "enabled if the clicked-on event is rerunnable" in {}
    *         "disabled if the clicked-on event is not rerunnable" in {}
    *       }
@@ -1985,7 +2029,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      *
      * <p>
      * This method transforms a block of code into a <code>ResultOfAfterWordApplication</code>, which
-     * is accepted by <code>when</code>, <code>should</code>, <code>must</code>, <code>can</code>, and <code>that</code>
+     * is accepted by <code>when</code>, <code>should</code>, <code>must</code>, <code>can</code>, and <code>which</code>
      * methods.  For more information, see the <a href="WordSpec.html#AfterWords">main documentation</code></a> for trait <code>WordSpec</code>.
      * </p>
      */
@@ -2001,7 +2045,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * You create an after word by passing the repeated word or phrase to the <code>afterWord</code> method.
    * Once created, you can place the after word after <code>when</code>, a verb
    * (<code>should</code>, <code>must</code>, or <code>can</code>), or
-   * <code>that</code>. (You can't place one after <code>in</code> or <code>is</code>, the
+   * <code>which</code>. (You can't place one after <code>in</code> or <code>is</code>, the
    * words that introduce a test.) Here's an example that has after words used in all three
    * places:
    * </p>
@@ -2019,7 +2063,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    *     "clicks on an event report in the list box" should display {
    *       "a blue background in the clicked-on row in the list box" in {}
    *       "the details for the event in the details area" in {}
-   *       "a rerun button" that is {
+   *       "a rerun button" which is {
    *         "enabled if the clicked-on event is rerunnable" in {}
    *         "disabled if the clicked-on event is not rerunnable" in {}
    *       }
@@ -2045,7 +2089,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
   /**
    * Implicitly converts <code>String</code>s to <code>WordSpecStringWrapper</code>, which enables
-   * methods <code>when</code>, <code>that</code>, <code>in</code>, <code>is</code>, <code>taggedAs</code>
+   * methods <code>when</code>, <code>which</code>, <code>in</code>, <code>is</code>, <code>taggedAs</code>
    * and <code>ignore</code> to be invoked on <code>String</code>s.
    */
   protected implicit def convertToWordSpecStringWrapper(s: String) = new WordSpecStringWrapper(s)
