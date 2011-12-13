@@ -17,7 +17,7 @@ package org.scalatest
 
 import org.scalatest.matchers.ShouldMatchers
 
-class TestFailedExceptionSpec extends Spec with ShouldMatchers {
+class TestFailedExceptionSpec extends FunSpec with ShouldMatchers {
 
   val baseLineNumber = 22
 

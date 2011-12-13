@@ -17,10 +17,10 @@ package org.scalatest
  */
 
 import events.NameInfo
-import fixture.FixtureSpec
+import fixture.FunSpec
 import java.util.concurrent.atomic.AtomicBoolean
 
-class ConcurrentInformerSpec extends FixtureSpec {
+class ConcurrentInformerSpec extends fixture.FunSpec {
 
   val nameInfo = NameInfo("suite name", Some("suite.class.Name"), Some("test name"))
 

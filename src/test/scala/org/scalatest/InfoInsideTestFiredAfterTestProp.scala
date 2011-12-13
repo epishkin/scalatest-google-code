@@ -50,7 +50,7 @@ class InfoInsideTestFiredAfterTestProp extends SuiteProp {
     }
 
   def spec =
-    new Spec with Services {
+    new FunSpec with Services {
       it(testName) {
         info(msg)
       }

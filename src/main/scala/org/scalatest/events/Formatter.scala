@@ -28,7 +28,7 @@ sealed abstract class Formatter
  * "Suppress" means that the event won't be reported to the user.
  *
  * <p>
- * An example is that specification-style suites, such as <code>Spec</code>, generate output that reads
+ * An example is that specification-style suites, such as <code>FunSpec</code>, generate output that reads
  * more like a specification. One aspect of this is that generally only a single event should be reported
  * for each test, so that output can appear like this:
  * </p>
@@ -41,7 +41,7 @@ sealed abstract class Formatter
  *
  * <p>
  * ScalaTest suites should generate two events per test, a <code>TestStarting</code> event and either
- * a <code>TestSucceeded</code> or a <code>TestFailed</code> event. The <code>Spec</code> trait does report both events,
+ * a <code>TestSucceeded</code> or a <code>TestFailed</code> event. The <code>FunSpec</code> trait does report both events,
  * but passes a <code>MotionToSuppress</code> along with the <code>TestStarting</code> event. As a result,
  * The <code>TestStarting</code> events have no effect on the output. Each <code>TestSucceeded</code> or
  * <code>TestFailed</code> event, which is sent with an <code>IndentedText</code> formatter instead of
@@ -64,7 +64,7 @@ final case object MotionToSuppress extends Formatter
  * A <code>Formatter</code> providing information that enables reporters to create more stylized output.
  *
  * <p>
- * An example is that specification-style suites, such as <code>Spec</code>, generate output that reads
+ * An example is that specification-style suites, such as <code>FunSpec</code>, generate output that reads
  * more like a specification, for instance:
  * </p>
  *

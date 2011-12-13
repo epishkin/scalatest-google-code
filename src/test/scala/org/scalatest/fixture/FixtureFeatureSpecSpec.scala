@@ -18,7 +18,7 @@ package org.scalatest.fixture
 import org.scalatest._
 import events.TestFailed
 
-class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
+class FixtureFeatureSpecSpec extends org.scalatest.FunSpec with SharedHelpers {
 
   describe("A FixtureFeatureSpec") {
     it("should return the test names in order of registration from testNames") {

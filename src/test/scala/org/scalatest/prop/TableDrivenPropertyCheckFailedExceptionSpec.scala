@@ -15,10 +15,10 @@
  */
 package org.scalatest.prop
 
-import org.scalatest.Spec
+import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
 
-class TableDrivenPropertyCheckFailedExceptionSpec extends Spec with ShouldMatchers with TableDrivenPropertyChecks {
+class TableDrivenPropertyCheckFailedExceptionSpec extends FunSpec with ShouldMatchers with TableDrivenPropertyChecks {
 
   val baseLineNumber = 22
 

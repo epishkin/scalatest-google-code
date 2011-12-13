@@ -18,7 +18,7 @@ package org.scalatest
 import collection.immutable.TreeSet
 import org.scalatest.events._
 
-class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
+class SuiteSpec extends FunSpec with PrivateMethodTester with SharedHelpers {
 
   describe("The simpleNameForTest method") {
     it("should return the correct test simple name with or without Informer") {

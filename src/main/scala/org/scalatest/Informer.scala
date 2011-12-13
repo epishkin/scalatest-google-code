@@ -55,7 +55,7 @@ package org.scalatest
  * </pre>
  *
  * <p>
- * Traits <code>FunSuite</code>, <code>Spec</code>, <code>FlatSpec</code>, <code>WordSpec</code>, <code>FeatureSpec</code>, and 
+ * Traits <code>FunSuite</code>, <code>FunSpec</code>, <code>FlatSpec</code>, <code>WordSpec</code>, <code>FeatureSpec</code>, and 
  * their sister traits in <code>org.scalatest.fixture</code> package declare an implicit <code>info</code> method that returns
  * an <code>Informer</code>. This implicit <code>info</code> is used, for example, to enable the syntax offered by the
  * <a href="GivenWhenThen.html"><code>GivenWhenThen</code> trait</a>, which contains methods that take an implicit <code>Informer</code>.

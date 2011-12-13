@@ -36,7 +36,7 @@ trait CustomFileBePropertyMatchers {
   val directory = new DirectoryBePropertyMatcher
 }
 
-class ShouldFileBePropertyMatcherSpec extends Spec with ShouldMatchers with CustomFileBePropertyMatchers {
+class ShouldFileBePropertyMatcherSpec extends FunSpec with ShouldMatchers with CustomFileBePropertyMatchers {
  
   describe("A temp file") {
  

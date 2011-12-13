@@ -15,10 +15,10 @@
  */
 package org.scalatestexamples
 
-import org.scalatest.Spec
+import org.scalatest.FunSpec
 import org.scalatest.ParallelTestExecution
 
-class ParallelTestExecutionExampleSpec extends Spec with StackFixtureCreationMethods with StackBehaviors with ParallelTestExecution {
+class ParallelTestExecutionExampleSpec extends FunSpec with StackFixtureCreationMethods with StackBehaviors with ParallelTestExecution {
 
   describe("A Stack") {
 

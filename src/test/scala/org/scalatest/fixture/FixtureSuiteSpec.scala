@@ -21,7 +21,7 @@ import events.TestFailed
 import events.TestSucceeded
 import mock.MockitoSugar
 
-class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
+class FixtureSuiteSpec extends org.scalatest.FunSpec with PrivateMethodTester with SharedHelpers {
 
   describe("The private testMethodTakesInformer method") {
     val testMethodTakesAFixtureAndInformer = PrivateMethod[Boolean]('testMethodTakesAFixtureAndInformer)

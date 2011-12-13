@@ -6,7 +6,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class EventSpec extends Spec with Checkers {
+class EventSpec extends FunSpec with Checkers {
 /*
   describe("An TestStarting Event") {
     describe("(with different runStamps)") {

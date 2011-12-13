@@ -112,7 +112,7 @@ import Suite.reportInfoProvided
  * <p>
  * If you prefer a behavior-driven development (BDD) style, in which tests are combined with text that
  * specifies the behavior being tested, look at
- * <a href="Spec.html"><code>Spec</code></a>, 
+ * <a href="FunSpec.html"><code>FunSpec</code></a>, 
  * <a href="FlatSpec.html"><code>FlatSpec</code></a>,
  * <a href="FreeSpec.html"><code>FreeSpec</code></a>, and
  * <a href="WordSpec.html"><code>WordSpec</code></a>. Otherwise, if you just want to write tests
@@ -570,7 +570,7 @@ import Suite.reportInfoProvided
  *
  * <p>
  * Although pending tests may be used more often in specification-style suites, such as
- * <code>org.scalatest.Spec</code>, you can also use it in <code>Suite</code>, like this:
+ * <code>org.scalatest.FunSpec</code>, you can also use it in <code>Suite</code>, like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -1906,7 +1906,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
   * to run tests in a different order, for example, to ensure that tests that depend on other tests are run after those other tests.
   * Another potential reason to override is allow tests to be defined in a different manner, such as methods annotated <code>@Test</code> annotations
   * (as is done in <code>JUnitSuite</code> and <code>TestNGSuite</code>) or test functions registered during construction (as is
-  * done in <code>FunSuite</code> and <code>Spec</code>).
+  * done in <code>FunSuite</code> and <code>FunSpec</code>).
   * </p>
   */
   def testNames: Set[String] = {
@@ -2453,7 +2453,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * Note: This method always completes abruptly with a <code>TestPendingException</code>. Thus it always has a side
    * effect. Methods with side effects are usually invoked with parentheses, as in <code>pending()</code>. This
    * method is defined as a parameterless method, in flagrant contradiction to recommended Scala style, because it 
-   * forms a kind of DSL for pending tests. It enables tests in suites such as <code>FunSuite</code> or <code>Spec</code>
+   * forms a kind of DSL for pending tests. It enables tests in suites such as <code>FunSuite</code> or <code>FunSpec</code>
    * to be denoted by placing "<code>(pending)</code>" after the test name, as in:
    * </p>
    *

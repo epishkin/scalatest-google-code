@@ -180,10 +180,10 @@ passed methodName will be "check":
 For detection of a duplicate test name in Spec, passed fileName will be "Spec.scala" and
 passed methodName will be "it":
 
-0 org.scalatest.Spec$class.registerExample(Spec.scala:682)
-1 org.scalatest.Spec$class.it(Spec.scala:712)
+0 org.scalatest.FunSpec$class.registerExample(Spec.scala:682)
+1 org.scalatest.FunSpec$class.it(Spec.scala:712)
 2 org.scalatest.ShouldContainElementSpec.it(ShouldContainElementSpec.scala:23)
-3 org.scalatest.Spec$class.it(Spec.scala:735)
+3 org.scalatest.FunSpec$class.it(Spec.scala:735)
 4 org.scalatest.ShouldContainElementSpec.it(ShouldContainElementSpec.scala:23)
 5 org.scalatest.ShouldContainElementSpec$$anonfun$1$$anonfun$apply$167.apply(ShouldContainElementSpec.scala:1092) 
 
@@ -197,21 +197,21 @@ passed methodName will be "test":
 For detection of an it inside an it in Spec, passed fileName will be "Spec.scala" and
 passed methodName will be "it":
 
-0 org.scalatest.Spec$class.it(Spec.scala:745)
+0 org.scalatest.FunSpec$class.it(Spec.scala:745)
 1 org.scalatest.ShouldBehaveLikeSpec.it(ShouldBehaveLikeSpec.scala:23)
 2 org.scalatest.ShouldBehaveLikeSpec$$anonfun$1.apply(ShouldBehaveLikeSpec.scala:26) 
 
 For detection of a describe inside an it in Spec, passed fileName will be "Spec.scala" and
 passed methodName will be "describe":
 
-0 org.scalatest.Spec$class.describe(Spec.scala:804)
+0 org.scalatest.FunSpec$class.describe(Spec.scala:804)
 1 org.scalatest.ShouldBehaveLikeSpec.describe(ShouldBehaveLikeSpec.scala:23)
 2 org.scalatest.ShouldBehaveLikeSpec$$anonfun$1.apply(ShouldBehaveLikeSpec.scala:26) 
 
 For detection of an ignore inside an it in Spec, passed fileName will be "Spec.scala" and
 passed methodName will be "ignore":
 
-0 org.scalatest.Spec$class.ignore(Spec.scala:792)
+0 org.scalatest.FunSpec$class.ignore(Spec.scala:792)
 1 org.scalatest.ShouldBehaveLikeSpec.ignore(ShouldBehaveLikeSpec.scala:23)
 2 org.scalatest.ShouldBehaveLikeSpec$$anonfun$1.apply(ShouldBehaveLikeSpec.scala:26) 
 

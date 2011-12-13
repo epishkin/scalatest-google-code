@@ -22,100 +22,156 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
 import Suite.checkRunTestParamsForNull
+import Suite.indentation
+import verb.BehaveWord
+import Suite.reportInfoProvided
+import Suite.reportTestIgnored
 
 /**
- * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands
- * for &#8220;function.&#8221; Here's an example <code>FunSuite</code>:
+ * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
+ * are combined with text that specifies the behavior the tests verify.
+ * (Note: In BDD, the word <em>example</em> is usually used instead of <em>test</em>. The word test will not appear
+ * in your code if you use <code>WordSpec</code>, so if you prefer the word <em>example</em> you can use it. However, in this documentation
+ * the word <em>test</em> will be used, for clarity and to be consistent with the rest of ScalaTest.)
+ * Here's an example <code>FunSpec</code>:
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
+ * import scala.collection.mutable.Stack
  *
- * class ExampleSuite extends FunSuite {
+ * class StackSpec extends FunSpec {
  *
- *   test("addition") {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *   }
+ *   describe("A Stack") {
  *
- *   test("subtraction") {
- *     val diff = 4 - 1
- *     assert(diff === 3)
+ *     it("should pop values in last-in-first-out order") {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *     it("should throw NoSuchElementException if an empty stack is popped") {
+ *       val emptyStack = new Stack[String]
+ *       intercept[NoSuchElementException] {
+ *         emptyStack.pop()
+ *       }
+ *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * &#8220;<code>test</code>&#8221; is a method, defined in <code>FunSuite</code>, which will be invoked
- * by the primary constructor of <code>ExampleSuite</code>. You specify the name of the test as
- * a string between the parentheses, and the test code itself between curly braces.
- * The test code is a function passed as a by-name parameter to <code>test</code>, which registers
- * it for later execution. One benefit of <code>FunSuite</code> compared to <code>Suite</code> is you need not name all your
- * tests starting with &#8220;<code>test</code>.&#8221; In addition, you can more easily give long names to
- * your tests, because you need not encode them in camel case.
+ * A <code>FunSpec</code> contains <em>describe clauses</em> and tests. You define a describe clause
+ * with <code>describe</code>, and a test with <code>it</code>. Both
+ * <code>describe</code> and <code>it</code> are methods, defined in
+ * <code>FunSpec</code>, which will be invoked
+ * by the primary constructor of <code>StackSpec</code>. 
+ * A describe clause names, or gives more information about, the <em>subject</em> (class or other entity) you are specifying
+ * and testing. In the previous example, "A Stack"
+ * is the subject under specification and test. With each test you provide a string (the <em>spec text</em>) that specifies
+ * one bit of behavior of the subject, and a block of code that tests that behavior.
+ * You place the spec text between the parentheses, followed by the test code between curly
+ * braces.  The test code will be wrapped up as a function passed as a by-name parameter to
+ * <code>it</code>, which will register the test for later execution.
  * </p>
  *
  * <p>
- * A <code>FunSuite</code>'s lifecycle has two phases: the <em>registration</em> phase and the
+ * A <code>FunSpec</code>'s lifecycle has two phases: the <em>registration</em> phase and the
  * <em>ready</em> phase. It starts in registration phase and enters ready phase the first time
  * <code>run</code> is called on it. It then remains in ready phase for the remainder of its lifetime.
  * </p>
  *
  * <p>
- * Tests can only be registered with the <code>test</code> method while the <code>FunSuite</code> is
- * in its registration phase. Any attempt to register a test after the <code>FunSuite</code> has
- * entered its ready phase, <em>i.e.</em>, after <code>run</code> has been invoked on the <code>FunSuite</code>,
+ * Tests can only be registered with the <code>it</code> method while the <code>FunSpec</code> is
+ * in its registration phase. Any attempt to register a test after the <code>FunSpec</code> has
+ * entered its ready phase, <em>i.e.</em>, after <code>run</code> has been invoked on the <code>FunSpec</code>,
  * will be met with a thrown <code>TestRegistrationClosedException</code>. The recommended style
- * of using <code>FunSuite</code> is to register tests during object construction as is done in all
+ * of using <code>FunSpec</code> is to register tests during object construction as is done in all
  * the examples shown here. If you keep to the recommended style, you should never see a
  * <code>TestRegistrationClosedException</code>.
  * </p>
  *
  * <p>
- * See also: <a href="http://www.scalatest.org/getting_started_with_fun_suite" target="_blank">Getting started with <code>FunSuite</code>.</a>
+ * When you execute a <code>FunSpec</code>, it will send <code>Formatter</code>s in the events it sends to the
+ * <code>Reporter</code>. ScalaTest's built-in reporters will report these events in such a way
+ * that the output is easy to read as an informal specification of the <em>subject</em> being tested.
+ * For example, if you ran <code>StackSpec</code> from within the Scala interpreter:
  * </p>
- * 
+ *
+ * <pre class="stREPL">
+ * scala> (new StackSpec).execute()
+ * </pre>
+ *
+ * <p>
+ * You would see:
+ * </p>
+ *
+ * <pre class="stREPL">
+ * <span class="stGreen">A Stack
+ * - should pop values in last-in-first-out order
+ * - should throw NoSuchElementException if an empty stack is popped</span>
+ * </pre>
+ *
+ * <p>
+ * <em>Note: Trait <code>FunSpec</code>'s syntax is in great part inspired by <a href="http://rspec.info/" target="_blank">RSpec</a>, a Ruby BDD framework.</em>
+ *</p>
+ *
+ * <p>
+ * See also: <a href="http://www.scalatest.org/getting_started_with_spec" target="_blank">Getting started with <code>FunSpec</code>.</a>
+ * </p>
+ *
  * <h2>Ignored tests</h2>
  *
  * <p>
  * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
- * good intention of resurrecting the test at a later time, <code>FunSuite</code> provides registration
- * methods that start with <code>ignore</code> instead of <code>test</code>. For example, to temporarily
- * disable the test named <code>addition</code>, just change &#8220;<code>test</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
+ * good intention of resurrecting the test at a later time, <code>FunSpec</code> provides registration
+ * methods that start with <code>ignore</code> instead of <code>it</code>. For example, to temporarily
+ * disable the test with the name <code>"should pop values in last-in-first-out order"</code>, just change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
+ * import scala.collection.mutable.Stack
  *
- * class ExampleSuite extends FunSuite {
+ * class StackSpec extends FunSpec {
  *
- *   ignore("addition") {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *   }
+ *   describe("A Stack") {
  *
- *   test("subtraction") {
- *     val diff = 4 - 1
- *     assert(diff === 3)
+ *     ignore("should pop values in last-in-first-out order") {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *     it("should throw NoSuchElementException if an empty stack is popped") {
+ *       val emptyStack = new Stack[String]
+ *       intercept[NoSuchElementException] {
+ *         emptyStack.pop()
+ *       }
+ *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * If you run this version of <code>ExampleSuite</code> with:
+ * If you run this version of <code>StackSpec</code> with:
  * </p>
  *
  * <pre class="stREPL">
- * scala> (new ExampleSuite).execute()
+ * scala> (new StackSpec).execute()
  * </pre>
  *
  * <p>
- * It will run only <code>subtraction</code> and report that <code>addition</code> was ignored:
+ * It will run only the second test and report that the first test was ignored:
  * </p>
  *
  * <pre class="stREPL">
- * <span class="stGreen">ExampleSuite:</span>
- * <span class="stYellow">- addition !!! IGNORED !!!</span>
- * <span class="stGreen">- subtraction</span>
+ * <span class="stGreen">A Stack</span>
+ * <span class="stYellow">- should pop values in last-in-first-out order !!! IGNORED !!!</span>
+ * <span class="stGreen">- should throw NoSuchElementException if an empty stack is popped</span>
  * </pre>
  *
  * <h2>Informers</h2>
@@ -135,26 +191,35 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
  *
- * class ExampleSuite extends FunSuite {
+ * class ExampleSpec extends FunSpec {
  *
- *   test("addition") {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *     info("Addition seems to work")
+ *   describe("The Scala language") {
+ *
+ *     it("should add correctly") {
+ *       val sum = 1 + 1
+ *       assert(sum === 2)
+ *       info("Addition seems to work")
+ *     }
+ *
+ *     it("should subtract correctly") {
+ *       val diff = 7 - 2
+ *       assert(diff === 5)
+ *     }
  *   }
  * }
  * </pre>
  *
- * If you run this <code>FunSuite</code> from the interpreter, you will see the following message
+ * If you run this <code>FunSpec</code> from the interpreter, you will see the following message
  * included in the printed report:
  *
  * <pre class="stREPL">
- * <span class="stGreen">ExampleSuite:
- * - addition
- *   + Addition seems to work</span> 
+ * <span class="stGreen">ExampleSpec:
+ * The Scala language
+ * - should add correctly
+ *   + Addition seems to work
+ * - should subtract correctly</span> 
  * </pre>
  *
  * <h2>Pending tests</h2>
@@ -183,59 +248,65 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <p>
- * Although pending tests may be used more often in specification-style suites, such as
- * <code>org.scalatest.FunSpec</code>, you can also use it in <code>FunSuite</code>, like this:
+ * You can mark a test as pending in <code>FunSpec</code> by placing "<code>(pending)</code>" after the 
+ * test name, like this:
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
+ * import scala.collection.mutable.Stack
  *
- * class ExampleSuite extends FunSuite {
+ * class StackSpec extends FunSpec {
  *
- *   test("addition") {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
+ *   describe("A Stack") {
+ *
+ *     it("should pop values in last-in-first-out order") {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *     it("should throw NoSuchElementException if an empty stack is popped") (pending)
  *   }
- *
- *   test("subtraction") (pending)
  * }
  * </pre>
  *
  * <p>
  * (Note: "<code>(pending)</code>" is the body of the test. Thus the test contains just one statement, an invocation
  * of the <code>pending</code> method, which throws <code>TestPendingException</code>.)
- * If you run this version of <code>ExampleSuite</code> with:
+ * If you run this version of <code>StackSpec</code> with:
  * </p>
  *
  * <pre class="stREPL">
- * scala> (new ExampleSuite).execute()
+ * scala> (new StackSpec).execute()
  * </pre>
  *
  * <p>
- * It will run both tests, but report that <code>subtraction</code> is pending. You'll see:
+ * It will run both tests, but report that the test named "<code>A stack should pop values in last-in-first-out order</code>" is pending. You'll see:
  * </p>
  *
  * <pre class="stREPL">
- * <span class="stGreen">ExampleSuite:
- * - addition</span>
- * <span class="stYellow">- subtraction (pending)</span>
+ * <span class="stGreen">A Stack 
+ * - should pop values in last-in-first-out order</span>
+ * <span class="stYellow">- should throw NoSuchElementException if an empty stack is popped (pending)</span>
  * </pre>
  * 
  * <h2>Tagging tests</h2>
  *
  * <p>
- * A <code>FunSuite</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
- * As with any suite, when executing a <code>FunSuite</code>, groups of tests can
- * optionally be included and/or excluded. To tag a <code>FunSuite</code>'s tests,
- * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to methods
- * that register tests, <code>test</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter, a string name.  If you have
+ * A <code>FunSpec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
+ * As with any suite, when executing a <code>FunSpec</code>, groups of tests can
+ * optionally be included and/or excluded. To tag a <code>FunSpec</code>'s tests,
+ * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
+ * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
+ * a string name.  If you have
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
+ * then you will probably want to use group names on your <code>FunSpec</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
- * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.tags.SlowTest</code> and
- * <code>com.mycompany.tags.DbTest</code>, then you could
- * create matching groups for <code>FunSuite</code>s like this:
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.tags.SlowTest</code> and <code>com.mycompany.tags.DbTest</code>, then you could
+ * create matching groups for <code>FunSpec</code>s like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -246,20 +317,20 @@ import Suite.checkRunTestParamsForNull
  * </pre>
  *
  * <p>
- * Given these definitions, you could place <code>FunSuite</code> tests into groups like this:
+ * Given these definitions, you could place <code>FunSpec</code> tests into groups like this:
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
  *
- * class ExampleSuite extends FunSuite {
+ * class ExampleSpec extends FunSpec {
  *
- *   test("addition", SlowTest) {
+ *   it("should add correctly", SlowTest) {
  *     val sum = 1 + 1
  *     assert(sum === 2)
  *   }
  *
- *   test("subtraction", SlowTest, DbTest) {
+ *   it("should subtract correctly", SlowTest, DbTest) {
  *     val diff = 4 - 1
  *     assert(diff === 3)
  *   }
@@ -267,8 +338,8 @@ import Suite.checkRunTestParamsForNull
  * </pre>
  *
  * <p>
- * This code marks both tests, "addition" and "subtraction," with the <code>com.mycompany.tags.SlowTest</code> tag, 
- * and test "subtraction" with the <code>com.mycompany.tags.DbTest</code> tag.
+ * This code marks both tests with the <code>com.mycompany.tags.SlowTest</code> tag, 
+ * and test <code>"should subtract correctly"</code> with the <code>com.mycompany.tags.DbTest</code> tag.
  * </p>
  *
  * <p>
@@ -288,7 +359,7 @@ import Suite.checkRunTestParamsForNull
  * connections, <em>etc.</em>) used by tests to do their work.
  * If a fixture is used by only one test method, then the definitions of the fixture objects can
  * be local to the method, such as the objects assigned to <code>sum</code> and <code>diff</code> in the
- * previous <code>ExampleSuite</code> examples. If multiple methods need to share an immutable fixture, one approach
+ * previous <code>ExampleSpec</code> examples. If multiple methods need to share an immutable fixture, one approach
  * is to assign them to instance variables.
  * </p>
  *
@@ -314,10 +385,10 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
  * import collection.mutable.ListBuffer
  *
- * class ExampleSuite extends FunSuite {
+ * class ExampleSpec extends FunSpec {
  * 
  *   def fixture =
  *     new {
@@ -325,19 +396,22 @@ import Suite.checkRunTestParamsForNull
  *       val buffer = new ListBuffer[String]
  *     }
  * 
- *   test("easy") {
- *     val f = fixture
- *     f.builder.append("easy!")
- *     assert(f.builder.toString === "ScalaTest is easy!")
- *     assert(f.buffer.isEmpty)
- *     f.buffer += "sweet"
- *   }
+ *   describe("Testing") {
+ *
+ *     it("should be easy") {
+ *       val f = fixture
+ *       f.builder.append("easy!")
+ *       assert(f.builder.toString === "ScalaTest is easy!")
+ *       assert(f.buffer.isEmpty)
+ *       f.buffer += "sweet"
+ *     }
  * 
- *   test("fun") {
- *     val f = fixture
- *     f.builder.append("fun!")
- *     assert(f.builder.toString === "ScalaTest is fun!")
- *     assert(f.buffer.isEmpty)
+ *     it("should be fun") {
+ *       val f = fixture
+ *       f.builder.append("fun!")
+ *       assert(f.builder.toString === "ScalaTest is fun!")
+ *       assert(f.buffer.isEmpty)
+ *     }
  *   }
  * }
  * </pre>
@@ -356,30 +430,33 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
  * import collection.mutable.ListBuffer
  * 
- * class ExampleSuite extends FunSuite {
+ * class ExampleSpec extends FunSpec {
  * 
  *   trait Fixture {
  *     val builder = new StringBuilder("ScalaTest is ")
  *     val buffer = new ListBuffer[String]
  *   }
  * 
- *   test("easy") {
- *     new Fixture {
- *       builder.append("easy!")
- *       assert(builder.toString === "ScalaTest is easy!")
- *       assert(buffer.isEmpty)
- *       buffer += "sweet"
+ *   describe("Testing") {
+ *
+ *     it("should be easy") {
+ *       new Fixture {
+ *         builder.append("easy!")
+ *         assert(builder.toString === "ScalaTest is easy!")
+ *         assert(buffer.isEmpty)
+ *         buffer += "sweet"
+ *       }
  *     }
- *   }
  * 
- *   test("fun") {
- *     new Fixture {
- *       builder.append("fun!")
- *       assert(builder.toString === "ScalaTest is fun!")
- *       assert(buffer.isEmpty)
+ *     it("should be fun") {
+ *       new Fixture {
+ *         builder.append("fun!")
+ *         assert(builder.toString === "ScalaTest is fun!")
+ *         assert(buffer.isEmpty)
+ *       }
  *     }
  *   }
  * }
@@ -395,26 +472,29 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
  * import org.scalatest.OneInstancePerTest
  * import collection.mutable.ListBuffer
  * 
- * class ExampleSuite extends FunSuite with OneInstancePerTest {
+ * class ExampleSpec extends FunSpec with OneInstancePerTest {
  * 
  *   val builder = new StringBuilder("ScalaTest is ")
  *   val buffer = new ListBuffer[String]
  * 
- *   test("easy") {
- *     builder.append("easy!")
- *     assert(builder.toString === "ScalaTest is easy!")
- *     assert(buffer.isEmpty)
- *     buffer += "sweet"
- *   }
+ *   describe("Testing") {
+ *
+ *     it("should be easy") {
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
  * 
- *   test("fun") {
- *     builder.append("fun!")
- *     assert(builder.toString === "ScalaTest is fun!")
- *     assert(buffer.isEmpty)
+ *     it("should be fun") {
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
+ *     }
  *   }
  * }
  * </pre>
@@ -434,11 +514,11 @@ import Suite.checkRunTestParamsForNull
  * </p>
  * 
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
  * import org.scalatest.BeforeAndAfter
  * import collection.mutable.ListBuffer
  * 
- * class ExampleSuite extends FunSuite with BeforeAndAfter {
+ * class ExampleSpec extends FunSpec with BeforeAndAfter {
  * 
  *   val builder = new StringBuilder
  *   val buffer = new ListBuffer[String]
@@ -452,17 +532,20 @@ import Suite.checkRunTestParamsForNull
  *     buffer.clear()
  *   }
  * 
- *   test("easy") {
- *     builder.append("easy!")
- *     assert(builder.toString === "ScalaTest is easy!")
- *     assert(buffer.isEmpty)
- *     buffer += "sweet"
- *   }
+ *   describe("Testing") {
+ *
+ *     it("should be easy") {
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
  * 
- *   test("fun") {
- *     builder.append("fun!")
- *     assert(builder.toString === "ScalaTest is fun!")
- *     assert(buffer.isEmpty)
+ *     it("should be fun") {
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
+ *     }
  *   }
  * }
  * </pre>
@@ -492,10 +575,10 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
  * import collection.mutable.ListBuffer
  *
- * class ExampleSuite extends FunSuite {
+ * class ExampleSpec extends FunSpec {
  *
  *   val builder = new StringBuilder
  *   val buffer = new ListBuffer[String]
@@ -511,18 +594,21 @@ import Suite.checkRunTestParamsForNull
  *     }
  *   }
  *
- *   test("easy") {
- *     builder.append("easy!")
- *     assert(builder.toString === "ScalaTest is easy!")
- *     assert(buffer.isEmpty)
- *     buffer += "sweet"
- *   }
+ *   describe("Testing") {
  *
- *   test("fun") {
- *     builder.append("fun!")
- *     assert(builder.toString === "ScalaTest is fun!")
- *     assert(buffer.isEmpty)
- *     buffer += "clear"
+ *     it("should be easy") {
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
+ *
+ *     it("should be fun") {
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "clear"
+ *     }
  *   }
  * }
  * </pre>
@@ -543,8 +629,8 @@ import Suite.checkRunTestParamsForNull
  * <h4>Overriding <code>withFixture(OneArgTest)</code></h4>
  *
  * <p>
- * To use the loan pattern, you can extend <code>FixtureFunSuite</code> (from the <code>org.scalatest.fixture</code> package) instead of
- * <code>FunSuite</code>. Each test in a <code>FixtureFunSuite</code> takes a fixture as a parameter, allowing you to pass the fixture into
+ * To use the loan pattern, you can extend <code>org.scalatest.fixture.FunSpec</code> (from the <code>org.scalatest.fixture</code> package) instead of
+ * <code>FunSpec</code>. Each test in a <code>org.scalatest.fixture.FunSpec</code> takes a fixture as a parameter, allowing you to pass the fixture into
  * the test. You must indicate the type of the fixture parameter by specifying <code>FixtureParam</code>, and implement a
  * <code>withFixture</code> method that takes a <code>OneArgTest</code>. This <code>withFixture</code> method is responsible for
  * invoking the one-arg test function, so you can perform fixture set up before, and clean up after, invoking and passing
@@ -552,11 +638,11 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.FixtureFunSuite
+ * import org.scalatest.fixture
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class ExampleSuite extends FixtureFunSuite {
+ * class ExampleSpec extends fixture.FunSpec {
  * 
  *   final val tmpFile = "temp.txt"
  * 
@@ -573,28 +659,31 @@ import Suite.checkRunTestParamsForNull
  *     }
  *   }
  * 
- *   test("easy") { writer =>
- *     writer.write("Hello, test!")
- *     writer.flush()
- *     assert(new File(tmpFile).length === 12)
- *   }
+ *   describe("Testing") {
+ *
+ *     it("should be easy") { writer =>
+ *       writer.write("Hello, test!")
+ *       writer.flush()
+ *       assert(new File(tmpFile).length === 12)
+ *     }
  * 
- *   test("fun") { writer =>
- *     writer.write("Hi, test!")
- *     writer.flush()
- *     assert(new File(tmpFile).length === 9)
+ *     it("should be fun") { writer =>
+ *       writer.write("Hi, test!")
+ *       writer.flush()
+ *       assert(new File(tmpFile).length === 9)
+ *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * For more information, see the <a href="fixture/FixtureFunSuite.html">documentation for <code>FixtureFunSuite</code></a>.
+ * For more information, see the <a href="fixture/FunSpec.html">documentation for <code>org.scalatest.fixture.FunSpec</code></a>.
  * </p>
  *
  * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
  * 
  * <p>
- * If different tests in the same <code>FunSuite</code> require different fixtures, you can combine the previous techniques and
+ * If different tests in the same <code>FunSpec</code> require different fixtures, you can combine the previous techniques and
  * provide each test with just the fixture or fixtures it needs. Here's an example in which a <code>StringBuilder</code> and a
  * <code>ListBuffer</code> are provided via fixture traits, and file writer (that requires cleanup) is provided via the loan pattern:
  * </p>
@@ -603,9 +692,9 @@ import Suite.checkRunTestParamsForNull
  * import java.io.FileWriter
  * import java.io.File
  * import collection.mutable.ListBuffer
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
  * 
- * class ExampleSuite extends FunSuite {
+ * class ExampleSpec extends FunSpec {
  * 
  *   final val tmpFile = "temp.txt"
  * 
@@ -627,47 +716,50 @@ import Suite.checkRunTestParamsForNull
  *     }
  *   }
  * 
- *   test("productive") { // This test needs the StringBuilder fixture
- *     new Builder {
- *       builder.append("productive!")
- *       assert(builder.toString === "ScalaTest is productive!")
+ *   describe("Testing") {
+ *
+ *     it("should be productive") { // This test needs the StringBuilder fixture
+ *       new Builder {
+ *         builder.append("productive!")
+ *         assert(builder.toString === "ScalaTest is productive!")
+ *       }
  *     }
- *   }
  * 
- *   test("readable") { // This test needs the ListBuffer[String] fixture
- *     new Buffer {
- *       buffer += ("readable!")
- *       assert(buffer === List("ScalaTest", "is", "readable!"))
+ *     it("should be readable") { // This test needs the ListBuffer[String] fixture
+ *       new Buffer {
+ *         buffer += ("readable!")
+ *         assert(buffer === List("ScalaTest", "is", "readable!"))
+ *       }
  *     }
- *   }
  * 
- *   test("friendly") { // This test needs the FileWriter fixture
- *     withWriter { writer =>
- *       writer.write("Hello, user!")
- *       writer.flush()
- *       assert(new File(tmpFile).length === 12)
- *     }
- *   }
- * 
- *   test("clear and concise") { // This test needs the StringBuilder and ListBuffer
- *     new Builder with Buffer {
- *       builder.append("clear!")
- *       buffer += ("concise!")
- *       assert(builder.toString === "ScalaTest is clear!")
- *       assert(buffer === List("ScalaTest", "is", "concise!"))
- *     }
- *   }
- * 
- *   test("composable") { // This test needs all three fixtures
- *     new Builder with Buffer {
- *       builder.append("clear!")
- *       buffer += ("concise!")
- *       assert(builder.toString === "ScalaTest is clear!")
- *       assert(buffer === List("ScalaTest", "is", "concise!"))
+ *     it("should be friendly") { // This test needs the FileWriter fixture
  *       withWriter { writer =>
- *         writer.write(builder.toString)
+ *         writer.write("Hello, user!")
  *         writer.flush()
- *         assert(new File(tmpFile).length === 19)
+ *         assert(new File(tmpFile).length === 12)
+ *     }
+ *   }
+ * 
+ *     it("should be clear and concise") { // This test needs the StringBuilder and ListBuffer
+ *       new Builder with Buffer {
+ *         builder.append("clear!")
+ *         buffer += ("concise!")
+ *         assert(builder.toString === "ScalaTest is clear!")
+ *         assert(buffer === List("ScalaTest", "is", "concise!"))
+ *       }
+ *     }
+ * 
+ *     it("should be composable") { // This test needs all three fixtures
+ *       new Builder with Buffer {
+ *         builder.append("clear!")
+ *         buffer += ("concise!")
+ *         assert(builder.toString === "ScalaTest is clear!")
+ *         assert(buffer === List("ScalaTest", "is", "concise!"))
+ *         withWriter { writer =>
+ *           writer.write(builder.toString)
+ *           writer.flush()
+ *           assert(new File(tmpFile).length === 19)
+ *         }
  *       }
  *     }
  *   }
@@ -675,22 +767,22 @@ import Suite.checkRunTestParamsForNull
  * </pre>
  *
  * <p>
- * In the previous example, <code>productive</code> uses only the <code>StringBuilder</code> fixture, so it just instantiates
- * a <code>new Builder</code>, whereas <code>readable</code> uses only the <code>ListBuffer</code> fixture, so it just intantiates
- * a <code>new Buffer</code>. <code>friendly</code> needs just the <code>FileWriter</code> fixture, so it invokes
+ * In the previous example, <code>should be productive</code> uses only the <code>StringBuilder</code> fixture, so it just instantiates
+ * a <code>new Builder</code>, whereas <code>should be readable</code> uses only the <code>ListBuffer</code> fixture, so it just intantiates
+ * a <code>new Buffer</code>. <code>should be friendly</code> needs just the <code>FileWriter</code> fixture, so it invokes
  * <code>withWriter</code>, which prepares and passes a <code>FileWriter</code> to the test (and takes care of closing it afterwords).
  * </p>
  *
  * <p>
- * Two tests need multiple fixtures: <code>clear and concise</code> needs both the <code>StringBuilder</code> and the
+ * Two tests need multiple fixtures: <code>should be clear and concise</code> needs both the <code>StringBuilder</code> and the
  * <code>ListBuffer</code>, so it instantiates a class that mixes in both fixture traits with <code>new Builder with Buffer</code>.
- * <code>composable</code> needs all three fixtures, so in addition to <code>new Builder with Buffer</code> it also invokes
+ * <code>should be composable</code> needs all three fixtures, so in addition to <code>new Builder with Buffer</code> it also invokes
  * <code>withWriter</code>, wrapping just the of the test code that needs the fixture.
  * </p>
  *
  * <p>
  * Note that in this case, the loan pattern is being implemented via the <code>withWriter</code> method that takes a function, not
- * by overriding <code>FixtureFunSuite</code>'s <code>withFixture(OneArgTest)</code> method. <code>FixtureFunSuite</code> makes the most sense
+ * by overriding <code>org.scalatest.fixture.FunSpec</code>'s <code>withFixture(OneArgTest)</code> method. <code>org.scalatest.fixture.FunSpec</code> makes the most sense
  * if all (or at least most) tests need the same fixture, whereas in this <code>Suite</code> only two tests need the
  * <code>FileWriter</code>.
  * </p>
@@ -720,13 +812,15 @@ import Suite.checkRunTestParamsForNull
  * </p>
  * 
  * <pre class="stHighlight">
- * test("User logs in") {
- *   withDataInDatabase {
- *     // test user logging in scenario
+ * describe("A user") {
+ *   it("should be able to log in") {
+ *     withDataInDatabase {
+ *       // test user logging in scenario
+ *     }
  *   }
  * }
  * </pre>
- * 
+ *
  * <a name="composingFixtures"></a><h2>Composing stackable fixture traits</h2>
  *
  * <p>
@@ -739,7 +833,7 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
  * import org.scalatest.AbstractSuite
  * import collection.mutable.ListBuffer
  * 
@@ -772,33 +866,36 @@ import Suite.checkRunTestParamsForNull
  *   }
  * }
  * 
- * class ExampleSuite extends FunSuite with Builder with Buffer {
+ * class ExampleSpec extends FunSpec with Builder with Buffer {
  * 
- *   test("easy") {
- *     builder.append("easy!")
- *     assert(builder.toString === "ScalaTest is easy!")
- *     assert(buffer.isEmpty)
- *     buffer += "sweet"
- *   }
+ *   describe("Testing") {
+ *
+ *     it("should be easy") {
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
  * 
- *   test("fun") {
- *     builder.append("fun!")
- *     assert(builder.toString === "ScalaTest is fun!")
- *     assert(buffer.isEmpty)
- *     buffer += "clear"
+ *     it("should be fun") {
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "clear"
+ *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * By mixing in both the <code>Builder</code> and <code>Buffer</code> traits, <code>ExampleSuite</code> gets both fixtures, which will be
+ * By mixing in both the <code>Builder</code> and <code>Buffer</code> traits, <code>ExampleSpec</code> gets both fixtures, which will be
  * initialized before each test and cleaned up after. The order the traits are mixed together determines the order of execution.
  * In this case, <code>Builder</code> is "super" to </code>Buffer</code>. If you wanted <code>Buffer</code> to be "super"
  * to <code>Builder</code>, you need only switch the order you mix them together, like this: 
  * </p>
  *
  * <pre class="stHighlight">
- * class Example2Suite extends FunSuite with Buffer with Builder
+ * class Example2Spec extends FunSpec with Buffer with Builder
  * </pre>
  *
  * <p>
@@ -806,7 +903,7 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * class Example3Suite extends FunSuite with Builder
+ * class Example3Spec extends FunSpec with Builder
  * </pre>
  *
  * <p>
@@ -820,7 +917,7 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * import org.scalatest.FunSpec
  * import org.scalatest.BeforeAndAfterEach
  * import collection.mutable.ListBuffer
  * 
@@ -857,20 +954,23 @@ import Suite.checkRunTestParamsForNull
  *   }
  * }
  * 
- * class ExampleSuite extends FunSuite with Builder with Buffer {
+ * class ExampleSpec extends FunSpec with Builder with Buffer {
  * 
- *   test("easy") {
- *     builder.append("easy!")
- *     assert(builder.toString === "ScalaTest is easy!")
- *     assert(buffer.isEmpty)
- *     buffer += "sweet"
- *   }
+ *   describe("Testing") {
+ *
+ *     it("should be easy") {
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
+ *     }
  * 
- *   test("fun") {
- *     builder.append("fun!")
- *     assert(builder.toString === "ScalaTest is fun!")
- *     assert(buffer.isEmpty)
- *     buffer += "clear"
+ *     it("should be fun") {
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(buffer.isEmpty)
+ *       buffer += "clear"
+ *     }
  *   }
  * }
  * </pre>
@@ -897,10 +997,8 @@ import Suite.checkRunTestParamsForNull
  * <p>
  * Sometimes you may want to run the same test code on different fixture objects. In other words, you may want to write tests that are "shared"
  * by different fixture objects.
- * To accomplish this in a <code>FunSuite</code>, you first place shared tests in
- * <em>behavior functions</em>. These behavior functions will be
- * invoked during the construction phase of any <code>FunSuite</code> that uses them, so that the tests they contain will
- * be registered as tests in that <code>FunSuite</code>.
+ * To accomplish this in a <code>FunSpec</code>, you first place shared tests in <em>behavior functions</em>. These behavior functions will be
+ * invoked during the construction phase of any <code>FunSpec</code> that uses them, so that the tests they contain will be registered as tests in that <code>FunSpec</code>.
  * For example, given this stack class:
  * </p>
  *
@@ -946,55 +1044,50 @@ import Suite.checkRunTestParamsForNull
  * <em>etc</em>. You may find you have several tests that make sense any time the stack is non-empty. Thus you'd ideally want to run
  * those same tests for three stack fixture objects: a full stack, a stack with a one item, and a stack with one item less than
  * capacity. With shared tests, you can factor these tests out into a behavior function, into which you pass the
- * stack fixture to use when running the tests. So in your <code>FunSuite</code> for stack, you'd invoke the
- * behavior function three times, passing in each of the three stack fixtures so that the shared tests are run for all three fixtures.
+ * stack fixture to use when running the tests. So in your <code>FunSpec</code> for stack, you'd invoke the
+ * behavior function three times, passing in each of the three stack fixtures so that the shared tests are run for all three fixtures. You
+ * can define a behavior function that encapsulates these shared tests inside the <code>FunSpec</code> that uses them. If they are shared
+ * between different <code>FunSpec</code>s, however, you could also define them in a separate trait that is mixed into each <code>FunSpec</code> that uses them.
  * </p>
  *
  * <p>
- * You can define a behavior function that encapsulates these shared tests inside the <code>FunSuite</code> that uses them. If they are shared
- * between different <code>FunSuite</code>s, however, you could also define them in a separate trait that is mixed into
- * each <code>FunSuite</code> that uses them.
- * <a name="StackBehaviors">For</a> example, here the <code>nonEmptyStack</code> behavior function (in this case, a
- * behavior <em>method</em>) is defined in a trait along with another
+ * <a name="StackBehaviors">For</a> example, here the <code>nonEmptyStack</code> behavior function (in this case, a behavior <em>method</em>) is defined in a trait along with another
  * method containing shared tests for non-full stacks:
  * </p>
  * 
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
+ * trait StackBehaviors { this: FunSpec =>
  * 
- * trait FunSuiteStackBehaviors { this: FunSuite =>
+ *   def nonEmptyStack(stack: Stack[Int], lastItemAdded: Int) {
  * 
- *   def nonEmptyStack(createNonEmptyStack: => Stack[Int], lastItemAdded: Int) {
- * 
- *     test("empty is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
- *       val stack = createNonEmptyStack
+ *     it("should be non-empty") {
  *       assert(!stack.empty)
- *     }
+ *     }  
  * 
- *     test("peek is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
- *       val stack = createNonEmptyStack
+ *     it("should return the top item on peek") {
+ *       assert(stack.peek === lastItemAdded)
+ *     }
+ *   
+ *     it("should not remove the top item on peek") {
  *       val size = stack.size
  *       assert(stack.peek === lastItemAdded)
  *       assert(stack.size === size)
  *     }
- * 
- *     test("pop is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
- *       val stack = createNonEmptyStack
+ *   
+ *     it("should remove the top item on pop") {
  *       val size = stack.size
  *       assert(stack.pop === lastItemAdded)
  *       assert(stack.size === size - 1)
  *     }
  *   }
  *   
- *   def nonFullStack(createNonFullStack: => Stack[Int]) {
+ *   def nonFullStack(stack: Stack[Int]) {
  *       
- *     test("full is invoked on this non-full stack: " + createNonFullStack.toString) {
- *       val stack = createNonFullStack
+ *     it("should not be full") {
  *       assert(!stack.full)
  *     }
  *       
- *     test("push is invoked on this non-full stack: " + createNonFullStack.toString) {
- *       val stack = createNonFullStack
+ *     it("should add to the top on push") {
  *       val size = stack.size
  *       stack.push(7)
  *       assert(stack.size === size + 1)
@@ -1005,13 +1098,13 @@ import Suite.checkRunTestParamsForNull
  * </pre>
  *
  * <p>
- * Given these behavior functions, you could invoke them directly, but <code>FunSuite</code> offers a DSL for the purpose,
+ * Given these behavior functions, you could invoke them directly, but <code>FunSpec</code> offers a DSL for the purpose,
  * which looks like this:
  * </p>
  *
  * <pre class="stHighlight">
- * testsFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
- * testsFor(nonFullStack(stackWithOneItem))
+ * it should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
+ * it should behave like nonFullStack(stackWithOneItem)
  * </pre>
  *
  * <p>
@@ -1022,8 +1115,8 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * testsFor(nonEmptyStack) // assuming lastValuePushed is also in scope inside nonEmptyStack
- * testsFor(nonFullStack)
+ * it should behave like nonEmptyStack // assuming lastValuePushed is also in scope inside nonEmptyStack
+ * it should behave like nonFullStack
  * </pre>
  *
  * <p>
@@ -1031,71 +1124,77 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.FunSuite
- * 
- * class StackFunSuite extends FunSuite with FunSuiteStackBehaviors {
+ * class SharedTestExampleSpec extends FunSpec with StackBehaviors {
  * 
  *   // Stack fixture creation methods
  *   def emptyStack = new Stack[Int]
- *  
+ * 
  *   def fullStack = {
  *     val stack = new Stack[Int]
  *     for (i <- 0 until stack.MAX)
  *       stack.push(i)
  *     stack
  *   }
- *  
+ * 
  *   def stackWithOneItem = {
  *     val stack = new Stack[Int]
  *     stack.push(9)
  *     stack
  *   }
- *  
+ * 
  *   def stackWithOneItemLessThanCapacity = {
  *     val stack = new Stack[Int]
  *     for (i <- 1 to 9)
  *       stack.push(i)
  *     stack
  *   }
- *  
+ * 
  *   val lastValuePushed = 9
- *  
- *   test("empty is invoked on an empty stack") {
- *     val stack = emptyStack
- *     assert(stack.empty)
- *   }
- *
- *   test("peek is invoked on an empty stack") {
- *     val stack = emptyStack
- *     intercept[IllegalStateException] {
- *       stack.peek
+ * 
+ *   describe("A Stack") {
+ * 
+ *     describe("(when empty)") {
+ *       
+ *       it("should be empty") {
+ *         assert(emptyStack.empty)
+ *       }
+ * 
+ *       it("should complain on peek") {
+ *         intercept[IllegalStateException] {
+ *           emptyStack.peek
+ *         }
+ *       }
+ * 
+ *       it("should complain on pop") {
+ *         intercept[IllegalStateException] {
+ *           emptyStack.pop
+ *         }
+ *       }
  *     }
- *   }
- *
- *   test("pop is invoked on an empty stack") {
- *     val stack = emptyStack
- *     intercept[IllegalStateException] {
- *       emptyStack.pop
+ * 
+ *     describe("(with one item)") {
+ *       it should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
+ *       it should behave like nonFullStack(stackWithOneItem)
  *     }
- *   }
- *
- *   testsFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
- *   testsFor(nonFullStack(stackWithOneItem))
- *
- *   testsFor(nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed))
- *   testsFor(nonFullStack(stackWithOneItemLessThanCapacity))
- *
- *   test("full is invoked on a full stack") {
- *     val stack = fullStack
- *     assert(stack.full)
- *   }
- *
- *   testsFor(nonEmptyStack(fullStack, lastValuePushed))
- *
- *   test("push is invoked on a full stack") {
- *     val stack = fullStack
- *     intercept[IllegalStateException] {
- *       stack.push(10)
+ *     
+ *     describe("(with one item less than capacity)") {
+ *       it should behave like nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed)
+ *       it should behave like nonFullStack(stackWithOneItemLessThanCapacity)
+ *     }
+ * 
+ *     describe("(full)") {
+ *       
+ *       it("should be full") {
+ *         assert(fullStack.full)
+ *       }
+ * 
+ *       it should behave like nonEmptyStack(fullStack, lastValuePushed)
+ * 
+ *       it("should complain on a push") {
+ *         intercept[IllegalStateException] {
+ *           fullStack.push(10)
+ *         }
+ *       }
  *     }
  *   }
  * }
@@ -1107,151 +1206,272 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stREPL">
- * scala> (new StackFunSuite).execute()
- * <span class="stGreen">StackFunSuite:
- * - empty is invoked on an empty stack
- * - peek is invoked on an empty stack
- * - pop is invoked on an empty stack
- * - empty is invoked on this non-empty stack: Stack(9)
- * - peek is invoked on this non-empty stack: Stack(9)
- * - pop is invoked on this non-empty stack: Stack(9)
- * - full is invoked on this non-full stack: Stack(9)
- * - push is invoked on this non-full stack: Stack(9)
- * - empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * - peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * - pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * - full is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * - push is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * - full is invoked on a full stack
- * - empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
- * - peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
- * - pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
- * - push is invoked on a full stack</span>
+ * scala> (new StackSpec).execute()
+ * <span class="stGreen">A Stack (when empty) 
+ * - should be empty
+ * - should complain on peek
+ * - should complain on pop
+ * A Stack (with one item) 
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should not be full
+ * - should add to the top on push
+ * A Stack (with one item less than capacity) 
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should not be full
+ * - should add to the top on push
+ * A Stack (full) 
+ * - should be full
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should complain on a push</span>
  * </pre>
  * 
  * <p>
  * One thing to keep in mind when using shared tests is that in ScalaTest, each test in a suite must have a unique name.
  * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime
- * complaining that multiple tests are being registered with the same test name.
- * In a <code>FunSuite</code> there is no nesting construct analogous to <code>FunSpec</code>'s <code>describe</code> clause.
- * Therefore, you need to do a bit of
- * extra work to ensure that the test names are unique. If a duplicate test name problem shows up in a
- * <code>FunSuite</code>, you'll need to pass in a prefix or suffix string to add to each test name. You can pass this string
- * the same way you pass any other data needed by the shared tests, or just call <code>toString</code> on the shared fixture object.
- * This is the approach taken by the previous <code>FunSuiteStackBehaviors</code> example.
- * </p>
- *
- * <p>
- * Given this <code>FunSuiteStackBehaviors</code> trait, calling it with the <code>stackWithOneItem</code> fixture, like this:
+ * complaining that multiple tests are being registered with the same test name. A good way to solve this problem in a <code>FunSpec</code> is to surround
+ * each invocation of a behavior function with a <code>describe</code> clause, which will prepend a string to each test name.
+ * For example, the following code in a <code>FunSpec</code> would register a test with the name <code>"A Stack (when empty) should be empty"</code>:
  * </p>
  *
  * <pre class="stHighlight">
- * testsFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
+ *   describe("A Stack") {
+ * 
+ *     describe("(when empty)") {
+ *       
+ *       it("should be empty") {
+ *         assert(emptyStack.empty)
+ *       }
+ *       // ...
  * </pre>
  *
  * <p>
- * yields test names:
- * </p>
- *
- * <ul>
- * <li><code>empty is invoked on this non-empty stack: Stack(9)</code></li>
- * <li><code>peek is invoked on this non-empty stack: Stack(9)</code></li>
- * <li><code>pop is invoked on this non-empty stack: Stack(9)</code></li>
- * </ul>
- *
- * <p>
- * Whereas calling it with the <code>stackWithOneItemLessThanCapacity</code> fixture, like this:
- * </p>
- *
- * <pre class="stHighlight">
- * testsFor(nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed))
- * </pre>
- *
- * <p>
- * yields different test names:
- * </p>
- *
- * <ul>
- * <li><code>empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)</code></li>
- * <li><code>peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)</code></li>
- * <li><code>pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)</code></li>
- * </ul>
+ * If the <code>"should be empty"</code> test was factored out into a behavior function, it could be called repeatedly so long
+ * as each invocation of the behavior function is inside a different set of <code>describe</code> clauses.
  *
  * @author Bill Venners
  */
-trait FunSuite extends Suite { thisSuite =>
+trait FunSpec extends Suite { thisSuite =>
 
-  private final val engine = new Engine("concurrentFunSuiteMod", "FunSuite")
+  private final val engine = new Engine("concurrentSpecMod", "Spec")
   import engine._
+  
+  protected[scalatest] val fileName = "FunSpec.scala"
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
    * <code>apply</code> method to the current reporter. If invoked in a constructor, it
    * will register the passed string for forwarding later during test execution. If invoked while this
-   * <code>FunSuite</code> is being executed, such as from inside a test function, it will forward the information to
+   * <code>FunSpec</code> is being executed, such as from inside a test function, it will forward the information to
    * the current reporter immediately. If invoked at any other time, it will
    * throw an exception. This method can be called safely by any thread.
    */
   implicit protected def info: Informer = atomicInformer.get
 
   /**
-   * Register a test with the specified name, optional tags, and function value that takes no arguments.
-   * This method will register the test for later execution via an invocation of one of the <code>run</code>
-   * methods. The passed test name must not have been registered previously on
-   * this <code>FunSuite</code> instance.
+   * Class that, via an instance referenced from the <code>it</code> field,
+   * supports test (and shared test) registration in <code>FunSpec</code>s.
    *
-   * @param testName the name of the test
-   * @param testTags the optional list of tags for this test
-   * @param testFun the test function
-   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-   * @throws DuplicateTestNameException if a test with the same name has been registered previously
-   * @throws NotAllowedException if <code>testName</code> had been registered previously
-   * @throws NullPointerException if <code>testName</code> or any passed test tag is <code>null</code>
+   * <p>
+   * This class supports syntax such as the following test registration:
+   * </p>
+   *
+   * <pre class="stExamples">
+   * it("should be empty")
+   * ^
+   * </pre>
+   *
+   * <p>
+   * and the following shared test registration:
+   * </p>
+   *
+   * <pre class="stExamples">
+   * it should behave like nonFullStack(stackWithOneItem)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples, see the <a href="FunSpec.html">main documentation for <code>FunSpec</code></a>.
+   * </p>
    */
-  protected def test(testName: String, testTags: Tag*)(testFun: => Unit) {
-    registerTest(testName, testFun _, "testCannotAppearInsideAnotherTest", "FunSuite.scala", "test", testTags: _*)
+  protected class ItWord {
+
+    /**
+     * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
+     * An invocation of this method is called an &#8220;example.&#8221;
+     *
+     * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+     * methods. The name of the test will be a concatenation of the text of all surrounding describers,
+     * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+     * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+     * this <code>FunSpec</code> instance.
+     *
+     * @param specText the specification text, which will be combined with the descText of any surrounding describers
+     * to form the test name
+     * @param testTags the optional list of tags for this test
+     * @param testFun the test function
+     * @throws DuplicateTestNameException if a test with the same name has been registered previously
+     * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
+     * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
+     */
+    def apply(specText: String, testTags: Tag*)(testFun: => Unit) {
+      registerTest(specText, testFun _, "itCannotAppearInsideAnotherIt", fileName, "apply", testTags: _*)
+    }
+
+    /**
+     * Supports the registration of shared tests.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre class="stExamples">
+     * it should behave like nonFullStack(stackWithOneItem)
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="FunSpec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>FunSpec</code>.
+     * </p>
+     */
+    def should(behaveWord: BehaveWord) = behaveWord
+
+    /**
+     * Supports the registration of shared tests.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre class="stExamples">
+     * it must behave like nonFullStack(stackWithOneItem)
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="FunSpec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>FunSpec</code>.
+     * </p>
+     */
+    def must(behaveWord: BehaveWord) = behaveWord
   }
 
   /**
-   * Register a test to ignore, which has the specified name, optional tags, and function value that takes no arguments.
-   * This method will register the test for later ignoring via an invocation of one of the <code>run</code>
-   * methods. This method exists to make it easy to ignore an existing test by changing the call to <code>test</code>
-   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be run, but a
-   * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
-   * this <code>FunSuite</code> instance.
+   * Supports test (and shared test) registration in <code>FunSpec</code>s.
    *
-   * @param testName the name of the test
+   * <p>
+   * This field supports syntax such as the following:
+   * </p>
+   *
+   * <pre class="stExamples">
+   * it("should be empty")
+   * ^
+   * </pre>
+   *
+   * <pre> class="stExamples"
+   * it should behave like nonFullStack(stackWithOneItem)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of the <code>it</code> field, see the main documentation for this trait.
+   * </p>
+   */
+  protected val it = new ItWord
+
+  /**
+   * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
+   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing test by changing the call to <code>it</code>
+   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
+   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+   * this <code>FunSpec</code> instance.
+   *
+   * @param specText the specification text, which will be combined with the descText of any surrounding describers
+   * to form the test name
    * @param testTags the optional list of tags for this test
    * @param testFun the test function
-   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
-   * @throws NotAllowedException if <code>testName</code> had been registered previously
+   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
+   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(testName: String, testTags: Tag*)(testFun: => Unit) {
-    registerIgnoredTest(testName, testFun _, "ignoreCannotAppearInsideATest", "FunSuite.scala", "ignore", testTags: _*)
+  protected def ignore(testText: String, testTags: Tag*)(testFun: => Unit) {
+    registerIgnoredTest(testText, testFun _, "ignoreCannotAppearInsideAnIt", fileName, "ignore", testTags: _*)
   }
 
   /**
-  * An immutable <code>Set</code> of test names. If this <code>FunSuite</code> contains no tests, this method returns an empty <code>Set</code>.
-  *
-  * <p>
-  * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's iterator will
-  * return those names in the order in which the tests were registered.
-  * </p>
-  */
+   * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
+   * passed function value may contain more describers (defined with <code>describe</code>) and/or tests
+   * (defined with <code>it</code>). This trait's implementation of this method will register the
+   * description string and immediately invoke the passed function.
+   */
+  protected def describe(description: String)(fun: => Unit) {
+
+    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", fileName, "describe")
+  }
+
+  /**
+   * An immutable <code>Set</code> of test names. If this <code>FunSpec</code> contains no tests, this method returns an
+   * empty <code>Set</code>.
+   *
+   * <p>
+   * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's
+   * iterator will return those names in the order in which the tests were registered. Each test's name is composed
+   * of the concatenation of the text of each surrounding describer, in order from outside in, and the text of the
+   * example itself, with all components separated by a space. For example, consider this <code>FunSpec</code>:
+   * </p>
+   *
+   * <pre class="stHighlight">
+   * import org.scalatest.FunSpec
+   *
+   * class StackSpec extends FunSpec {
+   *   describe("A Stack") {
+   *     describe("(when not empty)") {
+   *       it("must allow me to pop") {}
+   *     }
+   *     describe("(when not full)") {
+   *       it("must allow me to push") {}
+   *     }
+   *   }
+   * }
+   * </pre>
+   *
+   * <p>
+   * Invoking <code>testNames</code> on this <code>FunSpec</code> will yield a set that contains the following
+   * two test name strings:
+   * </p>
+   *
+   * <pre class="stExamples">
+   * "A Stack (when not empty) must allow me to pop"
+   * "A Stack (when not full) must allow me to push"
+   * </pre>
+   */
   override def testNames: Set[String] = {
     // I'm returning a ListSet here so that they tests will be run in registration order
     ListSet(atomic.get.testNamesList.toArray: _*)
   }
 
   /**
-   * Run a test. This trait's implementation runs the test registered with the name specified by <code>testName</code>.
+   * Run a test. This trait's implementation runs the test registered with the name specified by
+   * <code>testName</code>. Each test's name is a concatenation of the text of all describers surrounding a test,
+   * from outside in, and the test's  spec text, with one space placed between each item. (See the documenation
+   * for <code>testNames</code> for an example.)
    *
-   * @param testName the name of one test to run.
+   * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param configMap a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
-   * @throws IllegalArgumentException if <code>testName</code> is defined but a test with that name does not exist on this <code>FunSuite</code>
+   * @param configMap a <code>Map</code> of properties that can be used by this <code>FunSpec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>configMap</code>
    *     is <code>null</code>.
    */
@@ -1272,8 +1492,8 @@ trait FunSuite extends Suite { thisSuite =>
   }
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSuite</code> belong, and values
-   * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.
+   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSpec</code> belong, and values
+   * the <code>Set</code> of test names that belong to each tag. If this <code>FunSpec</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
    * This trait's implementation returns tags that were passed as strings contained in <code>Tag</code> objects passed to 
@@ -1283,7 +1503,7 @@ trait FunSuite extends Suite { thisSuite =>
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
 
   /**
-   * Run zero to many of this <code>FunSuite</code>'s tests.
+   * Run zero to many of this <code>FunSpec</code>'s tests.
    *
    * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
    *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
@@ -1311,27 +1531,21 @@ trait FunSuite extends Suite { thisSuite =>
   }
 
   /**
-   * Registers shared tests.
+   * Supports shared test registration in <code>FunSpec</code>s.
    *
    * <p>
-   * This method enables the following syntax for shared tests in a <code>FunSuite</code>:
+   * This field supports syntax such as the following:
    * </p>
    *
-   * <pre class="stHighlight">
-   * testsFor(nonEmptyStack(lastValuePushed))
+   * <pre class="stExamples">
+   * it should behave like nonFullStack(stackWithOneItem)
+   *           ^
    * </pre>
    *
    * <p>
-   * This method just provides syntax sugar intended to make the intent of the code clearer.
-   * Because the parameter passed to it is
-   * type <code>Unit</code>, the expression will be evaluated before being passed, which
-   * is sufficient to register the shared tests. For examples of shared tests, see the
-   * <a href="#SharedTests">Shared tests section</a> in the main documentation for this trait.
+   * For more information and examples of the use of <cod>behave</code>, see the <a href="#SharedTests">Shared tests section</a>
+   * in the main documentation for this trait.
    * </p>
    */
-  protected def testsFor(unit: Unit) {}
-}
-
-private[scalatest] object FunSuite {
-  val IgnoreTagName = "org.scalatest.Ignore"
+  protected val behave = new BehaveWord
 }

@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-class FailureOfSpec extends Spec with FailureOf {
+class FailureOfSpec extends FunSpec with FailureOf {
 
   describe("The failureOf method") {
     it("should return None if no exception is thrown") {

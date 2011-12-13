@@ -16,16 +16,16 @@
 package org.scalatest
 
 import org.scalatest.prop.Tables
-import org.scalatest.fixture._
+import org.scalatest.fixture
 
 trait SuiteExamples extends Tables {
 
   type FixtureServices
 
   def funSuite: FunSuite with FixtureServices
-  def fixtureFunSuite: FixtureFunSuite with FixtureServices
-  def spec: Spec with FixtureServices
-  def fixtureSpec: FixtureSpec with FixtureServices
+  def fixtureFunSuite: fixture.FixtureFunSuite with FixtureServices
+  def spec: FunSpec with FixtureServices
+  def fixtureSpec: fixture.FunSpec with FixtureServices
 
   def examples =
     Table(

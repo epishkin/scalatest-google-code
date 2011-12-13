@@ -23,12 +23,14 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
+import verb.BehaveWord
+import FunSuite.IgnoreTagName 
 
 /**
- * A sister trait to <code>org.scalatest.FeatureSpec</code> that can pass a fixture object into its tests.
+ * A sister trait to <code>org.scalatest.FunSpec</code> that can pass a fixture object into its tests.
  *
  * <p>
- * The purpose of <code>FeatureSpec</code> and its subtraits is to facilitate writing tests in
+ * The purpose of <code>FunSpec</code> and its subtraits is to facilitate writing tests in
  * a functional style. Some users may prefer writing tests in a functional style in general, but one
  * particular use case is parallel test execution (See <a href="../ParallelTestExecution.html">ParallelTestExecution</a>). To run
  * tests in parallel, your test class must
@@ -38,7 +40,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <p>
- * Trait <code>FeatureSpec</code> behaves similarly to trait <code>org.scalatest.FeatureSpec</code>, except that tests may have a
+ * Trait <code>FunSpec</code> behaves similarly to trait <code>org.scalatest.FunSpec</code>, except that tests may have a
  * fixture parameter. The type of the
  * fixture parameter is defined by the abstract <code>FixtureParam</code> type, which is declared as a member of this trait.
  * This trait also declares an abstract <code>withFixture</code> method. This <code>withFixture</code> method
@@ -51,7 +53,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  * 
  * <p>
- * Subclasses of this trait must, therefore, do three things differently from a plain old <code>org.scalatest.FeatureSpec</code>:
+ * Subclasses of this trait must, therefore, do three things differently from a plain old <code>org.scalatest.FunSpec</code>:
  * </p>
  * 
  * <ol>
@@ -70,7 +72,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import collection.mutable.Stack
  * import java.util.NoSuchElementException
  *
- * class StackSpec extends fixture.FeatureSpec {
+ * class StackSpec extends fixture.FunSpec {
  *
  *   // 1. define type FixtureParam
  *   type FixtureParam = Stack[Int]
@@ -83,26 +85,23 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     test(stack) // "loan" the fixture to the test
  *   }
  *
- *   feature("Pushing a value onto a stack") {
+ *   describe ("A Stack") {
  *
  *     // 3. write tests that take a fixture parameter
- *     scenario("User pushes a value") { stack =>
- *       stack.push(9)
- *       assert(stack.size === 3)
- *       assert(stack.head === 9)
- *     }
- *   }
- *
- *   feature("Popping a value off of a stack") {
- *
- *     scenario("User pops a value") { stack =>
+ *     it("should pop a value") { stack =>
  *       val top = stack.pop()
  *       assert(top === 2)
  *       assert(stack.size === 1)
  *     }
  *
+ *     it("should push a value") { stack =>
+ *       stack.push(9)
+ *       assert(stack.size === 3)
+ *       assert(stack.head === 9)
+ *     }
+ *
  *     // 4. You can also write tests that don't take a fixture parameter.
- *     scenario("User calls pop on an empty stack") { () =>
+ *     it("should complain if popped while empty") {
  *       intercept[NoSuchElementException] {
  *         (new Stack[Int]).pop()
  *       }
@@ -149,7 +148,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import org.scalatest.fixture
  * import scala.collection.mutable.ListBuffer
  *
- * class ExampleSpec extends fixture.FeatureSpec {
+ * class ExampleSpec extends fixture.FunSpec {
  *
  *   case class F(builder: StringBuilder, buffer: ListBuffer[String])
  *   type FixtureParam = F
@@ -164,17 +163,20 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     test(F(stringBuilder, listBuffer))
  *   }
  *
- *   scenario("User finds testing easy") { f =>
- *     f.builder.append("easy!")
- *     assert(f.builder.toString === "ScalaTest is easy!")
- *     assert(f.buffer.isEmpty)
- *     f.buffer += "sweet"
- *   }
+ *   describe("Testing") {
  *
- *   scenario("User finds testing fun") { f =>
- *     f.builder.append("fun!")
- *     assert(f.builder.toString === "ScalaTest is fun!")
- *     assert(f.buffer.isEmpty)
+ *     it("should be easy") { f =>
+ *       f.builder.append("easy!")
+ *       assert(f.builder.toString === "ScalaTest is easy!")
+ *       assert(f.buffer.isEmpty)
+ *       f.buffer += "sweet"
+ *     }
+ *  
+ *     it("should be fun") { f =>
+ *       f.builder.append("fun!")
+ *       assert(f.builder.toString === "ScalaTest is fun!")
+ *       assert(f.buffer.isEmpty)
+ *     }
  *   }
  * }
  * </pre>
@@ -198,7 +200,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import java.io.FileWriter
  * import java.io.File
  *
- * class ExampleSpec extends fixture.FeatureSpec {
+ * class ExampleSpec extends fixture.FunSpec {
  *
  *   type FixtureParam = FileReader
  *   def withFixture(test: OneArgTest) {
@@ -222,7 +224,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *     // Create the reader needed by the test
  *     val reader = new FileReader(FileName)
- *
+ *  
  *     try {
  *       // Run the test using the temp file
  *       test(reader)
@@ -235,18 +237,22 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  *
- *   scenario("User reads the entire contents of a file") { reader =>
- *     var builder = new StringBuilder
- *     var c = reader.read()
- *     while (c != -1) {
- *       builder.append(c.toChar)
- *       c = reader.read()
+ *   describe("A file") {
+ *     it("can be read") { reader =>
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
+ *       }
+ *       assert(builder.toString === "Hello, test!")
  *     }
- *     assert(builder.toString === "Hello, test!")
  *   }
  *
- *   scenario("User reads just the first char of a file") { reader =>
- *     assert(reader.read() === 'H')
+ *   describe("The first char of a file") {
+ *     it ("can be read") { reader =>
+ *       assert(reader.read() === 'H')
+ *     }
  *   }
  * }
  * </pre>
@@ -262,16 +268,16 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  import org.scalatest.fixture
  *  import org.scalatest.fixture.ConfigMapFixture
  *
- *  class ExampleSpec extends fixture.FeatureSpec with ConfigMapFixture {
+ *  class ExampleSpec extends fixture.FunSpec with ConfigMapFixture {
  *
- *    feature("Test runs can be configured") {
+ *    describe("The config map") {
  *
- *      scenario("User wants to be greeted by the config map") { configMap =>
+ *      it("should contain hello") { configMap =>
  *        // Use the configMap passed to runTest in the test
  *        assert(configMap.contains("hello"))
  *      }
  *
- *      scenario("User wants the world from the config map") { configMap =>
+ *      it("should conain world") { configMap =>
  *        assert(configMap.contains("world"))
  *      }
  *    }
@@ -281,7 +287,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <h2>Providing multiple fixtures</h2>
  *
  * <p>
- * If different tests in the same <code>FeatureSpec</code> need different shared fixtures, you can use the <em>loan pattern</em> to supply to
+ * If different tests in the same <code>FunSpec</code> need different shared fixtures, you can use the <em>loan pattern</em> to supply to
  * each test just the fixture or fixtures it needs. First select the most commonly used fixture objects and pass them in via the
  * <code>FixtureParam</code>. Then for each remaining fixture needed by multiple tests, create a <em>with&lt;fixture name&gt;</em>
  * method that takes a function you will use to pass the fixture to the test. Lasty, use the appropriate
@@ -301,56 +307,59 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import org.scalatest.fixture
  * import org.scalatest.fixture.ConfigMapFixture
  * import collection.mutable.Stack
- * 
- * class StackSpec extends fixture.FeatureSpec with ConfigMapFixture {
- * 
+ *
+ * class StackSpec extends fixture.FunSpec with ConfigMapFixture {
+ *
  *   def withIntStack(test: Stack[Int] => Any) {
  *     val stack = new Stack[Int]
  *     stack.push(1)
  *     stack.push(2)
  *     test(stack) // "loan" the Stack[Int] fixture to the test
  *   }
- * 
+ *
  *   def withStringStack(test: Stack[String] => Any) {
  *     val stack = new Stack[String]
  *     stack.push("one")
  *     stack.push("two")
  *     test(stack) // "loan" the Stack[String] fixture to the test
  *   }
- * 
- *   scenario("User pops an Int value") { () => // This test doesn't need the configMap fixture, ...
- *     withIntStack { stack =>
- *       val top = stack.pop() // But it needs the Stack[Int] fixture.
- *       assert(top === 2)
- *       assert(stack.size === 1)
- *     }
- *   }
- * 
- *   scenario("User pushes and Int value") { configMap =>
- *     withIntStack { stack =>
- *       val iToPush = // This test uses the configMap fixture...
- *         configMap("IntToPush").toString.toInt
- *       stack.push(iToPush) // And also uses the Stack[Int] fixture.
- *       assert(stack.size === 3)
- *       assert(stack.head === iToPush)
- *     }
- *   }
- * 
- *   scenario("User pops a String value") { () => // This test doesn't need the configMap fixture, ...
- *     withStringStack { stack =>
- *       val top = stack.pop() // But it needs the Stack[String] fixture.
- *       assert(top === "two")
- *       assert(stack.size === 1)
- *     }
- *   }
  *
- *   scenario("User pushes a String value") { configMap =>
- *     withStringStack { stack =>
- *       val sToPush = // This test uses the configMap fixture...
- *         configMap("StringToPush").toString
- *       stack.push(sToPush) // And also uses the Stack[Int] fixture.
- *       assert(stack.size === 3)
- *       assert(stack.head === sToPush)
+ *   describe("A Stack") {
+ *
+ *     it("should pop an Int value") { () => { // This test doesn't need the configMap fixture, ...
+ *       withIntStack { stack =>
+ *         val top = stack.pop() // But it needs the Stack[Int] fixture.
+ *         assert(top === 2)
+ *         assert(stack.size === 1)
+ *       }
+ *     }
+ *
+ *     it("should push an Int value") { configMap =>
+ *       withIntStack { stack =>
+ *         val iToPush = // This test uses the configMap fixture...
+ *           configMap("IntToPush").toString.toInt
+ *         stack.push(iToPush) // And also uses the Stack[Int] fixture.
+ *         assert(stack.size === 3)
+ *         assert(stack.head === iToPush)
+ *       }
+ *     }
+ * 
+ *     it("should pop a String value") { () => { // This test doesn't need the configMap fixture, ...
+ *       withStringStack { stack =>
+ *         val top = stack.pop() // But it needs the Stack[String] fixture.
+ *         assert(top === "two")
+ *         assert(stack.size === 1)
+ *       }
+ *     }
+ * 
+ *     it("should push a String value") { configMap =>
+ *       withStringStack { stack =>
+ *         val sToPush = // This test uses the configMap fixture...
+ *           configMap("StringToPush").toString
+ *         stack.push(sToPush) // And also uses the Stack[Int] fixture.
+ *         assert(stack.size === 3)
+ *         assert(stack.head === sToPush)
+ *       }
  *     }
  *   }
  * }
@@ -366,53 +375,140 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * scala> run(new StackSpec, configMap = Map("IntToPush" -> 9, "StringToPush" -> "nine"))
  * <span class="stGreen">StackSpec:
- * - User pops an Int value
- * - User pushes an Int value
- * - User pops a String value
- * - User pushes a String value</span>
+ * A Stack
+ * - should pop an Int value
+ * - should push an Int value
+ * - should pop a String value
+ * - should push a String value</span>
  * </pre>
  *
  * @author Bill Venners
  */
-trait FeatureSpec extends FixtureSuite { thisSuite =>
+trait FunSpec extends FixtureSuite { thisSuite =>
 
-  private final val engine = new FixtureEngine[FixtureParam]("concurrentFeatureSpecMod", "FixtureFeatureSpec")
+  private final val engine = new FixtureEngine[FixtureParam]("concurrentFixtureSpecMod", "FixtureSpec")
   import engine._
   
-  protected[scalatest] val fileName = "FeatureSpec.scala"
+  protected[scalatest] val fileName = "FunSpec.scala"
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
    * <code>apply</code> method to the current reporter. If invoked in a constructor, it
    * will register the passed string for forwarding later during test execution. If invoked while this
-   * <code>FeatureSpec</code> is being executed, such as from inside a test function, it will forward the information to
+   * <code>FunSpec</code> is being executed, such as from inside a test function, it will forward the information to
    * the current reporter immediately. If invoked at any other time, it will
    * throw an exception. This method can be called safely by any thread.
    */
   implicit protected def info: Informer = atomicInformer.get
 
   /**
-   * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
-   * An invocation of this method is called an &#8220;example.&#8221;
+   * Class that, via an instance referenced from the <code>it</code> field,
+   * supports test (and shared test) registration in <code>FunSpec</code>s.
    *
-   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-   * methods. The name of the test will be a concatenation of the text of all surrounding describers,
-   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
-   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>FeatureSpec</code> instance.
+   * <p>
+   * This class supports syntax such as the following:
+   * </p>
    *
-   * @param specText the specification text, which will be combined with the descText of any surrounding describers
-   * to form the test name
-   * @param testTags the optional list of tags for this test
-   * @param testFun the test function
-   * @throws DuplicateTestNameException if a test with the same name has been registered previously
-   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
+   * <pre class="stHighlight">
+   * it("should be empty")
+   * ^
+   * </pre>
+   *
+   * <pre class="stHighlight">
+   * it should behave like nonFullStack(stackWithOneItem)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples, see the <a href="../FunSpec.html">main documentation for <code>FunSpec</code></a>.
+   * </p>
    */
-  protected def scenario(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
+  protected final class ItWord {
 
-    registerTest(Resources("scenario", specText), testFun, "scenarioCannotAppearInsideAnotherScenario", fileName, "scenario", testTags: _*)
+    /**
+     * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
+     * An invocation of this method is called an &#8220;example.&#8221;
+     *
+     * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+     * methods. The name of the test will be a concatenation of the text of all surrounding describers,
+     * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+     * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+     * this <code>FunSpec</code> instance.
+     *
+     * @param specText the specification text, which will be combined with the descText of any surrounding describers
+     * to form the test name
+     * @param testTags the optional list of tags for this test
+     * @param testFun the test function
+     * @throws DuplicateTestNameException if a test with the same name has been registered previously
+     * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
+     * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
+     */
+    def apply(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
+      registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", fileName, "apply", testTags: _*)
+    }
+
+    /**
+     * Supports the registration of shared tests.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre class="stHighlight">
+     * it should behave like nonFullStack(stackWithOneItem)
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="../Spec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>FunSpec</code>.
+     * </p>
+     */
+    def should(behaveWord: BehaveWord) = behaveWord
+
+    /**
+     * Supports the registration of shared tests.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre class="stHighlight">
+     * it must behave like nonFullStack(stackWithOneItem)
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="../Spec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>FunSpec</code>.
+     * </p>
+     */
+    def must(behaveWord: BehaveWord) = behaveWord
   }
+
+  /**
+   * Supports test (and shared test) registration in <code>FunSpec</code>s.
+   *
+   * <p>
+   * This field supports syntax such as the following:
+   * </p>
+   *
+   * <pre class="stHighlight">
+   * it("should be empty")
+   * ^
+   * </pre>
+   *
+   * <pre class="stHighlight">
+   * it should behave like nonFullStack(stackWithOneItem)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of the <code>it</code> field, see
+   * the <a href="../FunSpec.html">main documentation for <code>FunSpec</code></a>.
+   * </p>
+   */
+  protected val it = new ItWord
 
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
@@ -422,7 +518,7 @@ trait FeatureSpec extends FixtureSuite { thisSuite =>
    * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>FeatureSpec</code> instance.
+   * this <code>FunSpec</code> instance.
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
@@ -433,7 +529,30 @@ trait FeatureSpec extends FixtureSuite { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-    registerIgnoredTest(Resources("scenario", specText), testFun , "ignoreCannotAppearInsideAScenario", fileName, "ignore", testTags: _*)
+    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", fileName, "ignore", testTags: _*)
+  }
+
+  /**
+   * Register a test to ignore, which has the given spec text and test function value that takes no arguments.
+   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing test by changing the call to <code>it</code>
+   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
+   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+   * this <code>FunSpec</code> instance.
+   *
+   * @param specText the specification text, which will be combined with the descText of any surrounding describers
+   * to form the test name
+   * @param testFun the test function
+   * @throws DuplicateTestNameException if a test with the same name has been registered previously
+   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
+   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
+   */
+  protected def ignore(specText: String)(testFun: FixtureParam => Any) {
+    if (atomic.get.registrationClosed)
+      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth(fileName, "ignore"))
+    ignore(specText, Array[Tag](): _*)(testFun)
   }
 
   /**
@@ -442,17 +561,13 @@ trait FeatureSpec extends FixtureSuite { thisSuite =>
    * (defined with <code>it</code>). This trait's implementation of this method will register the
    * description string and immediately invoke the passed function.
    */
-  protected def feature(description: String)(fun: => Unit) {
-
-    if (!currentBranchIsTrunk)
-      throw new NotAllowedException(Resources("cantNestFeatureClauses"), getStackDepth(fileName, "feature"))
-
-    registerNestedBranch(description, None, fun, "featureCannotAppearInsideAScenario", fileName, "feature")
+  protected def describe(description: String)(fun: => Unit) {
+    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", fileName, "describe")
   }
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FeatureSpec</code> belong, and values
-   * the <code>Set</code> of test names that belong to each tag. If this <code>FeatureSpec</code> contains no tags, this method returns an empty <code>Map</code>.
+   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSpec</code> belong, and values
+   * the <code>Set</code> of test names that belong to each tag. If this <code>FunSpec</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
    * This trait's implementation returns tags that were passed as strings contained in <code>Tag</code> objects passed to
@@ -470,12 +585,11 @@ trait FeatureSpec extends FixtureSuite { thisSuite =>
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param configMap a <code>Map</code> of properties that can be used by this <code>FeatureSpec</code>'s executing tests.
+   * @param configMap a <code>Map</code> of properties that can be used by this <code>FunSpec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>configMap</code>
    *     is <code>null</code>.
    */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
-
 
     def invokeWithFixture(theTest: TestLeaf) {
       theTest.testFun match {
@@ -485,12 +599,12 @@ trait FeatureSpec extends FixtureSuite { thisSuite =>
       }
     }
 
-    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, false, invokeWithFixture)
+    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, true, invokeWithFixture)
   }
 
   /**
    * <p>
-   * Run zero to many of this <code>FeatureSpec</code>'s tests.
+   * Run zero to many of this <code>FunSpec</code>'s tests.
    * </p>
    *
    * <p>
@@ -537,23 +651,23 @@ trait FeatureSpec extends FixtureSuite { thisSuite =>
    * </ul>
    *
    * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
-   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>FeatureSpec</code>.
+   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>FunSpec</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>FeatureSpec</code>
-   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>FeatureSpec</code>
-   * @param configMap a <code>Map</code> of key-value pairs that can be used by this <code>FeatureSpec</code>'s executing tests.
+   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>FunSpec</code>
+   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>FunSpec</code>
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by this <code>FunSpec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
    *     <code>tagsToExclude</code>, or <code>configMap</code> is <code>null</code>.
    */
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
-    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, false, runTest)
+    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, true, runTest)
   }
 
   /**
-   * An immutable <code>Set</code> of test names. If this <code>FeatureSpec</code> contains no tests, this method returns an
+   * An immutable <code>Set</code> of test names. If this <code>FunSpec</code> contains no tests, this method returns an
    * empty <code>Set</code>.
    *
    * <p>
@@ -563,7 +677,6 @@ trait FeatureSpec extends FixtureSuite { thisSuite =>
    * example itself, with all components separated by a space.
    * </p>
    */
-  //override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
   override def testNames: Set[String] = {
     // I'm returning a ListSet here so that they tests will be run in registration order
     ListSet(atomic.get.testNamesList.toArray: _*)
@@ -576,26 +689,23 @@ trait FeatureSpec extends FixtureSuite { thisSuite =>
   }
 
   /**
-   * Registers shared scenarios.
+   * Supports shared test registration in <code>FunSpec</code>s.
    *
    * <p>
-   * This method enables the following syntax for shared scenarios in a <code>FeatureSpec</code>:
+   * This field supports syntax such as the following:
    * </p>
    *
    * <pre class="stHighlight">
-   * scenariosFor(nonEmptyStack(lastValuePushed))
+   * it should behave like nonFullStack(stackWithOneItem)
+   *           ^
    * </pre>
    *
    * <p>
-   * This method just provides syntax sugar intended to make the intent of the code clearer.
-   * Because the parameter passed to it is
-   * type <code>Unit</code>, the expression will be evaluated before being passed, which
-   * is sufficient to register the shared scenarios. For examples of shared scenarios, see the
-   * <a href="../FeatureSpec.html#SharedScenarios">Shared scenarios section</a> in the main documentation for
-   * trait <code>FeatureSpec</code>.
+   * For more information and examples of the use of <cod>behave</code>, see the <a href="../FunSpec.html#SharedTests">Shared tests section</a>
+   * in the main documentation for trait <code>FunSpec</code>.
    * </p>
    */
-  protected def scenariosFor(unit: Unit) {}
+  protected val behave = new BehaveWord
 
   /**
    * Implicitly converts a function that takes no parameters and results in <code>PendingNothing</code> to
@@ -611,9 +721,6 @@ trait FeatureSpec extends FixtureSuite { thisSuite =>
     fixture => f
   }
 
-  // I need this implicit because the function is passed to scenario as the 2nd parameter list, and
-  // I can't overload on that. I could if I took the ScenarioWord approach, but that has possibly a worse
-  // downside of people could just say scenario("...") and nothing else.
   /**
    * Implicitly converts a function that takes no parameters and results in <code>Any</code> to
    * a function from <code>FixtureParam</code> to <code>Any</code>, to enable no-arg tests to registered
@@ -622,4 +729,3 @@ trait FeatureSpec extends FixtureSuite { thisSuite =>
   protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (FixtureParam => Any) =
     new NoArgTestWrapper(fun)
 }
-

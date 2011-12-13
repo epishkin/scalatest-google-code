@@ -17,7 +17,7 @@ package org.scalatest.matchers
 
 import org.scalatest._
 
-class ShouldBeASymbolSpec extends Spec with ShouldMatchers with FileMocks {
+class ShouldBeASymbolSpec extends FunSpec with ShouldMatchers with FileMocks {
 
   describe("The be a ('symbol) syntax") {
 

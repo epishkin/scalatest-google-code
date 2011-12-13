@@ -6,7 +6,7 @@ import scala.collection.immutable.TreeSet
 import Arbitrary._
 import Prop._  */
 
-class FilterSpec extends Spec {
+class FilterSpec extends FunSpec {
 
   describe("A Filter") {
 

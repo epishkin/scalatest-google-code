@@ -21,7 +21,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldEqualSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
+class ShouldEqualSpec extends FunSpec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   // Checking for equality with "equal"
   describe("The equal token") {

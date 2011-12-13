@@ -247,7 +247,7 @@ import Suite.checkRunTestParamsForNull
  *
  * <p>
  * Although pending tests may be used more often in specification-style suites, such as
- * <code>org.scalatest.Spec</code>, you can also use it in <code>PropSpec</code>, like this:
+ * <code>org.scalatest.FunSpec</code>, you can also use it in <code>PropSpec</code>, like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -471,7 +471,7 @@ trait PropSpec extends Suite { thisSuite =>
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
 
   /**
-   * Run zero to many of this <code>Spec</code>'s tests.
+   * Run zero to many of this <code>PropSpec</code>'s tests.
    *
    * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
    *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.

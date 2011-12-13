@@ -37,7 +37,7 @@ object TopLevelSuite {
   var sideEffectWasNotSeen = true
 }
 
-class OneInstancePerTestSpec extends Spec with SharedHelpers {
+class OneInstancePerTestSpec extends FunSpec with SharedHelpers {
   describe("The OneInstancePerTest trait") {
     it("should isolate side effects from one test to the next in a top level Suite class that does not override newInstance") {
       var sideEffectWasNotSeen = true

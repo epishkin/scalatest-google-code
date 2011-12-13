@@ -16,13 +16,13 @@
 package org.scalatestexamples.matchers
 
 import org.scalatestexamples._
-import org.scalatest.Spec
+import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
 import scala.collection.mutable.ListBuffer
 import org.scalatestexamples.helpers.Stack
 import org.scalatestexamples.helpers.Stack
 
-trait ShouldStackBehaviors extends ShouldMatchers { this: Spec =>
+trait ShouldStackBehaviors extends ShouldMatchers { this: FunSpec =>
 
   val full = 'full
   val empty = 'empty
@@ -65,7 +65,7 @@ trait ShouldStackBehaviors extends ShouldMatchers { this: Spec =>
   }
 }
 
-class ShouldStackSpec extends Spec with ShouldMatchers with StackFixtureCreationMethods with ShouldStackBehaviors {
+class ShouldStackSpec extends FunSpec with ShouldMatchers with StackFixtureCreationMethods with ShouldStackBehaviors {
 
   info("Before the first behavior of shorthand")
 

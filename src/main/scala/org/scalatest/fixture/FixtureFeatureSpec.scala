@@ -17,8 +17,26 @@ package org.scalatest.fixture
 
 /**
  * <strong>FixtureFeatureSpec has been deprecated and will be removed in a future
- * release of ScalaTest. Please change any uses of <code>org.scalatest.FixtureFeatureSpec</code>
- * to a corresponding use of <a href="FeatureSpec.html"><code>org.scalatest.fixture.FeatureSpec</code></a> instead.</strong>
+ * release of ScalaTest. Please change any uses of <code>org.scalatest.fixture.FixtureFeatureSpec</code>
+ * to a corresponding use of <a href="FeatureSpec.html"><code>org.scalatest.fixture.FeatureSpec</code></a>.</strong>
+ * 
+ * <p>
+ * <strong> This is just
+ * a rename, so the only thing you need to do is change the name. However, the recommended way to
+ * to write it is to import <code>org.scalatest.fixture</code> and then write <code>fixture.FeatureSpec</code> when
+ * you use it, to differentiate it more clearly from <code>org.scalatest.FeatureSpec</code>. For example:
+ * </strong>
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture
+ *
+ * class ExampleSpec extends fixture.FeatureSpec {
+ *   // ...
+ * }
+ * </pre>
  */
 @deprecated("Please use org.scalatest.fixture.FeatureSpec instead.")
-trait FixtureFeatureSpec extends FeatureSpec
+trait FixtureFeatureSpec extends FeatureSpec {
+  override protected[scalatest] val fileName = "FixtureFeatureSpec.scala"
+}

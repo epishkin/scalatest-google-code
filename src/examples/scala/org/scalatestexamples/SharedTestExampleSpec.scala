@@ -15,12 +15,12 @@
  */
 package org.scalatestexamples
 
-import org.scalatest.Spec
+import org.scalatest.FunSpec
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.BeforeAndAfterAll
 import org.scalatestexamples.helpers.Stack
 
-trait StackBehaviors extends BeforeAndAfterEach with BeforeAndAfterAll { this: Spec =>
+trait StackBehaviors extends BeforeAndAfterEach with BeforeAndAfterAll { this: FunSpec =>
 
   def nonEmptyStack(lastItemAdded: Int)(implicit stack: Stack[Int]) {
 
@@ -60,7 +60,7 @@ trait StackBehaviors extends BeforeAndAfterEach with BeforeAndAfterAll { this: S
   }
 }
 
-class SharedTestExampleSpec extends Spec with StackBehaviors {
+class SharedTestExampleSpec extends FunSpec with StackBehaviors {
 
   // Stack fixture creation methods
   def emptyStack = new Stack[Int]

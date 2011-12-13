@@ -15,7 +15,7 @@
  */
 package org.scalatest;
 
-class AssertionsSpec extends Spec {
+class AssertionsSpec extends FunSpec {
 
   describe("The === method") {
     it("should be usable when the left expression results in null") {
