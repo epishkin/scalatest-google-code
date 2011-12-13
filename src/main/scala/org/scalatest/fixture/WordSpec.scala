@@ -416,7 +416,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
    */
   private def registerTestToRun(specText: String, testTags: List[Tag], testFun: FixtureParam => Any) {
     // TODO: This is what was being used before but it is wrong
-    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "FixtureWordSpec.scala", "it", testTags: _*)
+    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "WordSpec.scala", "it", testTags: _*)
   }
 
   /**
@@ -445,7 +445,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
   private def registerBranch(description: String, childPrefix: Option[String], fun: () => Unit) {
 
     // TODO: Fix the resource name and method name
-    registerNestedBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", "FixtureWordSpec.scala", "describe")
+    registerNestedBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", "WordSpec.scala", "describe")
   }
 
   /**

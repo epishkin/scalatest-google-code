@@ -67,7 +67,7 @@ package org.scalatest
  * </pre>
  *
  * <p>
- * or in a <code>WordSpec</code> or <code>FixtureWordSpec</code> like this:
+ * or in a <code>WordSpec</code> or <code>org.scalatest.fixture.WordSpec</code> like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -82,7 +82,7 @@ package org.scalatest
  * </pre>
  *
  * <p>
- * or in a <code>FeatureSpec</code> or <code>FixtureFeatureSpec</code> like this:
+ * or in a <code>FeatureSpec</code> or <code>org.sca.atest.fixture.FeatureSpec</code> like this:
  * </p>
  *
  * <pre class="stHighlight">

@@ -20,7 +20,7 @@ import org.scalatest._
 /**
  * Class that supports shared test registration via instances referenced from the <code>behave</code> field of <code>Spec</code>s,
  * <code>FlatSpec</code>s, and <code>WordSpec</code>s as well as instance of their sister traits, 
- * <code>FixtureSpec</code>, <code>FixtureFlatSpec</code>, and <code>FixtureWordSpec</code>.
+ * <code>FixtureSpec</code>, <code>FixtureFlatSpec</code>, and <code>org.scalatest.fixture.WordSpec</code>.
  *
  * <p>
  * This class, via the <code>behave</code> field, enables syntax such as the following in <code>Spec</code>s, <code>FlatSpec</code>s,
@@ -33,7 +33,7 @@ import org.scalatest._
  * </pre>
  *
  * <p>
- * It also enables syntax such as the following syntax in <code>WordSpec</code>s and <code>FixtureWordSpec</code>s:
+ * It also enables syntax such as the following syntax in <code>WordSpec</code>s and <code>org.scalatest.fixture.WordSpec</code>s:
  * </p>
  *
  * <pre class="stHighlight">
@@ -63,7 +63,7 @@ final class BehaveWord {
    * </pre>
    *
    * <p>
-   * It also enables syntax such as the following syntax in <code>WordSpec</code>s and <code>FixtureWordSpec</code>s:
+   * It also enables syntax such as the following syntax in <code>WordSpec</code>s and <code>org.scalatest.fixtureWordSpec</code>s:
    * </p>
    *
    * <pre class="stHighlight">

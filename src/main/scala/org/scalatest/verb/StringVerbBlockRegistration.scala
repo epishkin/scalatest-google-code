@@ -23,11 +23,11 @@ import org.scalatest._
 // ShouldVerb, MustVerb, and CanVerb.
 /**
  * Class that provides a role-specific type for an implicit conversion used to support
- * the registration of subject descriptions in <code>WordSpec</code> and <code>FixtureWordSpec</code>.
+ * the registration of subject descriptions in <code>WordSpec</code> and <code>org.scalatest.fixture.WordSpec</code>.
  *
  * <p>
  * For example, this class enables syntax such as the following in <code>WordSpec</code>
- * and <code>FixtureWordSpec</code>:
+ * and <code>org.scalatest.fixture.WordSpec</code>:
  * </p>
  *
  * <pre class="stHighlight">
@@ -46,11 +46,11 @@ import org.scalatest._
 abstract class StringVerbBlockRegistration extends ((String, String, () => Unit) => Unit) {
 
   /**
-   * Registers a subject description in <code>WordSpec</code> and <code>FixtureWordSpec</code>.
+   * Registers a subject description in <code>WordSpec</code> and <code>org.scalatest.fixture.WordSpec</code>.
    *
    * <p>
    * For example, this class enables syntax such as the following in <code>WordSpec</code>
-   * and <code>FixtureWordSpec</code>:
+   * and <code>org.scalatest.fixture.WordSpec</code>:
    * </p>
    *
    * <pre class="stHighlight">

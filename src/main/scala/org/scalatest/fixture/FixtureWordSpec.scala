@@ -15,16 +15,7 @@
  */
 package org.scalatest.fixture
 
-import org.scalatest._
-import FixtureNodeFamily._
-import verb.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord, MustVerb,
-  StringVerbBlockRegistration}
-import scala.collection.immutable.ListSet
-import org.scalatest.StackDepthExceptionHelper.getStackDepth
-import java.util.concurrent.atomic.AtomicReference
-import java.util.ConcurrentModificationException
-import org.scalatest.events._
-import Suite.anErrorThatShouldCauseAnAbort
+import org.scalatest.verb.{CanVerb, MustVerb, ShouldVerb}
 
 /**
  * <strong>FixtureWordSpec has been deprecated and will be removed in a future

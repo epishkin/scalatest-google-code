@@ -20,7 +20,7 @@ import org.scalatest._
 /**
  * Provides an implicit conversion that adds <code>must</code> methods to <code>String</code>
  * to support the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>,
- * and <code>FixtureWordSpec</code>.
+ * and <code>org.scalatest.fixture.WordSpec</code>.
  *
  * <p>
  * For example, this trait enables syntax such as the following test registration in <code>FlatSpec</code>
@@ -44,7 +44,7 @@ import org.scalatest._
  *
  * <p>
  * In addition, it supports the registration of subject descriptions in <code>WordSpec</code>
- * and <code>FixtureWordSpec</code>, such as:
+ * and <code>org.scalatest.fixture.WordSpec</code>, such as:
  * </p>
  *
  * <pre class="stHighlight">
@@ -54,7 +54,7 @@ import org.scalatest._
  *
  * <p>
  * And finally, it also supportds the registration of subject descriptions with after words
- * in <code>WordSpec</code> and <code>FixtureWordSpec</code>. For example:
+ * in <code>WordSpec</code> and <code>org.scalatest.fixture.WordSpec</code>. For example:
  * </p>
  *
  * <pre class="stHighlight">
@@ -67,14 +67,14 @@ import org.scalatest._
  * <p>
  * The reason this implicit conversion is provided in a separate trait, instead of being provided
  * directly in <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, and
- * <code>FixtureWordSpec</code>, is because an implicit conversion provided directly would conflict
+ * <code>org.scalatest.fixture.WordSpec</code>, is because an implicit conversion provided directly would conflict
  * with the implicit conversion that provides <code>must</code> methods on <code>String</code>
  * in the <code>MustMatchers</code> trait. By contrast, there is no conflict with
  * the separate <code>MustVerb</code> trait approach, because:
  * </p>
  *
  * <ol>
- * <li><code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, and <code>FixtureWordSpec</code>
+ * <li><code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, and <code>org.scalatest.fixture.WordSpec</code>
  * mix in <code>MustVerb</code> directly, and</li>
  * <li><code>MustMatchers</code> extends <code>MustVerb</code>, overriding the
  * <code>convertToStringMustWrapper</code> implicit conversion function.</li>
@@ -82,7 +82,7 @@ import org.scalatest._
  *
  * <p>
  * So whether or not
- * a <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, or <code>FixtureWordSpec</code>
+ * a <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, or <code>org.scalatest.fixture.WordSpec</code>
  * mixes in <code>MustMatchers</code>, there will only be one
  * implicit conversion in scope that adds <code>must</code> methods to <code>String</code>s.
  * </p>
@@ -94,7 +94,7 @@ import org.scalatest._
  * are still available. These four <code>must</code> are in fact available to any class
  * that mixes in <code>MustMatchers</code>, but each takes an implicit parameter that is provided
  * only in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>, or <code>WordSpec</code> and
- * <code>FixtureWordSpec</code>.  
+ * <code>org.scalatest.fixture.WordSpec</code>.  
  * </p>
  *
  * @author Bill Venners
@@ -103,7 +103,7 @@ trait MustVerb {
 
   /**
    * This class supports the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>,
-   * and <code>FixtureWordSpec</code>.
+   * and <code>org.scalatest.fixture.WordSpec</code>.
    *
    * <p>
    * This class is used in conjunction with an implicit conversion to enable <code>must</code> methods to
@@ -163,11 +163,11 @@ trait MustVerb {
 
     /**
      * Supports the registration of subject descriptions in <code>WordSpec</code>
-     * and <code>FixtureWordSpec</code>.
+     * and <code>org.scalatest.fixture.WordSpec</code>.
      *
      * <p>
      * For example, this method enables syntax such as the following in <code>WordSpec</code>
-     * and <code>FixtureWordSpec</code>:
+     * and <code>org.scalatest.fixture.WordSpec</code>:
      * </p>
      *
      * <pre class="stHighlight">
@@ -189,11 +189,11 @@ trait MustVerb {
 
     /**
      * Supports the registration of subject descriptions with after words
-     * in <code>WordSpec</code> and <code>FixtureWordSpec</code>.
+     * in <code>WordSpec</code> and <code>org.scalatest.fixture.WordSpec</code>.
      *
      * <p>
      * For example, this method enables syntax such as the following in <code>WordSpec</code>
-     * and <code>FixtureWordSpec</code>:
+     * and <code>org.scalatest.fixture.WordSpec</code>:
      * </p>
      *
      * <pre class="stHighlight">

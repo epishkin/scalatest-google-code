@@ -765,8 +765,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <h4>Overriding <code>withFixture(OneArgTest)</code></h4>
  *
  * <p>
- * To use the loan pattern, you can extend <code>FixtureFeatureSpec</code> (from the <code>org.scalatest.fixture</code> package) instead of
- * <code>FeatureSpec</code>. Each test in a <code>FixtureFeatureSpec</code> takes a fixture as a parameter, allowing you to pass the fixture into
+ * To use the loan pattern, you can extend <code>FeatureSpec</code> (from the <code>org.scalatest.fixture</code> package) instead of
+ * <code>FeatureSpec</code>. Each test in a <code>FeatureSpec</code> takes a fixture as a parameter, allowing you to pass the fixture into
  * the test. You must indicate the type of the fixture parameter by specifying <code>FixtureParam</code>, and implement a
  * <code>withFixture</code> method that takes a <code>OneArgTest</code>. This <code>withFixture</code> method is responsible for
  * invoking the one-arg test function, so you can perform fixture set up before, and clean up after, invoking and passing
@@ -774,11 +774,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.FixtureFeatureSpec
+ * import org.scalatest.fixture
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class ExampleSpec extends FixtureFeatureSpec {
+ * class ExampleSpec extends fixture.FeatureSpec {
  * 
  *   final val tmpFile = "temp.txt"
  * 
@@ -813,7 +813,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * For more information, see the <a href="fixture/FixtureFeatureSpec.html">documentation for <code>FixtureFeatureSpec</code></a>.
+ * For more information, see the <a href="fixture/FeatureSpec.html">documentation for <code>FeatureSpec</code></a>.
  * </p>
  *
  * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
@@ -915,7 +915,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * Note that in this case, the loan pattern is being implemented via the <code>withWriter</code> method that takes a function, not
- * by overriding <code>FixtureFeatureSpec</code>'s <code>withFixture(OneArgTest)</code> method. <code>FixtureFeatureSpec</code> makes the most sense
+ * by overriding <code>FeatureSpec</code>'s <code>withFixture(OneArgTest)</code> method. <code>FeatureSpec</code> makes the most sense
  * if all (or at least most) tests need the same fixture, whereas in this <code>Suite</code> only two tests need the
  * <code>FileWriter</code>.
  * </p>
