@@ -29,7 +29,23 @@ import Suite.anErrorThatShouldCauseAnAbort
 /**
  * <strong>FixtureWordSpec has been deprecated and will be removed in a future
  * release of ScalaTest. Please change any uses of <code>org.scalatest.FixtureWordSpec</code>
- * to a corresponding use of <a href="WordSpec.html"><code>org.scalatest.fixture.WordSpec</code></a> instead.</strong>
+ * to a corresponding use of <a href="WordSpec.html"><code>org.scalatest.fixture.WordSpec</code></a>.</strong>
+ * 
+ * <p>
+ * <strong> This is just
+ * a rename, so the only thing you need to do is change the name. However, the recommended way to
+ * to write it is to import <code>org.scalatest.fixture</code> and then write <code>fixture.WordSpec</code> when
+ * you use it, to differentiate it more clearly from <code>org.scalatest.Wordspec</code>. For example:
+ * </strong>
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture
+ *
+ * class ExampleSpec extends fixture.WordSpec {
+ *   // ...
+ * }
+ * </pre>
  */
 @deprecated("Please use org.scalatest.fixture.WordSpec instead.")
 trait FixtureWordSpec extends WordSpec with ShouldVerb with MustVerb with CanVerb 

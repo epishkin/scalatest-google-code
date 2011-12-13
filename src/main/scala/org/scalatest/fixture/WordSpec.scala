@@ -30,17 +30,17 @@ import Suite.anErrorThatShouldCauseAnAbort
  * A sister trait to <code>org.scalatest.WordSpec</code> that can pass a fixture object into its tests.
  *
  * <p>
- * The purpose of <code>WordSpec</code> and its subtraits is to facilitate writing tests in
+ * The purpose of <code>fixture.Suite</code> and its subtraits is to facilitate writing tests in
  * a functional style. Some users may prefer writing tests in a functional style in general, but one
  * particular use case is parallel test execution (See <a href="../ParallelTestExecution.html">ParallelTestExecution</a>). To run
  * tests in parallel, your test class must
  * be thread safe, and a good way to make it thread safe is to make it functional. A good way to
  * write tests that need common fixtures in a functional style is to pass the fixture objects into the tests,
- * the style enabled by the <code>FixtureSuite</code> family of traits.
+ * the style enabled by the <code>fixture.Suite</code> family of traits.
  * </p>
  *
  * <p>
- * Trait <code>WordSpec</code> behaves similarly to trait <code>org.scalatest.WordSpec</code>, except that tests may have a
+ * Trait <code>org.scalatest.fixture.WordSpec</code> behaves similarly to trait <code>org.scalatest.WordSpec</code>, except that tests may have a
  * fixture parameter. The type of the
  * fixture parameter is defined by the abstract <code>FixtureParam</code> type, which is declared as a member of this trait.
  * This trait also declares an abstract <code>withFixture</code> method. This <code>withFixture</code> method
@@ -68,11 +68,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.WordSpec
+ * import org.scalatest.fixture
  * import collection.mutable.Stack
  * import java.util.NoSuchElementException
  *
- * class StackSpec extends WordSpec {
+ * class StackSpec extends fixture.WordSpec {
  *
  *   // 1. define type FixtureParam
  *   type FixtureParam = Stack[Int]
@@ -145,10 +145,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.WordSpec
+ * import org.scalatest.fixture
  * import scala.collection.mutable.ListBuffer
  *
- * class ExampleSpec extends WordSpec {
+ * class ExampleSpec extends fixture.WordSpec {
  *
  *   case class F(builder: StringBuilder, buffer: ListBuffer[String])
  *   type FixtureParam = F
@@ -195,12 +195,12 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.WordSpec
+ * import org.scalatest.fixture
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class ExampleSpec extends WordSpec {
+ * class ExampleSpec extends fixture.WordSpec {
  *
  *   type FixtureParam = FileReader
  *   def withFixture(test: OneArgTest) {
@@ -265,10 +265,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre class="stHighlight">
- *  import org.scalatest.fixture.WordSpec
+ *  import org.scalatest.fixture
  *  import org.scalatest.fixture.ConfigMapFixture
  *
- *  class ExampleSpec extends WordSpec with ConfigMapFixture {
+ *  class ExampleSpec extends fixture.WordSpec with ConfigMapFixture {
  *
  *    def testHello { configMap =>
  *      // Use the configMap passed to runTest in the test
@@ -301,11 +301,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.WordSpec
+ * import org.scalatest.fixture
  * import org.scalatest.fixture.ConfigMapFixture
  * import collection.mutable.Stack
  * 
- * class StackSpec extends WordSpec with ConfigMapFixture {
+ * class StackSpec extends fixture.WordSpec with ConfigMapFixture {
  * 
  *   def withIntStack(test: Stack[Int] => Any) {
  *     val stack = new Stack[Int]
@@ -390,7 +390,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
    * <code>apply</code> method to the current reporter. If invoked in a constructor, it
    * will register the passed string for forwarding later during test execution. If invoked while this
-   * <code>FixtureWordSpec</code> is being executed, such as from inside a test function, it will forward the information to
+   * <code>fixture.WordSpec</code> is being executed, such as from inside a test function, it will forward the information to
    * the current reporter immediately. If invoked at any other time, it will
    * throw an exception. This method can be called safely by any thread.
    */
@@ -473,7 +473,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def in(testFun: FixtureParam => Any) {
@@ -493,7 +493,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def in(testFun: () => Any) {
@@ -513,7 +513,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def is(testFun: => PendingNothing) {
@@ -533,7 +533,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def ignore(testFun: FixtureParam => Any) {
@@ -553,7 +553,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def ignore(testFun: () => Any) {
@@ -567,10 +567,10 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
    * and <code>ignore</code> to be invoked on <code>String</code>s.
    *
    * <p>
-   * This class provides much of the syntax for <code>FixtureWordSpec</code>, however, it does not add
+   * This class provides much of the syntax for <code>fixture.WordSpec</code>, however, it does not add
    * the verb methods (<code>should</code>, <code>must</code>, and <code>can</code>) to <code>String</code>.
    * Instead, these are added via the <code>ShouldVerb</code>, <code>MustVerb</code>, and <code>CanVerb</code>
-   * traits, which <code>FixtureWordSpec</code> mixes in, to avoid a conflict with implicit conversions provided
+   * traits, which <code>fixture.WordSpec</code> mixes in, to avoid a conflict with implicit conversions provided
    * in <code>ShouldMatchers</code> and <code>MustMatchers</code>. 
    * </p>
    *
@@ -591,7 +591,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def in(testFun: FixtureParam => Any) {
@@ -611,7 +611,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def in(testFun: () => Any) {
@@ -631,7 +631,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def is(testFun: => PendingNothing) {
@@ -651,7 +651,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def ignore(testFun: FixtureParam => Any) {
@@ -671,7 +671,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def ignore(testFun: () => Any) {
@@ -692,7 +692,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
@@ -713,7 +713,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def when(f: => Unit) {
@@ -735,7 +735,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def when(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
@@ -764,7 +764,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def which(f: => Unit) {
@@ -793,7 +793,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * </pre>
      *
      * <p>
-     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>fixture.WordSpec</code>.
      * </p>
      */
     def which(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
@@ -816,9 +816,10 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
    * </p>
    *
    * <pre class="stHighlight">
-   * import org.scalatest.WordSpec
+   * import org.scalatest.fixture
+   * import ConfigMapFixture
    * 
-   * class ScalaTestGUISpec extends WordSpec {
+   * class ScalaTestGUISpec extends fixture.WordSpec with ConfigMapFixture {
    * 
    *   def theUser = afterWord("the user")
    *   def display = afterWord("display")
@@ -826,11 +827,11 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
    * 
    *   "The ScalaTest GUI" when theUser {
    *     "clicks on an event report in the list box" should display {
-   *       "a blue background in the clicked-on row in the list box" in {}
-   *       "the details for the event in the details area" in {}
+   *       "a blue background in the clicked-on row in the list box" in { cm =&gt; }
+   *       "the details for the event in the details area" in { cm =&gt; }
    *       "a rerun button," which is {
-   *         "enabled if the clicked-on event is rerunnable" in {}
-   *         "disabled if the clicked-on event is not rerunnable" in {}
+   *         "enabled if the clicked-on event is rerunnable" in { cm =&gt; }
+   *         "disabled if the clicked-on event is not rerunnable" in { cm =&gt; }
    *       }
    *     }
    *   }
@@ -838,7 +839,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
    * </pre>
    *
    * <p>
-   * Running the previous <code>WordSpec</code> in the Scala interpreter would yield:
+   * Running the previous <code>fixture.WordSpec</code> in the Scala interpreter would yield:
    * </p>
    *
    * <pre class="stREPL">
@@ -858,7 +859,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
      * <p>
      * This method transforms a block of code into a <code>ResultOfAfterWordApplication</code>, which
      * is accepted by <code>when</code>, <code>should</code>, <code>must</code>, <code>can</code>, and <code>which</code>
-     * methods.  For more information, see the <a href="../WordSpec.html#AfterWords">main documentation</code></a> for trait <code>WordSpec</code>.
+     * methods.  For more information, see the <a href="../WordSpec.html#AfterWords">main documentation</code></a> for trait <code>org.scalatest.WordSpec</code>.
      * </p>
      */
     def apply(f: => Unit) = new ResultOfAfterWordApplication(text, f _)
@@ -879,9 +880,10 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
    * </p>
    *
    * <pre class="stHighlight">
-   * import org.scalatest.WordSpec
+   * import org.scalatest.fixture
+   * import ConfigMapFixture
    * 
-   * class ScalaTestGUISpec extends WordSpec {
+   * class ScalaTestGUISpec extends fixture.WordSpec with ConfigMapFixture {
    * 
    *   def theUser = afterWord("the user")
    *   def display = afterWord("display")
@@ -889,11 +891,11 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
    * 
    *   "The ScalaTest GUI" when theUser {
    *     "clicks on an event report in the list box" should display {
-   *       "a blue background in the clicked-on row in the list box" in {}
-   *       "the details for the event in the details area" in {}
+   *       "a blue background in the clicked-on row in the list box" in { cm =&gt; }
+   *       "the details for the event in the details area" in { cm =&gt; }
    *       "a rerun button," which is {
-   *         "enabled if the clicked-on event is rerunnable" in {}
-   *         "disabled if the clicked-on event is not rerunnable" in {}
+   *         "enabled if the clicked-on event is rerunnable" in { cm =&gt; }
+   *         "disabled if the clicked-on event is not rerunnable" in { cm =&gt; }
    *       }
    *     }
    *   }
@@ -901,7 +903,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
    * </pre>
    *
    * <p>
-   * Running the previous <code>WordSpec</code> in the Scala interpreter would yield:
+   * Running the previous <code>fixture.WordSpec</code> in the Scala interpreter would yield:
    * </p>
    *
    * <pre class="stREPL">
@@ -981,7 +983,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
 
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
-   * the <code>Set</code> of test names that belong to each tag. If this <code>WordSpec</code> contains no tags, this method returns an empty <code>Map</code>.
+   * the <code>Set</code> of test names that belong to each tag. If this <code>fixture.WordSpec</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
    * This trait's implementation returns tags that were passed as strings contained in <code>Tag</code> objects passed to
@@ -1081,7 +1083,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
   }
 
   /**
-   * An immutable <code>Set</code> of test names. If this <code>FixtureWordSpec</code> contains no tests, this method returns an
+   * An immutable <code>Set</code> of test names. If this <code>fixture.WordSpec</code> contains no tests, this method returns an
    * empty <code>Set</code>.
    *
    * <p>
@@ -1103,7 +1105,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
   }
 
   /**
-   * Supports shared test registration in <code>FixtureWordSpec</code>s.
+   * Supports shared test registration in <code>fixture.WordSpec</code>s.
    *
    * <p>
    * This field enables syntax such as the following:
@@ -1116,7 +1118,7 @@ trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb {
    *
    * <p>
    * For more information and examples of the use of <cod>behave</code>, see the <a href="../WordSpec.html#SharedTests">Shared tests section</a>
-   * in the main documentation for trait <code>WordSpec</code>.
+   * in the main documentation for trait <code>org.scalatest.WordSpec</code>.
    * </p>
    */
   protected val behave = new BehaveWord
