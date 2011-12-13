@@ -98,7 +98,7 @@ import Suite.checkRunTestParamsForNull
  *   }
  *
  *   // 4. You can also write test methods that don't take a fixture parameter.
- *   def testPopAnEmptyStack() {
+ *   test("pop an empty stack") {
  *     intercept[NoSuchElementException] {
  *       (new Stack[Int]).pop()
  *     }
@@ -159,14 +159,14 @@ import Suite.checkRunTestParamsForNull
  *     test(F(stringBuilder, listBuffer))
  *   }
  *
- *   def test("easy") { f =>
+ *   test("easy") { f =>
  *     f.builder.append("easy!")
  *     assert(f.builder.toString === "ScalaTest is easy!")
  *     assert(f.buffer.isEmpty)
  *     f.buffer += "sweet"
  *   }
  *
- *   def test("fun") { f =>
+ *   test("fun") { f =>
  *     f.builder.append("fun!")
  *     assert(f.builder.toString === "ScalaTest is fun!")
  *     assert(f.buffer.isEmpty)
@@ -240,7 +240,7 @@ import Suite.checkRunTestParamsForNull
  *     assert(builder.toString === "Hello, test!")
  *   }
  * 
- *   def test("first char of the temp file") { reader =>
+ *   test("first char of the temp file") { reader =>
  *     assert(reader.read() === 'H')
  *   }
  * }
@@ -259,12 +259,12 @@ import Suite.checkRunTestParamsForNull
  *
  *  class ExampleSuite extends FixtureFunSuite with ConfigMapFixture {
  *
- *    def testHello(configMap: Map[String, Any]) {
+ *    test("hello") { (configMap: Map[String, Any]) =&gt;
  *      // Use the configMap passed to runTest in the test
  *      assert(configMap.contains("hello"))
  *    }
  *
- *    def testWorld(configMap: Map[String, Any]) {
+ *    test("world") { (configMap: Map[String, Any]) =&gt;
  *      assert(configMap.contains("world"))
  *    }
  *  }
@@ -310,7 +310,7 @@ import Suite.checkRunTestParamsForNull
  *     test(stack) // "loan" the Stack[String] fixture to the test
  *   }
  * 
- *   def test("pop an Int value") { () => // This test doesn't need the configMap fixture, ...
+ *   test("pop an Int value") { () => // This test doesn't need the configMap fixture, ...
  *     withIntStack { stack =>
  *       val top = stack.pop() // But it needs the Stack[Int] fixture.
  *       assert(top === 2)

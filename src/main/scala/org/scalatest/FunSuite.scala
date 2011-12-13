@@ -720,7 +720,7 @@ import Suite.checkRunTestParamsForNull
  * </p>
  * 
  * <pre class="stHighlight">
- * def testUserLogsIn {
+ * test("User logs in") {
  *   withDataInDatabase {
  *     // test user logging in scenario
  *   }
