@@ -52,7 +52,7 @@ package org.scalatest
  * </pre>
  *
  * <p>
- * or in a <code>FlatSpec</code> or <code>FixtureFlatSpec</code> like this:
+ * or in a <code>FlatSpec</code> or <code>fixture.FlatSpec</code> like this:
  * </p>
  *
  * <pre class="stHighlight">

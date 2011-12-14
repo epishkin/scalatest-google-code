@@ -26,9 +26,9 @@ import org.junit.Test
 import org.scalatest.verb.ShouldVerb
 import org.scalatest.mock.EasyMockSugar
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
-import org.scalatest.fixture.FixtureFlatSpec
+import org.scalatest.fixture
 
-class EasyMockExampleFixtureFlatSpec extends FixtureFlatSpec with EasyMockSugar {
+class EasyMockExampleFixtureFlatSpec extends fixture.FlatSpec with EasyMockSugar {
 
   case class FixtureHolder(classUnderTest: ClassTested, mockCollaborator: Collaborator)
 

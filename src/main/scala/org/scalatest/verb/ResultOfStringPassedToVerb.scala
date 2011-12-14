@@ -19,11 +19,11 @@ import org.scalatest._
 
 /**
  * Abstract class that supports test registration in <code>FlatSpec</code>
- * and <code>FixtureFlatSpec</code>.
+ * and <code>org.scalatest.fixture.FlatSpec</code>.
  *
  * <p>
  * For example, this class enables syntax such as the following pending test registration
- * in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>:
+ * in <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code>:
  * </p>
  *
  * <pre>
@@ -34,7 +34,7 @@ import org.scalatest._
  *
  * <p>
  * For example, this class enables syntax such as the following tagged test registration
- * in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>:
+ * in <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code>:
  * </p>
  *
  * <pre>
@@ -44,7 +44,7 @@ import org.scalatest._
  *
  * <p>
  * This class also indirectly enables syntax such as the following regular test registration
- * in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>:
+ * in <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code>:
  * </p>
  *
  * <pre>
@@ -54,12 +54,12 @@ import org.scalatest._
  *
  * <p>
  * However, this class does not declare any methods named <code>in</code>, because the
- * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>FixtureFlatSpec</code>.
- * A <code>FixtureFlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
+ * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>org.scalatest.fixture.FlatSpec</code>.
+ * A <code>org.scalatest.fixture.FlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
  * test function and another that takes a one-arg test function (a test that takes a
  * <code>Fixture</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
  * only one <code>in</code> method that takes a by-name parameter. As a result,
- * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> each provide an implicit conversion
+ * <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code> each provide an implicit conversion
  * from <code>ResultOfStringPassedToVerb</code> to a type that provides the appropriate
  * <code>in</code> methods. 
  * </p>
@@ -70,7 +70,7 @@ abstract class ResultOfStringPassedToVerb(val verb: String, val rest: String) {
 
   /**
    * Supports the registration of pending tests in a
-   * <code>FlatSpec</code> and <code>FixtureFlatSpec</code>.
+   * <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code>.
    *
    * <p>
    * This method supports syntax such as the following:
@@ -89,7 +89,7 @@ abstract class ResultOfStringPassedToVerb(val verb: String, val rest: String) {
   def is(fun: => PendingNothing)
 
   /**
-   * Supports the registration of tagged tests in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>.
+   * Supports the registration of tagged tests in <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code>.
    *
    * <p>
    * This method supports syntax such as the following:

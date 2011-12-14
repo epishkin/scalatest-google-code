@@ -26,12 +26,12 @@ import org.junit.Before
 import org.junit.Test
 import org.scalatest.verb.ShouldVerb
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
-import org.scalatest.fixture.FixtureFlatSpec
+import org.scalatest.fixture
 import org.scalatest.mock.{JMockCycleFixture, JMockCycle}
 import org.jmock.Expectations.returnValue
 import org.jmock.Expectations.equal
 
-class JMockExampleFixtureFlatSpec extends FixtureFlatSpec with JMockCycleFixture {
+class JMockExampleFixtureFlatSpec extends fixture.FlatSpec with JMockCycleFixture {
 
   def createTestedAndMock(cycle: JMockCycle) = { import cycle._
     val mockCollaborator = mock[Collaborator]

@@ -21,7 +21,7 @@ class ConfigMapFixtureSpec extends org.scalatest.FunSpec with SharedHelpers {
   describe("A ConfigMapFixture") {
     it("should pass the config map to each test") {
       val myConfigMap = Map[String, Any]("hello" -> "world", "salt" -> "pepper")
-      class MySuite extends FixtureSuite with ConfigMapFixture {
+      class MySuite extends Suite with ConfigMapFixture {
         var configMapPassed = false
         def testSomething(configMap: FixtureParam) {
           if (configMap == myConfigMap)

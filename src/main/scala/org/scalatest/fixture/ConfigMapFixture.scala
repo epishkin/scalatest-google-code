@@ -18,11 +18,11 @@ package org.scalatest.fixture
 import org.scalatest._
 
 /**
- * Trait that when mixed into a <code>FixtureSuite</code> ensures the
+ * Trait that when mixed into a <code>fixture.Suite</code> ensures the
  * <code>configMap</code> passed to <code>runTest</code> is passed along
  * as a fixture into each test.
  */
-trait ConfigMapFixture { this: FixtureSuite =>
+trait ConfigMapFixture { this: Suite =>
 
   /**
    * The type of the <code>configMap</code>, which is <code>Map[String, Any]</code>.

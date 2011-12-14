@@ -16,7 +16,6 @@
 package org.scalatest
 
 import org.scalatest.prop.Tables
-import org.scalatest.fixture
 
 trait SuiteExamples extends Tables {
 

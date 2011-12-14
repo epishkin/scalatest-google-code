@@ -485,7 +485,7 @@ import Suite.reportInfoProvided
  * so one way to access it in your suite is to override one of those methods. If you need to use the config map inside your tests, you
  * can access it from the <code>NoArgTest</code> passed to <code>withFixture</code>, or the <code>OneArgTest</code> passed to
  * <code>withFixture</code> in the traits in the <code>org.scalatest.fixture</code> package. (See the
- * <a href="fixture/FixtureSuite.html">documentation for <code>FixtureSuite</code></a>
+ * <a href="fixture/Suite.html">documentation for <code>fixture.Suite</code></a>
  * for instructions on how to access the config map in tests.)
  * </p>
  *
@@ -961,8 +961,8 @@ import Suite.reportInfoProvided
  * <h4>Overriding <code>withFixture(OneArgTest)</code></h4>
  *
  * <p>
- * To use the loan pattern, you can extend <code>FixtureSuite</code> (from the <code>org.scalatest.fixture</code> package) instead of
- * <code>Suite</code>. Each test in a <code>FixtureSuite</code> takes a fixture as a parameter, allowing you to pass the fixture into
+ * To use the loan pattern, you can extend <code>fixture.Suite</code> (from the <code>org.scalatest.fixture</code> package) instead of
+ * <code>Suite</code>. Each test in a <code>fixture.Suite</code> takes a fixture as a parameter, allowing you to pass the fixture into
  * the test. You must indicate the type of the fixture parameter by specifying <code>FixtureParam</code>, and implement a
  * <code>withFixture</code> method that takes a <code>OneArgTest</code>. This <code>withFixture</code> method is responsible for
  * invoking the one-arg test function, so you can perform fixture set up before, and clean up after, invoking and passing
@@ -970,11 +970,11 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.FixtureSuite
+ * import org.scalatest.fixture
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class ExampleSuite extends FixtureSuite {
+ * class ExampleSuite extends fixture.Suite {
  * 
  *   final val tmpFile = "temp.txt"
  * 
@@ -1006,7 +1006,7 @@ import Suite.reportInfoProvided
  * </pre>
  *
  * <p>
- * For more information, see the <a href="fixture/FixtureSuite.html">documentation for <code>FixtureSuite</code></a>.
+ * For more information, see the <a href="fixture/Suite.html">documentation for <code>fixture.Suite</code></a>.
  * </p>
  *
  * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
@@ -1108,7 +1108,7 @@ import Suite.reportInfoProvided
  *
  * <p>
  * Note that in this case, the loan pattern is being implemented via the <code>withWriter</code> method that takes a function, not
- * by overriding <code>FixtureSuite</code>'s <code>withFixture(OneArgTest)</code> method. <code>FixtureSuite</code> makes the most sense
+ * by overriding <code>fixture.Suite</code>'s <code>withFixture(OneArgTest)</code> method. <code>fixture.Suite</code> makes the most sense
  * if all (or at least most) tests need the same fixture, whereas in this <code>Suite</code> only two tests need the
  * <code>FileWriter</code>.
  * </p>
@@ -1913,7 +1913,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
 
     def isTestMethod(m: Method) = {
 
-      // Factored out to share code with FixtureSuite.testNames
+      // Factored out to share code with fixture.Suite.testNames
       val (isInstanceMethod, simpleName, firstFour, paramTypes, hasNoParams, isTestNames) = isTestMethodGoodies(m)
 
       isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames) || takesInformer(m))
@@ -1950,7 +1950,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * passed to this method takes no parameters, preparing the fixture will require
    * side effects, such as reassigning instance <code>var</code>s in this <code>Suite</code> or initializing
    * a globally accessible external database. If you want to avoid reassigning instance <code>var</code>s
-   * you can use <a href="fixture/FixtureSuite.html">FixtureSuite</a>.
+   * you can use <a href="fixture/Suite.html">fixture.Suite</a>.
    * </p>
    *
    * <p>
@@ -1968,14 +1968,14 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     test()
   }
 
-  // Factored out to share this with FixtureSuite.runTest
+  // Factored out to share this with fixture.Suite.runTest
   private[scalatest] def getSuiteRunTestGoodies(stopper: Stopper, reporter: Reporter, testName: String) = {
     val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) = getRunTestGoodies(stopper, reporter, testName)
     val method = getMethodForTestName(testName)
     (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime)
   }
 
-  // Sharing this with FunSuite and FixtureFunSuite as well as Suite and FixtureSuite
+  // Sharing this with FunSuite and FixtureFunSuite as well as Suite and fixture.Suite
   private[scalatest] def getRunTestGoodies(stopper: Stopper, reporter: Reporter, testName: String) = {
 
     val stopRequested = stopper

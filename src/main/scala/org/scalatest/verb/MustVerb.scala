@@ -19,12 +19,12 @@ import org.scalatest._
 
 /**
  * Provides an implicit conversion that adds <code>must</code> methods to <code>String</code>
- * to support the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>,
+ * to support the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>org.scalatest.fixture.FlatSpec</code>,
  * and <code>org.scalatest.fixture.WordSpec</code>.
  *
  * <p>
  * For example, this trait enables syntax such as the following test registration in <code>FlatSpec</code>
- * and <code>FixtureFlatSpec</code>:
+ * and <code>org.scalatest.fixture.FlatSpec</code>:
  * </p>
  *
  * <pre class="stHighlight">
@@ -34,7 +34,7 @@ import org.scalatest._
  *
  * <p>
  * It also enables syntax such as the following shared test registration in <code>FlatSpec</code>
- * and <code>FixtureFlatSpec</code>:
+ * and <code>org.scalatest.fixture.FlatSpec</code>:
  * </p>
  *
  * <pre class="stHighlight">
@@ -66,7 +66,7 @@ import org.scalatest._
  *
  * <p>
  * The reason this implicit conversion is provided in a separate trait, instead of being provided
- * directly in <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, and
+ * directly in <code>FlatSpec</code>, <code>WordSpec</code>, <code>org.scalatest.fixture.FlatSpec</code>, and
  * <code>org.scalatest.fixture.WordSpec</code>, is because an implicit conversion provided directly would conflict
  * with the implicit conversion that provides <code>must</code> methods on <code>String</code>
  * in the <code>MustMatchers</code> trait. By contrast, there is no conflict with
@@ -74,7 +74,7 @@ import org.scalatest._
  * </p>
  *
  * <ol>
- * <li><code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, and <code>org.scalatest.fixture.WordSpec</code>
+ * <li><code>FlatSpec</code>, <code>WordSpec</code>, <code>org.scalatest.fixture.FlatSpec</code>, and <code>org.scalatest.fixture.WordSpec</code>
  * mix in <code>MustVerb</code> directly, and</li>
  * <li><code>MustMatchers</code> extends <code>MustVerb</code>, overriding the
  * <code>convertToStringMustWrapper</code> implicit conversion function.</li>
@@ -82,7 +82,7 @@ import org.scalatest._
  *
  * <p>
  * So whether or not
- * a <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, or <code>org.scalatest.fixture.WordSpec</code>
+ * a <code>FlatSpec</code>, <code>WordSpec</code>, <code>org.scalatest.fixture.FlatSpec</code>, or <code>org.scalatest.fixture.WordSpec</code>
  * mixes in <code>MustMatchers</code>, there will only be one
  * implicit conversion in scope that adds <code>must</code> methods to <code>String</code>s.
  * </p>
@@ -93,7 +93,7 @@ import org.scalatest._
  * <code>StringMustWrapperForVerb</code> class, the four uses of <code>must</code> provided here
  * are still available. These four <code>must</code> are in fact available to any class
  * that mixes in <code>MustMatchers</code>, but each takes an implicit parameter that is provided
- * only in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>, or <code>WordSpec</code> and
+ * only in <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code>, or <code>WordSpec</code> and
  * <code>org.scalatest.fixture.WordSpec</code>.  
  * </p>
  *
@@ -102,7 +102,7 @@ import org.scalatest._
 trait MustVerb {
 
   /**
-   * This class supports the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>,
+   * This class supports the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>org.scalatest.fixture.FlatSpec</code>,
    * and <code>org.scalatest.fixture.WordSpec</code>.
    *
    * <p>
@@ -115,11 +115,11 @@ trait MustVerb {
   class StringMustWrapperForVerb(left: String) {
 
     /**
-     * Supports test registration in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>.
+     * Supports test registration in <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code>.
      *
      * <p>
      * For example, this method enables syntax such as the following in <code>FlatSpec</code>
-     * and <code>FixtureFlatSpec</code>:
+     * and <code>org.scalatest.fixture.FlatSpec</code>:
      * </p>
      *
      * <pre class="stHighlight">
@@ -139,11 +139,11 @@ trait MustVerb {
     }
 
     /**
-     * Supports shared test registration in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>.
+     * Supports shared test registration in <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code>.
      *
      * <p>
      * For example, this method enables syntax such as the following in <code>FlatSpec</code>
-     * and <code>FixtureFlatSpec</code>:
+     * and <code>org.scalatest.fixture.FlatSpec</code>:
      * </p>
      *
      * <pre class="stHighlight">
@@ -152,7 +152,7 @@ trait MustVerb {
      * </pre>
      *
      * <p>
-     * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> passes in a function via the implicit parameter that takes
+     * <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code> passes in a function via the implicit parameter that takes
      * a string and results in a <code>BehaveWord</code>. This method
      * simply invokes this function, passing in left, and returns the result.
      * </p>

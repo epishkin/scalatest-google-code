@@ -798,8 +798,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <h4>Overriding <code>withFixture(OneArgTest)</code></h4>
  *
  * <p>
- * To use the loan pattern, you can extend <code>FixtureFlatSpec</code> (from the <code>org.scalatest.fixture</code> package) instead of
- * <code>FlatSpec</code>. Each test in a <code>FixtureFlatSpec</code> takes a fixture as a parameter, allowing you to pass the fixture into
+ * To use the loan pattern, you can extend <code>fixture.FlatSpec</code> (from the <code>org.scalatest.fixture</code> package) instead of
+ * <code>FlatSpec</code>. Each test in a <code>fixture.FlatSpec</code> takes a fixture as a parameter, allowing you to pass the fixture into
  * the test. You must indicate the type of the fixture parameter by specifying <code>FixtureParam</code>, and implement a
  * <code>withFixture</code> method that takes a <code>OneArgTest</code>. This <code>withFixture</code> method is responsible for
  * invoking the one-arg test function, so you can perform fixture set up before, and clean up after, invoking and passing
@@ -807,11 +807,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.FixtureFlatSpec
+ * import org.scalatest.fixture
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class ExampleSpec extends FixtureFlatSpec {
+ * class ExampleSpec extends fixture.FlatSpec {
  * 
  *   final val tmpFile = "temp.txt"
  * 
@@ -843,7 +843,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * For more information, see the <a href="fixture/FixtureFlatSpec.html">documentation for <code>FixtureFlatSpec</code></a>.
+ * For more information, see the <a href="fixture/FlatSpec.html">documentation for <code>fixture.FlatSpec</code></a>.
  * </p>
  *
  * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
@@ -945,7 +945,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * Note that in this case, the loan pattern is being implemented via the <code>withWriter</code> method that takes a function, not
- * by overriding <code>FixtureFlatSpec</code>'s <code>withFixture(OneArgTest)</code> method. <code>FixtureFlatSpec</code> makes the most sense
+ * by overriding <code>fixture.FlatSpec</code>'s <code>withFixture(OneArgTest)</code> method. <code>fixture.FlatSpec</code> makes the most sense
  * if all (or at least most) tests need the same fixture, whereas in this <code>Suite</code> only two tests need the
  * <code>FileWriter</code>.
  * </p>
@@ -2266,12 +2266,12 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This class is used via an implicit conversion (named <code>convertToInAndIgnoreMethods</code>)
    * from <code>ResultOfStringPassedToVerb</code>. The <code>ResultOfStringPassedToVerb</code> class
    * does not declare any methods named <code>in</code>, because the
-   * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>FixtureFlatSpec</code>.
-   * A <code>FixtureFlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
+   * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>fixture.FlatSpec</code>.
+   * A <code>fixture.FlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
    * test function and another that takes a one-arg test function (a test that takes a
    * <code>Fixture</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
    * only one <code>in</code> method that takes a by-name parameter. As a result,
-   * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> each provide an implicit conversion
+   * <code>FlatSpec</code> and <code>fixture.FlatSpec</code> each provide an implicit conversion
    * from <code>ResultOfStringPassedToVerb</code> to a type that provides the appropriate
    * <code>in</code> methods.
    * </p>
@@ -2361,12 +2361,12 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * This class is used via an implicit conversion (named <code>convertToInAndIgnoreMethodsAfterTaggedAs</code>)
    * from <code>ResultOfTaggedAsInvocation</code>. The <code>ResultOfTaggedAsInvocation</code> class
    * does not declare any methods named <code>in</code>, because the
-   * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>FixtureFlatSpec</code>.
-   * A <code>FixtureFlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
+   * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>fixture.FlatSpec</code>.
+   * A <code>fixture.FlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
    * test function and another that takes a one-arg test function (a test that takes a
    * <code>Fixture</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
    * only one <code>in</code> method that takes a by-name parameter. As a result,
-   * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> each provide an implicit conversion
+   * <code>FlatSpec</code> and <code>fixture.FlatSpec</code> each provide an implicit conversion
    * from <code>ResultOfTaggedAsInvocation</code> to a type that provides the appropriate
    * <code>in</code> methods.
    * </p>

@@ -24,7 +24,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
-import Suite.anErrorThatShouldCauseAnAbort
+import org.scalatest.Suite.anErrorThatShouldCauseAnAbort
 
 /**
  * A sister trait to <code>org.scalatest.WordSpec</code> that can pass a fixture object into its tests.
@@ -381,7 +381,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * @author Bill Venners
  */
-trait WordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
+trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
   private final val engine = new FixtureEngine[FixtureParam]("concurrentFixtureWordSpecMod", "FixtureWordSpec")
   import engine._

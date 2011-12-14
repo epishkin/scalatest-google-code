@@ -22,7 +22,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
-import Suite.anErrorThatShouldCauseAnAbort
+import org.scalatest.Suite.anErrorThatShouldCauseAnAbort
 import verb.BehaveWord
 import FunSuite.IgnoreTagName 
 
@@ -36,7 +36,7 @@ import FunSuite.IgnoreTagName
  * tests in parallel, your test class must
  * be thread safe, and a good way to make it thread safe is to make it functional. A good way to
  * write tests that need common fixtures in a functional style is to pass the fixture objects into the tests,
- * the style enabled by the <code>FixtureSuite</code> family of traits.
+ * the style enabled by the <code>fixture.Suite</code> family of traits.
  * </p>
  *
  * <p>
@@ -384,7 +384,7 @@ import FunSuite.IgnoreTagName
  *
  * @author Bill Venners
  */
-trait FunSpec extends FixtureSuite { thisSuite =>
+trait FunSpec extends Suite { thisSuite =>
 
   private final val engine = new FixtureEngine[FixtureParam]("concurrentFixtureSpecMod", "FixtureSpec")
   import engine._

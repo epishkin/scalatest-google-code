@@ -21,9 +21,9 @@ import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import org.scalatest.events._
-import Suite.anErrorThatShouldCauseAnAbort
+import org.scalatest.Suite.anErrorThatShouldCauseAnAbort
 import FunSuite.IgnoreTagName 
-import Suite.checkRunTestParamsForNull
+import org.scalatest.Suite.checkRunTestParamsForNull
 
 /**
  * A sister trait to <code>org.scalatest.FunSuite</code> that can pass a fixture object into its tests.
@@ -366,7 +366,7 @@ import Suite.checkRunTestParamsForNull
  *
  * @author Bill Venners
  */
-trait FixtureFunSuite extends FixtureSuite { thisSuite =>
+trait FixtureFunSuite extends Suite { thisSuite =>
 
   private final val engine = new FixtureEngine[FixtureParam]("concurrentFixtureFunSuiteMod", "FixtureFunSuite")
   import engine._
