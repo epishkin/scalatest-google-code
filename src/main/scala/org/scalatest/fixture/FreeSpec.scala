@@ -408,7 +408,7 @@ trait FreeSpec extends Suite { thisSuite =>
    * methods. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
+   * this <code>FreeSpec</code> instance.
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
@@ -431,7 +431,7 @@ trait FreeSpec extends Suite { thisSuite =>
    * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
+   * this <code>FreeSpec</code> instance.
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
@@ -720,7 +720,7 @@ trait FreeSpec extends Suite { thisSuite =>
   protected implicit def convertToFreeSpecStringWrapper(s: String) = new FreeSpecStringWrapper(s)
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
+   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FreeSpec</code> belong, and values
    * the <code>Set</code> of test names that belong to each tag. If this <code>FreeSpec</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
@@ -739,7 +739,7 @@ trait FreeSpec extends Suite { thisSuite =>
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param configMap a <code>Map</code> of properties that can be used by this <code>Spec</code>'s executing tests.
+   * @param configMap a <code>Map</code> of properties that can be used by this <code>FreeSpec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>configMap</code>
    *     is <code>null</code>.
    */
@@ -758,7 +758,7 @@ trait FreeSpec extends Suite { thisSuite =>
 
   /**
    * <p>
-   * Run zero to many of this <code>Spec</code>'s tests.
+   * Run zero to many of this <code>FreeSpec</code>'s tests.
    * </p>
    *
    * <p>
@@ -805,12 +805,12 @@ trait FreeSpec extends Suite { thisSuite =>
    * </ul>
    *
    * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
-   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Spec</code>.
+   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>FreeSpec</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>Spec</code>
-   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>Spec</code>
-   * @param configMap a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
+   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>FreeSpec</code>
+   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>FreeSpec</code>
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by this <code>FreeSpec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
    *     <code>tagsToExclude</code>, or <code>configMap</code> is <code>null</code>.
    */

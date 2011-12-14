@@ -35,10 +35,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <p>
- * <code>FlatSpec</code>'s no-nesting approach contrasts with traits <code>Spec</code> and <code>WordSpec</code>, which use nesting
+ * <code>FlatSpec</code>'s no-nesting approach contrasts with traits <code>FunSpec</code> and <code>WordSpec</code>, which use nesting
  * to reduce duplication of specification text. Although nesting does have the advantage of reducing text duplication,
  * figuring out the full specification text for one test can require back-tracking out of several levels of nesting, mentally prepending
- * each fragment of text encountered. Thus the tradeoff with the nesting approach of <code>Spec</code> and <code>WordSpec</code> is that
+ * each fragment of text encountered. Thus the tradeoff with the nesting approach of <code>FunSpec</code> and <code>WordSpec</code> is that
  * they have less duplicated text at the cost of being a bit challenging to read. Trait <code>FlatSpec</code> offers the opposite
  * tradeoff. In a <code>FlatSpec</code> text is duplicated more, but figuring out the full specification text for a particular test is
  * easier. Here's an example <code>FlatSpec</code>:
@@ -490,7 +490,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * then you will probably want to use group names on your <code>FlatSpec</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
  * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.tags.SlowTest</code> and <code>com.mycompany.tags.DbTest</code>, then you could
- * create matching groups for <code>Spec</code>s like this:
+ * create matching groups for <code>FlatSpec</code>s like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -1444,7 +1444,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * methods. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
+   * this <code>FlatSpec</code> instance.
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
@@ -2513,7 +2513,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
+   * this <code>FlatSpec</code> instance.
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
@@ -2530,7 +2530,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   }
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
+   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FlatSpec</code> belong, and values
    * the <code>Set</code> of test names that belong to each tag. If this <code>FlatSpec</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
@@ -2549,7 +2549,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param configMap a <code>Map</code> of properties that can be used by this <code>Spec</code>'s executing tests.
+   * @param configMap a <code>Map</code> of properties that can be used by this <code>FlatSpec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>configMap</code>
    *     is <code>null</code>.
    */
@@ -2616,12 +2616,12 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * </ul>
    *
    * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
-   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Spec</code>.
+   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>FlatSpec</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>Spec</code>
-   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>Spec</code>
-   * @param configMap a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
+   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>FlatSpec</code>
+   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>FlatSpec</code>
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by this <code>FlatSpec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
    *     <code>tagsToExclude</code>, or <code>configMap</code> is <code>null</code>.
    */
@@ -2656,7 +2656,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * </pre>
    *
    * <p>
-   * Invoking <code>testNames</code> on this <code>Spec</code> will yield a set that contains the following
+   * Invoking <code>testNames</code> on this <code>FlatSpec</code> will yield a set that contains the following
    * two test name strings:
    * </p>
    *

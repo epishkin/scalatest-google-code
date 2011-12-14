@@ -31,7 +31,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <p>
- * Trait <code>FreeSpec</code> is so named because unlike traits such as <code>WordSpec</code>, <code>FlatSpec</code>, and <code>Spec</code>,
+ * Trait <code>FreeSpec</code> is so named because unlike traits such as <code>WordSpec</code>, <code>FlatSpec</code>, and <code>FunSpec</code>,
  * it is enforces no structure on the text. You are free to compose text however you like. (A <code>FreeSpec</code> is like free-verse poetry as
  * opposed to a sonnet or haiku, which defines a structure for the text of the poem.)
  * Here's an example <code>FreeSpec</code>:
@@ -509,7 +509,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * then you will probably want to use group names on your <code>FreeSpec</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
  * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DbTest</code>, then you could
- * create matching tags for <code>Spec</code>s like this:
+ * create matching tags for <code>FreeSpec</code>s like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -1499,7 +1499,7 @@ trait FreeSpec extends Suite { thisSuite =>
    * methods. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
+   * this <code>FreeSpec</code> instance.
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
@@ -1522,7 +1522,7 @@ trait FreeSpec extends Suite { thisSuite =>
    * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
+   * this <code>FreeSpec</code> instance.
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
@@ -1721,7 +1721,7 @@ trait FreeSpec extends Suite { thisSuite =>
   protected implicit def convertToFreeSpecStringWrapper(s: String) = new FreeSpecStringWrapper(s)
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
+   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FreeSpec</code> belong, and values
    * the <code>Set</code> of test names that belong to each tag. If this <code>FreeSpec</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
@@ -1740,7 +1740,7 @@ trait FreeSpec extends Suite { thisSuite =>
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param configMap a <code>Map</code> of properties that can be used by this <code>Spec</code>'s executing tests.
+   * @param configMap a <code>Map</code> of properties that can be used by this <code>FreeSpec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>configMap</code>
    *     is <code>null</code>.
    */
@@ -1852,7 +1852,7 @@ trait FreeSpec extends Suite { thisSuite =>
    * </pre>
    *
    * <p>
-   * Invoking <code>testNames</code> on this <code>Spec</code> will yield a set that contains the following
+   * Invoking <code>testNames</code> on this <code>FreeSpec</code> will yield a set that contains the following
    * two test name strings:
    * </p>
    *

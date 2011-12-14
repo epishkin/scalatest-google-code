@@ -21,7 +21,7 @@ package org.scalatest
  *
  * <p>
  * The main purpose of <code>AbstractSuite</code> is to differentiate core <code>Suite</code>
- * traits, such as <code>Suite</code>, <code>FunSuite</code>, and <code>Spec</code> from stackable
+ * traits, such as <code>Suite</code>, <code>FunSuite</code>, and <code>FunSpec</code> from stackable
  * modification traits for <code>Suite</code>s such as <code>BeforeAndAfterEach</code>, <code>OneInstancePerTest</code>,
  * and <code>ParallelNestedSuiteExecution</code>. Because these stackable traits extend <code>AbstractSuite</code> 
  * instead of <code>Suite</code>, you can't define a suite by simply extending one of the stackable traits:
