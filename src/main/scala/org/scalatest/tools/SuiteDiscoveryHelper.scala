@@ -137,6 +137,30 @@ private[scalatest] class SuiteDiscoveryHelper() {
       case e: NoClassDefFoundError => false
     }
   }
+  
+  private def isRunnable(clazz: java.lang.Class[_]): Boolean = {
+    val runWithAnnotation = clazz.getAnnotation(classOf[RunWith])
+    if (runWithAnnotation != null) {
+      val suiteClazz = runWithAnnotation.value
+      val constructorList = suiteClazz.getDeclaredConstructors()
+      constructorList.exists { c => 
+        val types = c.getParameterTypes
+        types.length == 1 && types(0).isAssignableFrom(clazz)
+      }
+    }
+    else
+      false
+  }
+  
+  private def isRunnable(className: String, loader: ClassLoader): Boolean = {
+    try {
+      isRunnable(loader.loadClass(className)) 
+    }
+    catch {
+      case e: ClassNotFoundException => false
+      case e: NoClassDefFoundError => false
+    }
+  }
 
   // Returns Some(<class name>) if processed, else None
   private def processClassName(className: String, loader: ClassLoader): Option[String] = {

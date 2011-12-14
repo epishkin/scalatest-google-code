@@ -80,11 +80,6 @@
             <path refid="lib.path"></path>
         </path>
 
-        <path id="scalac.source.path">
-            <pathelement location="${scalasrc}" />
-            <pathelement location="${build.generated.src}" />
-        </path>
-
         <!-- this is the class path used to run ScalaTest to test itself, in the "test" target -->
         <path id="test.class.path">
             <pathelement location="${classes}" />
@@ -192,19 +187,20 @@
     <!--<target name="compile-main" depends="init">-->
     <target name="compile-main" depends="init, gentables, gengen">
 
-        <!-- Compile the Java code from ${javasrc} into ${classes}  Needs to go first because TagAnnotation used in Suite -->
-        <javac srcdir="${javasrc}" destdir="${classes}" compiler="javac1.5" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
-            <include name="org/scalatest/Ignore.java" />
-            <include name="org/scalatest/tools/ScalaTestTask.java" />
-        </javac>
-
         <!-- If ever want to see the typer output, add -Xprint:typer to the addparams like this: -->
-        <!--<scalac srcdir="${scalasrc}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-no-specialization -Xprint:typer" fork="true" jvmargs="${jvmargs}" />-->
+        <!--<scalac srcdir="${scalasrc}:${build.generated.src}:${javasrc}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-no-specialization -Xprint:typer" fork="true" jvmargs="${jvmargs}" />-->
 
         <!-- Compile the Scala code from ${scalasrc} into ${classes}. Scalac will parse the referenced .java files. -->
         <!-- Compile the Scala code from ${build.generated.src} into ${classes}. Scalac will parse any referenced .java files. -->
-        <scalac srcref="scalac.source.path" destdir="${classes}" target="jvm-1.5" deprecation="yes" classpathref="build.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
+        <scalac srcdir="${scalasrc}:${build.generated.src}:${javasrc}" destdir="${classes}" target="jvm-1.5" deprecation="yes" classpathref="build.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
 
+    	<!-- Compile the Java code from ${javasrc} into ${classes} -->
+    	<javac srcdir="${javasrc}" destdir="${classes}" compiler="javac1.5" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
+    	    <include name="org/scalatest/Ignore.java" />
+    	    <include name="org/scalatest/tools/ScalaTestTask.java" />
+    	    <include name="org/scalatest/RunWith.java" />
+    	</javac>
+    	
        <!-- copy these here not in dist because sometimes I like to do -cp target/jar_contents things, such as REPL sessions -->
         <copy file="${resources}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
         <copy todir="${jar.contents}/images">

@@ -42,6 +42,13 @@ class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper) {
     m.setAccessible(true)
     m.invoke(sdt, Array[Object](clazz): _*).asInstanceOf[Boolean]
   }
+  
+  def isRunnable(clazz: java.lang.Class[_]): Boolean = {
+    val m = Class.forName("org.scalatest.tools.SuiteDiscoveryHelper").getDeclaredMethod("isRunnable",
+      Array(classOf[Class[_]]): _*) // This one works in 2.7
+    m.setAccessible(true)
+    m.invoke(sdt, Array[Object](clazz): _*).asInstanceOf[Boolean]
+  }
 
   def processFileNames(fileNames: Iterator[String], fileSeparator: Char, loader: ClassLoader): Set[String] = {
 
@@ -157,5 +164,22 @@ class SuiteDiscoveryHelperSuite extends Suite {
     assert(sdtf.getFileNamesSetFromFile(new File("harness/fnIteratorTest"), '/') === Set("subDir2/inSubDir2.class",
       "subDir2/subSubDir/inSubSubDir.class", "empty.txt", "empty.class", "subDir1/inSubDir1.class"))
     */
+  }
+  
+  def testIsRunnable {
+    class NormalClass {}
+    class SuiteClass extends Suite
+    @RunWith(classOf[SuiteClass])
+    class AnnotateDefaultConstructor
+    class WrongSuiteClass(testValue: String) extends Suite
+    @RunWith(classOf[WrongSuiteClass])
+    class AnnotateWrongConstructor
+    class SomeApiSubClass extends SomeApiClass
+    assert(!sdtf.isRunnable(classOf[NormalClass]))
+    assert(!sdtf.isRunnable(classOf[SuiteClass]))
+    assert(!sdtf.isRunnable(classOf[AnnotateDefaultConstructor]))
+    assert(!sdtf.isRunnable(classOf[AnnotateWrongConstructor]))
+    assert(sdtf.isRunnable(classOf[SomeApiClass]))
+    assert(sdtf.isRunnable(classOf[SomeApiSubClass]))
   }
 }
