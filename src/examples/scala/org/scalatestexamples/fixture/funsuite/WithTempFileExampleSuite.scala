@@ -15,12 +15,12 @@
  */
 package org.scalatestexamples.fixture.funsuite
 
-import org.scalatest.fixture.FixtureFunSuite
+import org.scalatest.fixture
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.File
 
-class WithTempFileExampleSuite extends FixtureFunSuite {
+class WithTempFileExampleSuite extends fixture.FunSuite {
 
   type FixtureParam = FileReader
 

@@ -835,8 +835,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <h4>Overriding <code>withFixture(OneArgTest)</code></h4>
  *
  * <p>
- * To use the loan pattern, you can extend <code>FixtureFreeSpec</code> (from the <code>org.scalatest.fixture</code> package) instead of
- * <code>FreeSpec</code>. Each test in a <code>FixtureFreeSpec</code> takes a fixture as a parameter, allowing you to pass the fixture into
+ * To use the loan pattern, you can extend <code>fixture.FreeSpec</code> (from the <code>org.scalatest.fixture</code> package) instead of
+ * <code>FreeSpec</code>. Each test in a <code>fixture.FreeSpec</code> takes a fixture as a parameter, allowing you to pass the fixture into
  * the test. You must indicate the type of the fixture parameter by specifying <code>FixtureParam</code>, and implement a
  * <code>withFixture</code> method that takes a <code>OneArgTest</code>. This <code>withFixture</code> method is responsible for
  * invoking the one-arg test function, so you can perform fixture set up before, and clean up after, invoking and passing
@@ -844,11 +844,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.FixtureFreeSpec
+ * import org.scalatest.fixture
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class ExampleSpec extends FixtureFreeSpec {
+ * class ExampleSpec extends fixture.FreeSpec {
  * 
  *   final val tmpFile = "temp.txt"
  * 
@@ -883,7 +883,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * For more information, see the <a href="fixture/FixtureFreeSpec.html">documentation for <code>FixtureFreeSpec</code></a>.
+ * For more information, see the <a href="fixture/FreeSpec.html">documentation for <code>fixture.FreeSpec</code></a>.
  * </p>
  *
  * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
@@ -988,7 +988,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * Note that in this case, the loan pattern is being implemented via the <code>withWriter</code> method that takes a function, not
- * by overriding <code>FixtureFreeSpec</code>'s <code>withFixture(OneArgTest)</code> method. <code>FixtureFreeSpec</code> makes the most sense
+ * by overriding <code>fixture.FreeSpec</code>'s <code>withFixture(OneArgTest)</code> method. <code>fixture.FreeSpec</code> makes the most sense
  * if all (or at least most) tests need the same fixture, whereas in this <code>Suite</code> only two tests need the
  * <code>FileWriter</code>.
  * </p>

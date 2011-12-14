@@ -25,4 +25,4 @@ trait StringFixture { this: fixture.Suite =>
 }
 
 trait StringFixtureSpec extends fixture.FunSpec with StringFixture
-trait StringFixtureFunSuite extends fixture.FixtureFunSuite with StringFixture
+trait StringFixtureFunSuite extends fixture.FunSuite with StringFixture

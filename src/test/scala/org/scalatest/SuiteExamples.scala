@@ -22,7 +22,7 @@ trait SuiteExamples extends Tables {
   type FixtureServices
 
   def funSuite: FunSuite with FixtureServices
-  def fixtureFunSuite: fixture.FixtureFunSuite with FixtureServices
+  def fixtureFunSuite: fixture.FunSuite with FixtureServices
   def spec: FunSpec with FixtureServices
   def fixtureSpec: fixture.FunSpec with FixtureServices
 

@@ -177,8 +177,8 @@ import org.scalatools.testing.{Event, EventHandler, Result, Logger, Runner => Te
       test("assert bad") {assert(1 === 3)}
     }
 
-    import org.scalatest.fixture.FixtureFunSuite
-    private class TestWithConfigMap extends FixtureFunSuite {
+    import org.scalatest.fixture
+    private class TestWithConfigMap extends fixture.FunSuite {
       type FixtureParam = String
       override def withFixture(test: OneArgTest) {
         test(test.configMap("josh").toString)
@@ -187,7 +187,7 @@ import org.scalatools.testing.{Event, EventHandler, Result, Logger, Runner => Te
     }
 
 
-    private class TestWithConfigMap2 extends FixtureFunSuite {
+    private class TestWithConfigMap2 extends fixture.FunSuite {
       type FixtureParam = Map[String,Any]
       override def withFixture(test: OneArgTest) {
         test(test.configMap)

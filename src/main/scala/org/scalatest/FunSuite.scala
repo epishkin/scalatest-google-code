@@ -543,8 +543,8 @@ import Suite.checkRunTestParamsForNull
  * <h4>Overriding <code>withFixture(OneArgTest)</code></h4>
  *
  * <p>
- * To use the loan pattern, you can extend <code>FixtureFunSuite</code> (from the <code>org.scalatest.fixture</code> package) instead of
- * <code>FunSuite</code>. Each test in a <code>FixtureFunSuite</code> takes a fixture as a parameter, allowing you to pass the fixture into
+ * To use the loan pattern, you can extend <code>fixture.FunSuite</code> (from the <code>org.scalatest.fixture</code> package) instead of
+ * <code>FunSuite</code>. Each test in a <code>fixture.FunSuite</code> takes a fixture as a parameter, allowing you to pass the fixture into
  * the test. You must indicate the type of the fixture parameter by specifying <code>FixtureParam</code>, and implement a
  * <code>withFixture</code> method that takes a <code>OneArgTest</code>. This <code>withFixture</code> method is responsible for
  * invoking the one-arg test function, so you can perform fixture set up before, and clean up after, invoking and passing
@@ -552,11 +552,11 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.FixtureFunSuite
+ * import org.scalatest.fixture
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class ExampleSuite extends FixtureFunSuite {
+ * class ExampleSuite extends fixture.FunSuite {
  * 
  *   final val tmpFile = "temp.txt"
  * 
@@ -588,7 +588,7 @@ import Suite.checkRunTestParamsForNull
  * </pre>
  *
  * <p>
- * For more information, see the <a href="fixture/FixtureFunSuite.html">documentation for <code>FixtureFunSuite</code></a>.
+ * For more information, see the <a href="fixture/FunSuite.html">documentation for <code>fixture.FunSuite</code></a>.
  * </p>
  *
  * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
@@ -690,7 +690,7 @@ import Suite.checkRunTestParamsForNull
  *
  * <p>
  * Note that in this case, the loan pattern is being implemented via the <code>withWriter</code> method that takes a function, not
- * by overriding <code>FixtureFunSuite</code>'s <code>withFixture(OneArgTest)</code> method. <code>FixtureFunSuite</code> makes the most sense
+ * by overriding <code>fixture.FunSuite</code>'s <code>withFixture(OneArgTest)</code> method. <code>fixture.FunSuite</code> makes the most sense
  * if all (or at least most) tests need the same fixture, whereas in this <code>Suite</code> only two tests need the
  * <code>FileWriter</code>.
  * </p>

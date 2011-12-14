@@ -24,7 +24,7 @@ package org.scalatest
  * object SlowTest extends Tag("SlowTest")
  * </pre>
  *
- * then you can tag a test as a <code>SlowTest</code> in a <code>FunSuite</code> or <code>FixtureFunSuite</code> like this:
+ * then you can tag a test as a <code>SlowTest</code> in a <code>FunSuite</code> or <code>fixture.FunSuite</code> like this:
  * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  *

@@ -1975,7 +1975,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime)
   }
 
-  // Sharing this with FunSuite and FixtureFunSuite as well as Suite and fixture.Suite
+  // Sharing this with FunSuite and fixture.FunSuite as well as Suite and fixture.Suite
   private[scalatest] def getRunTestGoodies(stopper: Stopper, reporter: Reporter, testName: String) = {
 
     val stopRequested = stopper
