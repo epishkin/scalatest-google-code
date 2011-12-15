@@ -34,7 +34,7 @@ import java.io.IOException
  *
  * @author Bill Venners
  */
-private[scalatest] class SuiteDiscoveryHelper() {
+private[scalatest] object SuiteDiscoveryHelper {
 
   def discoverSuiteNames(runpath: List[String], loader: ClassLoader): Set[String] = {
 
@@ -115,7 +115,7 @@ private[scalatest] class SuiteDiscoveryHelper() {
 
   private val emptyClassArray = new Array[java.lang.Class[T] forSome { type T }](0)
 
-  private def isAccessibleSuite(clazz: java.lang.Class[_]): Boolean = {
+  private[scalatest] def isAccessibleSuite(clazz: java.lang.Class[_]): Boolean = {
       try {
         classOf[Suite].isAssignableFrom(clazz) && 
           Modifier.isPublic(clazz.getModifiers) &&
@@ -128,7 +128,7 @@ private[scalatest] class SuiteDiscoveryHelper() {
       }
   }
 
-  private def isAccessibleSuite(className: String, loader: ClassLoader): Boolean = {
+  private[scalatest] def isAccessibleSuite(className: String, loader: ClassLoader): Boolean = {
     try {
       isAccessibleSuite(loader.loadClass(className)) 
     }
@@ -138,7 +138,7 @@ private[scalatest] class SuiteDiscoveryHelper() {
     }
   }
   
-  private def isRunnable(clazz: java.lang.Class[_]): Boolean = {
+  private[scalatest] def isRunnable(clazz: java.lang.Class[_]): Boolean = {
     val runWithAnnotation = clazz.getAnnotation(classOf[RunWith])
     if (runWithAnnotation != null) {
       val suiteClazz = runWithAnnotation.value
@@ -152,7 +152,7 @@ private[scalatest] class SuiteDiscoveryHelper() {
       false
   }
   
-  private def isRunnable(className: String, loader: ClassLoader): Boolean = {
+  private[scalatest] def isRunnable(className: String, loader: ClassLoader): Boolean = {
     try {
       isRunnable(loader.loadClass(className)) 
     }
@@ -165,7 +165,7 @@ private[scalatest] class SuiteDiscoveryHelper() {
   // Returns Some(<class name>) if processed, else None
   private def processClassName(className: String, loader: ClassLoader): Option[String] = {
 
-    if (isAccessibleSuite(className, loader)) {
+    if (isAccessibleSuite(className, loader) || isRunnable(className, loader)) {
       Some(className)
     }
     else {

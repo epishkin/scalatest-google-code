@@ -1441,7 +1441,7 @@ object Runner {
               (Nil, Nil) // No DiscoverySuites in this case. Just run Suites named with -s or -j
             }
             else {
-              val accessibleSuites = (new SuiteDiscoveryHelper).discoverSuiteNames(runpath, loader)
+              val accessibleSuites = SuiteDiscoveryHelper.discoverSuiteNames(runpath, loader)
 
               if (membersOnlyAndBeginsWithListsAreEmpty && suitesList.isEmpty && junitsList.isEmpty) {
                 // In this case, they didn't specify any -w, -m, -s, or -j on the command line, so the default

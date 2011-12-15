@@ -3,6 +3,7 @@ package org.scalatest.tools
 import org.scalatools.testing._
 import org.scalatest.tools.Runner.parsePropertiesArgsIntoMap
 import org.scalatest.tools.Runner.parseCompoundArgIntoSet
+import SuiteDiscoveryHelper._
 import StringReporter.colorizeLinesIndividually
 import org.scalatest.Suite.formatterForSuiteStarting
 import org.scalatest.Suite.formatterForSuiteCompleted
@@ -60,13 +61,18 @@ class ScalaTestFramework extends Framework {
   def name = "ScalaTest"
 
   /**
-   * Returns an array containing one <code>org.scalatools.testing.TestFingerprint</code> object, whose superclass name is <code>org.scalatest.Suite</code>
-   * and <code>isModule</code> value is false.
+   * Returns an array containing fingerprint for ScalaTest's test, which are classes  
+   * whose superclass name is <code>org.scalatest.Suite</code>
+   * or is annotated with <code>org.scalatest.RunWith</code>.
    */
   def tests =
     Array(
       new org.scalatools.testing.TestFingerprint {
         def superClassName = "org.scalatest.Suite"
+        def isModule = false
+      },
+      new org.scalatools.testing.AnnotatedFingerprint {
+        def annotationName = "org.scalatest.RunWith"
         def isModule = false
       }
     )
@@ -80,7 +86,7 @@ class ScalaTestFramework extends Framework {
   }
 
   /**The test runner for ScalaTest suites. It is compiled in a second step after the rest of sbt.*/
-  private[tools] class ScalaTestRunner(val testLoader: ClassLoader, val loggers: Array[Logger]) extends org.scalatools.testing.Runner {
+  private[tools] class ScalaTestRunner(val testLoader: ClassLoader, val loggers: Array[Logger]) extends org.scalatools.testing.Runner2 {
 
     import org.scalatest._
 
@@ -109,11 +115,10 @@ tasks are more integrated, don't need to know as much.
 write a sbt plugin to deploy the task.
 
      */
-    def run(testClassName: String, fingerprint: TestFingerprint, eventHandler: EventHandler, args: Array[String]) {
-      val suiteClass = Class.forName(testClassName, true, testLoader).asSubclass(classOf[Suite])
-
+    def run(testClassName: String, fingerprint: Fingerprint, eventHandler: EventHandler, args: Array[String]) {
+      val testClass = Class.forName(testClassName, true, testLoader)
       // println("sbt args: " + args.toList)
-      if (isAccessibleSuite(suiteClass)) {
+      if (isAccessibleSuite(testClass) || isRunnable(testClass)) {
 
         val (propertiesArgsList, includesArgsList,
         excludesArgsList, repoArgsList) = parsePropsAndTags(args.filter(!_.equals("")))
@@ -147,11 +152,23 @@ write a sbt plugin to deploy the task.
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
 
-        val suite = suiteClass.newInstance
+        val runWithAnnotation = testClass.getAnnotation(classOf[RunWith])
+        val suite = 
+        if (runWithAnnotation == null)
+          testClass.newInstance.asInstanceOf[Suite]
+        else {
+          val suiteClazz = runWithAnnotation.value
+          val constructorList = suiteClazz.getDeclaredConstructors()
+          val constructor = constructorList.find { c => 
+              val types = c.getParameterTypes
+              types.length == 1 && types(0).isAssignableFrom(testClass)
+            }
+            constructor.get.newInstance(testClass.newInstance.asInstanceOf[Object]).asInstanceOf[Suite]
+        }
 
         val formatter = formatterForSuiteStarting(suite)
 
-        report(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suiteClass.getName), formatter, None))
+        report(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(testClass.getName), formatter, None))
 
         try {
           suite.run(None, report, new Stopper {}, filter, configMap, None, tracker)
@@ -159,18 +176,18 @@ write a sbt plugin to deploy the task.
           val formatter = formatterForSuiteCompleted(suite)
 
           val duration = System.currentTimeMillis - suiteStartTime
-          report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suiteClass.getName), Some(duration), formatter, None))
+          report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(testClass.getName), Some(duration), formatter, None))
         }
         catch {       
           case e: Exception => {
 
             // TODO: Could not get this from Resources. Got:
             // java.util.MissingResourceException: Can't find bundle for base name org.scalatest.ScalaTestBundle, locale en_US
-            val rawString = "Exception encountered when attempting to run a suite with class name: " + suiteClass.getName
+            val rawString = "Exception encountered when attempting to run a suite with class name: " + testClass.getName
             val formatter = formatterForSuiteAborted(suite, rawString)
 
             val duration = System.currentTimeMillis - suiteStartTime
-            report(SuiteAborted(tracker.nextOrdinal(), rawString, suite.suiteName, Some(suiteClass.getName), Some(e), Some(duration), formatter, None))
+            report(SuiteAborted(tracker.nextOrdinal(), rawString, suite.suiteName, Some(testClass.getName), Some(e), Some(duration), formatter, None))
           }
         }
       }
@@ -178,20 +195,6 @@ write a sbt plugin to deploy the task.
     }
 
     private val emptyClassArray = new Array[java.lang.Class[T] forSome {type T}](0)
-
-    private def isAccessibleSuite(clazz: java.lang.Class[_]): Boolean = {
-      import java.lang.reflect.Modifier
-
-      try {
-        classOf[Suite].isAssignableFrom(clazz) &&
-                Modifier.isPublic(clazz.getModifiers) &&
-                !Modifier.isAbstract(clazz.getModifiers) &&
-                Modifier.isPublic(clazz.getConstructor(emptyClassArray: _*).getModifiers)
-      } catch {
-        case nsme: NoSuchMethodException => false
-        case se: SecurityException => false
-      }
-    }
     
     private class SbtReporter(eventHandler: EventHandler, report: Option[Reporter]) extends Reporter {
       
