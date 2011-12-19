@@ -139,7 +139,7 @@ private[scalatest] object SuiteDiscoveryHelper {
   }
   
   private[scalatest] def isRunnable(clazz: java.lang.Class[_]): Boolean = {
-    val runWithAnnotation = clazz.getAnnotation(classOf[RunWith])
+    val runWithAnnotation = clazz.getAnnotation(classOf[WrapWith])
     if (runWithAnnotation != null) {
       val suiteClazz = runWithAnnotation.value
       val constructorList = suiteClazz.getDeclaredConstructors()

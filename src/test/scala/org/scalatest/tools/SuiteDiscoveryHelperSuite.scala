@@ -169,10 +169,10 @@ class SuiteDiscoveryHelperSuite extends Suite {
   def testIsRunnable {
     class NormalClass {}
     class SuiteClass extends Suite
-    @RunWith(classOf[SuiteClass])
+    @WrapWith(classOf[SuiteClass])
     class AnnotateDefaultConstructor
     class WrongSuiteClass(testValue: String) extends Suite
-    @RunWith(classOf[WrongSuiteClass])
+    @WrapWith(classOf[WrongSuiteClass])
     class AnnotateWrongConstructor
     //class SomeApiSubClass extends SomeApiClass
     assert(!sdtf.isRunnable(classOf[NormalClass]))

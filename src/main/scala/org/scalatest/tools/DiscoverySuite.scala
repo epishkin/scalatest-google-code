@@ -35,7 +35,7 @@ private[scalatest] class DiscoverySuite(path: String, accessibleSuites: Set[Stri
       yield {
         try {
           val clazz = runpathClassLoader.loadClass(suiteClassName)
-          val runWithAnnotation = clazz.getAnnotation(classOf[RunWith])
+          val runWithAnnotation = clazz.getAnnotation(classOf[WrapWith])
           if (runWithAnnotation == null)
             clazz.newInstance.asInstanceOf[Suite]
           else {

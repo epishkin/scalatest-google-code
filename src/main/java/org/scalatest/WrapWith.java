@@ -20,7 +20,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-public @interface RunWith {
+public @interface WrapWith {
     /**
      * @return a Runner class (must have a constructor that takes a single Class to run)
      */

@@ -1,6 +1,6 @@
 package org.scalatest.tools
 
-import org.scalatest.RunWith
+import org.scalatest.WrapWith
 
-@RunWith(classOf[SomeApiClassRunner])
+@WrapWith(classOf[SomeApiClassRunner])
 class SomeApiClass

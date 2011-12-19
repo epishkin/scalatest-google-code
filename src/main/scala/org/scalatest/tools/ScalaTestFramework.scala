@@ -72,7 +72,7 @@ class ScalaTestFramework extends Framework {
         def isModule = false
       },
       new org.scalatools.testing.AnnotatedFingerprint {
-        def annotationName = "org.scalatest.RunWith"
+        def annotationName = "org.scalatest.WrapWith"
         def isModule = false
       }
     )
@@ -152,7 +152,7 @@ write a sbt plugin to deploy the task.
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
 
-        val runWithAnnotation = testClass.getAnnotation(classOf[RunWith])
+        val runWithAnnotation = testClass.getAnnotation(classOf[WrapWith])
         val suite = 
         if (runWithAnnotation == null)
           testClass.newInstance.asInstanceOf[Suite]

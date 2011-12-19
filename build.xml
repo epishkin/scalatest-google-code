@@ -198,7 +198,7 @@
     	<javac srcdir="${javasrc}" destdir="${classes}" compiler="javac1.5" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
     	    <include name="org/scalatest/Ignore.java" />
     	    <include name="org/scalatest/tools/ScalaTestTask.java" />
-    	    <include name="org/scalatest/RunWith.java" />
+    	    <include name="org/scalatest/WrapWith.java" />
     	</javac>
     	
        <!-- copy these here not in dist because sometimes I like to do -cp target/jar_contents things, such as REPL sessions -->
