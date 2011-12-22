@@ -34,6 +34,6 @@ package org.scalatest
  *
  * @author Chee Seng
  */
-trait NoDefaultImplicits extends Suite { 
-  override def convertToEqualizer(left: Any): Equalizer = super.convertToEqualizer(left)
+trait NoDefaultImplicits { theSuite: Suite =>
+  override def convertToEqualizer(right: Any): Equalizer = new Equalizer(right)
 }
