@@ -65,6 +65,16 @@ This compiled but is ugly. I think config should be at the end in this case.
   }
 
   // TODO: Use the one in the Suite singleton object
+  // Another TODO: I think that this should work:
+  // case _: AnnotationFormatError |
+  //     AWTError |
+  //     CoderMalfunctionError |
+  //     FactoryConfigurationError |
+  //     LinkageError |
+  //     ThreadDeath |
+  //     TransformerFactoryConfigurationError |
+  //     VirtualMachineError => true
+  // Try it, and if it works, use it. (Better make sure there are tests for all these at that time too.)
   private def anErrorThatShouldCauseAnAbort(throwable: Throwable) =
     throwable match {
       case _: AnnotationFormatError => true
