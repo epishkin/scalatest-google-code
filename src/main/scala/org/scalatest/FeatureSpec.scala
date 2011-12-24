@@ -17,7 +17,7 @@ package org.scalatest
 
 import NodeFamily._
 import scala.collection.immutable.ListSet
-import org.scalatest.StackDepthExceptionHelper.getStackDepth
+import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
@@ -1605,7 +1605,7 @@ trait FeatureSpec extends Suite { thisSuite =>
   protected def feature(description: String)(fun: => Unit) {
 
     if (!currentBranchIsTrunk)
-      throw new NotAllowedException(Resources("cantNestFeatureClauses"), getStackDepth("FeatureSpec.scala", "feature"))
+      throw new NotAllowedException(Resources("cantNestFeatureClauses"), getStackDepthFun("FeatureSpec.scala", "feature"))
 
     registerNestedBranch(description, None, fun, "featureCannotAppearInsideAScenario", "FeatureSpec.scala", "feature")
   }

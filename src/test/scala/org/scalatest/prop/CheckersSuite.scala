@@ -20,6 +20,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 import org.scalatest.matchers.ShouldMatchers._
+import org.scalatest.SharedHelpers.thisLineNumber
 
 class CheckersSuite extends Suite with Checkers {
 
@@ -193,5 +194,38 @@ class CheckersSuite extends Suite with Checkers {
         stack.iterator.toList == list.reverse
       }
     }
+  }
+  
+  def expectFileNameLineNumber(ex: GeneratorDrivenPropertyCheckFailedException, expectedFileName: String, expectedLineNumber: Int) {
+      expect(expectedFileName)(ex.failedCodeFileName.getOrElse(null))
+      expect(expectedLineNumber)(ex.failedCodeLineNumber.getOrElse(-1))
+  }
+  
+  def testCheckPropStackDepth() {
+    val ex1 = intercept[GeneratorDrivenPropertyCheckFailedException] { check((a: List[Int]) => a.size == a.size + 1) }
+    expectFileNameLineNumber(ex1, "CheckersSuite.scala", thisLineNumber - 1)
+    val ex2 = intercept[GeneratorDrivenPropertyCheckFailedException] { check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size + 1) }
+    expectFileNameLineNumber(ex2, "CheckersSuite.scala", thisLineNumber - 1)
+    val ex3 = intercept[GeneratorDrivenPropertyCheckFailedException] { check((a: List[Int], b: List[Int], c: List[Int]) => a.size + b.size + c.size == (a ::: b ::: c).size + 1) }
+    expectFileNameLineNumber(ex3, "CheckersSuite.scala", thisLineNumber - 1)
+    val ex4 = intercept[GeneratorDrivenPropertyCheckFailedException] { check((a: List[Int], b: List[Int], c: List[Int], d: List[Int]) => a.size + b.size + c.size == (a ::: b ::: c ::: d).size + 1) }
+    expectFileNameLineNumber(ex4, "CheckersSuite.scala", thisLineNumber - 1)
+    val ex5 = intercept[GeneratorDrivenPropertyCheckFailedException] { check((a: List[Int], b: List[Int], c: List[Int], d: List[Int], e: List[Int]) => a.size + b.size + c.size == (a ::: b ::: c ::: d ::: e).size + 1) }
+    expectFileNameLineNumber(ex5, "CheckersSuite.scala", thisLineNumber - 1)
+    val ex6 = intercept[GeneratorDrivenPropertyCheckFailedException] { check((a: List[Int], b: List[Int], c: List[Int], d: List[Int], e: List[Int], f: List[Int]) => a.size + b.size + c.size == (a ::: b ::: c ::: d ::: e ::: f).size + 1) }
+    expectFileNameLineNumber(ex6, "CheckersSuite.scala", thisLineNumber - 1)
+    
+    try {
+      check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size + 1)
+    }
+    catch {
+      case ex: GeneratorDrivenPropertyCheckFailedException =>
+        expectFileNameLineNumber(ex, "CheckersSuite.scala", thisLineNumber - 4)
+    }
+    
+    val ex7 = intercept[GeneratorDrivenPropertyCheckFailedException] { check(Prop.forAll((n: Int) => n + 0 == n + 1)) }
+    expectFileNameLineNumber(ex7, "CheckersSuite.scala", thisLineNumber - 1)
+    val ex8 = intercept[GeneratorDrivenPropertyCheckFailedException] { check(Prop.forAll((n: Int) => n + 0 == n + 1), Test.Params(minSuccessfulTests = 5)) }
+    expectFileNameLineNumber(ex8, "CheckersSuite.scala", thisLineNumber - 1)
   }
 }

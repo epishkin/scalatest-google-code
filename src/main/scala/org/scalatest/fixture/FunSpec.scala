@@ -18,7 +18,7 @@ package org.scalatest.fixture
 import org.scalatest._
 import FixtureNodeFamily._
 import scala.collection.immutable.ListSet
-import org.scalatest.StackDepthExceptionHelper.getStackDepth
+import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
@@ -551,7 +551,7 @@ trait FunSpec extends Suite { thisSuite =>
    */
   protected def ignore(specText: String)(testFun: FixtureParam => Any) {
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth(fileName, "ignore"))
+      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepthFun(fileName, "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
   }
 

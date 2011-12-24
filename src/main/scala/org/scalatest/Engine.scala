@@ -17,7 +17,7 @@ package org.scalatest
 
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
-import org.scalatest.StackDepthExceptionHelper.getStackDepth
+import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 import FunSuite.IgnoreTagName 
 import org.scalatest.NodeFamily.TestLeaf
 import org.scalatest.Suite._
@@ -355,7 +355,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     val (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
 
     if (registrationClosed)
-      throw new TestRegistrationClosedException(Resources(registrationClosedResource), getStackDepth(sourceFile, methodName))
+      throw new TestRegistrationClosedException(Resources(registrationClosedResource), getStackDepthFun(sourceFile, methodName))
 
     val oldBranch = currentBranch
     val newBranch = DescriptionBranch(currentBranch, description, childPrefix)
@@ -380,7 +380,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     val (_, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
 
     if (registrationClosed)
-      throw new TestRegistrationClosedException(Resources(registrationClosedResource), getStackDepth(sourceFile, methodName))
+      throw new TestRegistrationClosedException(Resources(registrationClosedResource), getStackDepthFun(sourceFile, methodName))
 
     // Need to use Trunk here. I think it will be visible to all threads because
     // of the atomic, even though it wasn't inside it.
@@ -403,7 +403,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     checkRegisterTestParamsForNull(testText, testTags: _*)
 
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources(testRegistrationClosedResourceName), getStackDepth(sourceFileName, methodName))
+      throw new TestRegistrationClosedException(Resources(testRegistrationClosedResourceName), getStackDepthFun(sourceFileName, methodName))
 //    throw new TestRegistrationClosedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth(sourceFileName, "test"))
 
     val oldBundle = atomic.get
@@ -412,7 +412,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     val testName = getTestName(testText, currentBranch)
 
     if (atomic.get.testsMap.keySet.contains(testName))
-      throw new DuplicateTestNameException(testName, getStackDepth(sourceFileName, methodName))
+      throw new DuplicateTestNameException(testName, getStackDepthFun(sourceFileName, methodName))
 
     val testLeaf = TestLeaf(currentBranch, testName, testText, testFun)
     testsMap += (testName -> testLeaf)

@@ -23,7 +23,7 @@ import org.scalacheck.Pretty
 import org.scalacheck.Arg
 import org.scalacheck.Prop
 import org.scalacheck.Test
-import org.scalatest.StackDepthExceptionHelper.getStackDepthForPropCheck
+import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 
 /**
  * Trait that contains several &#8220;check&#8221; methods that perform ScalaCheck property checks.
@@ -383,7 +383,7 @@ object Checkers extends Checkers {
           throw new GeneratorDrivenPropertyCheckFailedException(
             sde => failureMsg,
             None,
-            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
+            getStackDepthFun(stackDepthFileName, stackDepthMethodName),
             // getStackDepth("ScalaCheck.scala", "check"),
             // { val x = getStackDepth("GeneratorDrivenPropertyChecks$class.scala", "forAll"); println("stackDepth:" + x); x},
             failureMsg,
@@ -397,7 +397,7 @@ object Checkers extends Checkers {
           throw new GeneratorDrivenPropertyCheckFailedException(
             sde => prettyTestStats(result),
             None,
-            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
+            getStackDepthFun(stackDepthFileName, stackDepthMethodName),
             FailureMessages("propertyFailed", result.succeeded),
             args,
             None,
@@ -429,7 +429,7 @@ object Checkers extends Checkers {
               prettyArgs(argsWithSpecifiedNames) + "\n" +
               "  )",
             Some(e),
-            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
+            getStackDepthFun(stackDepthFileName, stackDepthMethodName),
             FailureMessages("propertyException", UnquotedString(e.getClass.getName)),
             args,
             None,
@@ -441,7 +441,7 @@ object Checkers extends Checkers {
           throw new GeneratorDrivenPropertyCheckFailedException(
             sde => prettyTestStats(result),
             Some(e),
-            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
+            getStackDepthFun(stackDepthFileName, stackDepthMethodName),
             FailureMessages("generatorException", UnquotedString(e.getClass.getName)),
             args,
             None,

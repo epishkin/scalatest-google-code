@@ -166,6 +166,15 @@ trait SharedHelpers extends Assertions {
     assert(testFailedEvent.isDefined)
     assert(testFailedEvent.get.asInstanceOf[TestFailed].testName === testName)
   }
+  
+  def thisLineNumber = {
+    val st = Thread.currentThread.getStackTrace
+
+    if (!st(2).getMethodName.contains("thisLineNumber"))
+      st(2).getLineNumber
+    else
+      st(3).getLineNumber
+  }
 
   class TestIgnoredTrackingReporter extends Reporter {
     var testIgnoredReceived = false

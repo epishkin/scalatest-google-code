@@ -17,10 +17,9 @@ package org.scalatest.prop
 
 import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.SharedHelpers.thisLineNumber
 
 class TableDrivenPropertyCheckFailedExceptionSpec extends FunSpec with ShouldMatchers with TableDrivenPropertyChecks {
-
-  val baseLineNumber = 22
 
   describe("The TableDrivenPropertyCheckFailedException") {
 
@@ -39,7 +38,7 @@ class TableDrivenPropertyCheckFailedExceptionSpec extends FunSpec with ShouldMat
       catch {
         case e: TableDrivenPropertyCheckFailedException =>
           e.failedCodeFileNameAndLineNumberString match {
-            case Some(s) => s should equal ("TableDrivenPropertyCheckFailedExceptionSpec.scala:" + (baseLineNumber + 15))
+            case Some(s) => s should equal ("TableDrivenPropertyCheckFailedExceptionSpec.scala:" + (thisLineNumber - 5))
             case None => fail("A table-driven property check didn't produce a file name and line number string", e)
           }
         case e =>
@@ -63,7 +62,7 @@ class TableDrivenPropertyCheckFailedExceptionSpec extends FunSpec with ShouldMat
         catch {
           case e: TableDrivenPropertyCheckFailedException =>
             e.failedCodeFileNameAndLineNumberString match {
-              case Some(s) => s should equal ("TableDrivenPropertyCheckFailedExceptionSpec.scala:" + (baseLineNumber + 39))
+              case Some(s) => s should equal ("TableDrivenPropertyCheckFailedExceptionSpec.scala:" + (thisLineNumber - 5))
               case None => fail("A table-driven property check didn't produce a file name and line number string", e)
             }
           case e =>
