@@ -23,7 +23,7 @@ package org.scalatest.fixture
  * <p>
  * <strong> This is just
  * a rename, so the only thing you need to do is change the name. However, the recommended way to
- * to write it is to import <code>org.scalatest.fixture</code> and then write <code>fixture.PropSpec</code> when
+ * write it is to import <code>org.scalatest.fixture</code> and then write <code>fixture.PropSpec</code> when
  * you use it, to differentiate it more clearly from <code>org.scalatest.PropSpec</code>. For example:
  * </strong>
  * </p>
