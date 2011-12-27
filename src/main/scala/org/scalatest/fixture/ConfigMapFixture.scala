@@ -22,7 +22,7 @@ import org.scalatest._
  * <code>configMap</code> passed to <code>runTest</code> is passed along
  * as a fixture into each test.
  */
-trait ConfigMapFixture { this: Suite =>
+trait ConfigMapFixture { this: org.scalatest.fixture.Suite =>
 
   /**
    * The type of the <code>configMap</code>, which is <code>Map[String, Any]</code>.
