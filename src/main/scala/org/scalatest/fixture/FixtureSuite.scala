@@ -26,7 +26,7 @@ import org.scalatest.Suite._
  * <p>
  * <strong> This is just
  * a rename, so the only thing you need to do is change the name. However, the recommended way to
- * to write it is to import <code>org.scalatest.fixture</code> and then write <code>fixture.Suite</code> when
+ * write it is to import <code>org.scalatest.fixture</code> and then write <code>fixture.Suite</code> when
  * you use it, to differentiate it more clearly from <code>org.scalatest.Suite</code>. For example:
  * </strong>
  * </p>
