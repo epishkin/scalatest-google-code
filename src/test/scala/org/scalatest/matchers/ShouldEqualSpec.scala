@@ -186,5 +186,21 @@ class ShouldEqualSpec extends FunSpec with ShouldMatchers with Checkers with Ret
       }
       assert(caught3.getMessage === "1 equaled 1, and 1 equaled 1")
     }
+    
+    it("should put string differences in square bracket") {
+      val caught1 = intercept[TestFailedException] { "dummy" should equal ("dunny") }
+      caught1.getMessage should equal ("\"du[mm]y\" did not equal \"du[nn]y\"")
+      
+      val caught2 = intercept[TestFailedException] { "dummy" should be ("dunny") }
+      caught2.getMessage should be ("\"du[mm]y\" was not equal to \"du[nn]y\"")
+    }
+    
+    it("should not put string differences in square bracket") {
+      val caught1 = intercept[TestFailedException] { "dummy" should not equal "dummy" }
+      caught1.getMessage should equal ("\"dummy\" equaled \"dummy\"")
+      
+      val caught2 = intercept[TestFailedException] { "dummy" should not be "dummy" }
+      caught2.getMessage should equal ("\"dummy\" was equal to \"dummy\"")
+    }
   }
 }

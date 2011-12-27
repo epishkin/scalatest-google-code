@@ -4505,12 +4505,14 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
    */
   def equal(right: Any): Matcher[Any] =
       new Matcher[Any] {
-        def apply(left: Any) =
+        def apply(left: Any) = {
+          val (leftee, rightee) = Suite.getObjectsForFailureMessage(left, right)
           MatchResult(
             areEqualComparingArraysStructurally(left, right),
-            FailureMessages("didNotEqual", left, right),
+            FailureMessages("didNotEqual", leftee, rightee),
             FailureMessages("equaled", left, right)
           )
+        }
       }
 
   /**
@@ -5098,12 +5100,14 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
                 FailureMessages("wasNotNull", right),
                 FailureMessages("midSentenceWasNull")
               )
-            case _ => 
+            case _ => {
+              val (leftee, rightee) = Suite.getObjectsForFailureMessage(left, right)
               MatchResult(
                 areEqualComparingArraysStructurally(left, right),
-                FailureMessages("wasNotEqualTo", left, right),
+                FailureMessages("wasNotEqualTo", leftee, rightee),
                 FailureMessages("wasEqualTo", left, right)
               )
+            }
         }
       }
   }
