@@ -292,7 +292,7 @@ private[scalatest] object StackDepthExceptionHelper {
         fileNameIsDesired || methodNameAndPreviousFileNameAreDesired
 
     val includeDepth = includeInStackDepthList.takeWhile(include => include).length
-    val depth = if(includeDepth == 0 && stackTrace(0).getFileName != fileName && stackTrace(0).getMethodName != methodName) 
+    val depth = if (includeDepth == 0 && stackTrace(0).getFileName != fileName && stackTrace(0).getMethodName != methodName) 
       stackTraceList.takeWhile(st => st.getFileName != fileName || st.getMethodName != methodName).length
     else
       includeDepth
