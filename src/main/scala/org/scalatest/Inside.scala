@@ -15,6 +15,8 @@
  */
 package org.scalatest
 
+import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
+
 /**
  * Trait containing the <code>inside</code> construct, which allows you to make statements about nested object graphs using pattern matching.
  *
@@ -77,8 +79,9 @@ trait Inside {
           throw e.modifyMessage(appendInsideMessage)
       }
     }
-    else 
-      throw new TestFailedException(Resources("insidePartialFunctionNotDefined", value.toString()), 2)
+    else
+      throw new TestFailedException(sde => Some(Resources("insidePartialFunctionNotDefined", value.toString())), None, getStackDepthFun("Inside.scala", "inside"))
+      //throw new TestFailedException(Resources("insidePartialFunctionNotDefined", value.toString()), 2)
   }
 }
 

@@ -1,5 +1,7 @@
 package org.scalatest
 
+import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
+
 trait ValueOnEither {
   implicit def convertEitherToValuable[L, R](either: Either[L, R]) = new Valuable(either)
   
@@ -11,8 +13,7 @@ trait ValueOnEither {
       }
       catch {
         case cause: NoSuchElementException => 
-          // TODO: Verify and possibly be smarter about stack depth
-          throw new TestFailedException(Resources("eitherLeftValueNotDefined"), cause, 1)
+          throw new TestFailedException(sde => Some(Resources("eitherLeftValueNotDefined")), Some(cause), getStackDepthFun("ValueOnEither.scala", "leftValue"))
       }
     }
     
@@ -22,8 +23,7 @@ trait ValueOnEither {
       }
       catch {
         case cause: NoSuchElementException => 
-          // TODO: Verify and possibly be smarter about stack depth
-          throw new TestFailedException(Resources("eitherRightValueNotDefined"), cause, 1)
+          throw new TestFailedException(sde => Some(Resources("eitherRightValueNotDefined")), Some(cause), getStackDepthFun("ValueOnEither.scala", "rightValue"))
       }
     }
   }
