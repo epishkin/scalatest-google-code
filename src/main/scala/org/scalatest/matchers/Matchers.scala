@@ -4764,12 +4764,14 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
      */
     def ===(right: Any): Matcher[Any] =
       new Matcher[Any] {
-        def apply(left: Any) =
+        def apply(left: Any) = {
+          val (leftee, rightee) = Suite.getObjectsForFailureMessage(left, right)
           MatchResult(
             areEqualComparingArraysStructurally(left, right),
-            FailureMessages("wasNotEqualTo", left, right),
+            FailureMessages("wasNotEqualTo", leftee, rightee),
             FailureMessages("wasEqualTo", left, right)
           )
+        }
       }
 
     /**
