@@ -2671,14 +2671,14 @@ private[scalatest] object Suite {
 
   private[scalatest] def anErrorThatShouldCauseAnAbort(throwable: Throwable) =
     throwable match {
-      case _: AnnotationFormatError => true
-      case _: AWTError => true
-      case _: CoderMalfunctionError => true
-      case _: FactoryConfigurationError => true
-      case _: LinkageError => true
-      case _: ThreadDeath => true
-      case _: TransformerFactoryConfigurationError => true
-      case _: VirtualMachineError => true
+      case _: AnnotationFormatError | 
+           _: AWTError | 
+           _: CoderMalfunctionError | 
+           _: FactoryConfigurationError | 
+           _: LinkageError | 
+           _: ThreadDeath | 
+           _: TransformerFactoryConfigurationError | 
+           _: VirtualMachineError => true
       case _ => false
     }
 
