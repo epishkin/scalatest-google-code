@@ -1,6 +1,6 @@
 package org.scalatest
 
-private[scalatest] trait ValueOnEither {
+trait ValueOnEither {
   implicit def convertEitherToValuable[L, R](either: Either[L, R]) = new Valuable(either)
   
   class Valuable[L, R](either: Either[L, R]) {

@@ -17,7 +17,7 @@ package org.scalatest
 
 import java.util.NoSuchElementException
 
-private[scalatest] trait ValueOnOption {
+trait ValueOnOption {
 
   implicit def convertOptionToValuable[T](opt: Option[T]) = new Valuable(opt)
 

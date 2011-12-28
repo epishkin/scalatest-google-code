@@ -1,6 +1,6 @@
 package org.scalatest
 
-private[scalatest] trait ValueOnPartialFunction {
+trait ValueOnPartialFunction {
   implicit def convertPartialFunctionToValuable[A, B](pf: PartialFunction[A, B]) = new Valuable(pf)
   
   class Valuable[A, B](pf: PartialFunction[A, B]) {
