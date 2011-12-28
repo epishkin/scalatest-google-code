@@ -23,7 +23,7 @@ import java.lang.annotation.AnnotationFormatError
 import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 import org.scalatest.Suite.anErrorThatShouldCauseAnAbort
 
-private[scalatest] trait Eventually {
+trait Eventually {
 
   case class EventuallyConfig(maxAttempts: Int = 100, interval: Int = 10)
   class MaxAttemptsConfig(maxAttempts: Int, interval: Int) extends EventuallyConfig(maxAttempts = maxAttempts)
