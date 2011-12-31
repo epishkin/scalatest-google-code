@@ -18,7 +18,7 @@ package org.scalatest
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.events._
 
-class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
+class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen {
 
   describe("A FlatSpec") {
 

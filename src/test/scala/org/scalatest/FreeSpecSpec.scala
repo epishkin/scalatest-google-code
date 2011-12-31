@@ -18,7 +18,7 @@ package org.scalatest
 // elements
 import org.scalatest.events._
 
-class FreeSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
+class FreeSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen {
 
   describe("A FreeSpec") {
 

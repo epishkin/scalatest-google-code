@@ -1599,12 +1599,11 @@ object Runner {
               (Nil, Nil) // No DiscoverySuites in this case. Just run Suites named with -s or -j
             }
             else {
-println("DEBUG: Discovery Starting")
-val discoveryStartTime = System.currentTimeMillis
-
-              val accessibleSuites = SuiteDiscoveryHelper.discoverSuiteNames(runpath, loader, dollar)
-val discoveryDuration = System.currentTimeMillis - discoveryStartTime
-println("DEBUG: Discovery Completed: " + discoveryDuration + " milliseconds")
+              println("DEBUG: Discovery Starting")
+              val discoveryStartTime = System.currentTimeMillis
+              val accessibleSuites = SuiteDiscoveryHelper.discoverSuiteNames(runpath, loader, dollar)              
+              val discoveryDuration = System.currentTimeMillis - discoveryStartTime
+              println("DEBUG: Discovery Completed: " + discoveryDuration + " milliseconds")
 
               if (membersOnlyAndWildcardListsAreEmpty && suitesList.isEmpty && junitsList.isEmpty) {
                 // In this case, they didn't specify any -w, -m, -s, or -j on the command line, so the default

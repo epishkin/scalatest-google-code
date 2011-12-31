@@ -17,6 +17,7 @@ package org.scalatest
 
 import org.scalatest.Inside._
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.SharedHelpers.thisLineNumber
 
 class InsideSpec extends Spec with ShouldMatchers with ValueOnOption {
 
@@ -55,7 +56,7 @@ class InsideSpec extends Spec with ShouldMatchers with ValueOnOption {
           name.first should be ("Sally")
         }
       } should produce [TestFailedException]
-      caught.message.value should be ("The partial function passed as the second parameter to inside was not defined at the value passed as the first parameter to inside, which was: Record(Name(Sally,Mary,Jones),Address(123 Main St,Bluesville,KY,12345),29)")
+      caught.message.value should be (Resources("insidePartialFunctionNotDefined", rec.toString))
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 5)
       caught.failedCodeFileName.value should be ("InsideSpec.scala")
     }
@@ -66,7 +67,7 @@ class InsideSpec extends Spec with ShouldMatchers with ValueOnOption {
           age should be <= 21
         }
       } should produce [TestFailedException]
-      caught.message.value should be ("29 was not less than or equal to 21, inside Record(Name(Sally,Mary,Jones),Address(123 Main St,Bluesville,KY,12345),29)")
+      caught.message.value should be (Resources("insidePartialFunctionAppendSomeMsg", Resources("wasNotLessThanOrEqualTo", "29", "21"), rec.toString))
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 4)
       caught.failedCodeFileName.value should be ("InsideSpec.scala")
     }
@@ -79,28 +80,21 @@ class InsideSpec extends Spec with ShouldMatchers with ValueOnOption {
           }
         }
       } should produce [TestFailedException]
-      caught.message.value should be ("\"[Sall]y\" was not equal to \"[Harr]y\", inside Name(Sally,Mary,Jones), inside Record(Name(Sally,Mary,Jones),Address(123 Main St,Bluesville,KY,12345),29)")
+      caught.message.value should be (Resources("insidePartialFunctionAppendSomeMsg", Resources("insidePartialFunctionAppendSomeMsg", Resources("wasNotEqualTo", "\"[Sall]y\"", "\"[Harr]y\""), rec.name.toString), rec.toString))
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 5)
       caught.failedCodeFileName.value should be ("InsideSpec.scala")
     }
-  }
-
-  // TODO: This is copied and pasted from TestFailedExceptionSpec. Eventually
-  // eliminate the duplication.
-  //
-  // Returns the line number from which this method was called.
-  //
-  // Found that on some machines it was in the third element in the stack
-  // trace, and on others it was the fourth, so here we check the method
-  // name of the third element to decide which of the two to return.
-  //
-  private def thisLineNumber = {
-    val st = Thread.currentThread.getStackTrace
-
-    if (!st(2).getMethodName.contains("thisLineNum"))
-      st(2).getLineNumber
-    else
-      st(3).getLineNumber
+    
+    it("should throw a TFE when matcher fails inside due to exception") {
+      val caught = evaluating {
+        inside (rec) { case Record(name, address, age) =>
+          throw new TestFailedException(None, None, 0)
+        }
+      } should produce [TestFailedException]
+      caught.message.value should be (Resources("insidePartialFunctionAppendNone", rec))
+      caught.failedCodeLineNumber.value should equal (thisLineNumber - 4)
+      caught.failedCodeFileName.value should be ("InsideSpec.scala")
+    }
   }
 }
 

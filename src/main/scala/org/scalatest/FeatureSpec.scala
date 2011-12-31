@@ -17,7 +17,7 @@ package org.scalatest
 
 import NodeFamily._
 import scala.collection.immutable.ListSet
-import org.scalatest.StackDepthExceptionHelper.getStackDepth
+import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
@@ -769,8 +769,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <h4>Overriding <code>withFixture(OneArgTest)</code></h4>
  *
  * <p>
- * To use the loan pattern, you can extend <code>FixtureFeatureSpec</code> (from the <code>org.scalatest.fixture</code> package) instead of
- * <code>FeatureSpec</code>. Each test in a <code>FixtureFeatureSpec</code> takes a fixture as a parameter, allowing you to pass the fixture into
+ * To use the loan pattern, you can extend <code>FeatureSpec</code> (from the <code>org.scalatest.fixture</code> package) instead of
+ * <code>FeatureSpec</code>. Each test in a <code>FeatureSpec</code> takes a fixture as a parameter, allowing you to pass the fixture into
  * the test. You must indicate the type of the fixture parameter by specifying <code>FixtureParam</code>, and implement a
  * <code>withFixture</code> method that takes a <code>OneArgTest</code>. This <code>withFixture</code> method is responsible for
  * invoking the one-arg test function, so you can perform fixture set up before, and clean up after, invoking and passing
@@ -778,11 +778,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.FixtureFeatureSpec
+ * import org.scalatest.fixture
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class ExampleSpec extends FixtureFeatureSpec {
+ * class ExampleSpec extends fixture.FeatureSpec {
  * 
  *   final val tmpFile = "temp.txt"
  * 
@@ -817,7 +817,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * For more information, see the <a href="fixture/FixtureFeatureSpec.html">documentation for <code>FixtureFeatureSpec</code></a>.
+ * For more information, see the <a href="fixture/FeatureSpec.html">documentation for <code>FeatureSpec</code></a>.
  * </p>
  *
  * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
@@ -919,7 +919,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * Note that in this case, the loan pattern is being implemented via the <code>withWriter</code> method that takes a function, not
- * by overriding <code>FixtureFeatureSpec</code>'s <code>withFixture(OneArgTest)</code> method. <code>FixtureFeatureSpec</code> makes the most sense
+ * by overriding <code>FeatureSpec</code>'s <code>withFixture(OneArgTest)</code> method. <code>FeatureSpec</code> makes the most sense
  * if all (or at least most) tests need the same fixture, whereas in this <code>Suite</code> only two tests need the
  * <code>FileWriter</code>.
  * </p>
@@ -1494,7 +1494,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * One thing to keep in mind when using shared tests is that in ScalaTest, each test in a suite must have a unique name.
  * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime
  * complaining that multiple tests are being registered with the same test name.
- * In a <code>FeatureSpec</code> there is no nesting construct analogous to <code>Spec</code>'s <code>describe</code> clause.
+ * In a <code>FeatureSpec</code> there is no nesting construct analogous to <code>FunSpec</code>'s <code>describe</code> clause.
  * Therefore, you need to do a bit of
  * extra work to ensure that the test names are unique. If a duplicate test name problem shows up in a
  * <code>FeatureSpec</code>, you'll need to pass in a prefix or suffix string to add to each test name. You can pass this string
@@ -1574,7 +1574,7 @@ trait FeatureSpec extends Suite { thisSuite =>
    * methods. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
+   * this <code>FeatureSpec</code> instance.
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
@@ -1597,7 +1597,7 @@ trait FeatureSpec extends Suite { thisSuite =>
    * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
+   * this <code>FeatureSpec</code> instance.
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
@@ -1620,13 +1620,13 @@ trait FeatureSpec extends Suite { thisSuite =>
   protected def feature(description: String)(fun: => Unit) {
 
     if (!currentBranchIsTrunk)
-      throw new NotAllowedException(Resources("cantNestFeatureClauses"), getStackDepth("FeatureSpec.scala", "feature"))
+      throw new NotAllowedException(Resources("cantNestFeatureClauses"), getStackDepthFun("FeatureSpec.scala", "feature"))
 
     registerNestedBranch(description, None, fun, "featureCannotAppearInsideAScenario", "FeatureSpec.scala", "feature", stackDepth)
   }
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
+   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FeatureSpec</code> belong, and values
    * the <code>Set</code> of test names that belong to each tag. If this <code>FeatureSpec</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
@@ -1645,7 +1645,7 @@ trait FeatureSpec extends Suite { thisSuite =>
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param configMap a <code>Map</code> of properties that can be used by this <code>Spec</code>'s executing tests.
+   * @param configMap a <code>Map</code> of properties that can be used by this <code>FeatureSpec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>configMap</code>
    *     is <code>null</code>.
    */
@@ -1753,7 +1753,7 @@ trait FeatureSpec extends Suite { thisSuite =>
    * </pre>
    *
    * <p>
-   * Invoking <code>testNames</code> on this <code>Spec</code> will yield a set that contains the following
+   * Invoking <code>testNames</code> on this <code>FeatureSpec</code> will yield a set that contains the following
    * two test name strings:
    * </p>
    *

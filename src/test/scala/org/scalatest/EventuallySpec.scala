@@ -17,6 +17,7 @@ package org.scalatest
 
 import org.scalatest.Eventually._
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.SharedHelpers.thisLineNumber
 
 class EventuallySpec extends Spec with ShouldMatchers with ValueOnOption {
 
@@ -66,9 +67,36 @@ class EventuallySpec extends Spec with ShouldMatchers with ValueOnOption {
         eventually { 1 + 1 should equal (3) }
       } should produce [TestFailedException]
 
-      caught.message.value should be ("The code passed to eventually never returned normally.")
+      caught.message.value should be (Resources("eventuallyNotReturn"))
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 4)
       caught.failedCodeFileName.value should be ("EventuallySpec.scala")
+    }
+    
+    it("should provides correct stack depth when eventually is called from the overload method") {
+      
+      val caught1 = evaluating {
+        eventually(maxAttempts(10), interval(1)) { 1 + 1 should equal (3) }
+      } should produce [TestFailedException]
+      caught1.failedCodeLineNumber.value should equal (thisLineNumber - 2)
+      caught1.failedCodeFileName.value should be ("EventuallySpec.scala")
+      
+      val caught2 = evaluating {
+        eventually(interval(1), maxAttempts(10)) { 1 + 1 should equal (3) }
+      } should produce [TestFailedException]
+      caught2.failedCodeLineNumber.value should equal (thisLineNumber - 2)
+      caught2.failedCodeFileName.value should be ("EventuallySpec.scala")
+      
+      val caught3 = evaluating {
+        eventually(maxAttempts(10)) { 1 + 1 should equal (3) }
+      } should produce [TestFailedException]
+      caught3.failedCodeLineNumber.value should equal (thisLineNumber - 2)
+      caught3.failedCodeFileName.value should be ("EventuallySpec.scala")
+      
+      val caught4 = evaluating {
+        eventually(interval(1)) { 1 + 1 should equal (3) }
+      } should produce [TestFailedException]
+      caught4.failedCodeLineNumber.value should equal (thisLineNumber - 2)
+      caught4.failedCodeFileName.value should be ("EventuallySpec.scala")
     }
 
     it("should by default invoke an always-failing by-name 100 times") {
@@ -100,10 +128,10 @@ class EventuallySpec extends Spec with ShouldMatchers with ValueOnOption {
 
       var count = 0
       evaluating {
-        eventually {
+        eventually (maxAttempts(77)) {
           count += 1
           1 + 1 should equal (3)
-        } (maxAttempts(77))
+        } 
       } should produce [TestFailedException]
       count should equal (77)
     }
@@ -112,31 +140,13 @@ class EventuallySpec extends Spec with ShouldMatchers with ValueOnOption {
 
       var count = 0
       evaluating {
-        eventually {
+        eventually (maxAttempts(78), interval(1)) {
           count += 1
           1 + 1 should equal (3)
-        } (maxAttempts(78), interval(1))
+        } 
       } should produce [TestFailedException]
       count should equal (78)
     }
-  }
-
-  // TODO: This is copied and pasted from TestFailedExceptionSpec. Eventually
-  // eliminate the duplication.
-  //
-  // Returns the line number from which this method was called.
-  //
-  // Found that on some machines it was in the third element in the stack
-  // trace, and on others it was the fourth, so here we check the method
-  // name of the third element to decide which of the two to return.
-  //
-  private def thisLineNumber = {
-    val st = Thread.currentThread.getStackTrace
-
-    if (!st(2).getMethodName.contains("thisLineNum"))
-      st(2).getLineNumber
-    else
-      st(3).getLineNumber
   }
 }
 

@@ -1,9 +1,9 @@
 package org.scalatestexamples.fixture.suite
 
-import org.scalatest.fixture.FixtureSuite
+import org.scalatest.fixture
 import scala.collection.mutable.ListBuffer
 
-class CaseClassFixtureSuite extends FixtureSuite {
+class CaseClassFixtureSuite extends fixture.Suite {
 
   case class FixtureHolder(builder: StringBuilder, buffer: ListBuffer[String])
 

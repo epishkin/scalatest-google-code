@@ -17,7 +17,7 @@ package org.scalatest.matchers
 
 import org.scalatest._
 
-class ShouldBeAnSymbolSpec extends Spec with ShouldMatchers with FruitMocks {
+class ShouldBeAnSymbolSpec extends FunSpec with ShouldMatchers with FruitMocks {
 
   describe("The be an ('symbol) syntax") {
 

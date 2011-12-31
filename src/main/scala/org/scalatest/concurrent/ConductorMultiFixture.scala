@@ -16,7 +16,8 @@
 package org.scalatest.concurrent
 
 import org.scalatest._
-import fixture.{ConfigMapFixture, FixtureSuite}
+import fixture.ConfigMapFixture
+import org.scalatest.fixture
 
 /**
  * Trait that can pass a new <code>Conductor</code> fixture into tests, for use
@@ -87,7 +88,7 @@ import fixture.{ConfigMapFixture, FixtureSuite}
  * @author Bill Venners
  */
 
-trait ConductorMultiFixture { this: FixtureSuite with ConfigMapFixture =>
+trait ConductorMultiFixture { this: fixture.Suite with ConfigMapFixture =>
 
   /**
    * Creates a new <code>Conductor</code>, passes the <code>Conductor</code> to the

@@ -18,7 +18,7 @@ package org.scalatest.fixture
 import org.scalatest._
 import events.TestFailed
 
-class FixturePropSpecSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
+class FixturePropSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester with SharedHelpers {
 
   describe("A FixturePropSpec") {
     it("should return the test names in order of registration from testNames") {

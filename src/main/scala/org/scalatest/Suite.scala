@@ -116,7 +116,7 @@ import scala.reflect.NameTransformer
  * <p>
  * If you prefer a behavior-driven development (BDD) style, in which tests are combined with text that
  * specifies the behavior being tested, look at
- * <a href="Spec.html"><code>Spec</code></a>, 
+ * <a href="FunSpec.html"><code>FunSpec</code></a>, 
  * <a href="FlatSpec.html"><code>FlatSpec</code></a>,
  * <a href="FreeSpec.html"><code>FreeSpec</code></a>, and
  * <a href="WordSpec.html"><code>WordSpec</code></a>. Otherwise, if you just want to write tests
@@ -489,7 +489,7 @@ import scala.reflect.NameTransformer
  * so one way to access it in your suite is to override one of those methods. If you need to use the config map inside your tests, you
  * can access it from the <code>NoArgTest</code> passed to <code>withFixture</code>, or the <code>OneArgTest</code> passed to
  * <code>withFixture</code> in the traits in the <code>org.scalatest.fixture</code> package. (See the
- * <a href="fixture/FixtureSuite.html">documentation for <code>FixtureSuite</code></a>
+ * <a href="fixture/Suite.html">documentation for <code>fixture.Suite</code></a>
  * for instructions on how to access the config map in tests.)
  * </p>
  *
@@ -574,7 +574,7 @@ import scala.reflect.NameTransformer
  *
  * <p>
  * Although pending tests may be used more often in specification-style suites, such as
- * <code>org.scalatest.Spec</code>, you can also use it in <code>Suite</code>, like this:
+ * <code>org.scalatest.FunSpec</code>, you can also use it in <code>Suite</code>, like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -965,8 +965,8 @@ import scala.reflect.NameTransformer
  * <h4>Overriding <code>withFixture(OneArgTest)</code></h4>
  *
  * <p>
- * To use the loan pattern, you can extend <code>FixtureSuite</code> (from the <code>org.scalatest.fixture</code> package) instead of
- * <code>Suite</code>. Each test in a <code>FixtureSuite</code> takes a fixture as a parameter, allowing you to pass the fixture into
+ * To use the loan pattern, you can extend <code>fixture.Suite</code> (from the <code>org.scalatest.fixture</code> package) instead of
+ * <code>Suite</code>. Each test in a <code>fixture.Suite</code> takes a fixture as a parameter, allowing you to pass the fixture into
  * the test. You must indicate the type of the fixture parameter by specifying <code>FixtureParam</code>, and implement a
  * <code>withFixture</code> method that takes a <code>OneArgTest</code>. This <code>withFixture</code> method is responsible for
  * invoking the one-arg test function, so you can perform fixture set up before, and clean up after, invoking and passing
@@ -974,11 +974,11 @@ import scala.reflect.NameTransformer
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.FixtureSuite
+ * import org.scalatest.fixture
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class ExampleSuite extends FixtureSuite {
+ * class ExampleSuite extends fixture.Suite {
  * 
  *   final val tmpFile = "temp.txt"
  * 
@@ -1010,7 +1010,7 @@ import scala.reflect.NameTransformer
  * </pre>
  *
  * <p>
- * For more information, see the <a href="fixture/FixtureSuite.html">documentation for <code>FixtureSuite</code></a>.
+ * For more information, see the <a href="fixture/Suite.html">documentation for <code>fixture.Suite</code></a>.
  * </p>
  *
  * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
@@ -1112,7 +1112,7 @@ import scala.reflect.NameTransformer
  *
  * <p>
  * Note that in this case, the loan pattern is being implemented via the <code>withWriter</code> method that takes a function, not
- * by overriding <code>FixtureSuite</code>'s <code>withFixture(OneArgTest)</code> method. <code>FixtureSuite</code> makes the most sense
+ * by overriding <code>fixture.Suite</code>'s <code>withFixture(OneArgTest)</code> method. <code>fixture.Suite</code> makes the most sense
  * if all (or at least most) tests need the same fixture, whereas in this <code>Suite</code> only two tests need the
  * <code>FileWriter</code>.
  * </p>
@@ -1912,14 +1912,14 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
   * to run tests in a different order, for example, to ensure that tests that depend on other tests are run after those other tests.
   * Another potential reason to override is allow tests to be defined in a different manner, such as methods annotated <code>@Test</code> annotations
   * (as is done in <code>JUnitSuite</code> and <code>TestNGSuite</code>) or test functions registered during construction (as is
-  * done in <code>FunSuite</code> and <code>Spec</code>).
+  * done in <code>FunSuite</code> and <code>FunSpec</code>).
   * </p>
   */
   def testNames: Set[String] = {
 
     def isTestMethod(m: Method) = {
 
-      // Factored out to share code with FixtureSuite.testNames
+      // Factored out to share code with fixture.Suite.testNames
       val (isInstanceMethod, simpleName, firstFour, paramTypes, hasNoParams, isTestNames) = isTestMethodGoodies(m)
 
       isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames) || takesInformer(m))
@@ -1956,7 +1956,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * passed to this method takes no parameters, preparing the fixture will require
    * side effects, such as reassigning instance <code>var</code>s in this <code>Suite</code> or initializing
    * a globally accessible external database. If you want to avoid reassigning instance <code>var</code>s
-   * you can use <a href="fixture/FixtureSuite.html">FixtureSuite</a>.
+   * you can use <a href="fixture/Suite.html">fixture.Suite</a>.
    * </p>
    *
    * <p>
@@ -1974,14 +1974,14 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     test()
   }
 
-  // Factored out to share this with FixtureSuite.runTest
+  // Factored out to share this with fixture.Suite.runTest
   private[scalatest] def getSuiteRunTestGoodies(stopper: Stopper, reporter: Reporter, testName: String) = {
     val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) = getRunTestGoodies(stopper, reporter, testName)
     val method = getMethodForTestName(testName)
     (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime)
   }
 
-  // Sharing this with FunSuite and FixtureFunSuite as well as Suite and FixtureSuite
+  // Sharing this with FunSuite and fixture.FunSuite as well as Suite and fixture.Suite
   private[scalatest] def getRunTestGoodies(stopper: Stopper, reporter: Reporter, testName: String) = {
 
     val stopRequested = stopper
@@ -2501,7 +2501,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * Note: This method always completes abruptly with a <code>TestPendingException</code>. Thus it always has a side
    * effect. Methods with side effects are usually invoked with parentheses, as in <code>pending()</code>. This
    * method is defined as a parameterless method, in flagrant contradiction to recommended Scala style, because it 
-   * forms a kind of DSL for pending tests. It enables tests in suites such as <code>FunSuite</code> or <code>Spec</code>
+   * forms a kind of DSL for pending tests. It enables tests in suites such as <code>FunSuite</code> or <code>FunSpec</code>
    * to be denoted by placing "<code>(pending)</code>" after the test name, as in:
    * </p>
    *
@@ -2723,14 +2723,14 @@ private[scalatest] object Suite {
 
   private[scalatest] def anErrorThatShouldCauseAnAbort(throwable: Throwable) =
     throwable match {
-      case _: AnnotationFormatError => true
-      case _: AWTError => true
-      case _: CoderMalfunctionError => true
-      case _: FactoryConfigurationError => true
-      case _: LinkageError => true
-      case _: ThreadDeath => true
-      case _: TransformerFactoryConfigurationError => true
-      case _: VirtualMachineError => true
+      case _: AnnotationFormatError | 
+           _: AWTError | 
+           _: CoderMalfunctionError | 
+           _: FactoryConfigurationError | 
+           _: LinkageError | 
+           _: ThreadDeath | 
+           _: TransformerFactoryConfigurationError | 
+           _: VirtualMachineError => true
       case _ => false
     }
 

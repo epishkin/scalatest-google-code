@@ -17,8 +17,9 @@ package org.scalatest
 
 import org.scalatest.ValueOnOption._
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.SharedHelpers.thisLineNumber
 
-class ValueOnOptionSpec extends Spec with ShouldMatchers {
+class ValueOnOptionSpec extends FunSpec with ShouldMatchers {
 
   describe("value on Option") {
 
@@ -38,26 +39,8 @@ class ValueOnOptionSpec extends Spec with ShouldMatchers {
         } should produce [TestFailedException]
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 2)
       caught.failedCodeFileName.value should be ("ValueOnOptionSpec.scala")
-      caught.message.value should be ("The Option on which value was invoked was not defined.")
+      caught.message.value should be (Resources("optionValueNotDefined"))
     }
-  }
-
-   // TODO: This is copied and pasted from TestFailedExceptionSpec. Eventually
-   // eliminate the duplication.
-  //
-  // Returns the line number from which this method was called.
-  //
-  // Found that on some machines it was in the third element in the stack
-  // trace, and on others it was the fourth, so here we check the method
-  // name of the third element to decide which of the two to return.
-  //
-  private def thisLineNumber = {
-    val st = Thread.currentThread.getStackTrace
-
-    if (!st(2).getMethodName.contains("thisLineNum"))
-      st(2).getLineNumber
-    else
-      st(3).getLineNumber
   }
 }
 

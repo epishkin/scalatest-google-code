@@ -3,6 +3,7 @@ package org.scalatest.tools
 import org.scalatools.testing._
 import org.scalatest.tools.Runner.parsePropertiesArgsIntoMap
 import org.scalatest.tools.Runner.parseCompoundArgIntoSet
+import SuiteDiscoveryHelper._
 import StringReporter.colorizeLinesIndividually
 import org.scalatest.Suite.formatterForSuiteStarting
 import org.scalatest.Suite.formatterForSuiteCompleted
@@ -70,13 +71,18 @@ class ScalaTestFramework extends Framework {
   def name = "ScalaTest"
 
   /**
-   * Returns an array containing one <code>org.scalatools.testing.TestFingerprint</code> object, whose superclass name is <code>org.scalatest.Suite</code>
-   * and <code>isModule</code> value is false.
+   * Returns an array containing fingerprint for ScalaTest's test, which are classes  
+   * whose superclass name is <code>org.scalatest.Suite</code>
+   * or is annotated with <code>org.scalatest.RunWith</code>.
    */
   def tests =
     Array(
       new org.scalatools.testing.TestFingerprint {
         def superClassName = "org.scalatest.Suite"
+        def isModule = false
+      },
+      new org.scalatools.testing.AnnotatedFingerprint {
+        def annotationName = "org.scalatest.WrapWith"
         def isModule = false
       }
     )
@@ -90,7 +96,7 @@ class ScalaTestFramework extends Framework {
   }
 
   /**The test runner for ScalaTest suites. It is compiled in a second step after the rest of sbt.*/
-  private[tools] class ScalaTestRunner(val testLoader: ClassLoader, val loggers: Array[Logger]) extends org.scalatools.testing.Runner {
+  private[tools] class ScalaTestRunner(val testLoader: ClassLoader, val loggers: Array[Logger]) extends org.scalatools.testing.Runner2 {
 
     import org.scalatest._
 
@@ -133,21 +139,19 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
 
 
      */
-    def run(testClassName: String, fingerprint: TestFingerprint, eventHandler: EventHandler, args: Array[String]) {
-      val suiteClass = Class.forName(testClassName, true, testLoader).asSubclass(classOf[Suite])
+    def run(testClassName: String, fingerprint: Fingerprint, eventHandler: EventHandler, args: Array[String]) {
+      val suiteClass = Class.forName(testClassName, true, testLoader)
        //println("sbt args: " + args.toList)
-      if (SuiteDiscoveryHelper.isAccessibleSuite(suiteClass)) {
-
+      if (isAccessibleSuite(suiteClass) || isRunnable(suiteClass)) {
         // Why are we getting rid of empty strings? Were empty strings coming in from sbt? -bv 11/09/2011
         val translator = new SbtFriendlyParamsTranslator();
         val (propertiesArgsList, includesArgsList, excludesArgsList, repoArgsList, concurrentList, memberOnlyList, wildcardList, 
             suiteList, junitList, testngList) = translator.parsePropsAndTags(args.filter(!_.equals("")))
-        
         val configMap: Map[String, String] = parsePropertiesArgsIntoMap(propertiesArgsList)
         val tagsToInclude: Set[String] = parseCompoundArgIntoSet(includesArgsList, "-n")
         val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
         val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
-        
+
         // If no reporters specified, just give them a default stdout reporter
         val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) "-o" :: Nil else repoArgsList)
           val reporterConfigs: ReporterConfigurations =
@@ -178,7 +182,19 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
 
-        val suite = suiteClass.newInstance
+        val wrapWithAnnotation = suiteClass.getAnnotation(classOf[WrapWith])
+        val suite = 
+        if (wrapWithAnnotation == null)
+          suiteClass.newInstance.asInstanceOf[Suite]
+        else {
+          val suiteClazz = wrapWithAnnotation.value
+          val constructorList = suiteClazz.getDeclaredConstructors()
+          val constructor = constructorList.find { c => 
+              val types = c.getParameterTypes
+              types.length == 1 && types(0).isAssignableFrom(suiteClass)
+            }
+            constructor.get.newInstance(suiteClass.newInstance.asInstanceOf[Object]).asInstanceOf[Suite]
+        }
 
         val formatter = formatterForSuiteStarting(suite)
 
@@ -190,7 +206,9 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
           val formatter = formatterForSuiteCompleted(suite)
 
           val duration = System.currentTimeMillis - suiteStartTime
+
           report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, suite.suiteID, Some(suiteClass.getName), suite.decodedSuiteName, Some(duration), formatter, Some(TopOfClass(suiteClass.getName))))
+
         }
         catch {       
           case e: Exception => {
@@ -202,7 +220,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
             val rawString = "Exception encountered when attempting to run a suite with class name: " + suiteClass.getName
             val formatter = formatterForSuiteAborted(suite, rawString)
 
-            val duration = System.currentTimeMillis - suiteStartTime
+            val duration = System.currentTimeMillis - suiteStartTime            
             report(SuiteAborted(tracker.nextOrdinal(), rawString, suite.suiteName, suite.suiteID, Some(suiteClass.getName), suite.decodedSuiteName, Some(e), Some(duration), formatter, Some(SeeStackDepthException)))
           }
         }
@@ -261,6 +279,5 @@ private[scalatest] class SbtFriendlyParamsTranslator extends FriendlyParamsTrans
        s == "-j" || s.startsWith("junit") || 
        s == "-t" || s.startsWith("testng"))
       throw new IllegalArgumentException("Argument '" + s + "' is not supported using test/test-only, use scalatest task instead.")
-    
   }
 }

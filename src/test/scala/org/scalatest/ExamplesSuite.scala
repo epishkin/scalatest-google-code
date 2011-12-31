@@ -19,7 +19,7 @@ class ExamplesSuite extends FunSuite {
 
   test("that duplicate specTexts result in a thrown exception at construction time") {
 
-    class MySpec extends Spec {
+    class MySpec extends FunSpec {
 
       def myOtherExamples() {
         it("should lead the whole game") {}
@@ -42,7 +42,7 @@ class ExamplesSuite extends FunSuite {
   }
 
   test("duplicate testNames should result in an exception when one is in the Examples and the other in the Spec") {
-    class MySpec extends Spec {
+    class MySpec extends FunSpec {
       def myOtherExamples() {
         it("should lead the whole game") {}
         it("should lead just part of the game") {}
@@ -53,7 +53,7 @@ class ExamplesSuite extends FunSuite {
     intercept[DuplicateTestNameException] {
       new MySpec  
     }
-    class MyOtherSpec extends Spec {
+    class MyOtherSpec extends FunSpec {
       def myOtherExamples() {
         it("should lead the whole game") {}
         it("should lead just part of the game") {}
@@ -68,7 +68,7 @@ class ExamplesSuite extends FunSuite {
 
   test("that a null specText results in a thrown NPE at construction time") {
 
-    class MySpec extends Spec {
+    class MySpec extends FunSpec {
 
       def examples() {
         it(null) {}
@@ -82,7 +82,7 @@ class ExamplesSuite extends FunSuite {
 
   test("tags work correctly in Examples") {
 
-    val a = new Spec {
+    val a = new FunSpec {
       def aExamples() {
         it("test this", mytags.SlowAsMolasses) {}
         ignore("test that", mytags.SlowAsMolasses) {}
@@ -93,7 +93,7 @@ class ExamplesSuite extends FunSuite {
       a.tags
     }
 
-    val b = new Spec {
+    val b = new FunSpec {
       def bExamples() {}
       bExamples()
     }
@@ -101,7 +101,7 @@ class ExamplesSuite extends FunSuite {
       b.tags
     }
 
-    val c = new Spec {
+    val c = new FunSpec {
       def cExamples() {
         it("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
         it("test that", mytags.SlowAsMolasses) {}

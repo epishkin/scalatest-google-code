@@ -21,7 +21,7 @@ package org.scalatest
  *
  * <p>
  * The main purpose of <code>AbstractSuite</code> is to differentiate core <code>Suite</code>
- * traits, such as <code>Suite</code>, <code>FunSuite</code>, and <code>Spec</code> from stackable
+ * traits, such as <code>Suite</code>, <code>FunSuite</code>, and <code>FunSpec</code> from stackable
  * modification traits for <code>Suite</code>s such as <code>BeforeAndAfterEach</code>, <code>OneInstancePerTest</code>,
  * and <code>ParallelNestedSuiteExecution</code>. Because these stackable traits extend <code>AbstractSuite</code> 
  * instead of <code>Suite</code>, you can't define a suite by simply extending one of the stackable traits:
@@ -54,7 +54,7 @@ trait AbstractSuite { this: Suite =>
    * passed to this method takes no parameters, preparing the fixture will require
    * side effects, such as reassigning instance <code>var</code>s in this <code>Suite</code> or initializing
    * a globally accessible external database. If you want to avoid reassigning instance <code>var</code>s
-   * you can use <a href="FixtureSuite.html">FixtureSuite</a>.
+   * you can use <a href="Suite.html">fixture.Suite</a>.
    * </p>
    *
    * @param test the no-arg test function to run with a fixture

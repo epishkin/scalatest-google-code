@@ -20,7 +20,7 @@ import Thread.State._
 import PimpedThreadGroup._
 import _root_.java.util.concurrent._
 import _root_.java.util.concurrent.atomic.AtomicReference
-import org.scalatest.StackDepthExceptionHelper.getStackDepth
+import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 
 /**
  * Class that facilitates the testing of classes, traits, and libraries designed
@@ -303,10 +303,10 @@ final class Conductor {
   def thread(name: String)(fun: => Unit): Thread = {
     currentState.get match {
       case TestFinished =>
-        throw new NotAllowedException(Resources("threadCalledAfterConductingHasCompleted"), getStackDepth("Conductor.scala", "thread"))
+        throw new NotAllowedException(Resources("threadCalledAfterConductingHasCompleted"), getStackDepthFun("Conductor.scala", "thread"))
       case _ =>
         if (threadNames contains name)
-          throw new NotAllowedException(Resources("cantRegisterThreadsWithSameName", name), getStackDepth("Conductor.scala", "thread"))
+          throw new NotAllowedException(Resources("cantRegisterThreadsWithSameName", name), getStackDepthFun("Conductor.scala", "thread"))
         val t = TestThread(name, fun _)
         threads add t
         threadNames add name
@@ -402,10 +402,10 @@ final class Conductor {
   def whenFinished(fun: => Unit) {
 
     if (currentThread != mainThread)
-      throw new NotAllowedException(Resources("whenFinishedCanOnlyBeCalledByMainThread"), getStackDepth("Conductor.scala", "whenFinished"))
+      throw new NotAllowedException(Resources("whenFinishedCanOnlyBeCalledByMainThread"), getStackDepthFun("Conductor.scala", "whenFinished"))
 
     if (conductingHasBegun)
-      throw new NotAllowedException(Resources("cannotInvokeWhenFinishedAfterConduct"), getStackDepth("Conductor.scala", "whenFinished"))
+      throw new NotAllowedException(Resources("cannotInvokeWhenFinishedAfterConduct"), getStackDepthFun("Conductor.scala", "whenFinished"))
     
     conduct()
 
@@ -421,9 +421,9 @@ final class Conductor {
    */
   def waitForBeat(beat: Int) {
     if (beat == 0)
-      throw new NotAllowedException(Resources("cannotWaitForBeatZero"), getStackDepth("Conductor.scala", "waitForBeat")) 
+      throw new NotAllowedException(Resources("cannotWaitForBeatZero"), getStackDepthFun("Conductor.scala", "waitForBeat")) 
     if (beat < 0)
-      throw new NotAllowedException(Resources("cannotWaitForNegativeBeat"), getStackDepth("Conductor.scala", "waitForBeat")) 
+      throw new NotAllowedException(Resources("cannotWaitForNegativeBeat"), getStackDepthFun("Conductor.scala", "waitForBeat")) 
     clock waitForBeat beat
   }
 
@@ -515,14 +515,14 @@ final class Conductor {
   def conduct(clockPeriod: Int, timeout: Int) {
 
     if (clockPeriod <= 0)
-      throw new NotAllowedException(Resources("cannotPassNonPositiveClockPeriod", clockPeriod.toString), getStackDepth("Conductor.scala", "conduct"))
+      throw new NotAllowedException(Resources("cannotPassNonPositiveClockPeriod", clockPeriod.toString), getStackDepthFun("Conductor.scala", "conduct"))
     if (timeout <= 0)
-      throw new NotAllowedException(Resources("cannotPassNonPositiveTimeout", timeout.toString), getStackDepth("Conductor.scala", "conduct"))
+      throw new NotAllowedException(Resources("cannotPassNonPositiveTimeout", timeout.toString), getStackDepthFun("Conductor.scala", "conduct"))
 
     // if the test was started already, explode
     // otherwise, change state to TestStarted                          
     if (conductingHasBegun)
-      throw new NotAllowedException(Resources("cannotCallConductTwice"), getStackDepth("Conductor.scala", "conduct"))
+      throw new NotAllowedException(Resources("cannotCallConductTwice"), getStackDepthFun("Conductor.scala", "conduct"))
     else
       currentState set TestStarted
 

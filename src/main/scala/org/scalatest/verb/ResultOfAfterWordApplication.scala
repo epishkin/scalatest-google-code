@@ -19,7 +19,7 @@ import org.scalatest._
 
 /**
  * Class that supports the use of <em>after words</em> in <code>WordSpec</code>
- * and <code>FixtureWordSpec</code>.
+ * and <code>org.scalatest.fixture.WordSpec</code>.
  *
  * <p>
  * A <code>ResultOfAfterWordApplication</code>, which encapsulates the text of the after word

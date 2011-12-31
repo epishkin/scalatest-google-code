@@ -22,7 +22,7 @@ import Arbitrary._
 import Prop._
 import Integer.MIN_VALUE
 
-class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
+class ShouldLengthSpec extends FunSpec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   // Checking for a specific length
   describe("The 'have length (Int)' syntax") {

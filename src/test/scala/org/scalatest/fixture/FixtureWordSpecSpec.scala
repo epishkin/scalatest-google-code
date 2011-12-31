@@ -18,7 +18,7 @@ package org.scalatest.fixture
 import org.scalatest._
 import events.TestFailed
 
-class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
+class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester with SharedHelpers {
 
   describe("A FixtureWordSpec") {
 

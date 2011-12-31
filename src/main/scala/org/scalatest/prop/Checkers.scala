@@ -23,7 +23,7 @@ import org.scalacheck.Pretty
 import org.scalacheck.Arg
 import org.scalacheck.Prop
 import org.scalacheck.Test
-import org.scalatest.StackDepthExceptionHelper.getStackDepthForPropCheck
+import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 
 /**
  * Trait that contains several &#8220;check&#8221; methods that perform ScalaCheck property checks.
@@ -383,7 +383,7 @@ object Checkers extends Checkers {
           throw new GeneratorDrivenPropertyCheckFailedException(
             sde => failureMsg,
             None,
-            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
+            getStackDepthFun(stackDepthFileName, stackDepthMethodName),
             // getStackDepth("ScalaCheck.scala", "check"),
             // { val x = getStackDepth("GeneratorDrivenPropertyChecks$class.scala", "forAll"); println("stackDepth:" + x); x},
             failureMsg,
@@ -393,11 +393,23 @@ object Checkers extends Checkers {
           )
 
         case Test.Failed(scalaCheckArgs, scalaCheckLabels) =>
-
+              
           throw new GeneratorDrivenPropertyCheckFailedException(
-            sde => prettyTestStats(result),
+            sde => FailureMessages("propertyException", UnquotedString(sde.getClass.getSimpleName)) + "\n" + 
+              ( sde.failedCodeFileNameAndLineNumberString match { case Some(s) => " (" + s + ")"; case None => "" }) + "\n" + 
+              "  " + FailureMessages("propertyFailed", result.succeeded) + "\n" +
+              (
+                sde match {
+                  case sd: StackDepth if sd.failedCodeFileNameAndLineNumberString.isDefined =>
+                    "  " + FailureMessages("thrownExceptionsLocation", UnquotedString(sd.failedCodeFileNameAndLineNumberString.get)) + "\n"
+                  case _ => ""
+                }
+              ) +
+              "  " + FailureMessages("occurredOnValues") + "\n" + 
+              prettyArgs(getArgsWithSpecifiedNames(argNames, scalaCheckArgs)) + "\n" +
+              "  )",
             None,
-            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
+            getStackDepthFun(stackDepthFileName, stackDepthMethodName),
             FailureMessages("propertyFailed", result.succeeded),
             args,
             None,
@@ -405,15 +417,6 @@ object Checkers extends Checkers {
           )
 
         case Test.PropException(scalaCheckArgs, e, scalaCheckLabels) =>
-
-          val argsWithSpecifiedNames =
-            if (argNames.isDefined) {
-              // length of scalaCheckArgs should equal length of argNames
-              val zipped = argNames.get zip scalaCheckArgs
-              zipped map { case (argName, arg) => arg.copy(label = argName) }
-            }
-            else
-              scalaCheckArgs
 
           throw new GeneratorDrivenPropertyCheckFailedException(
             sde => FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" +
@@ -426,10 +429,10 @@ object Checkers extends Checkers {
                 }
               ) +
               "  " + FailureMessages("occurredOnValues") + "\n" +
-              prettyArgs(argsWithSpecifiedNames) + "\n" +
+              prettyArgs(getArgsWithSpecifiedNames(argNames, scalaCheckArgs)) + "\n" +
               "  )",
             Some(e),
-            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
+            getStackDepthFun(stackDepthFileName, stackDepthMethodName),
             FailureMessages("propertyException", UnquotedString(e.getClass.getName)),
             args,
             None,
@@ -441,7 +444,7 @@ object Checkers extends Checkers {
           throw new GeneratorDrivenPropertyCheckFailedException(
             sde => prettyTestStats(result),
             Some(e),
-            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
+            getStackDepthFun(stackDepthFileName, stackDepthMethodName),
             FailureMessages("generatorException", UnquotedString(e.getClass.getName)),
             args,
             None,
@@ -449,6 +452,16 @@ object Checkers extends Checkers {
           )
       }
     }
+  }
+  
+  private def getArgsWithSpecifiedNames(argNames: Option[List[String]], scalaCheckArgs: Prop.Args) = {
+    if (argNames.isDefined) {
+      // length of scalaCheckArgs should equal length of argNames
+      val zipped = argNames.get zip scalaCheckArgs
+      zipped map { case (argName, arg) => arg.copy(label = argName) }
+    }
+    else
+      scalaCheckArgs
   }
 
   private def argsAndLabels(result: Test.Result): (List[Any], List[String]) = {

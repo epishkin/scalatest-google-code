@@ -19,12 +19,12 @@ import org.scalatest._
 
 /**
  * Provides an implicit conversion that adds <code>can</code> methods to <code>String</code>
- * to support the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>,
- * and <code>FixtureWordSpec</code>.
+ * to support the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>org.scalatest.fixture.FlatSpec</code>,
+ * and <code>org.scalatest.fixture.WordSpec</code>.
  *
  * <p>
  * For example, this trait enables syntax such as the following test registration in <code>FlatSpec</code>
- * and <code>FixtureFlatSpec</code>:
+ * and <code>org.scalatest.fixture.FlatSpec</code>:
  * </p>
  *
  * <pre class="stHighlight">
@@ -34,7 +34,7 @@ import org.scalatest._
  *
  * <p>
  * It also enables syntax such as the following shared test registration in <code>FlatSpec</code>
- * and <code>FixtureFlatSpec</code>:
+ * and <code>org.scalatest.fixture.FlatSpec</code>:
  * </p>
  *
  * <pre class="stHighlight">
@@ -44,7 +44,7 @@ import org.scalatest._
  *
  * <p>
  * In addition, it supports the registration of subject descriptions in <code>WordSpec</code>
- * and <code>FixtureWordSpec</code>, such as:
+ * and <code>org.scalatest.fixture.WordSpec</code>, such as:
  * </p>
  *
  * <pre class="stHighlight">
@@ -54,7 +54,7 @@ import org.scalatest._
  *
  * <p>
  * And finally, it also supportds the registration of subject descriptions with after words
- * in <code>WordSpec</code> and <code>FixtureWordSpec</code>. For example:
+ * in <code>WordSpec</code> and <code>org.scalatest.fixture.WordSpec</code>. For example:
  * </p>
  *
  * <pre class="stHighlight">
@@ -66,8 +66,8 @@ import org.scalatest._
  *
  * <p>
  * The reason this implicit conversion is provided in a separate trait, instead of being provided
- * directly in <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, and
- * <code>FixtureWordSpec</code>, is primarily for design symmetry with <code>ShouldVerb</code>
+ * directly in <code>FlatSpec</code>, <code>WordSpec</code>, <code>org.scalatest.fixture.FlatSpec</code>, and
+ * <code>org.scalatest.fixture.WordSpec</code>, is primarily for design symmetry with <code>ShouldVerb</code>
  * and <code>MustVerb</code>. Both <code>ShouldVerb</code> and <code>MustVerb</code> must exist
  * as a separate trait because an implicit conversion provided directly would conflict
  * with the implicit conversion that provides <code>should</code> or <code>must</code> methods on <code>String</code>
@@ -80,8 +80,8 @@ trait CanVerb {
 
   // This one can be final, because it isn't extended by anything in the matchers DSL.
   /**
-   * This class supports the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>,
-   * and <code>FixtureWordSpec</code>.
+   * This class supports the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>org.scalatest.fixture.FlatSpec</code>,
+   * and <code>org.scalatest.fixture.WordSpec</code>.
    *
    * <p>
    * This class is used in conjunction with an implicit conversion to enable <code>can</code> methods to
@@ -93,11 +93,11 @@ trait CanVerb {
   final class StringCanWrapperForVerb(left: String) {
 
     /**
-     * Supports test registration in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>.
+     * Supports test registration in <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code>.
      *
      * <p>
      * For example, this method enables syntax such as the following in <code>FlatSpec</code>
-     * and <code>FixtureFlatSpec</code>:
+     * and <code>org.scalatest.fixture.FlatSpec</code>:
      * </p>
      *
      * <pre class="stHighlight">
@@ -117,11 +117,11 @@ trait CanVerb {
     }
 
     /**
-     * Supports shared test registration in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>.
+     * Supports shared test registration in <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code>.
      *
      * <p>
      * For example, this method enables syntax such as the following in <code>FlatSpec</code>
-     * and <code>FixtureFlatSpec</code>:
+     * and <code>org.scalatest.fixture.FlatSpec</code>:
      * </p>
      *
      * <pre class="stHighlight">
@@ -130,7 +130,7 @@ trait CanVerb {
      * </pre>
      *
      * <p>
-     * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> passes in a function via the implicit parameter that takes
+     * <code>FlatSpec</code> and <code>org.scalatest.fixture.FlatSpec</code> passes in a function via the implicit parameter that takes
      * a string and results in a <code>BehaveWord</code>. This method
      * simply invokes this function, passing in left, and returns the result.
      * </p>
@@ -141,11 +141,11 @@ trait CanVerb {
 
     /**
      * Supports the registration of subject descriptions in <code>WordSpec</code>
-     * and <code>FixtureWordSpec</code>.
+     * and <code>org.scalatest.fixture.WordSpec</code>.
      *
      * <p>
      * For example, this method enables syntax such as the following in <code>WordSpec</code>
-     * and <code>FixtureWordSpec</code>:
+     * and <code>org.scalatest.fixture.WordSpec</code>:
      * </p>
      *
      * <pre class="stHighlight">
@@ -167,11 +167,11 @@ trait CanVerb {
 
     /**
      * Supports the registration of subject descriptions with after words
-     * in <code>WordSpec</code> and <code>FixtureWordSpec</code>.
+     * in <code>WordSpec</code> and <code>org.scalatest.fixture.WordSpec</code>.
      *
      * <p>
      * For example, this method enables syntax such as the following in <code>WordSpec</code>
-     * and <code>FixtureWordSpec</code>:
+     * and <code>org.scalatest.fixture.WordSpec</code>:
      * </p>
      *
      * <pre class="stHighlight">

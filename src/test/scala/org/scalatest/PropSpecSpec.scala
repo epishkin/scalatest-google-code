@@ -17,7 +17,7 @@ package org.scalatest
 
 import org.scalatest.events._
 
-class PropSpecSpec extends Spec with SharedHelpers {
+class PropSpecSpec extends FunSpec with SharedHelpers {
 
   describe("A PropSpec") {
 

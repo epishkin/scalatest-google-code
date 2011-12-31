@@ -15,11 +15,11 @@
  */
 package org.scalatest
 
-class SuitesSpec extends Spec {
+class SuitesSpec extends FunSpec {
 
   val a = new Suite {}
   val b = new FunSuite {}
-  val c = new Spec {}
+  val c = new FunSpec {}
   val d = new WordSpec {}
   val e = new FeatureSpec {}
 

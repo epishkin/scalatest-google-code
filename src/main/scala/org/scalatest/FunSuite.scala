@@ -184,7 +184,7 @@ import Suite.checkRunTestParamsForNull
  *
  * <p>
  * Although pending tests may be used more often in specification-style suites, such as
- * <code>org.scalatest.Spec</code>, you can also use it in <code>FunSuite</code>, like this:
+ * <code>org.scalatest.FunSpec</code>, you can also use it in <code>FunSuite</code>, like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -543,8 +543,8 @@ import Suite.checkRunTestParamsForNull
  * <h4>Overriding <code>withFixture(OneArgTest)</code></h4>
  *
  * <p>
- * To use the loan pattern, you can extend <code>FixtureFunSuite</code> (from the <code>org.scalatest.fixture</code> package) instead of
- * <code>FunSuite</code>. Each test in a <code>FixtureFunSuite</code> takes a fixture as a parameter, allowing you to pass the fixture into
+ * To use the loan pattern, you can extend <code>fixture.FunSuite</code> (from the <code>org.scalatest.fixture</code> package) instead of
+ * <code>FunSuite</code>. Each test in a <code>fixture.FunSuite</code> takes a fixture as a parameter, allowing you to pass the fixture into
  * the test. You must indicate the type of the fixture parameter by specifying <code>FixtureParam</code>, and implement a
  * <code>withFixture</code> method that takes a <code>OneArgTest</code>. This <code>withFixture</code> method is responsible for
  * invoking the one-arg test function, so you can perform fixture set up before, and clean up after, invoking and passing
@@ -552,11 +552,11 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.FixtureFunSuite
+ * import org.scalatest.fixture
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class ExampleSuite extends FixtureFunSuite {
+ * class ExampleSuite extends fixture.FunSuite {
  * 
  *   final val tmpFile = "temp.txt"
  * 
@@ -588,7 +588,7 @@ import Suite.checkRunTestParamsForNull
  * </pre>
  *
  * <p>
- * For more information, see the <a href="fixture/FixtureFunSuite.html">documentation for <code>FixtureFunSuite</code></a>.
+ * For more information, see the <a href="fixture/FunSuite.html">documentation for <code>fixture.FunSuite</code></a>.
  * </p>
  *
  * <a name="differentFixtures"></a><h2>Providing different fixtures to different tests</h2>
@@ -690,7 +690,7 @@ import Suite.checkRunTestParamsForNull
  *
  * <p>
  * Note that in this case, the loan pattern is being implemented via the <code>withWriter</code> method that takes a function, not
- * by overriding <code>FixtureFunSuite</code>'s <code>withFixture(OneArgTest)</code> method. <code>FixtureFunSuite</code> makes the most sense
+ * by overriding <code>fixture.FunSuite</code>'s <code>withFixture(OneArgTest)</code> method. <code>fixture.FunSuite</code> makes the most sense
  * if all (or at least most) tests need the same fixture, whereas in this <code>Suite</code> only two tests need the
  * <code>FileWriter</code>.
  * </p>
@@ -1133,7 +1133,7 @@ import Suite.checkRunTestParamsForNull
  * One thing to keep in mind when using shared tests is that in ScalaTest, each test in a suite must have a unique name.
  * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime
  * complaining that multiple tests are being registered with the same test name.
- * In a <code>FunSuite</code> there is no nesting construct analogous to <code>Spec</code>'s <code>describe</code> clause.
+ * In a <code>FunSuite</code> there is no nesting construct analogous to <code>FunSpec</code>'s <code>describe</code> clause.
  * Therefore, you need to do a bit of
  * extra work to ensure that the test names are unique. If a duplicate test name problem shows up in a
  * <code>FunSuite</code>, you'll need to pass in a prefix or suffix string to add to each test name. You can pass this string
@@ -1294,7 +1294,7 @@ trait FunSuite extends Suite { thisSuite =>
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
 
   /**
-   * Run zero to many of this <code>Spec</code>'s tests.
+   * Run zero to many of this <code>FunSuite</code>'s tests.
    *
    * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
    *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.

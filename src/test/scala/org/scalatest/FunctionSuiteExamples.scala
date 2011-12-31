@@ -1,34 +1,33 @@
 package org.scalatest
 
 import org.scalatest.prop.Tables
-import org.scalatest.fixture._
 
 trait FunctionSuiteExamples extends Tables {
 
   type FixtureServices
   
   def funSuite: FunSuite with FixtureServices
-  def fixtureFunSuite: FixtureFunSuite with FixtureServices
-  def spec: Spec with FixtureServices
-  def fixtureSpec: FixtureSpec with FixtureServices
+  def fixtureFunSuite: fixture.FunSuite with FixtureServices
+  def funSpec: FunSpec with FixtureServices
+  def fixtureFunSpec: fixture.FunSpec with FixtureServices
   def featureSpec: FeatureSpec with FixtureServices
-  def fixtureFeatureSpec: FixtureFeatureSpec with FixtureServices
+  def fixtureFeatureSpec: fixture.FeatureSpec with FixtureServices
   def flatSpec: FlatSpec with FixtureServices
-  def fixtureFlatSpec: FixtureFlatSpec with FixtureServices
+  def fixtureFlatSpec: fixture.FlatSpec with FixtureServices
   def freeSpec: FreeSpec with FixtureServices
-  def fixtureFreeSpec: FixtureFreeSpec with FixtureServices
+  def fixtureFreeSpec: fixture.FreeSpec with FixtureServices
   def propSpec: PropSpec with FixtureServices
-  def fixturePropSpec: FixturePropSpec with FixtureServices
+  def fixturePropSpec: fixture.PropSpec with FixtureServices
   def wordSpec: WordSpec with FixtureServices
-  def fixtureWordSpec: FixtureWordSpec with FixtureServices
+  def fixtureWordSpec: fixture.WordSpec with FixtureServices
   
   def examples =
     Table(
       "suite",
       funSuite,
       fixtureFunSuite,
-      spec,
-      fixtureSpec,
+      funSpec,
+      fixtureFunSpec,
       featureSpec,
       fixtureFeatureSpec,
       flatSpec,

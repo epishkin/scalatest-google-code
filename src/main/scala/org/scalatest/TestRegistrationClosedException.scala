@@ -20,7 +20,7 @@ package org.scalatest
  * such as registering a test to run or ignore, was attempted after registration had already closed.
  *
  * <p>
- * In suites that register tests as functions, such as <code>FunSuite</code> and <code>Spec</code>, tests
+ * In suites that register tests as functions, such as <code>FunSuite</code> and <code>FunSpec</code>, tests
  * are normally registered during construction. Although it is not the usual approach, tests can also
  * be registered after construction by invoking methods that register tests on the already constructed suite so
  * long as <code>run</code> has not been invoked on that suite.

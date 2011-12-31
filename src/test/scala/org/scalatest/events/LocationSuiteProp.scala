@@ -2,7 +2,7 @@ package org.scalatest.events
 import org.scalatest.Suite
 import org.scalatest.SuiteProp
 import org.scalatest.FunSuite
-import org.scalatest.Spec
+import org.scalatest.FunSpec
 import org.scalatest.StringFixtureSpec
 import org.scalatest.StringFixtureFunSuite
 import org.scalatest.Stopper
@@ -11,17 +11,12 @@ import org.scalatest.Tracker
 import org.scalatest.Reporter
 import org.scalatest.Distributor
 import org.scalatest.FeatureSpec
-import org.scalatest.fixture.FixtureFeatureSpec
+import org.scalatest.fixture
 import org.scalatest.junit.JUnit3Suite
 import org.scalatest.FlatSpec
-import org.scalatest.fixture.FixtureFlatSpec
 import org.scalatest.FreeSpec
-import org.scalatest.fixture.FixtureFreeSpec
 import org.scalatest.PropSpec
-import org.scalatest.fixture.FixturePropSpec
 import org.scalatest.WordSpec
-import org.scalatest.fixture.FixtureWordSpec
-import org.scalatest.fixture.FixtureSuite
 import org.scalatest.StringFixture
 import org.scalatest.Informer
 
@@ -69,7 +64,7 @@ class LocationSuiteProp extends SuiteProp
   }
   
   def fixtureSuite = new TestLocationFixtureSuite
-  class StringFixtureSuite extends FixtureSuite with StringFixture
+  class StringFixtureSuite extends fixture.Suite with StringFixture
   class TestLocationFixtureSuite extends StringFixtureSuite with FixtureServices {
     val suiteTypeName = "org.scalatest.events.LocationSuiteProp$TestLocationFixtureSuite"
     val expectedSuiteStartingList = List(TopOfClassPair(suiteTypeName + "$NestedSuite"), 
@@ -162,8 +157,8 @@ class LocationSuiteProp extends SuiteProp
     override def nestedSuites = List(new NestedSuite, new AbortNestedSuite, new FailNestedSuite)
   } 
   
-  def spec = new LocationTestSpec
-  class LocationTestSpec extends Spec with FixtureServices {
+  def funSpec = new LocationTestSpec
+  class LocationTestSpec extends FunSpec with FixtureServices {
     val suiteTypeName = "org.scalatest.events.LocationSuiteProp$LocationTestSpec"
     val expectedSuiteStartingList = List(TopOfClassPair(suiteTypeName + "$NestedSuite"), 
                                          TopOfClassPair(suiteTypeName + "$AbortNestedSuite"),
@@ -174,18 +169,18 @@ class LocationSuiteProp extends SuiteProp
     val expectedTestFailedList = List(SeeStackDepthExceptionPair("fail"))
     val expectedInfoProvidedList = List(LineInFilePair("test info", "LocationSuiteProp.scala", thisLineNumber + 4))
     
-    class NestedSuite extends Spec {
+    class NestedSuite extends FunSpec {
       it("info") {
         info("test info")
       }
     }
-    class AbortNestedSuite extends Spec {
+    class AbortNestedSuite extends FunSpec {
       override protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
                                 configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
         throw new RuntimeException
       }
     }
-    class FailNestedSuite extends Spec {
+    class FailNestedSuite extends FunSpec {
       it("fail") { fail }
     }
     override def nestedSuites = List(new NestedSuite, new AbortNestedSuite, new FailNestedSuite)
@@ -214,7 +209,7 @@ class LocationSuiteProp extends SuiteProp
         throw new RuntimeException
       }
     }
-    class FailNestedSuite extends Spec {
+    class FailNestedSuite extends FunSpec {
       it("fail") { fail }
     }
     override def nestedSuites = List(new NestedSuite, new AbortNestedSuite, new FailNestedSuite)
@@ -256,7 +251,7 @@ class LocationSuiteProp extends SuiteProp
   }
   
   def fixtureFeatureSpec = new TestLocationFixtureFeatureSpec
-  class StringFixtureFeatureSpec extends FixtureFeatureSpec with StringFixture
+  class StringFixtureFeatureSpec extends fixture.FeatureSpec with StringFixture
   class TestLocationFixtureFeatureSpec extends StringFixtureFeatureSpec with FixtureServices { 
     val suiteTypeName = "org.scalatest.events.LocationSuiteProp$TestLocationFixtureFeatureSpec"
     val expectedSuiteStartingList = List(TopOfClassPair(suiteTypeName + "$NestedSuite"), 
@@ -323,7 +318,7 @@ class LocationSuiteProp extends SuiteProp
   }
   
   def fixtureFlatSpec = new TestLocationFixtureFlatSpec
-  class StringFixtureFlatSpec extends FixtureFlatSpec with StringFixture
+  class StringFixtureFlatSpec extends fixture.FlatSpec with StringFixture
   class TestLocationFixtureFlatSpec extends StringFixtureFlatSpec with FixtureServices {
     val suiteTypeName = "org.scalatest.events.LocationSuiteProp$TestLocationFixtureFlatSpec"
     val expectedSuiteStartingList = List(TopOfClassPair(suiteTypeName + "$NestedSuite"), 
@@ -390,7 +385,7 @@ class LocationSuiteProp extends SuiteProp
   }
   
   def fixtureFreeSpec = new TestLocationFixtureFreeSpec
-  class StringFixtureFreeSpec extends FixtureFreeSpec with StringFixture
+  class StringFixtureFreeSpec extends fixture.FreeSpec with StringFixture
   class TestLocationFixtureFreeSpec extends StringFixtureFreeSpec with FixtureServices {
     val suiteTypeName = "org.scalatest.events.LocationSuiteProp$TestLocationFixtureFreeSpec"
     val expectedSuiteStartingList = List(TopOfClassPair(suiteTypeName + "$NestedSuite"), 
@@ -457,7 +452,7 @@ class LocationSuiteProp extends SuiteProp
   }
   
   def fixturePropSpec = new TestLocationFixturePropSpec
-  class StringFixturePropSpec extends FixturePropSpec with StringFixture
+  class StringFixturePropSpec extends fixture.PropSpec with StringFixture
   class TestLocationFixturePropSpec extends StringFixturePropSpec with FixtureServices {
     val suiteTypeName = "org.scalatest.events.LocationSuiteProp$TestLocationFixturePropSpec"
     val expectedSuiteStartingList = List(TopOfClassPair(suiteTypeName + "$NestedSuite"), 
@@ -524,7 +519,7 @@ class LocationSuiteProp extends SuiteProp
   }
   
   def fixtureWordSpec = new TestLocationFixtureWordSpec
-  class StringFixtureWordSpec extends FixtureWordSpec with StringFixture
+  class StringFixtureWordSpec extends fixture.WordSpec with StringFixture
   class TestLocationFixtureWordSpec extends StringFixtureWordSpec with FixtureServices {
     val suiteTypeName = "org.scalatest.events.LocationSuiteProp$TestLocationFixtureWordSpec"
     val expectedSuiteStartingList = List(TopOfClassPair(suiteTypeName + "$NestedSuite"), 

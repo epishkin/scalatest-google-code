@@ -7,7 +7,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class OrdinalSpec extends Spec with ShouldMatchers with Checkers {
+class OrdinalSpec extends FunSpec with ShouldMatchers with Checkers {
 
   describe("An Ordinal") {
 
