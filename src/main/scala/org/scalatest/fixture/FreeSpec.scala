@@ -443,7 +443,7 @@ trait FreeSpec extends Suite { thisSuite =>
    */
   private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: FixtureParam => Any) {
     // TODO: This is how these were, but it needs attention. Mentions "it".
-    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", "FreeSpec.scala", "ignore", testTags: _*)
+    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", fileName, "ignore", testTags: _*)
   }
    /*
   private def registerBranch(description: String, childPrefix: Option[String], fun: () => Unit) {

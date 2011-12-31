@@ -35,11 +35,11 @@ private[scalatest] class DiscoverySuite(path: String, accessibleSuites: Set[Stri
       yield {
         try {
           val clazz = runpathClassLoader.loadClass(suiteClassName)
-          val runWithAnnotation = clazz.getAnnotation(classOf[WrapWith])
-          if (runWithAnnotation == null)
+          val wrapWithAnnotation = clazz.getAnnotation(classOf[WrapWith])
+          if (wrapWithAnnotation == null)
             clazz.newInstance.asInstanceOf[Suite]
           else {
-            val suiteClazz = runWithAnnotation.value
+            val suiteClazz = wrapWithAnnotation.value
             val constructorList = suiteClazz.getDeclaredConstructors()
             val constructor = constructorList.find { c => 
               val types = c.getParameterTypes
@@ -50,7 +50,6 @@ private[scalatest] class DiscoverySuite(path: String, accessibleSuites: Set[Stri
         }
         catch {
           case e: Exception => {
-            e.printStackTrace()
             val msg = Resources("cannotLoadDiscoveredSuite", suiteClassName)
             throw new RuntimeException(msg, e)
           }

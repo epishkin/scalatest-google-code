@@ -152,12 +152,12 @@ write a sbt plugin to deploy the task.
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
 
-        val runWithAnnotation = testClass.getAnnotation(classOf[WrapWith])
+        val wrapWithAnnotation = testClass.getAnnotation(classOf[WrapWith])
         val suite = 
-        if (runWithAnnotation == null)
+        if (wrapWithAnnotation == null)
           testClass.newInstance.asInstanceOf[Suite]
         else {
-          val suiteClazz = runWithAnnotation.value
+          val suiteClazz = wrapWithAnnotation.value
           val constructorList = suiteClazz.getDeclaredConstructors()
           val constructor = constructorList.find { c => 
               val types = c.getParameterTypes

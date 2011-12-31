@@ -174,7 +174,6 @@ class SuiteDiscoveryHelperSuite extends Suite {
     class WrongSuiteClass(testValue: String) extends Suite
     @WrapWith(classOf[WrongSuiteClass])
     class AnnotateWrongConstructor
-    //class SomeApiSubClass extends SomeApiClass
     assert(!sdtf.isRunnable(classOf[NormalClass]))
     assert(!sdtf.isRunnable(classOf[SuiteClass]))
     assert(!sdtf.isRunnable(classOf[AnnotateDefaultConstructor]))

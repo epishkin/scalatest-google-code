@@ -86,7 +86,7 @@ class LoginUiWordSpec extends WordSpec {
   }
   
   /**
-   * The following test should be removed once the 'that' word is removed.
+   * The 'that' test should be removed once the 'that' word is removed.
    */
 }
 
