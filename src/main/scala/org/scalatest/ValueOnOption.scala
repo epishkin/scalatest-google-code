@@ -18,6 +18,15 @@ package org.scalatest
 import java.util.NoSuchElementException
 import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 
+/**
+ * Trait that provides an implicit conversion that adds a <code>value</code> method
+ * to <code>Option</code>, which will return the value of the option if it is defined,
+ * or throw <code>TestFailedException</code> if it is not defined.
+ *
+ * <p>
+ * 
+ * </p>
+ */
 trait ValueOnOption {
 
   implicit def convertOptionToValuable[T](opt: Option[T]) = new Valuable(opt)
