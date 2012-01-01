@@ -105,4 +105,36 @@ trait ValueOnEither {
   }
 }
 
+/**
+ * Companion object that facilitates the importing of <code>ValueEither</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>ValueOnEither</code>'s members so you can use
+ * <code>leftValue</code> and <code>rightValue</code> on <code>Either</code> in the Scala interpreter:
+ *
+ * <pre class="stREPL">
+ * $ scala -cp target/jar_contents/
+ * Welcome to Scala version 2.9.1.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
+ * Type in expressions to have them evaluated.
+ * Type :help for more information.
+ * 
+ * scala&gt; import org.scalatest._
+ * import org.scalatest._
+ * 
+ * scala&gt; import matchers.ShouldMatchers._
+ * import matchers.ShouldMatchers._
+ * 
+ * scala&gt; import ValueOnEither._
+ * import ValueOnEither._
+ * 
+ * scala&gt; val e: Either[String, Int] = Left("Muchas problemas")
+ * e: Either[String,Int] = Left(Muchas problemas)
+ * 
+ * scala&gt; e.leftValue should be ("Muchas problemas")
+ * 
+ * scala&gt; e.rightValue should be &lt; 9
+ * org.scalatest.TestFailedException: The Either on which rightValue was invoked was not defined.
+ *   at org.scalatest.ValueOnEither$Valuable.rightValue(ValueOnEither.scala:102)
+ *   at .&lt;init&gt;(&lt;console&gt;:18)
+ *   ...
+ * </pre>
+ */
 object ValueOnEither extends ValueOnEither

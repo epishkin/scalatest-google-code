@@ -23,10 +23,13 @@ package org.scalatest
  * </p>
  *
  * <pre>
+ * // On Option
  * option.value should be &gt; 9
  *
+ * // On Either
  * either.rightValue should be &lt;= 10
  *
+ * // On PartialFunction
  * pf.valueAt("IV") should equal (4)
  * </pre>
  *
