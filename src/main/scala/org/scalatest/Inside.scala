@@ -123,7 +123,7 @@ trait Inside {
  * an alternative to mixing it in. One use case is to import the <code>inside</code> construct so you can use
  * it in the Scala interpreter:
  *
- * <pre>
+ * <pre class="stREPL">
  * $ scala -cp scalatest-1.8.jar
  * Welcome to Scala version 2.9.1.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
  * Type in expressions to have them evaluated.
