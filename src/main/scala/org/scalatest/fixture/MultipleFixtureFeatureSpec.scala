@@ -27,4 +27,4 @@ package org.scalatest.fixture
  * </p>
  */
 @deprecated("Use FixtureFeatureSpec with ConfigMapFixture instead")
-trait MultipleFixtureFeatureSpec extends FeatureSpec with ConfigMapFixture
+trait MultipleFixtureFeatureSpec extends FixtureFeatureSpec with ConfigMapFixture

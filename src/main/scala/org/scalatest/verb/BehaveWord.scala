@@ -63,7 +63,7 @@ final class BehaveWord {
    * </pre>
    *
    * <p>
-   * It also enables syntax such as the following syntax in <code>WordSpec</code>s and <code>org.scalatest.fixtureWordSpec</code>s:
+   * It also enables syntax such as the following syntax in <code>WordSpec</code>s and <code>org.scalatest.fixture.WordSpec</code>s:
    * </p>
    *
    * <pre class="stHighlight">
