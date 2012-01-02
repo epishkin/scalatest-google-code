@@ -63,7 +63,7 @@ class ScalaTestFramework extends Framework {
   /**
    * Returns an array containing fingerprint for ScalaTest's test, which are classes  
    * whose superclass name is <code>org.scalatest.Suite</code>
-   * or is annotated with <code>org.scalatest.RunWith</code>.
+   * or is annotated with <code>org.scalatest.WrapWith</code>.
    */
   def tests =
     Array(
