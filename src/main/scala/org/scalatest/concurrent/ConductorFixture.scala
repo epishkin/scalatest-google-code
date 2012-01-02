@@ -16,7 +16,7 @@
 package org.scalatest.concurrent
 
 import org.scalatest._
-import org.scalatest.fixture.FixtureSuite
+import org.scalatest.fixture
 
 /**
  * Trait that can pass a new <code>Conductor</code> fixture into tests.
@@ -27,12 +27,12 @@ import org.scalatest.fixture.FixtureSuite
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.fixture.FixtureFunSuite
+ * import org.scalatest.fixture
  * import org.scalatest.concurrent.ConductorFixture
  * import org.scalatest.matchers.ShouldMatchers
  * import java.util.concurrent.ArrayBlockingQueue
  *
- * class ArrayBlockingQueueSuite extends FixtureFunSuite with ConductorFixture with ShouldMatchers {
+ * class ArrayBlockingQueueSuite extends fixture.FunSuite with ConductorFixture with ShouldMatchers {
  * 
  *   test("calling put on a full queue blocks the producer thread") { conductor => import conductor._
  *
@@ -84,7 +84,7 @@ import org.scalatest.fixture.FixtureSuite
  *
  * @author Bill Venners
  */
-trait ConductorFixture { this: FixtureSuite =>
+trait ConductorFixture { this: fixture.Suite =>
 
   /**
    * Defines type <code>Fixture</code> to be <code>Conductor</code>.

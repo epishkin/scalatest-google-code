@@ -23,8 +23,7 @@ import Prop._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
-class ShouldEqualSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
+class ShouldEqualSpec extends FunSpec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   // Checking for equality with "equal"
   describe("The equal token") {

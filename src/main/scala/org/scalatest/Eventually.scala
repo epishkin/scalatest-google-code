@@ -20,8 +20,9 @@ import java.nio.charset.CoderMalfunctionError
 import javax.xml.parsers.FactoryConfigurationError
 import javax.xml.transform.TransformerFactoryConfigurationError
 import java.lang.annotation.AnnotationFormatError
+import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
+import org.scalatest.Suite.anErrorThatShouldCauseAnAbort
 
-// TODO: Make this private[scalatest]
 trait Eventually {
 
   case class EventuallyConfig(maxAttempts: Int = 100, interval: Int = 10)
@@ -33,15 +34,11 @@ trait Eventually {
   def maxAttempts(value: Int)(implicit config: EventuallyConfig) = new MaxAttemptsConfig(maxAttempts = value, interval = config.interval)
 
   def interval(value: Int)(implicit config: EventuallyConfig) = new IntervalConfig(maxAttempts = config.maxAttempts, interval = value)
-
-/*
-This compiled but is ugly. I think config should be at the end in this case.
-  def eventually[T](config: EventuallyConfig)(f: => T): T = eventually(f)(config)
-*/
-  implicit def uglyConversion(pair: (MaxAttemptsConfig, IntervalConfig)): EventuallyConfig = {
-    val (maxAttemptsConfig, intervalConfig) = pair
-    EventuallyConfig(maxAttemptsConfig.maxAttempts, intervalConfig.interval)
-  }
+  
+  def eventually[T](maxAttempts: MaxAttemptsConfig, interval: IntervalConfig)(f: => T): T = eventually(f)(new EventuallyConfig(maxAttempts.maxAttempts, interval.interval))
+  def eventually[T](interval: IntervalConfig, maxAttempts: MaxAttemptsConfig)(f: => T): T = eventually(maxAttempts, interval)(f)
+  def eventually[T](maxAttempts: MaxAttemptsConfig)(f: => T): T = eventually(f)(new EventuallyConfig(maxAttempts.maxAttempts, eventuallyConfig.interval))
+  def eventually[T](interval: IntervalConfig)(f: => T): T = eventually(f)(new EventuallyConfig(eventuallyConfig.maxAttempts, interval.interval))
 
   def eventually[T](f: => T)(implicit config: EventuallyConfig): T = {
     val maxAttempts = config.maxAttempts
@@ -59,35 +56,8 @@ This compiled but is ugly. I think config should be at the end in this case.
       }
       Thread.sleep(interval)
     }
-    // TODO: Get string from resource file
-    // TODO: Verify and possibly be smarter about stack depth
-    throw new TestFailedException("The code passed to eventually never returned normally.", cause, 2)
+    throw new TestFailedException(sde => Some(Resources("eventuallyNotReturn")), Some(cause), getStackDepthFun("Eventually.scala", "eventually"))
   }
-
-  // TODO: Use the one in the Suite singleton object
-  // Another TODO: I think that this should work:
-  // case _: AnnotationFormatError |
-  //     AWTError |
-  //     CoderMalfunctionError |
-  //     FactoryConfigurationError |
-  //     LinkageError |
-  //     ThreadDeath |
-  //     TransformerFactoryConfigurationError |
-  //     VirtualMachineError => true
-  // Try it, and if it works, use it. (Better make sure there are tests for all these at that time too.)
-  private def anErrorThatShouldCauseAnAbort(throwable: Throwable) =
-    throwable match {
-      case _: AnnotationFormatError => true
-      case _: AWTError => true
-      case _: CoderMalfunctionError => true
-      case _: FactoryConfigurationError => true
-      case _: LinkageError => true
-      case _: ThreadDeath => true
-      case _: TransformerFactoryConfigurationError => true
-      case _: VirtualMachineError => true
-      case _ => false
-    }
-
 }
 
 object Eventually extends Eventually

@@ -17,7 +17,7 @@ package org.scalatest.junit
 
 import org.scalatest._
 
-class JUnitTestFailedErrorSpec extends Spec with ShouldMatchersForJUnit {
+class JUnitTestFailedErrorSpec extends FunSpec with ShouldMatchersForJUnit {
 
   val baseLineNumber = 22
 

@@ -17,14 +17,14 @@ package org.scalatest
 
 /**
  * Class whose subclasses can be used to tag tests in types <code>FunSuite</code>,
- * <code>Spec</code>, <code>FlatSpec</code>, <code>WordSpec</code>, <code>FeatureSpec</code>, and their
+ * <code>FunSpec</code>, <code>FlatSpec</code>, <code>WordSpec</code>, <code>FeatureSpec</code>, and their
  * sister traits in the <code>org.scalatest.fixture</code> package. For example, if you define:
  *
  * <pre class="stHighlight">
  * object SlowTest extends Tag("SlowTest")
  * </pre>
  *
- * then you can tag a test as a <code>SlowTest</code> in a <code>FunSuite</code> or <code>FixtureFunSuite</code> like this:
+ * then you can tag a test as a <code>SlowTest</code> in a <code>FunSuite</code> or <code>fixture.FunSuite</code> like this:
  * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  *
@@ -37,13 +37,13 @@ package org.scalatest
  * </pre>
  *
  * <p>
- * or in a <code>Spec</code> or <code>FixtureSpec</code> like this:
+ * or in a <code>FunSpec</code> or <code>fixture.FunSpec</code> like this:
  * </p>
  *
  * <pre class="stHighlight">
- * import org.scalatest.Spec
+ * import org.scalatest.FunSpec
  *
- * class MySpec extends Spec {
+ * class MySpec extends FunSpec {
  *
  *   it("should sleep for a second", SlowTest) {
  *     Thread.sleep(1000)
@@ -52,7 +52,7 @@ package org.scalatest
  * </pre>
  *
  * <p>
- * or in a <code>FlatSpec</code> or <code>FixtureFlatSpec</code> like this:
+ * or in a <code>FlatSpec</code> or <code>fixture.FlatSpec</code> like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -67,7 +67,7 @@ package org.scalatest
  * </pre>
  *
  * <p>
- * or in a <code>WordSpec</code> or <code>FixtureWordSpec</code> like this:
+ * or in a <code>WordSpec</code> or <code>fixture.WordSpec</code> like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -82,7 +82,7 @@ package org.scalatest
  * </pre>
  *
  * <p>
- * or in a <code>FeatureSpec</code> or <code>FixtureFeatureSpec</code> like this:
+ * or in a <code>FeatureSpec</code> or <code>fixture.FeatureSpec</code> like this:
  * </p>
  *
  * <pre class="stHighlight">
@@ -114,7 +114,7 @@ package org.scalatest
  * </pre>
  *
  * If you have created Java annotation interfaces for use as tag names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you may want to use group names on your <code>FunSuite</code>s and <code>Spec</code>s that match. To do so, simply 
+ * then you may want to use group names on your <code>FunSuite</code>s and <code>FunSpec</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interface to the <code>Tag</code> constructor. For example, if you've
  * defined a Java annotation interface with fully qualified name, <code>com.mycompany.testtags.SlowTest</code>, then you could
  * create a matching group for <code>FunSuite</code>s like this:

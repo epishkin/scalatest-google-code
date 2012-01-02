@@ -30,7 +30,7 @@ class ScalaTestFrameworkSuite extends FunSuite{
   test("tests contains single test fingerprint"){
     val framework = new ScalaTestFramework
     val fingerprints = framework.tests
-    assert(fingerprints.size === 1)
+    assert(fingerprints.size === 2)
 
     val fingerprint =
       fingerprints(0).asInstanceOf[org.scalatools.testing.TestFingerprint]

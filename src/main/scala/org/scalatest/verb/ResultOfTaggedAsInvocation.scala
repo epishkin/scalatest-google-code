@@ -19,7 +19,7 @@ import org.scalatest._
 
 /**
  * Supports the registration of tagged tests in shorthand form in <code>FlatSpec</code>
- * and <code>FixtureFlatSpec</code>.
+ * and <code>fixture.FlatSpec</code>.
  *
  * <p>
  * For example, this class enables syntax such as the following tagged, pending test registration
@@ -45,12 +45,12 @@ import org.scalatest._
  * Rather than provide <code>in</code> and <code>ignore</code> methods directly, these
  * methods are provided after <code>taggedAs()</code> by implicit conversions
  * because the type passed to <code>in</code> (and <code>ignore</code>)
- * differs in a <code>FlatSpec</code> and a <code>FixtureFlatSpec</code>.
- * A <code>FixtureFlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
+ * differs in a <code>FlatSpec</code> and a <code>fixture.FlatSpec</code>.
+ * A <code>fixture.FlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
  * test function and another that takes a one-arg test function (a test that takes a
  * <code>Fixture</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
  * only one <code>in</code> method that takes a by-name parameter. As a result,
- * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> each provide an implicit conversion
+ * <code>FlatSpec</code> and <code>fixture.FlatSpec</code> each provide an implicit conversion
  * from <code>ResultOfTaggedAsInvocation</code> to a type that provides the appropriate
  * <code>in</code> methods.
  * </p>
@@ -61,7 +61,7 @@ abstract class ResultOfTaggedAsInvocation(val verb: String, val rest: String, va
 
   /**
    * Supports the registration of tagged, pending tests in shorthand form in <code>FlatSpec</code>
-   * and <code>FixtureFlatSpec</code>.
+   * and <code>fixture.FlatSpec</code>.
    *
    * <p>
    * This method supports syntax such as the following:

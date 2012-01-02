@@ -17,7 +17,7 @@ package org.scalatest
 
 import org.scalatest.matchers.ShouldMatchers
 
-class SeveredStackTracesSpec extends Spec with ShouldMatchers with SeveredStackTraces {
+class SeveredStackTracesSpec extends FunSpec with ShouldMatchers with SeveredStackTraces {
 
   describe("A severed TestFailedException") {
 

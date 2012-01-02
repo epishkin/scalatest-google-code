@@ -17,14 +17,14 @@ package org.scalatest
 
 import events.InfoProvided
 
-class GivenWhenThenSpec extends Spec with SharedHelpers {
+class GivenWhenThenSpec extends FunSpec with SharedHelpers {
   describe("The GivenWhenThen trait") {
 
     val theGiven = "an invalid zip code"
     val theAnd = "the zip code validator has been initialized"
     val theWhen = "validate is invoked with the invalid zip code"
     val theThen = "the validator should return false"
-    class GivenWhenThenInsideTestSpec extends Spec with GivenWhenThen {
+    class GivenWhenThenInsideTestSpec extends FunSpec with GivenWhenThen {
       it("should do something") {
         given(theGiven)
         and(theAnd)

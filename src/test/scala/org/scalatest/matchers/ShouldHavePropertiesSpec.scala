@@ -23,7 +23,7 @@ import Prop._
 import scala.reflect.BeanProperty
 
 // TODO: check not not and not not not to make sure those negative failure messages make sense.
-class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
+class ShouldHavePropertiesSpec extends FunSpec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
 
   // Checking for a specific size
   describe("The 'have (' syntax") {

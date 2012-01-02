@@ -25,9 +25,9 @@ package org.scalatest.testng {
   import org.scalatest.events._
   import org.scalatest.mock.JMockCycle
   import org.scalatest.mock.JMockCycleFixture
-  import org.scalatest.fixture.FixtureFunSuite
+  import org.scalatest.fixture
 
-  class TestNGSuiteSuite extends FixtureFunSuite with JMockCycleFixture with SuiteExpectations {
+  class TestNGSuiteSuite extends fixture.FunSuite with JMockCycleFixture with SuiteExpectations {
 
     test("Reporter should be notified when test passes") { cycle => import cycle._
 

@@ -17,7 +17,7 @@ package org.scalatest.matchers
 
 import org.scalatest._
 
-class ShouldPlusOrMinusSpec extends Spec with ShouldMatchers {
+class ShouldPlusOrMinusSpec extends FunSpec with ShouldMatchers {
 
   describe("The be (X plusOrMinus Y) syntax") {
 

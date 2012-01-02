@@ -1,9 +1,9 @@
 package org.scalatestexamples.fixture.suite
 
-import org.scalatest.fixture.FixtureSuite
+import org.scalatest.fixture
 import scala.collection.mutable.ListBuffer
       
-class TupleFixtureSuite extends FixtureSuite {
+class TupleFixtureSuite extends fixture.Suite {
 
   type FixtureParam = (StringBuilder, ListBuffer[String])
 

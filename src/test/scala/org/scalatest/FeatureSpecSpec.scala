@@ -17,7 +17,7 @@ package org.scalatest
 
 import org.scalatest.events.TestStarting
 
-class FeatureSpecSpec extends Spec with SharedHelpers {
+class FeatureSpecSpec extends FunSpec with SharedHelpers {
 
   describe("A FeatureSpec") {
 

@@ -22,7 +22,7 @@ import Arbitrary._
 import Prop._
 import scala.reflect.BeanProperty
 
-class ShouldBeMatcherSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
+class ShouldBeMatcherSpec extends FunSpec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
 
   class OddMatcher extends BeMatcher[Int] {
     def apply(left: Int): MatchResult = {

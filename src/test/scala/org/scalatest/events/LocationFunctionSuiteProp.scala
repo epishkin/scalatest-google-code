@@ -5,19 +5,13 @@ import org.scalatest.Stopper
 import org.scalatest.Filter
 import org.scalatest.Tracker
 import org.scalatest.FunSuite
-import org.scalatest.Spec
+import org.scalatest.FunSpec
 import org.scalatest.FeatureSpec
 import org.scalatest.FlatSpec
 import org.scalatest.FreeSpec
 import org.scalatest.PropSpec
 import org.scalatest.WordSpec
-import org.scalatest.fixture.FixtureFeatureSpec
-import org.scalatest.fixture.FixtureFlatSpec
-import org.scalatest.fixture.FixtureFreeSpec
-import org.scalatest.fixture.FixtureFunSuite
-import org.scalatest.fixture.FixturePropSpec
-import org.scalatest.fixture.FixtureSpec
-import org.scalatest.fixture.FixtureWordSpec
+import org.scalatest.fixture
 import org.scalatest.StringFixture
 import org.scalatest.SharedHelpers.thisLineNumber
 
@@ -62,7 +56,7 @@ class LocationFunctionSuiteProp extends FunctionSuiteProp {
     val expectedScopeClosedList = Nil
   }
   
-  def fixtureFunSuite = new FixtureFunSuite with FixtureServices with StringFixture {
+  def fixtureFunSuite = new fixture.FunSuite with FixtureServices with StringFixture {
     test("succeed") { param =>
       
     }
@@ -87,7 +81,7 @@ class LocationFunctionSuiteProp extends FunctionSuiteProp {
     val expectedScopeClosedList = Nil
   }
   
-  def spec = new Spec with FixtureServices {
+  def funSpec = new FunSpec with FixtureServices {
     describe("A Spec") {
       it("succeed") {
         
@@ -114,7 +108,7 @@ class LocationFunctionSuiteProp extends FunctionSuiteProp {
     val expectedScopeClosedList = List(ScopeClosedPair("A Spec", expectedSourceFileName, thisLineNumber - 23))
   }
   
-  def fixtureSpec = new FixtureSpec with FixtureServices with StringFixture {
+  def fixtureFunSpec = new fixture.FunSpec with FixtureServices with StringFixture {
     describe("A Spec") {
       it("succeed") { param =>
         
@@ -166,7 +160,7 @@ class LocationFunctionSuiteProp extends FunctionSuiteProp {
     val expectedScopeClosedList = Nil
   }
   
-  def fixtureFeatureSpec = new FixtureFeatureSpec with FixtureServices with StringFixture {
+  def fixtureFeatureSpec = new fixture.FeatureSpec with FixtureServices with StringFixture {
     feature("Test") {
       scenario("succeed") { param =>
       
@@ -224,7 +218,7 @@ class LocationFunctionSuiteProp extends FunctionSuiteProp {
                                        ScopeClosedPair("Test 4", expectedSourceFileName, thisLineNumber - 18))
   }
   
-  def fixtureFlatSpec = new FixtureFlatSpec with FixtureServices with StringFixture {
+  def fixtureFlatSpec = new fixture.FlatSpec with FixtureServices with StringFixture {
     "Test 1" should "succeed" in { param =>
       
     }
@@ -282,7 +276,7 @@ class LocationFunctionSuiteProp extends FunctionSuiteProp {
     val expectedScopeClosedList = List(ScopeClosedPair("Test", expectedSourceFileName, thisLineNumber - 23))
   }
   
-  def fixtureFreeSpec = new FixtureFreeSpec with FixtureServices with StringFixture {
+  def fixtureFreeSpec = new fixture.FreeSpec with FixtureServices with StringFixture {
     "Test" - {
       "should succeed" in { param =>
         
@@ -334,7 +328,7 @@ class LocationFunctionSuiteProp extends FunctionSuiteProp {
     val expectedScopeClosedList = Nil
   }
   
-  def fixturePropSpec = new FixturePropSpec with FixtureServices with StringFixture {
+  def fixturePropSpec = new fixture.PropSpec with FixtureServices with StringFixture {
     property("Test should succeed") { param =>
       
     }
@@ -386,7 +380,7 @@ class LocationFunctionSuiteProp extends FunctionSuiteProp {
     val expectedScopeClosedList = List(ScopeClosedPair("Test", expectedSourceFileName, thisLineNumber - 23))
   }
   
-  def fixtureWordSpec = new FixtureWordSpec with FixtureServices with StringFixture {
+  def fixtureWordSpec = new fixture.WordSpec with FixtureServices with StringFixture {
     "Test" should {
       "succeed" in { param =>
         

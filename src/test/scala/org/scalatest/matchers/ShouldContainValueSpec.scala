@@ -21,7 +21,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldContainValueSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
+class ShouldContainValueSpec extends FunSpec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   // Checking for a specific size
   describe("The 'contain value (Int)' syntax") {

@@ -16,7 +16,7 @@
 package org.scalatest.mock
 
 import org.scalatest._
-import org.scalatest.fixture.FixtureSuite
+import org.scalatest.fixture
 import matchers.ShouldMatchers
 import org.jmock.Expectations.{equal => thatEquals}
 
@@ -24,7 +24,7 @@ class JMockCycleSpec extends FlatSpec with ShouldMatchers with SharedHelpers {
 
   "The JMockCycle trait" should "work with multiple mocks" in {
 
-    val a = new FixtureSuite with JMockCycleFixture {
+    val a = new fixture.Suite with JMockCycleFixture {
       def testThatShouldFail(cycle: JMockCycle) {
         import cycle._
         trait OneFish {
@@ -100,7 +100,7 @@ class JMockCycleSpec extends FlatSpec with ShouldMatchers with SharedHelpers {
   }
 
   it should "provide sugar for invoking with methods that take matchers" in {
-    val a = new FixtureSuite with JMockCycleFixture {
+    val a = new fixture.Suite with JMockCycleFixture {
       def testThatShouldSucceed(cycle: JMockCycle) {
         import cycle._
         trait OneFish {
@@ -148,7 +148,7 @@ class JMockCycleSpec extends FlatSpec with ShouldMatchers with SharedHelpers {
   }
 
   it should "provide sugar for invoking with methods that take non-matcher values" in {
-    val a = new FixtureSuite with JMockCycleFixture {
+    val a = new fixture.Suite with JMockCycleFixture {
       def testThatShouldSucceed(cycle: JMockCycle) {
         import cycle._
         trait OneFish {

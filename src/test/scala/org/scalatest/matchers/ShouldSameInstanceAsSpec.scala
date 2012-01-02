@@ -17,7 +17,7 @@ package org.scalatest.matchers
 
 import org.scalatest._
 
-class ShouldSameInstanceAsSpec extends Spec with ShouldMatchers {
+class ShouldSameInstanceAsSpec extends FunSpec with ShouldMatchers {
 
   describe("The be a ('symbol) syntax") {
 

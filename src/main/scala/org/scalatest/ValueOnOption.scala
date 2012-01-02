@@ -16,11 +16,11 @@
 package org.scalatest
 
 import java.util.NoSuchElementException
+import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 
-// TODO: Make this private[scalatest]
 trait ValueOnOption {
 
-  implicit def convertToValuable[T](opt: Option[T]) = new Valuable(opt)
+  implicit def convertOptionToValuable[T](opt: Option[T]) = new Valuable(opt)
 
   class Valuable[T](opt: Option[T]) {
     def value: T = {
@@ -28,9 +28,8 @@ trait ValueOnOption {
         opt.get
       }
       catch {
-        case cause: NoSuchElementException => // TODO: Grab the string from the resource file
-          // TODO: Verify and possibly be smarter about stack depth
-          throw new TestFailedException("The Option on which value was invoked was not defined.", cause, 1)
+        case cause: NoSuchElementException => 
+          throw new TestFailedException(sde => Some(Resources("optionValueNotDefined")), Some(cause), getStackDepthFun("ValueOnOption.scala", "value"))
       }
     }
   }

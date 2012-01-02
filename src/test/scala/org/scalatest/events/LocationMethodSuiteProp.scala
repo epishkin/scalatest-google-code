@@ -5,7 +5,7 @@ import org.scalatest.Tracker
 import org.scalatest.Suite
 import org.scalatest.Ignore
 import org.scalatest.MethodSuiteProp
-import org.scalatest.fixture.FixtureSuite
+import org.scalatest.fixture
 import org.scalatest.StringFixture
 
 class LocationMethodSuiteProp extends MethodSuiteProp {
@@ -49,7 +49,7 @@ class LocationMethodSuiteProp extends MethodSuiteProp {
   }
   
   def fixtureSuite = new TestLocationFixtureSuite
-  class TestLocationFixtureSuite extends FixtureSuite with FixtureServices with StringFixture {
+  class TestLocationFixtureSuite extends fixture.Suite with FixtureServices with StringFixture {
     val suiteTypeName = "org.scalatest.events.LocationMethodSuiteProp$TestLocationFixtureSuite"
     val expectedStartingList = List(TestStartingPair("testSucceed", "testSucceed"), 
                                 TestStartingPair("testPending", "testPending"), 

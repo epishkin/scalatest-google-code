@@ -17,8 +17,9 @@ package org.scalatestexamples.fixture
 
 import org.scalatestexamples._
 import org.scalatest.GivenWhenThen
+import org.scalatest.fixture
 
-class TVFixtureFeatureSpec extends org.scalatest.fixture.FixtureFeatureSpec
+class TVFixtureFeatureSpec extends fixture.FeatureSpec
         with GivenWhenThen {
 
   type FixtureParam = String

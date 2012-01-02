@@ -87,8 +87,8 @@ class InfoInsideTestFiredAfterTestProp extends SuiteProp {
       }
     }
   
-  def spec =
-    new Spec with FixtureServices {
+  def funSpec =
+    new FunSpec with FixtureServices {
       it(nameOfTest) {
         info(msg)
       }

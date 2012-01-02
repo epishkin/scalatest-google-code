@@ -21,7 +21,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldBehaveLikeSpec extends Spec {
+class ShouldBehaveLikeSpec extends FunSpec {
 
   def myFirstBehavior(i: Int) {
     it("This one is should blow up") {}
