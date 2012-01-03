@@ -23,22 +23,127 @@ import java.lang.annotation.AnnotationFormatError
 import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 import org.scalatest.Suite.anErrorThatShouldCauseAnAbort
 
+/**
+ * Trait that provides the <code>eventually</code> construct, which periodically retries executing
+ * a passed by-name parameter, until it either succeeds or the configured maximum number of attempts is  
+ * exhausted.
+ */
 trait Eventually {
 
-  case class EventuallyConfig(maxAttempts: Int = 100, interval: Int = 10)
-  class MaxAttemptsConfig(maxAttempts: Int, interval: Int) extends EventuallyConfig(maxAttempts = maxAttempts)
-  class IntervalConfig(maxAttempts: Int, interval: Int) extends EventuallyConfig(interval = interval)
+  /**
+   * Configuration object for the <code>eventually</code> construct.
+   *
+   * <p>
+   * The default values for the parameters are:
+   * </p>
+   *
+   * <table style="border-collapse: collapse; border: 1px solid black">
+   * <tr>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+   * maxAttempts
+   * </td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+   * 100
+   * </td>
+   * </tr>
+   * <tr>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+   * interval
+   * </td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+   * 10
+   * </td>
+   * </tr>
+   * </table>
+   *
+   * @param maxAttempts the maximum number of unsuccessful attempts before giving up and throwing
+   *   <code>TestFailedException</code>.
+   * @param interval the number of milliseconds to sleep between each attempt
+   * @throws IllegalArgumentException if the specified <code>maxAttempts</code> value is less than or equal to zero,
+   *   the specified <code>interval</code> value is less than zero.
+   *
+   * @author Bill Venners
+   * @author Chua Chee Seng
+   */
+  case class EventuallyConfig(maxAttempts: Int = 100, interval: Int = 10) {
+    require(maxAttempts > 0, "maxAttempts had value " + maxAttempts + ", but must be greater than zero")
+    require(interval >= 0, "interval had value " + interval + ", but must be greater than or equal to zero")
+  }
 
+  /**
+   * Abstract class defining a family of configuration parameters for the <code>eventually</code> construct.
+   * 
+   * <p>
+   * The subclasses of this abstract class are used to pass configuration information to
+   * the <code>eventually</code> methods of trait <code>Eventually</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   * @author Chua Chee Seng
+   */
+  sealed abstract class EventuallyConfigParam
+
+  /**
+   * An <code>EventuallyConfigParam</code> that specifies the maximum number of times to invoke the
+   * by-name parameter passed to <code>eventually</code> with an unsucessful result.
+   *
+   * @param value the maximum number of unsuccessful attempts before giving up and throwing
+   *   <code>TestFailedException</code>.
+   * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+   *
+   * @author Bill Venners
+   */
+  case class MaxAttempts(value: Int) extends EventuallyConfigParam {
+    require(value > 0, "The passed value, " + value + ", was not greater than zero")
+  }
+
+  /**
+   * An <code>EventuallyConfigParam</code> that specifies the number of milliseconds to sleep after
+   * each unsuccessful invocation of the by-name parameter passed to <code>eventually</code>.
+   *
+   * @param value the number of milliseconds to sleep between each attempt
+   * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+   *
+   * @author Bill Venners
+   */
+  case class Interval(value: Int) extends EventuallyConfigParam {
+    require(value >= 0, "The passed value, " + value + ", was not greater than or equal to zero")
+  }
+
+  /**
+   * Implicit <code>EventuallyConfig</code> value providing default configuration values.
+   */
   implicit val eventuallyConfig = EventuallyConfig()
 
-  def maxAttempts(value: Int)(implicit config: EventuallyConfig) = new MaxAttemptsConfig(maxAttempts = value, interval = config.interval)
+  /**
+   * Returns a <code>MaxAttempts</code> configuration parameter containing the passed value, which
+   * specifies the maximum number of times to invoke the
+   * by-name parameter passed to <code>eventually</code> with an unsucessful result.
+   *
+   * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+   */
+  def maxAttempts(value: Int) = MaxAttempts(value)
 
-  def interval(value: Int)(implicit config: EventuallyConfig) = new IntervalConfig(maxAttempts = config.maxAttempts, interval = value)
-  
-  def eventually[T](maxAttempts: MaxAttemptsConfig, interval: IntervalConfig)(f: => T): T = eventually(f)(new EventuallyConfig(maxAttempts.maxAttempts, interval.interval))
-  def eventually[T](interval: IntervalConfig, maxAttempts: MaxAttemptsConfig)(f: => T): T = eventually(maxAttempts, interval)(f)
-  def eventually[T](maxAttempts: MaxAttemptsConfig)(f: => T): T = eventually(f)(new EventuallyConfig(maxAttempts.maxAttempts, eventuallyConfig.interval))
-  def eventually[T](interval: IntervalConfig)(f: => T): T = eventually(f)(new EventuallyConfig(eventuallyConfig.maxAttempts, interval.interval))
+  /**
+   * Returns an <code>Interval</code> configuration parameter containing the passed value, which
+   * specifies the number of milliseconds to sleep after
+   * each unsuccessful invocation of the by-name parameter passed to <code>eventually</code>.
+   *
+   * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+   */
+  def interval(value: Int) = Interval(value)
+
+  def eventually[T](maxAttempts: MaxAttempts, interval: Interval)(f: => T)(implicit config: EventuallyConfig): T =
+    eventually(f)(EventuallyConfig(maxAttempts.value, interval.value))
+
+  def eventually[T](interval: Interval, maxAttempts: MaxAttempts)(f: => T)(implicit config: EventuallyConfig): T =
+    eventually(f)(EventuallyConfig(maxAttempts.value, interval.value))
+
+  def eventually[T](maxAttempts: MaxAttempts)(f: => T)(implicit config: EventuallyConfig): T =
+    eventually(f)(EventuallyConfig(maxAttempts.value, config.interval))
+
+  def eventually[T](interval: Interval)(f: => T)(implicit config: EventuallyConfig): T =
+    eventually(f)(EventuallyConfig(config.maxAttempts, interval.value))
 
   def eventually[T](f: => T)(implicit config: EventuallyConfig): T = {
     val maxAttempts = config.maxAttempts
