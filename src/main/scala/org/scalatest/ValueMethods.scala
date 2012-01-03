@@ -46,7 +46,7 @@ trait ValueMethods extends ValueOnOption with ValueOnEither with ValueOnPartialF
  * value methods on options, eithers, and partial functions in the Scala interpreter:
  *
  * <pre class="stREPL">
- * $ scala -cp target/jar_contents/
+ * $ scala -cp scalatest-1.7.jar
  * Welcome to Scala version 2.9.1.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
  * Type in expressions to have them evaluated.
  * Type :help for more information.

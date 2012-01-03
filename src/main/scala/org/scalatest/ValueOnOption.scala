@@ -79,7 +79,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 trait ValueOnOption {
 
   /**
-   * Implicit conversion that adds <code>value</code> to <code>Option</code>.
+   * Implicit conversion that adds a <code>value</code> method to <code>Option</code>.
    *
    * @param opt the <code>Option</code> on which to add the <code>value</code> method
    */
@@ -93,6 +93,7 @@ trait ValueOnOption {
    * opt.value should be &gt; 9
    * </pre>
    *
+   * @param opt An option to convert to <code>Valuable</code>, which provides the <code>value</code> method.
    */
   class Valuable[T](opt: Option[T]) {
 
@@ -118,7 +119,7 @@ trait ValueOnOption {
  * <code>value</code> on option in the Scala interpreter:
  *
  * <pre class="stREPL">
- * $ scala -cp target/jar_contents/
+ * $ scala -cp scalatest-1.7.jar
  * Welcome to Scala version 2.9.1.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
  * Type in expressions to have them evaluated.
  * Type :help for more information.
@@ -149,3 +150,4 @@ trait ValueOnOption {
  *
  */
 object ValueOnOption extends ValueOnOption
+

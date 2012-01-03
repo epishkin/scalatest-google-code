@@ -79,10 +79,31 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * </pre>
  */
 trait ValueOnEither {
+
+  /**
+   * Implicit conversion that adds <code>leftValue</code> and <code>rightValue</code> methods to <code>Either</code>.
+   *
+   * @param either the <code>Either</code> on which to add the <code>leftValue</code> and <code>rightValue</code> methods
+   */
   implicit def convertEitherToValuable[L, R](either: Either[L, R]) = new Valuable(either)
 
+  /**
+   * Wrapper class that adds <code>leftValue</code> and <code>rightValue</code> methods to <code>Option</code>, allowing
+   * you to make statements like:
+   *
+   * <pre>
+   * either.rightValue should be &gt; 9
+   * </pre>
+   *
+   * @param either An <code>Either</code> to convert to <code>Valuable</code>, which provides the <code>leftValue</code> and
+   * <code>rightValue</code> methods.
+   */
   class Valuable[L, R](either: Either[L, R]) {
-    
+
+    /**
+     * Returns the <code>Left</code> value contained in the wrapped <code>Either</code>, if defined as a <code>Left</code>, else throws <code>TestFailedException</code> with
+     * a detail message indicating the <code>Either</code> was defined as a <code>Right</code>, not a <code>Left</code>.
+     */
     def leftValue: L = {
       try {
         either.left.get
@@ -93,6 +114,10 @@ trait ValueOnEither {
       }
     }
     
+    /**
+     * Returns the <code>Right</code> value contained in the wrapped <code>Either</code>, if defined as a <code>Right</code>, else throws <code>TestFailedException</code> with
+     * a detail message indicating the <code>Either</code> was defined as a <code>Left</code>, not a <code>Right</code>.
+     */
     def rightValue: R = {
       try {
         either.right.get
@@ -111,7 +136,7 @@ trait ValueOnEither {
  * <code>leftValue</code> and <code>rightValue</code> on <code>Either</code> in the Scala interpreter:
  *
  * <pre class="stREPL">
- * $ scala -cp target/jar_contents/
+ * $ scala -cp scalatest-1.7.jar
  * Welcome to Scala version 2.9.1.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
  * Type in expressions to have them evaluated.
  * Type :help for more information.
