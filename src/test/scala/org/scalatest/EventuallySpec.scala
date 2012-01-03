@@ -19,7 +19,7 @@ import org.scalatest.Eventually._
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.SharedHelpers.thisLineNumber
 
-class EventuallySpec extends Spec with ShouldMatchers with ValueOnOption {
+class EventuallySpec extends FunSpec with ShouldMatchers with ValueOnOption {
 
   describe("The eventually construct") {
 
