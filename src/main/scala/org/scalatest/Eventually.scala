@@ -22,10 +22,11 @@ import javax.xml.transform.TransformerFactoryConfigurationError
 import java.lang.annotation.AnnotationFormatError
 import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 import org.scalatest.Suite.anErrorThatShouldCauseAnAbort
+import scala.annotation.tailrec
 
 /**
  * Trait that provides the <code>eventually</code> construct, which periodically retries executing
- * a passed by-name parameter, until it either succeeds or the configured maximum number of attempts is  
+ * a passed by-name parameter, until it either succeeds or the configured maximum number of failed attempts is  
  * exhausted.
  */
 trait Eventually {
@@ -112,6 +113,11 @@ trait Eventually {
 
   /**
    * Implicit <code>EventuallyConfig</code> value providing default configuration values.
+   *
+   * <p>
+   * To change the default configuration, override or hide this <code>val</code> with another implicit
+   * <code>EventuallyConfig</code> containing your desired default configuration values.
+   * </p>
    */
   implicit val eventuallyConfig = EventuallyConfig()
 
@@ -133,35 +139,70 @@ trait Eventually {
    */
   def interval(value: Int) = Interval(value)
 
-  def eventually[T](maxAttempts: MaxAttempts, interval: Interval)(f: => T)(implicit config: EventuallyConfig): T =
-    eventually(f)(EventuallyConfig(maxAttempts.value, interval.value))
+  def eventually[T](maxAttempts: MaxAttempts, interval: Interval)(fun: => T)(implicit config: EventuallyConfig): T =
+    eventually(fun)(EventuallyConfig(maxAttempts.value, interval.value))
 
-  def eventually[T](interval: Interval, maxAttempts: MaxAttempts)(f: => T)(implicit config: EventuallyConfig): T =
-    eventually(f)(EventuallyConfig(maxAttempts.value, interval.value))
+  def eventually[T](interval: Interval, maxAttempts: MaxAttempts)(fun: => T)(implicit config: EventuallyConfig): T =
+    eventually(fun)(EventuallyConfig(maxAttempts.value, interval.value))
 
-  def eventually[T](maxAttempts: MaxAttempts)(f: => T)(implicit config: EventuallyConfig): T =
-    eventually(f)(EventuallyConfig(maxAttempts.value, config.interval))
+  def eventually[T](maxAttempts: MaxAttempts)(fun: => T)(implicit config: EventuallyConfig): T =
+    eventually(fun)(EventuallyConfig(maxAttempts.value, config.interval))
 
-  def eventually[T](interval: Interval)(f: => T)(implicit config: EventuallyConfig): T =
-    eventually(f)(EventuallyConfig(config.maxAttempts, interval.value))
+  def eventually[T](interval: Interval)(fun: => T)(implicit config: EventuallyConfig): T =
+    eventually(fun)(EventuallyConfig(config.maxAttempts, interval.value))
 
-  def eventually[T](f: => T)(implicit config: EventuallyConfig): T = {
-    val maxAttempts = config.maxAttempts
-    val interval = config.interval
-    var count = 0
-    var cause: Throwable = null
-    while (count < maxAttempts) {
+  /**
+   * Invokes the passed by-name parameter repeatedly until it either succeeds, or fails a configured maximum
+   * number of times, sleeping a configured interval between attempts.
+   *
+   * <p>
+   * The by-name parameter "succeeds" if it returns a result. It "fails" if it throws any exception that
+   * would normally cause a test to fail. (These are any exceptions except those listed in the
+   * <a href="Suite.html#errorHandling">Treatment of <code>java.lang.Error</code>s</a> section of the
+   * documentation of trait <code>Suite</code>.)
+   * </p>
+   *
+   * <p>
+   * The maximum attempts to make before giving up is configured by the <code>maxAttempts</code> field of
+   * the <code>EventuallyConfig</code> passed implicitly as the last parameter.
+   * The interval to sleep between attempts is configured by the <code>interval</code> field of
+   * the <code>EventuallyConfig</code> passed implicitly as the last parameter.
+   * </p>
+   *
+   * @param fun the by-name parameter to repeatedly invoke
+   * @param config the <code>EventuallyConfig</code> object containing the <code>maxAttempts</code> and
+   *          <code>interval</code> parameters
+   * @return the result of invoking the <code>fun</code> by-name parameter, the first time it succeeds
+   */
+  def eventually[T](fun: => T)(implicit config: EventuallyConfig): T = {
+
+    def makeAValiantAttempt(): Either[Throwable, T] = {
       try {
-        return f
+        Right(fun)
       }
       catch {
-        case e: Throwable if !anErrorThatShouldCauseAnAbort(e) =>
-          count += 1
-          cause = e
+        case e: Throwable if !anErrorThatShouldCauseAnAbort(e) => Left(e)
       }
-      Thread.sleep(interval)
     }
-    throw new TestFailedException(sde => Some(Resources("eventuallyNotReturn")), Some(cause), getStackDepthFun("Eventually.scala", "eventually"))
+
+    @tailrec
+    def tryTryAgain(attempt: Int): T = {
+      makeAValiantAttempt() match {
+        case Right(result) => result
+        case Left(e) => 
+          if (attempt < config.maxAttempts)
+            Thread.sleep(config.interval)
+          else
+            throw new TestFailedException(
+              sde => Some(Resources("eventuallyNotReturn")),
+              Some(e),
+              getStackDepthFun("Eventually.scala", "eventually")
+            )
+
+          tryTryAgain(attempt + 1)
+      }
+    }
+    tryTryAgain(1)
   }
 }
 
