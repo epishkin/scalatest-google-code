@@ -67,6 +67,100 @@ import scala.annotation.tailrec
  * <code>The code passed to eventually never returned normally. Attempted 100 times, sleeping 10 milliseconds between each attempt.</code>
  * </p>
  *
+ * <a name="eventuallyConfig"></a><h2>Configuration of <code>eventually</code></h2>
+ *
+ * <p>
+ * The <code>eventually</code> methods of this trait can be flexibly configured.
+ * The two configuration parameters for <code>eventually</code> along with their 
+ * default values and meanings are described in the following table:
+ * </p>
+ *
+ * <table style="border-collapse: collapse; border: 1px solid black">
+ * <tr>
+ * <th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black">
+ * <strong>Configuration Parameter</strong>
+ * </th>
+ * <th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black">
+ * <strong>Default Value</strong>
+ * </th>
+ * <th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black">
+ * <strong>Meaning</strong>
+ * </th>
+ * </tr>
+ * <tr>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * maxAttempts
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * 100
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: left">
+ * the maximum number of unsuccessful attempts before giving up and throwing <code>TestFailedException</code>
+ * </td>
+ * </tr>
+ * <tr>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * interval
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * 10
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: left">
+ * the number of milliseconds to sleep between each attempt
+ * </td>
+ * </tr>
+ * </table>
+ *
+* <p>
+ * The <code>eventually</code> methods of trait <code>Eventually</code> each take an <code>EventuallyConfig</code>
+ * object as an implicit parameter. This object provides values for the two configuration parameters. Trait
+ * <code>Eventually</code> provides an implicit <code>val</code> named <code>eventuallyConfig</code> with each
+ * configuration parameter set to its default value. 
+ * If you want to set one or more configuration parameters to a different value for all invocations of
+ * <code>eventually</code> in a suite you can override this
+ * val (or hide it, for example, if you are importing the members of the <code>Eventually</code> companion object rather
+ * than mixing in the trait). For example, if
+ * you always want the default <code>maxAttempts</code> to be 200 and the default <code>interval</code> to be 5 milliseconds, you
+ * can override <code>eventuallyConfig</code>, like this:
+ *
+ * <pre class="stHighlight">
+ * implicit override val eventuallyConfig =
+ *   EventuallyConfig(maxAttempts = 200, interval = 5)
+ * </pre>
+ *
+ * <p>
+ * Or, hide it by declaring a variable of the same name in whatever scope you want the changed values to be in effect:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * implicit val eventuallyConfig =
+ *   EventuallyConfig(maxAttempts = 200, interval = 5)
+ * </pre>
+ *
+ * <p>
+ * In addition to taking a <code>EventuallyConfig</code> object as an implicit parameter, the <code>eventually</code> methods of trait
+ * <code>Eventually</code> include overloaded forms that take one or two <code>EventuallyConfigParam</code>
+ * objects that you can use to override the values provided by the implicit <code>EventuallyConfig</code> for a single <code>eventually</code>
+ * invocation. For example, if you want to set <code>maxAttempts</code> to 500 for just one particular <code>eventually</code> invocation,
+ * you can do so like this:
+ * </p>
+ *
+ * <pre class="stHighlight">
+ * eventually (maxAttempts(500)) { it.next should be (110) }
+ * </pre>
+ *
+ * <p>
+ * This invocation of <code>eventually</code> will use 500 for <code>maxAttempts</code> and whatever value is specified by the 
+ * implicitly passed <code>EventuallyConfig</code> object for the <code>interval</code> configuration parameter.
+ * If you want to set both configuration parameters in this way, just list them separated by commas:
+ * </p>
+ * 
+ * <pre class="stHighlight">
+ * eventually (maxAttempts(500), interval(5)) { it.next should be (110) }
+ * </pre>
+ *
+ * @author Bill Venners
+ * @author Chua Chee Seng
  */
 trait Eventually {
 
@@ -105,7 +199,7 @@ trait Eventually {
    * @author Bill Venners
    * @author Chua Chee Seng
    */
-  case class EventuallyConfig(maxAttempts: Int = 100, interval: Int = 10) {
+  final case class EventuallyConfig(maxAttempts: Int = 100, interval: Int = 10) {
     require(maxAttempts > 0, "maxAttempts had value " + maxAttempts + ", but must be greater than zero")
     require(interval >= 0, "interval had value " + interval + ", but must be greater than or equal to zero")
   }
@@ -333,7 +427,7 @@ trait Eventually {
             Thread.sleep(interval)
           else
             throw new TestFailedException(
-              sde => Some(Resources("didNotEventuallySucceeded", maxAttempts.toString, interval.toString)),
+              sde => Some(Resources("didNotEventuallySucceed", maxAttempts.toString, interval.toString)),
               Some(e),
               getStackDepthFun("Eventually.scala", "eventually")
             )
@@ -366,7 +460,7 @@ trait Eventually {
  * import Eventually._
  *
  * scala&gt; val xs = 1 to 125
- * xs: scala.collection.immutable.Range.Inclusive = Range(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125)
+ * xs: scala.collection.immutable.Range.Inclusive = Range(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, ..., 125)
  * 
  * scala&gt; val it = xs.iterator
  * it: Iterator[Int] = non-empty iterator
@@ -374,7 +468,8 @@ trait Eventually {
  * scala&gt; eventually { it.next should be (3) }
  *
  * scala&gt; eventually { it.next should be (110) }
- * org.scalatest.TestFailedException: The code passed to eventually never returned normally. Attempted 100 times, sleeping 10 milliseconds between each attempt.
+ * org.scalatest.TestFailedException: The code passed to eventually never returned normally.
+ *     Attempted 100 times, sleeping 10 milliseconds between each attempt.
  *   at org.scalatest.Eventually$class.tryTryAgain$1(Eventually.scala:313)
  *   at org.scalatest.Eventually$class.eventually(Eventually.scala:322)
  *   ...
