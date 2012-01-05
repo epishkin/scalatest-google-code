@@ -11,14 +11,14 @@ class ValueMethodsSpec extends FunSpec with ShouldMatchers {
       opt.value should be > 8
     }
     
-    it("should be able to use syntax 'either.leftValue should be > 8'") {
+    it("should be able to use syntax 'either.left.value should be > 8'") {
       val either: Either[Int, Int] = Left(10)
-      either.leftValue should be > 8
+      either.left.value should be > 8
     }
     
-    it("should be able to use syntax 'either.rightValue should be <= 99'") {
+    it("should be able to use syntax 'either.right.value should be <= 99'") {
       val either: Either[Int, Int] = Right(10)
-      either.rightValue should be <= 99
+      either.right.value should be <= 99
     }
     
     it("""should be able to use syntax 'pf.valueAt("age") should be >= 21'""") {

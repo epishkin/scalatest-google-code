@@ -81,50 +81,71 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 trait ValueOnEither {
 
   /**
-   * Implicit conversion that adds <code>leftValue</code> and <code>rightValue</code> methods to <code>Either</code>.
+   * Implicit conversion that adds a <code>value</code> method to <code>LeftProjection</code>.
    *
-   * @param either the <code>Either</code> on which to add the <code>leftValue</code> and <code>rightValue</code> methods
+   * @param either the <code>LeftProjection</code> on which to add the <code>value</code> method
    */
-  implicit def convertEitherToValuable[L, R](either: Either[L, R]) = new Valuable(either)
+  implicit def convertLeftProjectionToValuable[L, R](leftProj: Either.LeftProjection[L, R]) = new LeftValuable(leftProj)
 
   /**
-   * Wrapper class that adds <code>leftValue</code> and <code>rightValue</code> methods to <code>Option</code>, allowing
+   * Implicit conversion that adds a <code>value</code> method to <code>RightProjection</code>.
+   *
+   * @param either the <code>RightProjection</code> on which to add the <code>value</code> method
+   */
+  implicit def convertRightProjectionToValuable[L, R](rightProj: Either.RightProjection[L, R]) = new RightValuable(rightProj)
+
+  /**
+   * Wrapper class that adds a <code>value</code> method to <code>LeftProjection</code>, allowing
    * you to make statements like:
    *
    * <pre>
-   * either.rightValue should be &gt; 9
+   * either.left.value should be &gt; 9
    * </pre>
    *
-   * @param either An <code>Either</code> to convert to <code>Valuable</code>, which provides the <code>leftValue</code> and
-   * <code>rightValue</code> methods.
+   * @param leftProj A <code>LeftProjection</code> to convert to <code>LeftValuable</code>, which provides the
+   *   <code>value</code> method.
    */
-  class Valuable[L, R](either: Either[L, R]) {
+  class LeftValuable[L, R](leftProj: Either.LeftProjection[L, R]) {
 
     /**
-     * Returns the <code>Left</code> value contained in the wrapped <code>Either</code>, if defined as a <code>Left</code>, else throws <code>TestFailedException</code> with
+     * Returns the <code>Left</code> value contained in the wrapped <code>LeftProjection</code>, if defined as a <code>Left</code>, else throws <code>TestFailedException</code> with
      * a detail message indicating the <code>Either</code> was defined as a <code>Right</code>, not a <code>Left</code>.
      */
-    def leftValue: L = {
+    def value: L = {
       try {
-        either.left.get
+        leftProj.get
       }
       catch {
         case cause: NoSuchElementException => 
-          throw new TestFailedException(sde => Some(Resources("eitherLeftValueNotDefined")), Some(cause), getStackDepthFun("ValueOnEither.scala", "leftValue"))
+          throw new TestFailedException(sde => Some(Resources("eitherLeftValueNotDefined")), Some(cause), getStackDepthFun("ValueOnEither.scala", "value"))
       }
     }
-    
+  }
+
+  /**
+   * Wrapper class that adds a <code>value</code> method to <code>RightProjection</code>, allowing
+   * you to make statements like:
+   *
+   * <pre>
+   * either.right.value should be &gt; 9
+   * </pre>
+   *
+   * @param rightProj A <code>RightProjection</code> to convert to <code>RightValuable</code>, which provides the
+   *   <code>value</code> method.
+   */
+  class RightValuable[L, R](rightProj: Either.RightProjection[L, R]) {
+
     /**
-     * Returns the <code>Right</code> value contained in the wrapped <code>Either</code>, if defined as a <code>Right</code>, else throws <code>TestFailedException</code> with
-     * a detail message indicating the <code>Either</code> was defined as a <code>Left</code>, not a <code>Right</code>.
+     * Returns the <code>Right</code> value contained in the wrapped <code>RightProjection</code>, if defined as a <code>Right</code>, else throws <code>TestFailedException</code> with
+     * a detail message indicating the <code>Either</code> was defined as a <code>Right</code>, not a <code>Left</code>.
      */
-    def rightValue: R = {
+    def value: R = {
       try {
-        either.right.get
+        rightProj.get
       }
       catch {
         case cause: NoSuchElementException => 
-          throw new TestFailedException(sde => Some(Resources("eitherRightValueNotDefined")), Some(cause), getStackDepthFun("ValueOnEither.scala", "rightValue"))
+          throw new TestFailedException(sde => Some(Resources("eitherRightValueNotDefined")), Some(cause), getStackDepthFun("ValueOnEither.scala", "value"))
       }
     }
   }
@@ -153,10 +174,10 @@ trait ValueOnEither {
  * scala&gt; val e: Either[String, Int] = Left("Muchas problemas")
  * e: Either[String,Int] = Left(Muchas problemas)
  * 
- * scala&gt; e.leftValue should be ("Muchas problemas")
+ * scala&gt; e.left.value should be ("Muchas problemas")
  * 
- * scala&gt; e.rightValue should be &lt; 9
- * org.scalatest.TestFailedException: The Either on which rightValue was invoked was not defined.
+ * scala&gt; e.right.value should be &lt; 9
+ * org.scalatest.TestFailedException: The Either on which right.value was invoked was not defined.
  *   at org.scalatest.ValueOnEither$Valuable.rightValue(ValueOnEither.scala:102)
  *   at .&lt;init&gt;(&lt;console&gt;:18)
  *   ...
