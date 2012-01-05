@@ -876,7 +876,7 @@ object Runner {
             val directory = new File(directoryName)
             if (!directory.isDirectory) {
               try {
-                if (!directory.mkdirs)
+                if (!directory.mkdirs())
                   throw new IllegalArgumentException("Unable to create directory: " + directory.getAbsolutePath)
               }
               catch {
