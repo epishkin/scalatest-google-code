@@ -67,7 +67,7 @@ class EventuallySpec extends FunSpec with ShouldMatchers with ValueOnOption {
         eventually { 1 + 1 should equal (3) }
       } should produce [TestFailedException]
 
-      caught.message.value should be (Resources("eventuallyNotReturn"))
+      caught.message.value should be (Resources("didNotEventuallySucceeded", "100", "10"))
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 4)
       caught.failedCodeFileName.value should be ("EventuallySpec.scala")
     }

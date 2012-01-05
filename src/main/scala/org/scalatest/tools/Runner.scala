@@ -872,11 +872,18 @@ object Runner {
             throw new IllegalArgumentException("-f needs to be followed by a file name arg: ")
         case "-u" =>
           if (it.hasNext) {
-            val directory = it.next
-            if (!(new File(directory).isDirectory))
-              throw new IllegalArgumentException(
-                "arg for -u option is not a directory [" + directory + "]")
-            else {}
+            val directoryName = it.next
+            val directory = new File(directoryName)
+            if (!directory.isDirectory) {
+              try {
+                if (!directory.mkdirs)
+                  throw new IllegalArgumentException("Unable to create directory: " + directory.getAbsolutePath)
+              }
+              catch {
+                case se: SecurityException => 
+                  throw new IllegalArgumentException("Unable to create directory: " + directory.getAbsolutePath)
+              }
+            }
           }
           else {
             throw new IllegalArgumentException("-u needs to be followed by a directory name arg: ")
