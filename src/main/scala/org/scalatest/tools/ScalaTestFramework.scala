@@ -128,7 +128,7 @@ write a sbt plugin to deploy the task.
         val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
         
         // If no reporters specified, just give them a default stdout reporter
-        val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) "-o" :: Nil else repoArgsList)
+        val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) checkSbtLogNoFormat("-o") :: Nil else repoArgsList)
 
         // For 1.6.3, this will never return a Some(grs). Could just as well throw an exception if Some(grs).
         val reporterConfigs: ReporterConfigurations =
@@ -226,6 +226,13 @@ write a sbt plugin to deploy the task.
         }
       }
     }
+    
+    private def checkSbtLogNoFormat(s: String) = {
+      if (System.getProperty("sbt.log.noformat") == "true" && !s.contains("W"))
+        s + "W"
+      else
+        s  
+    }
 
     private[scalatest] def parsePropsAndTags(args: Array[String]) = {
 
@@ -255,7 +262,7 @@ write a sbt plugin to deploy the task.
             excludes += it.next
         }
         else if (s.startsWith("-o")) {
-          repoArgs += s
+          repoArgs += checkSbtLogNoFormat(s)
         }
         else if (s.startsWith("-u")) {
           repoArgs += s
