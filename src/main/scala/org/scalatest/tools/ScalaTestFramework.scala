@@ -222,6 +222,7 @@ write a sbt plugin to deploy the task.
           case t: TestFailed => fireEvent(t.testName, Result.Failure, t.throwable)
           case t: TestSucceeded => fireEvent(t.testName, Result.Success, None)
           case t: TestIgnored => fireEvent(t.testName, Result.Skipped, None)
+          case t: SuiteAborted => fireEvent("!!! Suite Aborted !!!", Result.Failure, t.throwable)
           case _ => 
         }
       }
