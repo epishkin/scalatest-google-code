@@ -147,7 +147,7 @@ write a sbt plugin to deploy the task.
            }
           }
         
-        val report: Reporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
+        val report: SbtReporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
 
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
@@ -190,6 +190,8 @@ write a sbt plugin to deploy the task.
             report(SuiteAborted(tracker.nextOrdinal(), rawString, suite.suiteName, Some(testClass.getName), Some(e), Some(duration), formatter, None))
           }
         }
+        
+        report.waitUntilFinish()
       }
       else throw new IllegalArgumentException("Class is not an accessible org.scalatest.Suite: " + testClassName)
     }
@@ -224,6 +226,20 @@ write a sbt plugin to deploy the task.
           case t: TestIgnored => fireEvent(t.testName, Result.Skipped, None)
           case t: SuiteAborted => fireEvent("!!! Suite Aborted !!!", Result.Failure, t.throwable)
           case _ => 
+        }
+      }
+      
+      def waitUntilFinish() {
+        report match {
+          case Some(report) => 
+            report match {
+              case dispatchReporter: DispatchReporter => dispatchReporter.dispatchDisposeAndWaitUntilDone()
+              case catchReporter: CatchReporter => catchReporter.catchDispose()
+              case resourcefulReporter: ResourcefulReporter => resourcefulReporter.dispose()
+              case xmlReporter: XmlReporter => xmlReporter.waitUntilFileWriteFinish()
+              case _ =>
+            }
+          case None =>
         }
       }
     }

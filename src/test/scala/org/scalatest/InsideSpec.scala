@@ -19,7 +19,7 @@ import org.scalatest.Inside._
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.SharedHelpers.thisLineNumber
 
-class InsideSpec extends Spec with ShouldMatchers with ValueOnOption {
+class InsideSpec extends Spec with ShouldMatchers with OptionValues {
 
   case class Address(street: String, city: String, state: String, zip: String)
   case class Name(first: String, middle: String, last: String)

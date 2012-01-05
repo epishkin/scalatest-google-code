@@ -876,7 +876,8 @@ object Runner {
             val directory = new File(directoryName)
             if (!directory.isDirectory) {
               try {
-                if (!directory.mkdirs())
+                directory.mkdirs()
+                if (!directory.exists)
                   throw new IllegalArgumentException("Unable to create directory: " + directory.getAbsolutePath)
               }
               catch {
@@ -884,6 +885,8 @@ object Runner {
                   throw new IllegalArgumentException("Unable to create directory: " + directory.getAbsolutePath)
               }
             }
+            else if (directory.isFile)
+              throw new IllegalArgumentException(directory.getAbsolutePath + " is a file, directory expected.")
           }
           else {
             throw new IllegalArgumentException("-u needs to be followed by a directory name arg: ")
