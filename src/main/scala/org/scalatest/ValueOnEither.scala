@@ -18,7 +18,7 @@ package org.scalatest
 import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
 
 /**
- * Trait that provides an implicit conversion that adds <code>leftValue</code> and <code>rightValue</code> methods
+ * Trait that provides an implicit conversion that adds <code>left.value</code> and <code>right.value</code> methods
  * to <code>Either</code>, which will return the selected value of the <code>Either</code> if defined,
  * or throw <code>TestFailedException</code> if not.
  *
@@ -28,8 +28,8 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * </p>
  *
  * <pre>
- * either1.rightValue should be &gt; 9
- * either2.leftValue should be ("Muchas problemas")
+ * either1.right.value should be &gt; 9
+ * either2.left.value should be ("Muchas problemas")
  * </pre>
  *
  * <p>
@@ -37,8 +37,8 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * </p>
  *
  * <pre>
- * assert(either1.rightValue &gt; 9)
- * assert(either2.leftValue === "Muchas problemas")
+ * assert(either1.right.value &gt; 9)
+ * assert(either2.left.value === "Muchas problemas")
  * </pre>
  *
  * <p>
@@ -75,7 +75,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * <pre>
  * val either: Either[String, Int] = Left("Muchas problemas")
  *
- * either.rightValue should be &gt; 9 // either.rightValue throws TestFailedException
+ * either.right.value should be &gt; 9 // either.right.value throws TestFailedException
  * </pre>
  */
 trait ValueOnEither {
@@ -154,7 +154,7 @@ trait ValueOnEither {
 /**
  * Companion object that facilitates the importing of <code>ValueEither</code> members as 
  * an alternative to mixing it in. One use case is to import <code>ValueOnEither</code>'s members so you can use
- * <code>leftValue</code> and <code>rightValue</code> on <code>Either</code> in the Scala interpreter:
+ * <code>left.value</code> and <code>right.value</code> on <code>Either</code> in the Scala interpreter:
  *
  * <pre class="stREPL">
  * $ scala -cp scalatest-1.7.jar
@@ -177,8 +177,8 @@ trait ValueOnEither {
  * scala&gt; e.left.value should be ("Muchas problemas")
  * 
  * scala&gt; e.right.value should be &lt; 9
- * org.scalatest.TestFailedException: The Either on which right.value was invoked was not defined.
- *   at org.scalatest.ValueOnEither$Valuable.rightValue(ValueOnEither.scala:102)
+ * org.scalatest.TestFailedException: The Either on which rightValue was invoked was not defined.
+ *   at org.scalatest.ValueOnEither$RightValuable.value(ValueOnEither.scala:148)
  *   at .&lt;init&gt;(&lt;console&gt;:18)
  *   ...
  * </pre>
