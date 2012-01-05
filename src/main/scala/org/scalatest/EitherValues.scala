@@ -57,7 +57,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * The <code>NoSuchElementException</code> would cause the test to fail, but without providing a <a href="StackDepth.html">stack depth</a> pointing
  * to the failing line of test code. This stack depth, provided by <a href="TestFailedException.html"><code>TestFailedException</code></a> (and a
  * few other ScalaTest exceptions), makes it quicker for
- * users to navigate to the cause of the failure. Without <code>ValueOnEither</code>, to get
+ * users to navigate to the cause of the failure. Without <code>EitherValues</code>, to get
  * a stack depth exception you would need to make two statements, like this:
  * </p>
  *
@@ -69,7 +69,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * </pre>
  *
  * <p>
- * The <code>ValueOnEither</code> trait allows you to state that more concisely:
+ * The <code>EitherValues</code> trait allows you to state that more concisely:
  * </p>
  *
  * <pre>
@@ -78,7 +78,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * either.right.value should be &gt; 9 // either.right.value throws TestFailedException
  * </pre>
  */
-trait ValueOnEither {
+trait EitherValues {
 
   /**
    * Implicit conversion that adds a <code>value</code> method to <code>LeftProjection</code>.
@@ -117,7 +117,7 @@ trait ValueOnEither {
       }
       catch {
         case cause: NoSuchElementException => 
-          throw new TestFailedException(sde => Some(Resources("eitherLeftValueNotDefined")), Some(cause), getStackDepthFun("ValueOnEither.scala", "value"))
+          throw new TestFailedException(sde => Some(Resources("eitherLeftValueNotDefined")), Some(cause), getStackDepthFun("EitherValues.scala", "value"))
       }
     }
   }
@@ -145,7 +145,7 @@ trait ValueOnEither {
       }
       catch {
         case cause: NoSuchElementException => 
-          throw new TestFailedException(sde => Some(Resources("eitherRightValueNotDefined")), Some(cause), getStackDepthFun("ValueOnEither.scala", "value"))
+          throw new TestFailedException(sde => Some(Resources("eitherRightValueNotDefined")), Some(cause), getStackDepthFun("EitherValues.scala", "value"))
       }
     }
   }
@@ -153,7 +153,7 @@ trait ValueOnEither {
 
 /**
  * Companion object that facilitates the importing of <code>ValueEither</code> members as 
- * an alternative to mixing it in. One use case is to import <code>ValueOnEither</code>'s members so you can use
+ * an alternative to mixing it in. One use case is to import <code>EitherValues</code>'s members so you can use
  * <code>left.value</code> and <code>right.value</code> on <code>Either</code> in the Scala interpreter:
  *
  * <pre class="stREPL">
@@ -168,8 +168,8 @@ trait ValueOnEither {
  * scala&gt; import matchers.ShouldMatchers._
  * import matchers.ShouldMatchers._
  * 
- * scala&gt; import ValueOnEither._
- * import ValueOnEither._
+ * scala&gt; import EitherValues._
+ * import EitherValues._
  * 
  * scala&gt; val e: Either[String, Int] = Left("Muchas problemas")
  * e: Either[String,Int] = Left(Muchas problemas)
@@ -178,9 +178,9 @@ trait ValueOnEither {
  * 
  * scala&gt; e.right.value should be &lt; 9
  * org.scalatest.TestFailedException: The Either on which rightValue was invoked was not defined.
- *   at org.scalatest.ValueOnEither$RightValuable.value(ValueOnEither.scala:148)
+ *   at org.scalatest.EitherValues$RightValuable.value(EitherValues.scala:148)
  *   at .&lt;init&gt;(&lt;console&gt;:18)
  *   ...
  * </pre>
  */
-object ValueOnEither extends ValueOnEither
+object EitherValues extends EitherValues

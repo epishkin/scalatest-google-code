@@ -55,7 +55,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * The <code>NoSuchElementException</code> would cause the test to fail, but without providing a <a href="StackDepth.html">stack depth</a> pointing
  * to the failing line of test code. This stack depth, provided by <a href="TestFailedException.html"><code>TestFailedException</code></a> (and a
  * few other ScalaTest exceptions), makes it quicker for
- * users to navigate to the cause of the failure. Without <code>ValueOnOption</code>, to get
+ * users to navigate to the cause of the failure. Without <code>OptionValues</code>, to get
  * a stack depth exception you would need to make two statements, like this:
  * </p>
  *
@@ -67,7 +67,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * </pre>
  *
  * <p>
- * The <code>ValueOnOption</code> trait allows you to state that more concisely:
+ * The <code>OptionValues</code> trait allows you to state that more concisely:
  * </p>
  *
  * <pre>
@@ -76,7 +76,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * opt.value should be &gt; 9 // opt.value throws TestFailedException
  * </pre>
  */
-trait ValueOnOption {
+trait OptionValues {
 
   /**
    * Implicit conversion that adds a <code>value</code> method to <code>Option</code>.
@@ -107,15 +107,15 @@ trait ValueOnOption {
       }
       catch {
         case cause: NoSuchElementException => 
-          throw new TestFailedException(sde => Some(Resources("optionValueNotDefined")), Some(cause), getStackDepthFun("ValueOnOption.scala", "value"))
+          throw new TestFailedException(sde => Some(Resources("optionValueNotDefined")), Some(cause), getStackDepthFun("OptionValues.scala", "value"))
       }
     }
   }
 }
 
 /**
- * Companion object that facilitates the importing of <code>ValueOnOption</code> members as 
- * an alternative to mixing it in. One use case is to import <code>ValueOnOption</code>'s members so you can use
+ * Companion object that facilitates the importing of <code>OptionValues</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>OptionValues</code>'s members so you can use
  * <code>value</code> on option in the Scala interpreter:
  *
  * <pre class="stREPL">
@@ -130,8 +130,8 @@ trait ValueOnOption {
  * scala&gt; import matchers.ShouldMatchers._
  * import matchers.ShouldMatchers._
  *
- * scala&gt; import ValueOnOption._
- * import ValueOnOption._
+ * scala&gt; import OptionValues._
+ * import OptionValues._
  *
  * scala&gt; val opt1: Option[Int] = Some(1)
  * opt1: Option[Int] = Some(1)
@@ -143,11 +143,11 @@ trait ValueOnOption {
  * 
  * scala&gt; opt2.value should be &lt; 10
  * org.scalatest.TestFailedException: The Option on which value was invoked was not defined.
- *   at org.scalatest.ValueOnOption$Valuable.value(ValueOnOption.scala:68)
+ *   at org.scalatest.OptionValues$Valuable.value(OptionValues.scala:68)
  *   at .&lt;init&gt;(&lt;console&gt;:18)
  *   ...
  * </pre>
  *
  */
-object ValueOnOption extends ValueOnOption
+object OptionValues extends OptionValues
 

@@ -15,11 +15,11 @@
  */
 package org.scalatest
 
-import org.scalatest.ValueOnOption._
+import org.scalatest.OptionValues._
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.SharedHelpers.thisLineNumber
 
-class ValueOnOptionSpec extends FunSpec with ShouldMatchers {
+class OptionValuesSpec extends FunSpec with ShouldMatchers {
 
   describe("value on Option") {
 
@@ -38,7 +38,7 @@ class ValueOnOptionSpec extends FunSpec with ShouldMatchers {
           o.value should startWith ("hi")
         } should produce [TestFailedException]
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 2)
-      caught.failedCodeFileName.value should be ("ValueOnOptionSpec.scala")
+      caught.failedCodeFileName.value should be ("OptionValuesSpec.scala")
       caught.message.value should be (Resources("optionValueNotDefined"))
     }
   }

@@ -1,11 +1,11 @@
 package org.scalatest
 
-import org.scalatest.ValueOnEither._
-import org.scalatest.ValueOnOption._
+import org.scalatest.EitherValues._
+import org.scalatest.OptionValues._
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.SharedHelpers.thisLineNumber
 
-class ValueOnEitherSpec extends FunSpec with ShouldMatchers {
+class EitherValuesSpec extends FunSpec with ShouldMatchers {
   describe("values on Either") {
 
     it("should return the left value inside an either if left.value is defined") {
@@ -21,7 +21,7 @@ class ValueOnEitherSpec extends FunSpec with ShouldMatchers {
           e.left.value should startWith ("hi")
         } should produce [TestFailedException]
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 2)
-      caught.failedCodeFileName.value should be ("ValueOnEitherSpec.scala")
+      caught.failedCodeFileName.value should be ("EitherValuesSpec.scala")
       caught.message.value should be (Resources("eitherLeftValueNotDefined"))
     }
     
@@ -38,7 +38,7 @@ class ValueOnEitherSpec extends FunSpec with ShouldMatchers {
           e.right.value should startWith ("hi")
         } should produce [TestFailedException]
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 2)
-      caught.failedCodeFileName.value should be ("ValueOnEitherSpec.scala")
+      caught.failedCodeFileName.value should be ("EitherValuesSpec.scala")
       caught.message.value should be (Resources("eitherRightValueNotDefined"))
     }
   } 

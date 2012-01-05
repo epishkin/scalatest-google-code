@@ -56,7 +56,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * The <code>NoSuchElementException</code> thrown in this situation would cause the test to fail, but without providing a stack depth pointing
  * to the failing line of test code. This stack depth, provided by <a href="TestFailedException.html"><code>TestFailedException</code></a> (and a
  * few other ScalaTest exceptions), makes it quicker for
- * users to navigate to the cause of the failure. Without <code>ValueOnPartialFunction</code>, to get
+ * users to navigate to the cause of the failure. Without <code>PartialFunctionValues</code>, to get
  * a stack depth exception you would need to make two statements, like this:
  * </p>
  *
@@ -68,7 +68,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * </pre>
  *
  * <p>
- * The <code>ValueOnPartialFunction</code> trait allows you to state that more concisely:
+ * The <code>PartialFunctionValues</code> trait allows you to state that more concisely:
  * </p>
  *
  * <pre>
@@ -77,7 +77,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * pf.valueAt("V") should equal (5) // pf.valueAt("V") throws TestFailedException
  * </pre>
  */
-trait ValueOnPartialFunction {
+trait PartialFunctionValues {
 
   /**
    * Implicit conversion that adds a <code>valueAt</code> method to <code>PartialFunction</code>.
@@ -107,14 +107,14 @@ trait ValueOnPartialFunction {
         pf.apply(input)
       }
       else
-        throw new TestFailedException(sde => Some(Resources("partialFunctionValueNotDefined", input.toString)), None, getStackDepthFun("ValueOnPartialFunction.scala", "valueAt"))
+        throw new TestFailedException(sde => Some(Resources("partialFunctionValueNotDefined", input.toString)), None, getStackDepthFun("PartialFunctionValues.scala", "valueAt"))
     }
   }
 }
 
 /**
- * Companion object that facilitates the importing of <code>ValueOnPartialFunction</code> members as 
- * an alternative to mixing it in. One use case is to import <code>ValueOnPartialFunction</code>'s members so you can use
+ * Companion object that facilitates the importing of <code>PartialFunctionValues</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>PartialFunctionValues</code>'s members so you can use
  * the <code>valueAt</code> method on <code>PartialFunction</code> in the Scala interpreter:
  *
  * $ scala -cp scalatest-1.7.jar
@@ -128,8 +128,8 @@ trait ValueOnPartialFunction {
  * scala&gt; import matchers.ShouldMatchers._
  * import matchers.ShouldMatchers._
  * 
- * scala&gt; import ValueOnPartialFunction._
- * import ValueOnPartialFunction._
+ * scala&gt; import PartialFunctionValues._
+ * import PartialFunctionValues._
  * 
  * scala&gt; val pf: PartialFunction[String, Int] = Map("I" -&gt; 1, "II" -&gt; 2, "III" -&gt; 3, "IV" -&gt; 4)
  * pf: PartialFunction[String,Int] = Map(I -&gt; 1, II -&gt; 2, III -&gt; 3, IV -&gt; 4)
@@ -142,4 +142,4 @@ trait ValueOnPartialFunction {
  *   at scala.collection.immutable.Map$Map4.default(Map.scala:167)
  *   ...
  */
-object ValueOnPartialFunction extends ValueOnPartialFunction
+object PartialFunctionValues extends PartialFunctionValues
