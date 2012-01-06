@@ -225,6 +225,8 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
 object Filter {
   private final val IgnoreTag = "org.scalatest.Ignore"
 
+    
+    // TODO : Should update these factory methods to include testNamesToInclude
 /**
  * Factory method for a <code>Filter</code> initialized with the passed <code>tagsToInclude</code>
  * and <code>tagsToExclude</code>.
