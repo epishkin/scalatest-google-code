@@ -15,6 +15,8 @@
  */
 package org.scalatest
 
+import org.scalatest.Suite.reportTestIgnored
+
 /**
  * Trait that facilitates a style of testing in which each test is run in its own instance
  * of the suite class to isolate each test from the side effects of the other tests in the
@@ -61,7 +63,7 @@ package org.scalatest
  */
 trait OneInstancePerTest extends AbstractSuite {
   
-  this: Suite =>
+  thisSuite: Suite =>
 
   /**
    * Run this <code>Suite's</code> tests each in their own instance of this <code>Suite</code>'s class.
@@ -94,15 +96,26 @@ trait OneInstancePerTest extends AbstractSuite {
   protected abstract override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     testName match {
-      case Some(tn) => super.runTests(testName, reporter, stopper, filter, configMap, None, tracker)
+      case Some(_) =>
+        super.runTests(testName, reporter, stopper, filter, configMap, distributor, tracker)
       case None =>
-        for (tn <- testNames) {
-          val oneInstance = newInstance
-          oneInstance.run(Some(tn), reporter, stopper, filter, configMap, None, tracker)
+        val flag = "org.scalatest.OneInstancePerTest.testToRun"
+        if (configMap.contains(flag)) {
+          val newFilter = new Filter(filter.tagsToInclude, filter.tagsToExclude, Some(Set(configMap(flag).asInstanceOf[String])))
+          super.runTests(None, reporter, stopper, newFilter, configMap, None, tracker)
+        }
+        else {
+          val stopRequested = stopper
+          for ((tn, _) <- filter(testNames, tags)) {
+            if (!stopRequested()) {
+              val oneInstance = newInstance
+              oneInstance.run(None, reporter, stopper, filter, configMap + (flag -> tn), None, tracker)
+            }
+          }
         }
     }
   }
-  
+
   /**
    * Construct a new instance of this <code>Suite</code>.
    *

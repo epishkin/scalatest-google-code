@@ -18,6 +18,8 @@ package org.scalatest.mock
 import org.scalatest._
 import org.mockito.Mockito.{mock => mockitoMock}
 import reflect.Manifest
+import org.mockito.stubbing.Answer
+import org.mockito.MockSettings
 
 /**
  * Trait that provides some basic syntax sugar for <a href="http://mockito.org/" target="_blank">Mockito</a>.
@@ -43,8 +45,8 @@ import reflect.Manifest
 trait MockitoSugar {
 
   /**
-   * Invokes the <code>mock</code> method on the <code>Mockito</code> companion object (<em>i.e.</em>, the
-   * static <code>mock</code> method in Java class <code>org.mockito.Mockitok</code>).
+   * Invokes the <code>mock(java.lang.Class<T> classToMock)</code> method on the <code>Mockito</code> companion object (<em>i.e.</em>, the
+   * static <code>mock(java.lang.Class<T> classToMock)</code> method in Java class <code>org.mockito.Mockitok</code>).
    *
    * <p>
    * Using the Mockito API directly, you create a mock with:
@@ -64,5 +66,17 @@ trait MockitoSugar {
    */
   def mock[T <: AnyRef](implicit manifest: Manifest[T]): T = {
     mockitoMock(manifest.erasure.asInstanceOf[Class[T]])
+  }
+  
+  def mock[T <: AnyRef](defaultAnswer: Answer[T])(implicit manifest: Manifest[T]): T = {
+    mockitoMock(manifest.erasure.asInstanceOf[Class[T]], defaultAnswer)
+  }
+  
+  def mock[T <: AnyRef](mockSettings: MockSettings)(implicit manifest: Manifest[T]): T = {
+    mockitoMock(manifest.erasure.asInstanceOf[Class[T]], mockSettings)
+  }
+  
+  def mock[T <: AnyRef](name: String)(implicit manifest: Manifest[T]): T = {
+    mockitoMock(manifest.erasure.asInstanceOf[Class[T]], name)
   }
 }
