@@ -45,8 +45,6 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
 
   private val events = Set.empty[Event]
   private val propertiesXml = genPropertiesXml
-  
-  private val writingFiles = Set[String]()
 
   //
   // Records events in 'events' set.  Generates xml from events upon receipt
@@ -73,17 +71,14 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
   private def writeSuiteFile(endEvent: Event) {
     require(endEvent.isInstanceOf[SuiteCompleted] ||
             endEvent.isInstanceOf[SuiteAborted])
-    val suiteName = if (endEvent.isInstanceOf[SuiteCompleted]) endEvent.asInstanceOf[SuiteCompleted].suiteName else endEvent.asInstanceOf[SuiteAborted].suiteName
-    val filespec  = directory + "/TEST-" + suiteName + ".xml"
-    writingFiles += filespec
+    
     val testsuite = getTestsuite(endEvent)
     val xmlStr    = xmlify(testsuite)
+    val filespec  = directory + "/TEST-" + testsuite.name + ".xml"
     
     val out = new PrintWriter(filespec, "UTF-8")
     out.print(xmlStr)
     out.close()
-    
-    writingFiles -= filespec
   }
 
   //
