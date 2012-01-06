@@ -17,6 +17,7 @@ package org.scalatest
 
 import org.scalatest.Suite.reportTestIgnored
 
+// TODO: Update scaladoc to reflect the new behaviour.
 /**
  * Trait that facilitates a style of testing in which each test is run in its own instance
  * of the suite class to isolate each test from the side effects of the other tests in the
