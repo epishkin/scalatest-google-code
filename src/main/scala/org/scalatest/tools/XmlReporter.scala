@@ -85,11 +85,6 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
     
     writingFiles -= filespec
   }
-  
-  def waitUntilFileWriteFinish() {
-    while (writingFiles.size > 0) 
-      Thread.sleep(1000)
-  }
 
   //
   // Constructs a Testsuite object corresponding to a specified

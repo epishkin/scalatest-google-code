@@ -190,8 +190,6 @@ write a sbt plugin to deploy the task.
             report(SuiteAborted(tracker.nextOrdinal(), rawString, suite.suiteName, Some(testClass.getName), Some(e), Some(duration), formatter, None))
           }
         }
-        
-        report.waitUntilFinish()
       }
       else throw new IllegalArgumentException("Class is not an accessible org.scalatest.Suite: " + testClassName)
     }
@@ -226,20 +224,6 @@ write a sbt plugin to deploy the task.
           case t: TestIgnored => fireEvent(t.testName, Result.Skipped, None)
           case t: SuiteAborted => fireEvent("!!! Suite Aborted !!!", Result.Failure, t.throwable)
           case _ => 
-        }
-      }
-      
-      def waitUntilFinish() {
-        report match {
-          case Some(report) => 
-            report match {
-              case dispatchReporter: DispatchReporter => dispatchReporter.dispatchDisposeAndWaitUntilDone()
-              case catchReporter: CatchReporter => catchReporter.catchDispose()
-              case resourcefulReporter: ResourcefulReporter => resourcefulReporter.dispose()
-              case xmlReporter: XmlReporter => xmlReporter.waitUntilFileWriteFinish()
-              case _ =>
-            }
-          case None =>
         }
       }
     }
@@ -280,11 +264,6 @@ write a sbt plugin to deploy the task.
         }
         else if (s.startsWith("-o")) {
           repoArgs += checkSbtLogNoFormat(s)
-        }
-        else if (s.startsWith("-u")) {
-          repoArgs += s
-          if (it.hasNext)
-            repoArgs += it.next
         }
         //      else if (s.startsWith("-t")) {
         //
