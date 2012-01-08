@@ -237,7 +237,7 @@ object Filter {
  * @throws NullPointerException if either <code>tagsToInclude</code>, <code>tagsToExclude</code>, or <code>testNamesToInclude</code> are <code>null</code>
  * @throws IllegalArgumentException if <code>tagsToInclude</code> is defined, but contains an empty set
  */
-  def apply(tagsToInclude: Option[Set[String]], tagsToExclude: Set[String], val testNamesToInclude: Option[Set[String]] = None) =
+  def apply(tagsToInclude: Option[Set[String]], tagsToExclude: Set[String], testNamesToInclude: Option[Set[String]] = None) =
     new Filter(tagsToInclude, tagsToExclude, testNamesToInclude)
 
 /**
