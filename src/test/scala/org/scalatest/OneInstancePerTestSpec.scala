@@ -136,7 +136,7 @@ class OneInstancePerTestSpec extends FunSpec with SharedHelpers {
       assert(!dTheTestThisCalled)
       assert(!dTheTestThatCalled)
     }
-    it("should run a test marked ignored if it is passed in a Some as testName") {
+    it("should ignore a test marked as ignored if it is passed in a Some as testName") {
       var bTheTestThisCalled = false
       var bTheTestThatCalled = false
       class BSpec extends WordSpec with OneInstancePerTest {
@@ -148,8 +148,8 @@ class OneInstancePerTestSpec extends FunSpec with SharedHelpers {
 
       val repB = new TestIgnoredTrackingReporter
       b.run(Some("test this"), repB, new Stopper {}, Filter(), Map(), None, new Tracker)
-      assert(!repB.testIgnoredReceived)
-      assert(bTheTestThisCalled)
+      assert(repB.testIgnoredReceived)
+      assert(!bTheTestThisCalled)
       assert(!bTheTestThatCalled)
     }
   }

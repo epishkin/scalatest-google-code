@@ -690,7 +690,7 @@ class FixtureFlatSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
       assert(!d.theTestThatCalled)
     }
 
-    it("should run a test marked as ignored if run is invoked with that testName") {
+    it("should ignore a test marked as ignored if run is invoked with that testName") {
       // If I provide a specific testName to run, then it should ignore an Ignore on that test
       // method and actually invoke it.
       val e = new FixtureFlatSpec {
@@ -704,8 +704,8 @@ class FixtureFlatSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
 
       val repE = new TestIgnoredTrackingReporter
       e.run(Some("must test this"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
-      assert(!repE.testIgnoredReceived)
-      assert(e.theTestThisCalled)
+      assert(repE.testIgnoredReceived)
+      assert(!e.theTestThisCalled)
       assert(!e.theTestThatCalled)
     }
 

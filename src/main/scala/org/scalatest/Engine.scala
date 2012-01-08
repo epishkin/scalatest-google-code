@@ -278,7 +278,12 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
+      case Some(tn) =>
+        val (_, ignoreTest) = filter(tn, theSuite.tags)
+        if (ignoreTest)
+          reportTestIgnored(theSuite, report, tracker, tn, tn, 1)
+        else
+          runTest(tn, report, stopRequested, configMap, tracker)
       case None => runTestsInBranch(theSuite, Trunk, report, stopRequested, filter, configMap, tracker, includeIcon, runTest)
     }
   }

@@ -2187,17 +2187,22 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
-      case None =>
 
-      for ((tn, ignoreTest) <- filter(testNames, tags)) {
-        if (!stopRequested()) {
-          if (ignoreTest) {
-            reportTestIgnored(thisSuite, report, tracker, tn, tn, 1)
+      case Some(tn) =>
+        val (_, ignoreTest) = filter(tn, tags)
+        if (ignoreTest)
+          reportTestIgnored(thisSuite, report, tracker, tn, tn, 1)
+        else
+          runTest(tn, report, stopRequested, configMap, tracker)
+
+      case None =>
+        for ((tn, ignoreTest) <- filter(testNames, tags)) {
+          if (!stopRequested()) {
+            if (ignoreTest)
+              reportTestIgnored(thisSuite, report, tracker, tn, tn, 1)
+            else
+              runTest(tn, report, stopRequested, configMap, tracker)
           }
-          else
-            runTest(tn, report, stopRequested, configMap, tracker)
-        }
       }
     }
   }

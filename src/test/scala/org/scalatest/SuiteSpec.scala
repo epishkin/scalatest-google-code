@@ -198,7 +198,7 @@ class SuiteSpec extends FunSpec with PrivateMethodTester with SharedHelpers {
       assert(!d.theTestThatCalled)
     }
     
-    it("should run a test marked as ignored if run is invoked with that testName") {
+    it("should ignore a test marked as ignored if run is invoked with that testName") {
 
       val e = new Suite {
         var theTestThisCalled = false
@@ -210,8 +210,8 @@ class SuiteSpec extends FunSpec with PrivateMethodTester with SharedHelpers {
 
       val repE = new TestIgnoredTrackingReporter
       e.run(Some("testThis"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
-      assert(!repE.testIgnoredReceived)
-      assert(e.theTestThisCalled)
+      assert(repE.testIgnoredReceived)
+      assert(!e.theTestThisCalled)
       assert(!e.theTestThatCalled)
     }
 
