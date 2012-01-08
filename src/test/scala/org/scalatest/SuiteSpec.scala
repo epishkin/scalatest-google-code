@@ -215,6 +215,23 @@ class SuiteSpec extends FunSpec with PrivateMethodTester with SharedHelpers {
       assert(!e.theTestThatCalled)
     }
 
+    it("should exclude a test with a tag included in the tagsToExclude set even if run is invoked with that testName") {
+
+      val e = new Suite {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        @SlowAsMolasses
+        def testThis() { theTestThisCalled = true }
+        def testThat(info: Informer) { theTestThatCalled = true }
+      }
+
+      val repE = new TestIgnoredTrackingReporter
+      e.run(Some("testThis"), repE, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
+      assert(!repE.testIgnoredReceived)
+      assert(!e.theTestThisCalled)
+      assert(!e.theTestThatCalled)
+    }
+
     it("should throw IllegalArgumentException if run is passed a testName that does not exist") {
       val suite = new Suite {
         var theTestThisCalled = false

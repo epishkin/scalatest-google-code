@@ -2189,11 +2189,13 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     testName match {
 
       case Some(tn) =>
-        val (_, ignoreTest) = filter(tn, tags)
-        if (ignoreTest)
-          reportTestIgnored(thisSuite, report, tracker, tn, tn, 1)
-        else
-          runTest(tn, report, stopRequested, configMap, tracker)
+        val (filterTest, ignoreTest) = filter(tn, tags)
+        if (!filterTest) {
+          if (ignoreTest)
+            reportTestIgnored(thisSuite, report, tracker, tn, tn, 1)
+          else
+            runTest(tn, report, stopRequested, configMap, tracker)
+        }
 
       case None =>
         for ((tn, ignoreTest) <- filter(testNames, tags)) {

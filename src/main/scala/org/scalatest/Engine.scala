@@ -279,11 +279,13 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     // by testNames.
     testName match {
       case Some(tn) =>
-        val (_, ignoreTest) = filter(tn, theSuite.tags)
-        if (ignoreTest)
-          reportTestIgnored(theSuite, report, tracker, tn, tn, 1)
-        else
-          runTest(tn, report, stopRequested, configMap, tracker)
+        val (filterTest, ignoreTest) = filter(tn, theSuite.tags)
+        if (!filterTest) {
+          if (ignoreTest)
+            reportTestIgnored(theSuite, report, tracker, tn, tn, 1)
+          else
+            runTest(tn, report, stopRequested, configMap, tracker)
+        }
       case None => runTestsInBranch(theSuite, Trunk, report, stopRequested, filter, configMap, tracker, includeIcon, runTest)
     }
   }

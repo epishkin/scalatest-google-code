@@ -393,8 +393,6 @@ class FunSuiteSpec extends FunSpec with SharedHelpers {
     }
 
     it("should ignore a test marked as ignored if run is invoked with that testName") {
-      // If I provide a specific testName to run, then it should ignore an Ignore on that test
-      // method and actually invoke it.
       val e = new FunSuite {
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -405,6 +403,21 @@ class FunSuiteSpec extends FunSpec with SharedHelpers {
       val repE = new TestIgnoredTrackingReporter
       e.run(Some("test this"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
       assert(repE.testIgnoredReceived)
+      assert(!e.theTestThisCalled)
+      assert(!e.theTestThatCalled)
+    }
+
+    it("should exclude a test with a tag included in the tagsToExclude set even if run is invoked with that testName") {
+      val e = new FunSuite {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        test("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
+        test("test that") { theTestThatCalled = true }
+      }
+
+      val repE = new TestIgnoredTrackingReporter
+      e.run(Some("test this"), repE, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
+      assert(!repE.testIgnoredReceived)
       assert(!e.theTestThisCalled)
       assert(!e.theTestThatCalled)
     }
