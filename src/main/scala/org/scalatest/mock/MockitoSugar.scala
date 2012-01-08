@@ -40,13 +40,19 @@ import org.mockito.MockSettings
  * val mockCollaborator = mock[Collaborator]
  * </pre>
  *
+ * <p>
+ * This trait also provides shorthands for the three other (non-deprecated) overloaded <code>mock</code> methods,
+ * which allow you to pass in a default answer, a name, or settings.
+ * </p>
+ *
  * @author Bill Venners
+ * @author Chua Chee Seng
  */
 trait MockitoSugar {
 
   /**
    * Invokes the <code>mock(classToMock: Class[T])</code> method on the <code>Mockito</code> companion object (<em>i.e.</em>, the
-   * static <code>mock(java.lang.Class<T> classToMock)</code> method in Java class <code>org.mockito.Mockitok</code>).
+   * static <code>mock(java.lang.Class<T> classToMock)</code> method in Java class <code>org.mockito.Mockito</code>).
    *
    * <p>
    * Using the Mockito API directly, you create a mock with:
@@ -70,7 +76,7 @@ trait MockitoSugar {
   
   /**
    * Invokes the <code>mock(classToMock: Class[T], defaultAnswer: Answer[_])</code> method on the <code>Mockito</code> companion object (<em>i.e.</em>, the
-   * static <code>mock(java.lang.Class<T> classToMock, org.mockito.stubbing.Answer defaultAnswer)</code> method in Java class <code>org.mockito.Mockitok</code>).
+   * static <code>mock(java.lang.Class<T> classToMock, org.mockito.stubbing.Answer defaultAnswer)</code> method in Java class <code>org.mockito.Mockito</code>).
    *
    * <p>
    * Using the Mockito API directly, you create a mock with:
@@ -94,7 +100,7 @@ trait MockitoSugar {
   
   /**
    * Invokes the <code>mock(classToMock: Class[T], mockSettings: MockSettings)</code> method on the <code>Mockito</code> companion object (<em>i.e.</em>, the
-   * static <code>mock(java.lang.Class<T> classToMock, org.mockito.MockSettings mockSettings)</code> method in Java class <code>org.mockito.Mockitok</code>).
+   * static <code>mock(java.lang.Class<T> classToMock, org.mockito.MockSettings mockSettings)</code> method in Java class <code>org.mockito.Mockito</code>).
    *
    * <p>
    * Using the Mockito API directly, you create a mock with:
@@ -118,7 +124,7 @@ trait MockitoSugar {
   
   /**
    * Invokes the <code>mock(classToMock: Class[T], name: String)</code> method on the <code>Mockito</code> companion object (<em>i.e.</em>, the
-   * static <code>mock(java.lang.Class<T> classToMock, java.lang.String name)</code> method in Java class <code>org.mockito.Mockitok</code>).
+   * static <code>mock(java.lang.Class<T> classToMock, java.lang.String name)</code> method in Java class <code>org.mockito.Mockito</code>).
    *
    * <p>
    * Using the Mockito API directly, you create a mock with:
@@ -140,3 +146,16 @@ trait MockitoSugar {
     mockitoMock(manifest.erasure.asInstanceOf[Class[T]], name)
   }
 }
+
+/**
+ * Companion object that facilitates the importing of <code>MockitoSugar</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>MockitoSugar</code> members so you can use
+ * them in the Scala interpreter:
+ *
+ * <pre class="stREPL">
+ * $scala -classpath scalatest.jar
+ * </pre>
+ */
+// TODO: Fill in an example
+object MockitoSugar extends MockitoSugar
+
