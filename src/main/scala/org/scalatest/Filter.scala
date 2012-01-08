@@ -42,7 +42,7 @@ import Filter.IgnoreTag
  * that are both tagged with <code>org.scalatest.Ignore</code> and at least one of the tags in the <code>tagsToInclude</code> set
  * will be included in the result of <code>apply</code> and marked as ignored (so long as the test is not also
  * marked with a tag other than <code>org.scalatest.Ignore</code> that is a member of the <code>tagsToExclude</code>
- * set. For example, if <code>SlowAsMolasses</code> is a member of the <code>tagsToInclude</code> set and a
+ * set). For example, if <code>SlowAsMolasses</code> is a member of the <code>tagsToInclude</code> set and a
  * test is tagged with both <code>org.scalatest.Ignore</code> and <code>SlowAsMolasses</code>, and
  * <code>SlowAsMolasses</code> appears in the <code>tagsToExclude</code> set, the
  * <code>SlowAsMolasses</code> tag will "overpower" the <code>org.scalatest.Ignore</code> tag, and the
@@ -53,7 +53,7 @@ import Filter.IgnoreTag
  * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude (<em>i.e.</em>, filter out) when filtering tests
  * @param testNamesToInclude an optional <code>Set</code> of <code>String</code> test names to include (<em>i.e.</em>, not filter out) when filtering tests
  *
- * @throws NullPointerException if either <code>tagsToInclude</code> or <code>tagsToExclude</code> are null
+ * @throws NullPointerException if either <code>tagsToInclude</code>, <code>tagsToExclude</code>, or <code>testNamesToInclude</code> are <code>null</code>
  * @throws IllegalArgumentException if <code>tagsToInclude</code> is defined, but contains an empty set, or if <code>testNamesToInclude</code> is defined, but contains an empty set
  */
 final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Set[String], val testNamesToInclude: Option[Set[String]] = None) extends Function2[Set[String], Map[String, Set[String]], List[(String, Boolean)]] {
@@ -193,7 +193,7 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
 
   /**
    * Returns the number of tests that should be run after the passed <code>testNames</code> and <code>tags</code> have been filtered
-   * with the <code>tagsToInclude</code> and <code>tagsToExclude</code> class parameters.
+   * with the <code>tagsToInclude</code>, <code>tagsToExclude</code>, and <code>testNamesToInclude</code> class parameters.
    *
    * <p>
    * The result of this method may be smaller than the number of
@@ -225,7 +225,6 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
 object Filter {
   private final val IgnoreTag = "org.scalatest.Ignore"
 
-    
     // TODO : Should update these factory methods to include testNamesToInclude
 /**
  * Factory method for a <code>Filter</code> initialized with the passed <code>tagsToInclude</code>
@@ -233,22 +232,17 @@ object Filter {
  *
  * @param tagsToInclude an optional <code>Set</code> of <code>String</code> tag names to include (<em>i.e.</em>, not filter out) when filtering tests
  * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude (<em>i.e.</em>, filter out) when filtering tests
+ * @param testNamesToInclude an optional <code>Set</code> of <code>String</code> test names to include (<em>i.e.</em>, not filter out) when filtering tests
  *
- * @throws NullPointerException if either <code>tagsToInclude</code> or <code>tagsToExclude</code> are null
+ * @throws NullPointerException if either <code>tagsToInclude</code>, <code>tagsToExclude</code>, or <code>testNamesToInclude</code> are <code>null</code>
  * @throws IllegalArgumentException if <code>tagsToInclude</code> is defined, but contains an empty set
  */
-  def apply(tagsToInclude: Option[Set[String]], tagsToExclude: Set[String]) =
-    new Filter(tagsToInclude, tagsToExclude)
+  def apply(tagsToInclude: Option[Set[String]], tagsToExclude: Set[String], val testNamesToInclude: Option[Set[String]] = None) =
+    new Filter(tagsToInclude, tagsToExclude, testNamesToInclude)
 
 /**
  * Factory method for a <code>Filter</code> initialized with <code>None</code> for <code>tagsToInclude</code>
- * and an empty set for <code>tagsToExclude</code>.
- *
- * @param tagsToInclude an optional <code>Set</code> of <code>String</code> tag names to include (<em>i.e.</em>, not filter out) when filtering tests
- * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude (<em>i.e.</em>, filter out) when filtering tests
- *
- * @throws NullPointerException if either <code>tagsToInclude</code> or <code>tagsToExclude</code> are null
- * @throws IllegalArgumentException if <code>tagsToInclude</code> is defined, but contains an empty set
+ * an empty set for <code>tagsToExclude</code>, and a <code>None</code> for <code>testNamesToInclude</code>.
  */
   def apply() =
     new Filter(None, Set("org.scalatest.Ignore"))
