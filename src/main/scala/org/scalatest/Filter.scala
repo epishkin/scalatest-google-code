@@ -31,21 +31,49 @@ import Filter.IgnoreTag
  * <p>
  * 4. If both <code>tagsToInclude</code> and <code>testNamesToInclude</code> are defined, then the result of <code>apply</code> will essentially be the
  * intersection of cases 2 and 3. To survive the filter, a test's name must both be included in <code>testNamesToInclude</code> and have at least one
- * tag mentioned in <code>tagsToInclude</code>.
+ * tag mentioned in <code>tagsToInclude</code>, and not have a tag mentioned in <code>tagsToExclude</code>.
  * </p>
+ *
+ * <a name="handlingIgnore"></a><h2>Special handling of <code>org.scalatest.Ignore</code></h2>
  *
  * <p>
  * This class handles the <code>org.scalatest.Ignore</code> tag specially, in that its <code>apply</code> method indicates which
  * tests should be ignored based on whether they are tagged with <code>org.scalatest.Ignore</code>. If
- * <code>"org.scalatest.Ignore"</code> is not passed in the <code>tagsToExclude</code> set, it will be implicitly added. However, if the 
- * <code>tagsToInclude</code> option is defined, and the contained set does not include <code>"org.scalatest.Ignore"</code>, then only those tests
- * that are both tagged with <code>org.scalatest.Ignore</code> and at least one of the tags in the <code>tagsToInclude</code> set
- * will be included in the result of <code>apply</code> and marked as ignored (so long as the test is not also
- * marked with a tag other than <code>org.scalatest.Ignore</code> that is a member of the <code>tagsToExclude</code>
- * set). For example, if <code>SlowAsMolasses</code> is a member of the <code>tagsToInclude</code> set and a
- * test is tagged with both <code>org.scalatest.Ignore</code> and <code>SlowAsMolasses</code>, and
- * <code>SlowAsMolasses</code> appears in the <code>tagsToExclude</code> set, the
- * <code>SlowAsMolasses</code> tag will "overpower" the <code>org.scalatest.Ignore</code> tag, and the
+ * <code>"org.scalatest.Ignore"</code> is not passed in the <code>tagsToExclude</code> set, it will be implicitly added.
+ * However, a test tagged as <code>org.scalatest.Ignore</code> will only be reported as ignored if it is both <em>included</em> and
+ * not <em>excluded</em>.
+ * </p>
+ *
+ * <p>
+ * A test is <em>excluded</em> if and only if it is tagged with a tag mentioned in the <code>tagsToExclude</code> set, other than <code>org.scalatest.Ignore</code>.
+ * </p>
+ *
+ * <p>
+ * A test is <em>included</em> if one of the following is true:
+ * </p>
+ *
+ * <ul>
+ * <li>neither <code>tagsToInclude</code> nor <code>testNamesToInclude</code> is defined.</li>
+ * <li><code>tagsToInclude</code> is defined, <code>testNamesToInclude</code> is not defined, and the test is tagged by at least
+ * one tag mentioned in <code>tagsToInclude</code> (including, possibly, <code>org.scalatest.Ignore</code>)</li>
+ * <li><code>tagsToInclude</code> is not defined, <code>testNamesToInclude</code> is defined and includes the name of the test.</li>
+ * <li>both <code>tagsToInclude</code> and <code>testNamesToInclude</code> are defined; 
+ * the test is tagged by at least one tag mentioned in <code>tagsToInclude</code> (including, possibly,
+ * <code>org.scalatest.Ignore</code>); and <code>testNamesToInclude</code> includes the name of the test.</li>
+ * </ul>
+ *
+ * <p>
+ * For example, if:
+ * <ul>
+ * <li><code>tagsToInclude</code> is defined,</li>
+ * <li><code>testNameToInclude</code> is not defined,</li>
+ * <li><code>SlowAsMolasses</code> is a member of the <code>tagsToInclude</code> set,</li>
+ * <li><code>SlowAsMolasses</code> also appears in the <code>tagsToExclude</code> set,</li>
+ * <li>and a test is tagged with both <code>org.scalatest.Ignore</code> and <code>SlowAsMolasses</code>,</li>
+ * </ul>
+ * 
+ * <p>
+ * Then the <code>SlowAsMolasses</code> tag will "overpower" the <code>org.scalatest.Ignore</code> tag, and the
  * test will be filtered out entirely rather than being ignored.
  * </p>
  *
@@ -106,16 +134,20 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
     }
   }
 
-// TODO: Need to update these descriptions of the apply methods, etc., to include the behavior if testNamesToInclude is defined.
   /**
    * Filter test names based on their tags.
    *
    * <p>
    * Each tuple in the returned list contains a <code>String</code>
-   * test name and a <code>Boolean</code> that indicates whether the test should be ignored. A test will be marked as ignored
-   * if <code>org.scalatest.Ignore</code> is in its tags set, and either <code>tagsToInclude</code> is <code>None</code>, or
-   * <code>tagsToInclude</code>'s value (a set) contains the test's name, unless another tag for that test besides <code>org.scalatest.Ignore</code>
-   * is also included in <code>tagsToExclude</code>. For example, if a test is tagged with
+   * test name and a <code>Boolean</code> that indicates whether the test should be ignored.
+   * If a test is filtered out, its name does not appear in the returned list. Otherwise if the
+   * test is ignored, its name will appear in the returned list, but the second
+   * tuple element will be true to indicate the test should be ignored. Else the name will appear in the
+   * returned list and the second tuple elemnt will be false to indicate the test should not be ignored.
+   * </p>
+   *
+   * <p>
+   * For example, if a test is tagged with
    * both <code>org.scalatest.Ignore</code> and <code>SlowAsMolasses</code>, and <code>SlowAsMolasses</code>
    * appears in the <code>tagsToExclude</code> set, the <code>SlowAsMolasses</code> tag will
    * "overpower" the <code>org.scalatest.Ignore</code> tag, and this method will return
@@ -158,11 +190,11 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
    * <p>
    * The returned tuple contains a <code>Boolean</code>
    * that indicates whether the test should be filtered, and if not, a <code>Boolean</code> that
-   * indicates whether the test should be ignored. A test will be marked as ignored
-   * if <code>org.scalatest.Ignore</code> is in its tags set, and either <code>tagsToInclude</code>
-   * is <code>None</code>, or <code>tagsToInclude</code>'s value (a set) contains the passed
-   * test name, unless another tag for that test besides <code>org.scalatest.Ignore</code>
-   * is also included in <code>tagsToExclude</code>. For example, if a test is tagged with
+   * indicates whether the test should be ignored.
+   * </p>
+   *
+   * <p>
+   * For example, if a test is tagged with
    * both <code>org.scalatest.Ignore</code> and <code>SlowAsMolasses</code>, and <code>SlowAsMolasses</code>
    * appears in the <code>tagsToExclude</code> set, the <code>SlowAsMolasses</code> tag will
    * "overpower" the <code>org.scalatest.Ignore</code> tag, and this method will return
@@ -225,7 +257,6 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
 object Filter {
   private final val IgnoreTag = "org.scalatest.Ignore"
 
-    // TODO : Should update these factory methods to include testNamesToInclude
 /**
  * Factory method for a <code>Filter</code> initialized with the passed <code>tagsToInclude</code>
  * and <code>tagsToExclude</code>.
