@@ -1419,8 +1419,7 @@ import Suite.reportInfoProvided
  *
  * @author Bill Venners
  */
-@serializable
-trait Suite extends Assertions with AbstractSuite { thisSuite =>
+trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite =>
 
   import Suite.TestMethodPrefix, Suite.InformerInParens, Suite.IgnoreAnnotation
 

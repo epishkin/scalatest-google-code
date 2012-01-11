@@ -167,7 +167,7 @@ import java.util.Arrays
  *
  * @author Bill Venners
  */
-final class Ordinal private (val runStamp: Int, private val stamps: Array[Int]) extends Ordered[Ordinal] {
+final class Ordinal private (val runStamp: Int, private val stamps: Array[Int]) extends Ordered[Ordinal] with Serializable {
 
   /**
    * Construct a the first <code>Ordinal</code> for a run.

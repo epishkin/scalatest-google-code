@@ -28,7 +28,7 @@ import java.util.Date
  *
  * @author Bill Venners
  */
-sealed abstract class Event extends Ordered[Event] {
+sealed abstract class Event extends Ordered[Event] with Serializable {
 
   /**
    * An <code>Ordinal</code> that can be used to place this event in order in the context of
@@ -119,7 +119,7 @@ final case class TestStarting (
   suiteClassName: Option[String],
   testName: String,
   formatter: Option[Formatter],
-  rerunner: Option[Rerunner],
+  @transient rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -320,7 +320,7 @@ final case class TestSucceeded (
   testName: String,
   duration: Option[Long],
   formatter: Option[Formatter],
-  rerunner: Option[Rerunner],
+  @transient rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -558,7 +558,7 @@ final case class TestFailed (
   throwable: Option[Throwable],
   duration: Option[Long],
   formatter: Option[Formatter],
-  rerunner: Option[Rerunner],
+  @transient rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -1131,7 +1131,7 @@ final case class SuiteStarting (
   suiteName: String,
   suiteClassName: Option[String],
   formatter: Option[Formatter],
-  rerunner: Option[Rerunner],
+  @transient rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -1323,7 +1323,7 @@ final case class SuiteCompleted (
   suiteClassName: Option[String],
   duration: Option[Long],
   formatter: Option[Formatter],
-  rerunner: Option[Rerunner],
+  @transient rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -1553,7 +1553,7 @@ final case class SuiteAborted (
   throwable: Option[Throwable],
   duration: Option[Long],
   formatter: Option[Formatter],
-  rerunner: Option[Rerunner],
+  @transient rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
