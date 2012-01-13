@@ -185,13 +185,6 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
- * Use attribute <code>dollarfiles="true"</code> to specify that class
- * files containing dollar signs in their names should be included in
- * discovery searches for Suites to test.  By default, those files are
- * omitted to speed up search times.
- * </p>
- *
- * <p>
  * Use attribute <code>parallel="true"</code> to specify parallel execution of suites.
  * (If the <code>parallel</code> attribute is left out or set to false, suites will be executed sequentially by one thread.)
  * When <code>parallel</code> is true, you can include an optional <code>numthreads</code> attribute to specify the number
@@ -240,7 +233,6 @@ class ScalaTestAntTask extends Task {
   private var parallel      = false
   private var haltonfailure = false
   private var fork          = false
-  private var dollarfiles   = false
 
   private var numthreads = 0
 
@@ -268,7 +260,6 @@ class ScalaTestAntTask extends Task {
     addRunpathArgs(args)
     addTestNGSuiteArgs(args)
     addParallelArg(args)
-    addDollarfilesArg(args)
 
     val argsArray = args.toArray
 
@@ -328,16 +319,6 @@ class ScalaTestAntTask extends Task {
   private def addParallelArg(args: ListBuffer[String]) {
     if (parallel) {
       args += "-c" + (if (numthreads > 0) ("" + numthreads) else "")
-    }
-  }
-
-  //
-  // Adds '-S' arg to args list if 'dollarfiles' attribute was
-  // specified true for task.
-  //
-  private def addDollarfilesArg(args: ListBuffer[String]) {
-    if (dollarfiles) {
-      args += "-S"
     }
   }
 
@@ -572,13 +553,6 @@ class ScalaTestAntTask extends Task {
    */
   def setFork(fork: Boolean) {
     this.fork = fork
-  }
-  
-  /**
-   * Sets value of the <code>fork</code> attribute.
-   */
-  def setDollarfiles(dollarfiles: Boolean) {
-    this.dollarfiles = dollarfiles
   }
   
   /**

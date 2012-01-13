@@ -75,7 +75,7 @@ import EventToPresent.eventToEventToPresent
 private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresent],
     reporterConfigurations: ReporterConfigurations, suitesList: List[String], junitsList: List[String], runpathList: List[String], filter: Filter,
     propertiesMap: Map[String, String], concurrent: Boolean, memberOfList: List[String], beginsWithList: List[String],
-    testNGList: List[String], passFailReporter: Option[Reporter], numThreads: Int, dollar: Boolean) extends
+    testNGList: List[String], passFailReporter: Option[Reporter], numThreads: Int) extends
     JFrame(Resources("ScalaTestTitle")) with RunDoneListener with RunnerGUI {
 
   // This should only be updated by the event handler thread.
@@ -1411,7 +1411,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
         (loader, dispatchReporter) => {
           try {
             Runner.doRunRunRunDaDoRunRun(dispatchReporter, suitesList, junitsList, stopper, filter,
-                propertiesMap, concurrent, memberOfList, beginsWithList, testNGList, runpathList, loader, RunnerJFrame.this, nextRunStamp, numThreads, dollar) 
+                propertiesMap, concurrent, memberOfList, beginsWithList, testNGList, runpathList, loader, RunnerJFrame.this, nextRunStamp, numThreads) 
           }
           finally {
             stopper.reset()

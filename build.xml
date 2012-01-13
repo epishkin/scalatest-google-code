@@ -42,7 +42,7 @@
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
 
-    <property name="jvmargs" value="-Xmx3000M -Xss10M"/>
+    <property name="jvmargs" value="-Xmx2000M -Xss10M"/>
 
   <!--
   <property name="build.compiler" value="jikes"/>

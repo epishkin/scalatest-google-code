@@ -53,9 +53,9 @@ class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper.type) {
   def processFileNames(fileNames: Iterator[String], fileSeparator: Char, loader: ClassLoader): Set[String] = {
 
     val m = Class.forName("org.scalatest.tools.SuiteDiscoveryHelper$").getDeclaredMethod("org$scalatest$tools$SuiteDiscoveryHelper$$processFileNames",
-      Array(classOf[Iterator[String]], classOf[Char], classOf[ClassLoader], classOf[Boolean]): _*)
+      Array(classOf[Iterator[String]], classOf[Char], classOf[ClassLoader]): _*)
     m.setAccessible(true)
-    m.invoke(sdt, Array[Object](fileNames, new java.lang.Character(fileSeparator), loader, false.asInstanceOf[AnyRef]): _*).asInstanceOf[Set[String]]
+    m.invoke(sdt, Array[Object](fileNames, new java.lang.Character(fileSeparator), loader): _*).asInstanceOf[Set[String]]
   }
 
   def getFileNamesSetFromFile(file: File, fileSeparator: Char): Set[String] = {
