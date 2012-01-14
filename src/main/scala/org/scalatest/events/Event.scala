@@ -28,7 +28,7 @@ import java.util.Date
  *
  * @author Bill Venners
  */
-sealed abstract class Event extends Ordered[Event] with Serializable {
+sealed abstract class Event extends Ordered[Event] with java.io.Serializable {
 
   /**
    * An <code>Ordinal</code> that can be used to place this event in order in the context of
