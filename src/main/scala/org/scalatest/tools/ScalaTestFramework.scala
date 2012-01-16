@@ -11,6 +11,7 @@ import org.scalatest.Suite.formatterForSuiteAborted
 import org.scalatest.events.SuiteStarting
 import org.scalatest.events.SuiteCompleted
 import org.scalatest.events.SuiteAborted
+import org.scalatest.Reporter
 
 /**
  * Class that makes ScalaTest tests visible to sbt.
@@ -89,7 +90,19 @@ class ScalaTestFramework extends Framework {
   private[tools] class ScalaTestRunner(val testLoader: ClassLoader, val loggers: Array[Logger]) extends org.scalatools.testing.Runner2 {
 
     import org.scalatest._
+    
+    private class SbtLogInfoReporter(presentAllDurations: Boolean, presentInColor: Boolean, presentShortStackTraces: Boolean, presentFullStackTraces: Boolean) 
+      extends StringReporter(presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces) {
+    
+      protected def printPossiblyInColor(text: String, ansiColor: String) {
+          loggers.foreach { logger =>
+            logger.info(if (logger.ansiCodesSupported && presentInColor) colorizeLinesIndividually(text, ansiColor) else text)
+          }
+      }
 
+      def dispose() = ()
+    }
+    
     /* 
       test-only FredSuite -- -A -B -C -d  all things to right of == come in as a separate string in the array
  the other way is to set up the options and when I say test it always comes in that way
@@ -127,28 +140,33 @@ write a sbt plugin to deploy the task.
         val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
         val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
         
-        // If no reporters specified, just give them a default stdout reporter
-        val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) checkSbtLogNoFormat("-o") :: Nil else repoArgsList)
-
-        // For 1.6.3, this will never return a Some(grs). Could just as well throw an exception if Some(grs).
-        val reporterConfigs: ReporterConfigurations =
-          fullReporterConfigurations.graphicReporterConfiguration match {
-            case None => fullReporterConfigurations
-            case Some(grs) => {
-              new ReporterConfigurations(
-                None,
-                fullReporterConfigurations.fileReporterConfigurationList,
-                fullReporterConfigurations.xmlReporterConfigurationList,
-                fullReporterConfigurations.standardOutReporterConfiguration,
-                fullReporterConfigurations.standardErrReporterConfiguration,
-                fullReporterConfigurations.htmlReporterConfigurationList,
-                fullReporterConfigurations.customReporterConfigurationList
+        object SbtReporterFactory extends ReporterFactory {
+          
+          override def createStandardOutReporter(configSet: Set[ReporterConfigParam]) = {
+            if (configSetMinusNonFilterParams(configSet).isEmpty)
+              new SbtLogInfoReporter(
+                configSet.contains(PresentAllDurations),
+                !configSet.contains(PresentWithoutColor),
+                configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
+                configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
               )
-           }
+            else
+              new FilterReporter(
+                new SbtLogInfoReporter(
+                  configSet.contains(PresentAllDurations),
+                  !configSet.contains(PresentWithoutColor),
+                  configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
+                  configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
+                ),
+                configSet
+              )
           }
+        }
         
-        val report: SbtReporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
-
+        // If no reporters specified, just give them a default stdout reporter
+        val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) "-o" :: Nil else repoArgsList)
+        val report = new SbtReporter(eventHandler, Some(SbtReporterFactory.getDispatchReporter(fullReporterConfigurations, None, None, testLoader)))
+        
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
 
@@ -199,7 +217,7 @@ write a sbt plugin to deploy the task.
     private class SbtReporter(eventHandler: EventHandler, report: Option[Reporter]) extends Reporter {
       
       import org.scalatest.events._
-      
+
       def fireEvent(tn: String, r: Result, e: Option[Throwable]) = {
         eventHandler.handle(
           new org.scalatools.testing.Event {
@@ -226,13 +244,6 @@ write a sbt plugin to deploy the task.
           case _ => 
         }
       }
-    }
-    
-    private def checkSbtLogNoFormat(s: String) = {
-      if (System.getProperty("sbt.log.noformat") == "true" && !s.contains("W"))
-        s + "W"
-      else
-        s  
     }
 
     private[scalatest] def parsePropsAndTags(args: Array[String]) = {
@@ -263,7 +274,7 @@ write a sbt plugin to deploy the task.
             excludes += it.next
         }
         else if (s.startsWith("-o")) {
-          repoArgs += checkSbtLogNoFormat(s)
+          repoArgs += s
         }
         //      else if (s.startsWith("-t")) {
         //
