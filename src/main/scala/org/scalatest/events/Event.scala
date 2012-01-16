@@ -119,7 +119,7 @@ final case class TestStarting (
   suiteClassName: Option[String],
   testName: String,
   formatter: Option[Formatter],
-  @transient rerunner: Option[Rerunner],
+  rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -320,7 +320,7 @@ final case class TestSucceeded (
   testName: String,
   duration: Option[Long],
   formatter: Option[Formatter],
-  @transient rerunner: Option[Rerunner],
+  rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -558,7 +558,7 @@ final case class TestFailed (
   throwable: Option[Throwable],
   duration: Option[Long],
   formatter: Option[Formatter],
-  @transient rerunner: Option[Rerunner],
+  rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -1131,7 +1131,7 @@ final case class SuiteStarting (
   suiteName: String,
   suiteClassName: Option[String],
   formatter: Option[Formatter],
-  @transient rerunner: Option[Rerunner],
+  rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -1323,7 +1323,7 @@ final case class SuiteCompleted (
   suiteClassName: Option[String],
   duration: Option[Long],
   formatter: Option[Formatter],
-  @transient rerunner: Option[Rerunner],
+  rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -1553,7 +1553,7 @@ final case class SuiteAborted (
   throwable: Option[Throwable],
   duration: Option[Long],
   formatter: Option[Formatter],
-  @transient rerunner: Option[Rerunner],
+  rerunner: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
