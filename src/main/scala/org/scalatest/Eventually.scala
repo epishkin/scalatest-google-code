@@ -162,7 +162,7 @@ import scala.annotation.tailrec
  * @author Bill Venners
  * @author Chua Chee Seng
  */
-trait Eventually {
+private[scalatest] trait Eventually {
 
   /**
    * Configuration object for the <code>eventually</code> construct.
@@ -475,4 +475,4 @@ trait Eventually {
  *   ...
  * </pre>
  */
-object Eventually extends Eventually
+private[scalatest] object Eventually extends Eventually

@@ -3,7 +3,7 @@ import org.scalatest.Reporter
 import org.scalatest.Resources
 import org.scalatest.DispatchReporter
 
-class ReporterFactory {
+private[scalatest] class ReporterFactory {
   
   private[tools] def configSetMinusNonFilterParams(configSet: Set[ReporterConfigParam]) =
     (((configSet - PresentShortStackTraces) - PresentFullStackTraces) - PresentWithoutColor) - PresentAllDurations
@@ -177,4 +177,4 @@ class ReporterFactory {
   }
 }
 
-object ReporterFactory extends ReporterFactory
+private[scalatest] object ReporterFactory extends ReporterFactory
