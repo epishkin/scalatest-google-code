@@ -180,33 +180,32 @@ trait TestNGSuite extends Suite { thisSuite =>
   }
   
   /**
-   * This method ensures that TestNG will only run the test method whos name matches testName.
+   * This method ensures that TestNG will only run the test method whose name matches testName.
    * 
    * The approach is a bit odd however because TestNG doesn't have an easy API for
    * running a single method. To get around that we chose to use an AnnotationTransformer 
-   * to add a secret group to the test method's annotation. We then set up TestNG to run only that group.
-   *
-   * NOTE: There was another option - we could TestNG's XmlSuites to specify which method to run.
-   * This approach was about as much work, offered no clear benefits, and no additional problems either.
+   * to add a secret group to the test method's annotation. We then set up TestNG to run only that group. 
    * 
    * @param    testName    the name of the test method to be executed
    */
   private def setupTestNGToRunSingleMethod(testName: String, testng: TestNG) = {
+    // NOTE: There was another option - we could TestNG's XmlSuites to specify which method to run.
+    // This approach was about as much work, offered no clear benefits, and no additional problems either.
     
-    import org.testng.internal.annotations.IAnnotationTransformer
-    import org.testng.internal.annotations.ITest
-    import java.lang.reflect.Method
-    import java.lang.reflect.Constructor
-    
-    class MyTransformer extends IAnnotationTransformer {
-      override def transform( annotation: ITest, testClass: java.lang.Class[_], testConstructor: Constructor[_], testMethod: Method){
-        if (testName.equals(testMethod.getName)) {
-          annotation.setGroups(Array("org.scalatest.testng.singlemethodrun.methodname"))  
-        }
-      }
+    // Using reflection because TestNG has a incompatible change, we want to allow people to use the old and the new version of TestNG.
+    try {
+      val transformerSuperClass = Class.forName("org.testng.IAnnotationTransformer")
+      val transformerSubClass = Class.forName("org.scalatest.testng.SingleTestAnnotationTransformer")
+      // Go with TestNG 6
+      val transformerInstance = transformerSubClass.getConstructor(classOf[String]).newInstance(testName).asInstanceOf[SingleTestAnnotationTransformer]
+      testng.setGroups("org.scalatest.testng.singlemethodrun.methodname")
+      val method = testng.getClass.getMethod("setAnnotationTransformer", transformerSuperClass)
+      method.invoke(testng, transformerInstance)
     }
-    testng.setGroups("org.scalatest.testng.singlemethodrun.methodname")
-    testng.setAnnotationTransformer(new MyTransformer())
+    catch {
+      case e: ClassNotFoundException => 
+        new UnsupportedOperationException("Sorry, due to incompatible changes in TestNG, running a single test is only supported in TestNG version 6 or later.", e)
+    }
   }
   
   /**
