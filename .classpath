@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="target/jar_contents" path="src/generators/scala"/>
+	<classpathentry kind="src" path="target/generated/src/main/scala"/>
 	<classpathentry kind="src" path="src/us"/>
 	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry kind="src" output="target/jar_contents" path="target/generated/src/main"/>
 	<classpathentry kind="src" output="target/jar_contents" path="src/main/scala"/>
 	<classpathentry kind="src" output="target/jar_contents" path="src/main/java"/>
 	<classpathentry kind="src" path="src/test/scala"/>
@@ -13,14 +13,15 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/ant/ant/1.7.1/ant-1.7.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/commons/commons-io/1.3.2/commons-io-1.3.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/easymock/easymock/3.0/easymock-3.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/easymock/easymock/3.1/easymock-3.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/jmock/jmock/2.5.1/jmock-2.5.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/jmock/jmock-legacy/2.5.1/jmock-legacy-2.5.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/junit/junit/4.4/junit-4.4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.6/mockito-all-1.6.jar"/>
+	<classpathentry kind="var" path="M2_REPO/junit/junit/4.10/junit-4.10.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.9.0/mockito-all-1.9.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/scala-tools/testing/scalacheck_2.9.0/1.8/scalacheck_2.9.0-1.8.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/antlr/stringtemplate/3.2/stringtemplate-3.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/scala-tools/testing/test-interface/0.5/test-interface-0.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/testng/testng/5.7/testng-5.7-jdk15.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/testng/testng/6.3.1/testng-6.3.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/google/inject/guice/3.0/guice-3.0.jar"/>
 	<classpathentry kind="output" path="target/tests"/>
 </classpath>
