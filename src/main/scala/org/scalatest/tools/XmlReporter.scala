@@ -69,11 +69,11 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
   private def writeSuiteFile(endEvent: Event) {
     require(endEvent.isInstanceOf[SuiteCompleted] ||
             endEvent.isInstanceOf[SuiteAborted])
-
+    
     val testsuite = getTestsuite(endEvent)
     val xmlStr    = xmlify(testsuite)
     val filespec  = directory + "/" + testsuite.name + ".xml"
-
+    
     val out = new PrintWriter(filespec, "UTF-8")
     out.print(xmlStr)
     out.close()

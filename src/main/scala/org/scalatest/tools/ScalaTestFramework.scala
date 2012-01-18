@@ -13,6 +13,7 @@ import org.scalatest.events.SuiteCompleted
 import org.scalatest.events.SuiteAborted
 import org.scalatest.events.SeeStackDepthException
 import org.scalatest.events.TopOfClass
+import org.scalatest.Reporter
 
 /**
  * Class that makes ScalaTest tests visible to sbt.
@@ -99,7 +100,19 @@ class ScalaTestFramework extends Framework {
   private[tools] class ScalaTestRunner(val testLoader: ClassLoader, val loggers: Array[Logger]) extends org.scalatools.testing.Runner2 {
 
     import org.scalatest._
+    
+    private class SbtLogInfoReporter(presentAllDurations: Boolean, presentInColor: Boolean, presentShortStackTraces: Boolean, presentFullStackTraces: Boolean) 
+      extends StringReporter(presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces) {
+    
+      protected def printPossiblyInColor(text: String, ansiColor: String) {
+          loggers.foreach { logger =>
+            logger.info(if (logger.ansiCodesSupported && presentInColor) colorizeLinesIndividually(text, ansiColor) else text)
+          }
+      }
 
+      def dispose() = ()
+    }
+    
     /* 
       test-only FredSuite -- -A -B -C -d  all things to right of == come in as a separate string in the array
  the other way is to set up the options and when I say test it always comes in that way
@@ -144,7 +157,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
        //println("sbt args: " + args.toList)
       if (isAccessibleSuite(suiteClass) || isRunnable(suiteClass)) {
         // Why are we getting rid of empty strings? Were empty strings coming in from sbt? -bv 11/09/2011
-        val translator = new SbtFriendlyParamsTranslator();
+        val translator = new SbtFriendlyParamsTranslator()
         val (propertiesArgsList, includesArgsList, excludesArgsList, repoArgsList, concurrentList, memberOnlyList, wildcardList, 
             suiteList, junitList, testngList) = translator.parsePropsAndTags(args.filter(!_.equals("")))
         val configMap: Map[String, String] = parsePropertiesArgsIntoMap(propertiesArgsList)
@@ -152,33 +165,33 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
         val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
         val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
 
+        object SbtReporterFactory extends ReporterFactory {
+          
+          override def createStandardOutReporter(configSet: Set[ReporterConfigParam]) = {
+            if (configSetMinusNonFilterParams(configSet).isEmpty)
+              new SbtLogInfoReporter(
+                configSet.contains(PresentAllDurations),
+                !configSet.contains(PresentWithoutColor),
+                configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
+                configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
+              )
+            else
+              new FilterReporter(
+                new SbtLogInfoReporter(
+                  configSet.contains(PresentAllDurations),
+                  !configSet.contains(PresentWithoutColor),
+                  configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
+                  configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
+                ),
+                configSet
+              )
+          }
+        }
+        
         // If no reporters specified, just give them a default stdout reporter
         val fullReporterConfigurations: ReporterConfigurations = Runner.parseReporterArgsIntoConfigurations(if(repoArgsList.isEmpty) "-o" :: Nil else repoArgsList)
-          val reporterConfigs: ReporterConfigurations =
-            fullReporterConfigurations.graphicReporterConfiguration match {
-              case None => fullReporterConfigurations
-              case Some(grs) => {
-                new ReporterConfigurations(
-                  None,
-                  fullReporterConfigurations.fileReporterConfigurationList,
-                  fullReporterConfigurations.junitXmlReporterConfigurationList,
-                  fullReporterConfigurations.dashboardReporterConfigurationList,
-                  fullReporterConfigurations.xmlReporterConfigurationList,
-                  fullReporterConfigurations.standardOutReporterConfiguration,
-                  fullReporterConfigurations.standardErrReporterConfiguration,
-                  fullReporterConfigurations.htmlReporterConfigurationList,
-                  fullReporterConfigurations.customReporterConfigurationList
-                )
-             }
-            }
+        val report = new SbtReporter(eventHandler, Some(SbtReporterFactory.getDispatchReporter(fullReporterConfigurations, None, None, testLoader)))
         
-        // TODO: Chee Seng, when you add support for the graphic reporter, I think it makes sense to hold up the build tool until
-        // the graphic reporter is exited. This is what we do in Runner for the ant task I think.
-        // Actually, I wonder if don't want some kind of private[tools] run method in Runner that takes command line arguments
-        // and a classloader, and this gets called by the public main and run methods. We can talk about that over the phone.
-        // After discussion -> TODO this in the custom task.
-        val report:Reporter = new SbtReporter(eventHandler, Some(Runner.getDispatchReporter(reporterConfigs, None, None, testLoader)))
-
         val tracker = new Tracker
         val suiteStartTime = System.currentTimeMillis
 
@@ -233,7 +246,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
     private class SbtReporter(eventHandler: EventHandler, report: Option[Reporter]) extends Reporter {
       
       import org.scalatest.events._
-      
+
       def fireEvent(tn: String, r: Result, e: Option[Throwable]) = {
         eventHandler.handle(
           new org.scalatools.testing.Event {
@@ -256,6 +269,7 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
           case t: TestFailed => fireEvent(t.testName, Result.Failure, t.throwable)
           case t: TestSucceeded => fireEvent(t.testName, Result.Success, None)
           case t: TestIgnored => fireEvent(t.testName, Result.Skipped, None)
+          case t: SuiteAborted => fireEvent("!!! Suite Aborted !!!", Result.Failure, t.throwable)
           case _ => 
         }
       }

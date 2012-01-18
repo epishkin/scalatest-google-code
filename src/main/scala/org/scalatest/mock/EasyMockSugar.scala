@@ -495,3 +495,12 @@ trait EasyMockSugar {
     whenExecuting(mocks.mocks: _*)(fun)
   }
 }
+
+/**
+ * Companion object that facilitates the importing of <code>EasyMockSugar</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>EasyMockSugar</code> members so you can use
+ * them in the Scala interpreter.
+ */
+// TODO: Fill in an example
+object EasyMockSugar extends EasyMockSugar
+

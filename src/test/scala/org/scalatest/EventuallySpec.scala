@@ -19,7 +19,7 @@ import org.scalatest.Eventually._
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.SharedHelpers.thisLineNumber
 
-class EventuallySpec extends Spec with ShouldMatchers with ValueOnOption {
+class EventuallySpec extends FunSpec with ShouldMatchers with OptionValues {
 
   describe("The eventually construct") {
 
@@ -67,7 +67,7 @@ class EventuallySpec extends Spec with ShouldMatchers with ValueOnOption {
         eventually { 1 + 1 should equal (3) }
       } should produce [TestFailedException]
 
-      caught.message.value should be (Resources("eventuallyNotReturn"))
+      caught.message.value should be (Resources("didNotEventuallySucceed", "100", "10"))
       caught.failedCodeLineNumber.value should equal (thisLineNumber - 4)
       caught.failedCodeFileName.value should be ("EventuallySpec.scala")
     }

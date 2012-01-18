@@ -23,7 +23,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-private[scalatest] class TestRerunner(suiteClassName: String, testName: String) extends Rerunner {
+private[scalatest] class TestRerunner(suiteClassName: String, testName: String) extends Rerunner with java.io.Serializable {
 
   if (suiteClassName == null || testName == null)
     throw new NullPointerException

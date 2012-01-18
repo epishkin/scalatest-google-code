@@ -1423,8 +1423,7 @@ import scala.reflect.NameTransformer
  *
  * @author Bill Venners
  */
-@serializable
-trait Suite extends Assertions with AbstractSuite { thisSuite =>
+trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite =>
 
   import Suite.TestMethodPrefix, Suite.InformerInParens, Suite.IgnoreAnnotation
 
@@ -2200,17 +2199,24 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
-      case None =>
 
-      for ((tn, ignoreTest) <- filter(testNames, tags)) {
-        if (!stopRequested()) {
-          if (ignoreTest) {
+      case Some(tn) =>
+        val (filterTest, ignoreTest) = filter(tn, tags)
+        if (!filterTest) {
+          if (ignoreTest)
             reportTestIgnored(thisSuite, report, tracker, tn, tn, getDecodedName(tn), 1, Some(getTopOfMethod(tn)))
-          }
           else
             runTest(tn, report, stopRequested, configMap, tracker)
         }
+
+      case None =>
+        for ((tn, ignoreTest) <- filter(testNames, tags)) {
+          if (!stopRequested()) {
+            if (ignoreTest)
+              reportTestIgnored(thisSuite, report, tracker, tn, tn, getDecodedName(tn), 1, Some(getTopOfMethod(tn)))
+            else
+              runTest(tn, report, stopRequested, configMap, tracker)
+          }
       }
     }
   }

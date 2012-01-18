@@ -332,7 +332,17 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
+      case Some(tn) =>
+        val (filterTest, ignoreTest) = filter(tn, theSuite.tags)
+        if (!filterTest) {
+          if (ignoreTest) {
+            val theTest = atomic.get.testsMap(tn)
+            reportTestIgnored(theSuite, report, tracker, tn, tn, getDecodedName(tn), 1, theTest.lineInFile)
+          }
+          else {
+            runTest(tn, report, stopRequested, configMap, tracker)
+          }
+        }
       case None => runTestsInBranch(theSuite, Trunk, report, stopRequested, filter, configMap, tracker, includeIcon, runTest)
     }
   }

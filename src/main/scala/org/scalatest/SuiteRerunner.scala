@@ -27,7 +27,7 @@ import Suite.formatterForSuiteAborted
  *
  * @author Bill Venners
  */
-private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner {
+private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner with java.io.Serializable {
 
   if (suiteClassName == null)
     throw new NullPointerException

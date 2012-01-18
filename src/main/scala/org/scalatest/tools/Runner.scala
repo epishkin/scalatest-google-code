@@ -50,7 +50,7 @@ import scala.collection.mutable.ArrayBuffer
 [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] 
 [-n &lt;includes&gt;] [-l &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; 
 [...]] [-j &lt;junit class name&gt; [...]] [-m &lt;members-only suite path&gt; 
-[...]] [-w &lt;wildcard suite path&gt; [...]] [-t &lt;TestNG config file 
+[...]] [-w &lt;wildcard suite path&gt; [...]] [-b &lt;TestNG config file 
 path&gt; [...]]
  * </pre>
  *
@@ -375,11 +375,11 @@ path&gt; [...]]
  * <h2>Specifying TestNG XML config file paths</h2>
  *
  * <p>
- * If you specify one or more file paths with <code>-t</code>, <code>Runner</code> will create a <code>org.scalatest.testng.TestNGWrapperSuite</code>,
+ * If you specify one or more file paths with <code>-b</code> (b for Beust, the last name of TestNG's creator), <code>Runner</code> will create a <code>org.scalatest.testng.TestNGWrapperSuite</code>,
  * passing in a <code>List</code> of the specified paths. When executed, the <code>TestNGWrapperSuite</code> will create one <code>TestNG</code> instance
- * and pass each specified file path to it for running. If you include <code>-t</code> arguments, you must include TestNG's jar file on the class path or runpath.
- * The <code>-t</code> argument will enable you to run existing <code>TestNG</code> tests, including tests written in Java, as part of a ScalaTest run.
- * You need not use <code>-t</code> to run suites written in Scala that extend <code>TestNGSuite</code>. You can simply run such suites with 
+ * and pass each specified file path to it for running. If you include <code>-b</code> arguments, you must include TestNG's jar file on the class path or runpath.
+ * The <code>-b</code> argument will enable you to run existing <code>TestNG</code> tests, including tests written in Java, as part of a ScalaTest run.
+ * You need not use <code>-b</code> to run suites written in Scala that extend <code>TestNGSuite</code>. You can simply run such suites with 
  * <code>-s</code>, <code>-m</code>, or </code>-w</code> parameters.
  * </p>
  *
@@ -550,7 +550,7 @@ object Runner {
     val numThreads: Int = parseConcurrentNumArg(concurrentList)
     val membersOnlyList: List[String] = parseSuiteArgsIntoNameStrings(membersOnlyArgsList, "-m")
     val wildcardList: List[String] = parseSuiteArgsIntoNameStrings(wildcardArgsList, "-w")
-    val testNGList: List[String] = parseSuiteArgsIntoNameStrings(testNGArgsList, "-t")
+    val testNGList: List[String] = parseSuiteArgsIntoNameStrings(testNGArgsList, "-b") ::: parseSuiteArgsIntoNameStrings(testNGArgsList, "-t")
 
     val filter = Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
 
@@ -630,7 +630,7 @@ object Runner {
       // Style advice
       // If it is multiple else ifs, then make it symetrical. If one needs an open curly brace, put it on all
       // If an if just has another if, a compound statement, go ahead and put the open curly brace's around the outer one
-      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-u") || s.startsWith("-d") || s.startsWith("-a") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || /* s.startsWith("-x") || */ s.startsWith("-l") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
+      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-u") || s.startsWith("-d") || s.startsWith("-a") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || /* s.startsWith("-x") || */ s.startsWith("-l") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-b") || s.startsWith("-t")) {
         if (it.hasNext)
           it.next
       }
@@ -774,7 +774,10 @@ object Runner {
 
         concurrent += s
       }
-      else if (s.startsWith("-t")) {
+      else if (s.startsWith("-b") || s.startsWith("-t")) {
+
+        if (s.startsWith("-t"))
+          println("WARNING: -t has been deprecated and will be reused for a different (but still very cool) purpose in ScalaTest 2.0. Please change all uses of -t to -b.")
 
         testNGXMLFiles += s
         if (it.hasNext)
@@ -911,11 +914,21 @@ object Runner {
             throw new IllegalArgumentException("-f needs to be followed by a file name arg: ")
         case "-u" =>
           if (it.hasNext) {
-            val directory = it.next
-            if (!(new File(directory).isDirectory))
-              throw new IllegalArgumentException(
-                "arg for -u option is not a directory [" + directory + "]")
-            else {}
+            val directoryName = it.next
+            val directory = new File(directoryName)
+            if (!directory.isDirectory) {
+              try {
+                directory.mkdirs()
+                if (!directory.exists)
+                  throw new IllegalArgumentException("Unable to create directory: " + directory.getAbsolutePath)
+              }
+              catch {
+                case se: SecurityException => 
+                  throw new IllegalArgumentException("Unable to create directory: " + directory.getAbsolutePath)
+              }
+            }
+            else if (directory.isFile)
+              throw new IllegalArgumentException(directory.getAbsolutePath + " is a file, directory expected.")
           }
           else {
             throw new IllegalArgumentException("-u needs to be followed by a directory name arg: ")
@@ -1123,7 +1136,7 @@ object Runner {
     if (args.exists(_ == null))
       throw new NullPointerException("an arg String was null")
 
-    if (dashArg != "-j" && dashArg != "-s" && dashArg != "-w" && dashArg != "-m" && dashArg != "-t")
+    if (dashArg != "-j" && dashArg != "-s" && dashArg != "-w" && dashArg != "-m" && dashArg != "-b" && dashArg != "-t")
       throw new NullPointerException("dashArg invalid: " + dashArg)
 
     val lb = new ListBuffer[String]
@@ -1295,195 +1308,6 @@ object Runner {
       println("PresentRunAborted")
   }
 */
-
-  private def configSetMinusNonFilterParams(configSet: Set[ReporterConfigParam]) =
-    (((configSet - PresentShortStackTraces) - PresentFullStackTraces) - PresentWithoutColor) - PresentAllDurations
-
-  private[scalatest] def getDispatchReporter(reporterSpecs: ReporterConfigurations, graphicReporter: Option[Reporter], passFailReporter: Option[Reporter], loader: ClassLoader) = {
-
-    def getReporterFromConfiguration(configuration: ReporterConfiguration): Reporter =
-
-      configuration match {
-        case StandardOutReporterConfiguration(configSet) =>
-          if (configSetMinusNonFilterParams(configSet).isEmpty)
-            new StandardOutReporter(
-              configSet.contains(PresentAllDurations),
-              !configSet.contains(PresentWithoutColor),
-              configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
-              configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-            )
-          else
-            new FilterReporter(
-              new StandardOutReporter(
-                configSet.contains(PresentAllDurations),
-                !configSet.contains(PresentWithoutColor),
-                configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
-                configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-              ),
-              configSet
-            )
-
-      case StandardErrReporterConfiguration(configSet) =>
-        if (configSetMinusNonFilterParams(configSet).isEmpty)
-          new StandardErrReporter(
-            configSet.contains(PresentAllDurations),
-            !configSet.contains(PresentWithoutColor),
-            configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
-            configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-          )
-        else
-          new FilterReporter(
-            new StandardErrReporter(
-              configSet.contains(PresentAllDurations),
-              !configSet.contains(PresentWithoutColor),
-              configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
-              configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-            ),
-            configSet
-          )
-
-      case FileReporterConfiguration(configSet, fileName) =>
-        if (configSetMinusNonFilterParams(configSet).isEmpty)
-          new FileReporter(
-            fileName,
-            configSet.contains(PresentAllDurations),
-            !configSet.contains(PresentWithoutColor),
-            configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
-            configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-          )
-        else
-          new FilterReporter(
-            new FileReporter(
-              fileName,
-              configSet.contains(PresentAllDurations),
-              !configSet.contains(PresentWithoutColor),
-              configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
-              configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-            ),
-            configSet
-          )
-
-      case JunitXmlReporterConfiguration(configSet, directory) =>
-        new JunitXmlReporter(directory)
-
-      case DashboardReporterConfiguration(configSet, directory, numFilesToArchive) =>
-        new DashboardReporter(directory, numFilesToArchive)
-
-      case XmlReporterConfiguration(configSet, directory) =>
-        new XmlReporter(directory)
-
-      // TODO: For now do this so I don't have to keep fixing HtmlReporter which is just a copy of StringReporter.
-      // I think in the future we need to have HTMLReporter supply a directory not a file name
-      case HtmlReporterConfiguration(configSet, fileName) =>
-        if (configSetMinusNonFilterParams(configSet).isEmpty)
-          new FileReporter(
-            fileName,
-            configSet.contains(PresentAllDurations),
-            !configSet.contains(PresentWithoutColor),
-            configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
-            configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-          )
-        else
-          new FilterReporter(
-            new FileReporter(
-              fileName,
-              configSet.contains(PresentAllDurations),
-              !configSet.contains(PresentWithoutColor),
-              configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
-              configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-            ),
-            configSet
-          )
-/*
-      case HtmlReporterConfiguration(configSet, fileName) =>
-        if (configSetMinusNonFilterParams(configSet).isEmpty)
-          new HtmlReporter(
-            fileName,
-            configSet.contains(PresentAllDurations),
-            !configSet.contains(PresentWithoutColor),
-            configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
-            configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-          )
-        else
-          new FilterReporter(
-            new HtmlReporter(
-              fileName,
-              configSet.contains(PresentAllDurations),
-              !configSet.contains(PresentWithoutColor),
-              configSet.contains(PresentShortStackTraces) || configSet.contains(PresentFullStackTraces),
-              configSet.contains(PresentFullStackTraces) // If they say both S and F, F overrules
-            ),
-            configSet
-          )
-*/
-
-      case CustomReporterConfiguration(configSet, reporterClassName) => {
-        val customReporter = getCustomReporter(reporterClassName, loader, "-r... " + reporterClassName)
-        if (configSet.isEmpty)
-          customReporter
-        else
-          new FilterReporter(customReporter, configSet)
-      }
-      case GraphicReporterConfiguration(configSet) => throw new RuntimeException("Should never happen.")
-    }
-
-    val reporterSeq =
-      for (spec <- reporterSpecs) yield
-        getReporterFromConfiguration(spec)
-
-    val almostFullReporterList: List[Reporter] =
-      graphicReporter match {
-        case None => reporterSeq.toList
-        case Some(gRep) => gRep :: reporterSeq.toList
-      }
-      
-    val fullReporterList: List[Reporter] =
-      passFailReporter match {
-        case Some(pfr) => pfr :: almostFullReporterList
-        case None => almostFullReporterList
-      }
-
-    new DispatchReporter(fullReporterList)
-  }
-
-  private def getCustomReporter(reporterClassName: String, loader: ClassLoader, argString: String): Reporter = {
-    try {
-      val reporterClass: java.lang.Class[_] = loader.loadClass(reporterClassName) 
-      reporterClass.newInstance.asInstanceOf[Reporter]
-    }    // Could probably catch ClassCastException too
-    catch {
-      case e: ClassNotFoundException => {
-
-        val msg1 = Resources("cantLoadReporterClass", reporterClassName)
-        val msg2 = Resources("probarg", argString)
-        val msg = msg1 + "\n" + msg2
-    
-        val iae = new IllegalArgumentException(msg)
-        iae.initCause(e)
-        throw iae
-      }
-      case e: InstantiationException => {
-
-        val msg1 = Resources("cantInstantiateReporter", reporterClassName)
-        val msg2 = Resources("probarg", argString)
-        val msg = msg1 + "\n" + msg2
-    
-        val iae = new IllegalArgumentException(msg)
-        iae.initCause(e)
-        throw iae
-      }
-      case e: IllegalAccessException => {
-
-        val msg1 = Resources("cantInstantiateReporter", reporterClassName)
-        val msg2 = Resources("probarg", argString)
-        val msg = msg1 + "\n" + msg2
-    
-        val iae = new IllegalArgumentException(msg)
-        iae.initCause(e)
-        throw iae
-      }
-    }
-  }
 
   private[scalatest] def doRunRunRunDaDoRunRun(
     dispatch: DispatchReporter,
@@ -1701,7 +1525,7 @@ object Runner {
     try {
       Thread.currentThread.setContextClassLoader(loader)
       try {
-        val dispatchReporter = getDispatchReporter(reporterSpecs, graphicReporter, passFailReporter, loader)
+        val dispatchReporter = ReporterFactory.getDispatchReporter(reporterSpecs, graphicReporter, passFailReporter, loader)
         try {
           f(loader, dispatchReporter)
         }

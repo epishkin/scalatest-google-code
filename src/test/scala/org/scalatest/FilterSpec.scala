@@ -6,10 +6,6 @@ import scala.collection.immutable.TreeSet
 import Arbitrary._
 import Prop._  */
 
-/*
-I think tagsToInclude and testNamesToInclude should intersect. If both are defined, then only tests with names included
-in testNamesToInclude, and tags with at least one tagToInclude, that don't have a tag mentioned in tagsToExclude, will be returned.
-*/
 class FilterSpec extends FunSpec {
 
   describe("A Filter") {
