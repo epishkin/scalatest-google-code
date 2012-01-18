@@ -181,7 +181,7 @@ write a sbt plugin to deploy the task.
               val types = c.getParameterTypes
               types.length == 1 && types(0).isAssignableFrom(testClass)
             }
-            constructor.get.newInstance(testClass.newInstance.asInstanceOf[Object]).asInstanceOf[Suite]
+            constructor.get.newInstance(testClass).asInstanceOf[Suite]
         }
 
         val formatter = formatterForSuiteStarting(suite)

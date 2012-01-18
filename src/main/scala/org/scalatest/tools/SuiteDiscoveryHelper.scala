@@ -139,13 +139,13 @@ private[scalatest] object SuiteDiscoveryHelper {
   }
   
   private[scalatest] def isRunnable(clazz: java.lang.Class[_]): Boolean = {
-    val runWithAnnotation = clazz.getAnnotation(classOf[WrapWith])
-    if (runWithAnnotation != null) {
-      val suiteClazz = runWithAnnotation.value
-      val constructorList = suiteClazz.getDeclaredConstructors()
+    val wrapWithAnnotation = clazz.getAnnotation(classOf[WrapWith])
+    if (wrapWithAnnotation != null) {
+      val wrapperSuiteClazz = wrapWithAnnotation.value
+      val constructorList = wrapperSuiteClazz.getDeclaredConstructors()
       constructorList.exists { c => 
         val types = c.getParameterTypes
-        types.length == 1 && types(0).isAssignableFrom(clazz)
+        types.length == 1 && types(0) == classOf[java.lang.Class[_]]
       }
     }
     else
