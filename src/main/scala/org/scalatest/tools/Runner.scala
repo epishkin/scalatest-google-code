@@ -1274,7 +1274,18 @@ object Runner {
             for (suiteClassName <- suitesList)
               yield {
                 val clazz = loader.loadClass(suiteClassName)
-                clazz.newInstance.asInstanceOf[Suite]
+                val wrapWithAnnotation = clazz.getAnnotation(classOf[WrapWith])
+                if (wrapWithAnnotation == null)
+                  clazz.newInstance.asInstanceOf[Suite]
+                else {
+                  val suiteClazz = wrapWithAnnotation.value
+                  val constructorList = suiteClazz.getDeclaredConstructors()
+                  val constructor = constructorList.find { c => 
+                    val types = c.getParameterTypes
+                    types.length == 1 && types(0) == classOf[java.lang.Class[_]]
+                  }
+                  constructor.get.newInstance(clazz).asInstanceOf[Suite]
+                } 
               }
 
           val junitSuiteInstances: List[Suite] =

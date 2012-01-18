@@ -179,7 +179,7 @@ write a sbt plugin to deploy the task.
           val constructorList = suiteClazz.getDeclaredConstructors()
           val constructor = constructorList.find { c => 
               val types = c.getParameterTypes
-              types.length == 1 && types(0).isAssignableFrom(testClass)
+              types.length == 1 && types(0) == classOf[java.lang.Class[_]]
             }
             constructor.get.newInstance(testClass).asInstanceOf[Suite]
         }
