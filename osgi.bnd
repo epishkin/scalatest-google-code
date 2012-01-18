@@ -1,0 +1,28 @@
+Main-Class: org.scalatest.tools.Runner
+Class-Path: junit-4.1.jar
+
+Bundle-SymbolicName: org.scalatest
+Bundle-Version: ${release}
+Bundle-Name: ScalaTest
+Bundle-Description: ScalaTest is an open-source test framework for the Java Platform designed to increase your productivity by letting you write fewer lines of test code that more clearly reveal your intent.
+Bundle-DocURL: http://www.scalatest.org/
+Bundle-Vendor: Artima, Inc.
+
+Import-Package: org.scalatest.*, scala.*;version="[${scala.version}, ${scala.version}]", *;resolution:=optional
+
+Export-Package: org.scalatest.*;version="${release}"
+
+Main-Class: org.scalatest.tools.Runner
+Class-Path: junit-4.1.jar
+
+Bundle-SymbolicName: org.scalatest
+Bundle-Version: ${release}
+Bundle-Name: ScalaTest
+Bundle-Description: ScalaTest is an open-source test framework for the Java Platform designed to increase your productivity by letting you write fewer lines of test code that more clearly reveal your intent.
+Bundle-DocURL: http://www.scalatest.org/
+Bundle-Vendor: Artima, Inc.
+
+Import-Package: org.scalatest.*, scala.*;version="[${scala.version}, ${scala.version}]", *;resolution:=optional
+
+Export-Package: org.scalatest.*;version="${release}"
+
