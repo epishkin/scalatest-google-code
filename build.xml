@@ -195,7 +195,7 @@
 
         <!-- Compile the Scala code from ${scalasrc} into ${classes}. Scalac will parse the referenced .java files. -->
         <!-- Compile the Scala code from ${build.generated.src} into ${classes}. Scalac will parse any referenced .java files. -->
-        <scalac srcdir="${scalasrc}:${build.generated.src}:${javasrc}" destdir="${classes}" target="jvm-1.5" deprecation="yes" classpathref="build.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
+        <scalac srcdir="${scalasrc}:${build.generated.src}:${javasrc}" destdir="${classes}" target="jvm-1.5" deprecation="no" classpathref="build.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
 
     	<!-- Compile the Java code from ${javasrc} into ${classes} -->
     	<javac srcdir="${javasrc}" destdir="${classes}" compiler="javac1.5" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
@@ -277,18 +277,20 @@
 -->
     </target>
 
+     <!-- Put everything in ${jar.contents} into the scalatest.jar file -->
     <target name="dist" depends="compile">
         <!-- Create the distribution directory -->
         <mkdir dir="${dist}/lib" />
         <delete file="${dist}/lib/scalatest.jar" />
 
-        <!-- Put everything in ${jar.contents} into the MyProject-${DSTAMP}.jar file -->
-        <jar jarfile="${dist}/lib/scalatest.jar" basedir="${jar.contents}">
-            <manifest>
-                <attribute name="Main-Class" value="org.scalatest.tools.Runner" />
-                <attribute name="Class-Path" value="junit-4.1.jar" />
-            </manifest>
-        </jar>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties"
+                 classpath="ant-lib/biz.aQute.bnd.jar"/>
+
+        <!-- Create jar, including OSGi metadata -->
+        <bnd classpath="${jar.contents}" sourcepath="${jar.contents}"
+             eclipse="false" failok="false" exceptions="true" files="osgi.bnd"
+             output="${dist}/lib/scalatest.jar" /> 
+
         <jar jarfile="${dist}/lib/scalatest-wbt.jar" basedir="${build.tests}" includes="org/scalatest/*.class" />
 
         <echo message="All finished building ${project.name}!" />
