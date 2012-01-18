@@ -4,4 +4,4 @@ import org.scalatest.Suite
 import org.scalatest.DoNotDiscover
 
 @DoNotDiscover
-class SomeApiClassRunner(someApi: SomeApiClass) extends Suite
+class SomeApiClassRunner(someApi: Class[_ <: SomeApiClass]) extends Suite

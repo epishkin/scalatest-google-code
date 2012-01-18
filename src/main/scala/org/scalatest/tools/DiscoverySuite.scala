@@ -43,9 +43,9 @@ private[scalatest] class DiscoverySuite(path: String, accessibleSuites: Set[Stri
             val constructorList = suiteClazz.getDeclaredConstructors()
             val constructor = constructorList.find { c => 
               val types = c.getParameterTypes
-              types.length == 1 && types(0).isAssignableFrom(clazz)
+              types.length == 1 && types(0) == classOf[java.lang.Class[_]]
             }
-            constructor.get.newInstance(clazz.newInstance.asInstanceOf[Object]).asInstanceOf[Suite]
+            constructor.get.newInstance(clazz).asInstanceOf[Suite]
           }
         }
         catch {

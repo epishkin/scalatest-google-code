@@ -204,9 +204,9 @@ Tags to include and exclude: -n "CheckinTests FunctionalTests" -l "SlowTests Net
           val constructorList = suiteClazz.getDeclaredConstructors()
           val constructor = constructorList.find { c => 
               val types = c.getParameterTypes
-              types.length == 1 && types(0).isAssignableFrom(suiteClass)
+              types.length == 1 && types(0) == classOf[java.lang.Class[_]]
             }
-            constructor.get.newInstance(suiteClass.newInstance.asInstanceOf[Object]).asInstanceOf[Suite]
+          constructor.get.newInstance(suiteClass).asInstanceOf[Suite]
         }
 
         val formatter = formatterForSuiteStarting(suite)

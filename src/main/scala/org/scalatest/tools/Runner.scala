@@ -34,6 +34,7 @@ import org.scalatest.junit.JUnitWrapperSuite
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 import scala.collection.mutable.ArrayBuffer
+import SuiteDiscoveryHelper._
 
 /**
  * <p>
@@ -1365,9 +1366,12 @@ object Runner {
     try {
       val loadProblemsExist =
         try {
-          val unassignableList = suitesList.filter(className => !classOf[Suite].isAssignableFrom(loader.loadClass(className)))
-          if (!unassignableList.isEmpty) {
-            val names = for (className <- unassignableList) yield " " + className
+          val unrunnableList = suitesList.filter{ className => 
+            loader.loadClass(className) // Check if the class exist, so if not we get the nice cannot load suite error message.
+            !isAccessibleSuite(className, loader) && !isRunnable(className, loader)
+          }
+          if (!unrunnableList.isEmpty) {
+            val names = for (className <- unrunnableList) yield " " + className
             dispatch(RunAborted(tracker.nextOrdinal(), Resources("nonSuite") + names, None))
             true
           }
@@ -1388,7 +1392,18 @@ object Runner {
             for (suiteClassName <- suitesList)
               yield {
                 val clazz = loader.loadClass(suiteClassName)
-                clazz.newInstance.asInstanceOf[Suite]
+                val wrapWithAnnotation = clazz.getAnnotation(classOf[WrapWith])
+                if (wrapWithAnnotation == null)
+                  clazz.newInstance.asInstanceOf[Suite]
+                else {
+                  val suiteClazz = wrapWithAnnotation.value
+                  val constructorList = suiteClazz.getDeclaredConstructors()
+                  val constructor = constructorList.find { c => 
+                    val types = c.getParameterTypes
+                    types.length == 1 && types(0) == classOf[java.lang.Class[_]]
+                  }
+                  constructor.get.newInstance(clazz).asInstanceOf[Suite]
+                } 
               }
 
           val junitSuiteInstances: List[Suite] =
@@ -1411,7 +1426,7 @@ object Runner {
             else {
               println("DEBUG: Discovery Starting")
               val discoveryStartTime = System.currentTimeMillis
-              val accessibleSuites = SuiteDiscoveryHelper.discoverSuiteNames(runpath, loader)
+              val accessibleSuites = discoverSuiteNames(runpath, loader)
               val discoveryDuration = System.currentTimeMillis - discoveryStartTime
               println("DEBUG: Discovery Completed: " + discoveryDuration + " milliseconds")
 
