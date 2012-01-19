@@ -1463,8 +1463,6 @@ trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite 
   */
   def nestedSuites: List[Suite] = Nil
 
-  def filterSelections(filter: Filter, selections: List[Selection]): Filter = null // TODO: Fill this in
-
   /**
    * Executes this <code>Suite</code>, printing results to the standard output.
    *
@@ -2421,18 +2419,20 @@ trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite 
         }
       }
     }
-
-    distributor match {
-      case None =>
-        val nestedSuitesArray = nestedSuites.toArray
-        for (i <- 0 until nestedSuitesArray.length) {
-          if (!stopRequested()) {
-            callExecuteOnSuite(nestedSuitesArray(i))
+    
+    if (filter.includeNestedSuites) {
+      distributor match {
+        case None =>
+          val nestedSuitesArray = nestedSuites.toArray
+          for (i <- 0 until nestedSuitesArray.length) {
+            if (!stopRequested()) {
+              callExecuteOnSuite(nestedSuitesArray(i))
+            }
           }
-        }
-      case Some(distribute) =>
-        for (nestedSuite <- nestedSuites)
-          distribute(nestedSuite, tracker.nextTracker())
+        case Some(distribute) =>
+          for (nestedSuite <- nestedSuites)
+            distribute(nestedSuite, tracker.nextTracker())
+      }
     }
   }
 
