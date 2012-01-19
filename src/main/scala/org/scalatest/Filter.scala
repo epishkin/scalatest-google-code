@@ -27,7 +27,7 @@ import Filter.IgnoreTag
  * @throws NullPointerException if either <code>tagsToInclude</code> or <code>tagsToExclude</code> are null
  * @throws IllegalArgumentException if <code>tagsToInclude</code> is defined, but contains an empty set
  */
-final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Set[String], val includeNestedSuites: Boolean = true) extends Function2[Set[String], Map[String, Set[String]], List[(String, Boolean)]] {
+final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Set[String], val includeNestedSuites: Boolean = true, val dynaTags: DynaTags = Map.empty) extends Function2[Set[String], Map[String, Set[String]], List[(String, Boolean)]] {
 
   if (tagsToInclude == null)
     throw new NullPointerException("tagsToInclude was null")
@@ -105,6 +105,10 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
 
     filtered
   }
+  
+  def apply(testNames: Set[String], tags: Map[String, Set[String]], suiteId: String): List[(String, Boolean)] = {
+    apply(testNames, tags)
+  }
 
   /**
    * Filter one test name based on its tags.
@@ -143,6 +147,10 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
       (true, false)
     else
       (false, list.head._2)
+  }
+  
+  def apply(testName: String, tags: Map[String, Set[String]], suiteId: String): (Boolean, Boolean) = {
+    apply(testName, tags)
   }
 
   /**

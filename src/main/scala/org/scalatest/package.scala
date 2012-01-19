@@ -80,4 +80,8 @@ package object scalatest {
   def run(suite: Suite, testName: String = null, configMap: Map[String, Any] = Map()) {
     defaultShell.run(suite, testName, configMap)
   }
+  
+  // Suite ID -> Test Name -> Set of Tag Names
+  // TODO: Add scaladoc there.
+  type DynaTags = Map[String, Map[String, Set[String]]]
 }

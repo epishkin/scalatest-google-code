@@ -168,9 +168,9 @@ trait SharedHelpers extends Assertions {
     val infoProvidedOption = indexedList.find(_._1.isInstanceOf[InfoProvided])
     val testSucceededOption = indexedList.find(_._1.isInstanceOf[TestSucceeded])
 
-    assert(testStartingOption.isDefined, "TestStarting for Suite='" + suite.suiteID + "', testName='" + testName + "' not defined.")
-    assert(infoProvidedOption.isDefined, "InfoProvided for Suite='" + suite.suiteID + "', testName='" + testName + "' not defined.")
-    assert(testSucceededOption.isDefined, "TestSucceeded for Suite='" + suite.suiteID + "', testName='" + testName + "' not defined.")
+    assert(testStartingOption.isDefined, "TestStarting for Suite='" + suite.suiteId + "', testName='" + testName + "' not defined.")
+    assert(infoProvidedOption.isDefined, "InfoProvided for Suite='" + suite.suiteId + "', testName='" + testName + "' not defined.")
+    assert(testSucceededOption.isDefined, "TestSucceeded for Suite='" + suite.suiteId + "', testName='" + testName + "' not defined.")
 
     val testStartingIndex = testStartingOption.get._2
     val infoProvidedIndex = infoProvidedOption.get._2
