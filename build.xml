@@ -714,6 +714,8 @@
                 value="${build}/scalatest-scaladoc.jar"/>
       <property name="deploy.javadoc" 
                 value="${build}/scalatest-javadoc.jar"/>
+      <property name="deploy.release"
+                value="${release}"/>
 
       <antcall target="deploy-jars"/>
     </target>
@@ -808,6 +810,8 @@
                 value="target/redeploy/scalatest-scaladoc.jar"/>
       <property name="deploy.javadoc" 
                 value="target/redeploy/scalatest-javadoc.jar"/>
+      <property name="deploy.release"
+                value="${scalatest.version}"/>
 
       <antcall target="deploy-jars"/>
     </target>
@@ -840,12 +844,12 @@
 
       <condition property="maven.repository.url" value="${snapshot.repository}"
                  else="${release.repository}">
-        <contains string="${release}" substring="-SNAPSHOT"/>
+        <contains string="${deploy.release}" substring="-SNAPSHOT"/>
       </condition>
 
       <condition property="repository.id" value="${snapshot.repository.id}"
                  else="${release.repository.id}">
-        <contains string="${release}" substring="-SNAPSHOT"/>
+        <contains string="${deploy.release}" substring="-SNAPSHOT"/>
       </condition>
 
       <artifact:mvn>
