@@ -17,6 +17,8 @@ package org.scalatest
 
 import java.lang.reflect.{InvocationTargetException, Method, Modifier}
 
+// TODO: Document that no-arg methods need parens, like FunSpec invokeTarget getPath() 
+// i.e, can't say without the ending parens: FunSpec invokeTarget getPath
 /**
  * Trait that facilitates the testing of private methods.
  *
