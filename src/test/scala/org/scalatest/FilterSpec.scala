@@ -93,6 +93,24 @@ class FilterSpec extends FunSpec {
       validateIgnoreOtherBehavior(filter)
     }
 
+    def validateIgnoreOtherBehaviorDynamic(filter: Filter) {
+      val filtered = filter(Set("myTestName"), Map("myTestName" -> Set("org.scalatest.Ignore", "Other")), suiteId)
+      assert(filtered exists (tuple => tuple._1 == "myTestName"), "myTestName was in the tags map, but did not show up in the result of apply") 
+      assert(filtered exists (tuple => tuple._1 == "myTestName" && tuple._2 == true), "myTestName was in the result of apply, but was not marked as ignored") 
+    }
+
+    it("should report a test DYNAMICALLY tagged as Other as ignored when Some(Other) is passed to filter" +
+            "for tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("Other")), Set("no ignore here"))
+      validateIgnoreOtherBehavior(filter)
+    }
+
+    it("should report a test DYNAMICALLY tagged as Other as ignored when Some(Other) is passed to filter" +
+            "for tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("Other")), Set("org.scalatest.Ignore"))
+      validateIgnoreOtherBehavior(filter)
+    }
+
     def validateNotReportingIgnoresBehavior(filter: Filter) {
       val filtered = filter(Set("myTestName"), Map("myTestName" -> Set("org.scalatest.Ignore")), suiteId)
       assert(!(filtered exists (tuple => tuple._1 == "myTestName")), "myTestName's Ignore tag was not in tagsToInclude, but showed up in the result of apply") 
