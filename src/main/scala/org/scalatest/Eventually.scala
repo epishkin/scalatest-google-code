@@ -26,12 +26,12 @@ import scala.annotation.tailrec
 
 /**
  * Trait that provides the <code>eventually</code> construct, which periodically retries executing
- * a passed by-name parameter, until it either succeeds or the configured maximum number of failed attempts is  
- * exhausted.
+ * a passed by-name parameter, until it either succeeds or the configured timeout has been surpassed.
  *
  * <p>
  * The by-name parameter "succeeds" if it returns a result. It "fails" if it throws any exception that
- * would normally cause a test to fail. (These are any exceptions except those listed in the
+ * would normally cause a test to fail. (These are any exceptions except <a href="TestPendingException"><code>TestPendingException</code></a> and
+ * <code>Error</code>s listed in the
  * <a href="Suite.html#errorHandling">Treatment of <code>java.lang.Error</code>s</a> section of the
  * documentation of trait <code>Suite</code>.)
  * </p>
@@ -47,24 +47,24 @@ import scala.annotation.tailrec
  * </pre>
  *
  * <p>
- * However, because the default number of attempts is 100, the following invocation of
+ * However, because the default timeout one second, the following invocation of
  * <code>eventually</code> would ultimately produce a <code>TestFailedException</code>:
  * </p>
  *
  * <pre class="stHighlight">
  * val xs = 1 to 125
  * val it = xs.iterator
- * eventually { it.next should be (110) }
+ * eventually { Thread.sleep(999); it.next should be (110) }
  * </pre>
  *
  * <p>
- * Assuming the default configuration parameters, <code>maxAttempts</code> 100 and <code>interval</code> 10 milliseconds,
+ * Assuming the default configuration parameters, <code>timeout</code> 1000 milliseconds and <code>interval</code> 10 milliseconds,
  * were passed implicitly to <code>eventually</code>, the detail message of the thrown
- * <code>TestFailedException</code> would be:
+ * <code>TestFailedException</code> would look like:
  * </p>
  *
  * <p>
- * <code>The code passed to eventually never returned normally. Attempted 100 times, sleeping 10 milliseconds between each attempt.</code>
+ * <code>The code passed to eventually never returned normally. Attempted 2 times, sleeping 10 milliseconds between each attempt.</code>
  * </p>
  *
  * <a name="eventuallyConfig"></a><h2>Configuration of <code>eventually</code></h2>
@@ -89,13 +89,13 @@ import scala.annotation.tailrec
  * </tr>
  * <tr>
  * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
- * maxAttempts
+ * timeout
  * </td>
  * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
- * 100
+ * 1000
  * </td>
  * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: left">
- * the maximum number of unsuccessful attempts before giving up and throwing <code>TestFailedException</code>
+ * the maximum amount of time in milliseconds to allow unsuccessful attempts before giving up and throwing <code>TestFailedException</code>
  * </td>
  * </tr>
  * <tr>
@@ -120,12 +120,12 @@ import scala.annotation.tailrec
  * <code>eventually</code> in a suite you can override this
  * val (or hide it, for example, if you are importing the members of the <code>Eventually</code> companion object rather
  * than mixing in the trait). For example, if
- * you always want the default <code>maxAttempts</code> to be 200 and the default <code>interval</code> to be 5 milliseconds, you
+ * you always want the default <code>timeout</code> to be 2 seconds and the default <code>interval</code> to be 5 milliseconds, you
  * can override <code>eventuallyConfig</code>, like this:
  *
  * <pre class="stHighlight">
  * implicit override val eventuallyConfig =
- *   EventuallyConfig(maxAttempts = 200, interval = 5)
+ *   EventuallyConfig(timeout = 2000, interval = 5)
  * </pre>
  *
  * <p>
@@ -134,35 +134,35 @@ import scala.annotation.tailrec
  *
  * <pre class="stHighlight">
  * implicit val eventuallyConfig =
- *   EventuallyConfig(maxAttempts = 200, interval = 5)
+ *   EventuallyConfig(timeout = 2000, interval = 5)
  * </pre>
  *
  * <p>
  * In addition to taking a <code>EventuallyConfig</code> object as an implicit parameter, the <code>eventually</code> methods of trait
  * <code>Eventually</code> include overloaded forms that take one or two <code>EventuallyConfigParam</code>
  * objects that you can use to override the values provided by the implicit <code>EventuallyConfig</code> for a single <code>eventually</code>
- * invocation. For example, if you want to set <code>maxAttempts</code> to 500 for just one particular <code>eventually</code> invocation,
+ * invocation. For example, if you want to set <code>timeout</code> to 5000 for just one particular <code>eventually</code> invocation,
  * you can do so like this:
  * </p>
  *
  * <pre class="stHighlight">
- * eventually (maxAttempts(500)) { it.next should be (110) }
+ * eventually (timeout(5000)) { Thread.sleep(10); it.next should be (110) }
  * </pre>
  *
  * <p>
- * This invocation of <code>eventually</code> will use 500 for <code>maxAttempts</code> and whatever value is specified by the 
+ * This invocation of <code>eventually</code> will use 5000 for <code>timeout</code> and whatever value is specified by the 
  * implicitly passed <code>EventuallyConfig</code> object for the <code>interval</code> configuration parameter.
  * If you want to set both configuration parameters in this way, just list them separated by commas:
  * </p>
  * 
  * <pre class="stHighlight">
- * eventually (maxAttempts(500), interval(5)) { it.next should be (110) }
+ * eventually (timeout(5000), interval(5)) { it.next should be (110) }
  * </pre>
  *
  * @author Bill Venners
  * @author Chua Chee Seng
  */
-private[scalatest] trait Eventually {
+trait Eventually {
 
   /**
    * Configuration object for the <code>eventually</code> construct.
@@ -174,10 +174,10 @@ private[scalatest] trait Eventually {
    * <table style="border-collapse: collapse; border: 1px solid black">
    * <tr>
    * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
-   * maxAttempts
+   * timeout
    * </td>
    * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
-   * 100
+   * 1000
    * </td>
    * </tr>
    * <tr>
@@ -190,17 +190,17 @@ private[scalatest] trait Eventually {
    * </tr>
    * </table>
    *
-   * @param maxAttempts the maximum number of unsuccessful attempts before giving up and throwing
+   * @param timeout the maximum amount of time in milliseconds to allow unsuccessful attempts before giving up and throwing
    *   <code>TestFailedException</code>.
    * @param interval the number of milliseconds to sleep between each attempt
-   * @throws IllegalArgumentException if the specified <code>maxAttempts</code> value is less than or equal to zero,
+   * @throws IllegalArgumentException if the specified <code>timeout</code> value is less than or equal to zero,
    *   the specified <code>interval</code> value is less than zero.
    *
    * @author Bill Venners
    * @author Chua Chee Seng
    */
-  final case class EventuallyConfig(maxAttempts: Int = 100, interval: Int = 10) {
-    require(maxAttempts > 0, "maxAttempts had value " + maxAttempts + ", but must be greater than zero")
+  final case class EventuallyConfig(timeout: Int = 1000, interval: Int = 10) {
+    require(timeout > 0, "timeout had value " + timeout + ", but must be greater than zero")
     require(interval >= 0, "interval had value " + interval + ", but must be greater than or equal to zero")
   }
 
@@ -218,16 +218,16 @@ private[scalatest] trait Eventually {
   sealed abstract class EventuallyConfigParam
 
   /**
-   * An <code>EventuallyConfigParam</code> that specifies the maximum number of times to invoke the
-   * by-name parameter passed to <code>eventually</code> with an unsucessful result.
+   * An <code>EventuallyConfigParam</code> that specifies the maximum amount of time in milliseconds to allow invocations of the
+   * by-name parameter passed to <code>eventually</code> to give an unsucessful result.
    *
-   * @param value the maximum number of unsuccessful attempts before giving up and throwing
+   * @param value the maximum amount of time in milliseconds to allow unsuccessful attempts before giving up and throwing
    *   <code>TestFailedException</code>.
    * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
    *
    * @author Bill Venners
    */
-  case class MaxAttempts(value: Int) extends EventuallyConfigParam {
+  case class Timeout(value: Int) extends EventuallyConfigParam {
     require(value > 0, "The passed value, " + value + ", was not greater than zero")
   }
 
@@ -255,13 +255,13 @@ private[scalatest] trait Eventually {
   implicit val eventuallyConfig = EventuallyConfig()
 
   /**
-   * Returns a <code>MaxAttempts</code> configuration parameter containing the passed value, which
-   * specifies the maximum number of times to invoke the
-   * by-name parameter passed to <code>eventually</code> with an unsucessful result.
+   * Returns a <code>Timeout</code> configuration parameter containing the passed value, which
+   * specifies the maximum amount of time in milliseconds to allow invocations of the
+   * by-name parameter passed to <code>eventually</code> to give an unsucessful result.
    *
    * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
    */
-  def maxAttempts(value: Int) = MaxAttempts(value)
+  def timeout(value: Int) = Timeout(value)
 
   /**
    * Returns an <code>Interval</code> configuration parameter containing the passed value, which
@@ -273,101 +273,108 @@ private[scalatest] trait Eventually {
   def interval(value: Int) = Interval(value)
 
   /**
-   * Invokes the passed by-name parameter repeatedly until it either succeeds, or fails a configured maximum
-   * number of times, sleeping a configured interval between attempts.
+   * Invokes the passed by-name parameter repeatedly until it either succeeds, or a configured maximum
+   * amount of time has passed, sleeping a configured interval between attempts.
    *
    * <p>
    * The by-name parameter "succeeds" if it returns a result. It "fails" if it throws any exception that
-   * would normally cause a test to fail. (These are any exceptions except those listed in the
+   * would normally cause a test to fail. (These are any exceptions except <a href="TestPendingException"><code>TestPendingException</code></a> and
+   * <code>Error</code>s listed in the
    * <a href="Suite.html#errorHandling">Treatment of <code>java.lang.Error</code>s</a> section of the
    * documentation of trait <code>Suite</code>.)
    * </p>
    *
    * <p>
-   * The maximum attempts to make before giving up is configured by the value contained in the passed
-   * <code>maxAttempts</code> parameter.
+   * The maximum amount of time in milliseconds to tolerate unsuccessful attempts before giving up and throwing
+   * <code>TestFailedException</code> is configured by the value contained in the passed
+   * <code>timeout</code> parameter.
    * The interval to sleep between attempts is configured by the value contained in the passed
    * <code>interval</code> parameter.
    * </p>
    *
-   * @param maxAttempts the <code>MaxAttempts</code> configuration parameter
+   * @param timeout the <code>Timeout</code> configuration parameter
    * @param interval the <code>Interval</code> configuration parameter
    * @param fun the by-name parameter to repeatedly invoke
-   * @param config an <code>EventuallyConfig</code> object containing <code>maxAttempts</code> and
+   * @param config an <code>EventuallyConfig</code> object containing <code>timeout</code> and
    *          <code>interval</code> parameters that are unused by this method
    * @return the result of invoking the <code>fun</code> by-name parameter, the first time it succeeds
    */
-  def eventually[T](maxAttempts: MaxAttempts, interval: Interval)(fun: => T)(implicit config: EventuallyConfig): T =
-    eventually(fun)(EventuallyConfig(maxAttempts.value, interval.value))
+  def eventually[T](timeout: Timeout, interval: Interval)(fun: => T)(implicit config: EventuallyConfig): T =
+    eventually(fun)(EventuallyConfig(timeout.value, interval.value))
 
   /**
-   * Invokes the passed by-name parameter repeatedly until it either succeeds, or fails a configured maximum
-   * number of times, sleeping a configured interval between attempts.
+   * Invokes the passed by-name parameter repeatedly until it either succeeds, or a configured maximum
+   * amount of time has passed, sleeping a configured interval between attempts.
    *
    * <p>
    * The by-name parameter "succeeds" if it returns a result. It "fails" if it throws any exception that
-   * would normally cause a test to fail. (These are any exceptions except those listed in the
+   * would normally cause a test to fail. (These are any exceptions except <a href="TestPendingException"><code>TestPendingException</code></a> and
+   * <code>Error</code>s listed in the
    * <a href="Suite.html#errorHandling">Treatment of <code>java.lang.Error</code>s</a> section of the
    * documentation of trait <code>Suite</code>.)
    * </p>
    *
    * <p>
-   * The maximum attempts to make before giving up is configured by the value contained in the passed
-   * <code>maxAttempts</code> parameter.
+   * The maximum amount of time in milliseconds to tolerate unsuccessful attempts before giving up and throwing
+   * <code>TestFailedException</code> is configured by the value contained in the passed
+   * <code>timeout</code> parameter.
    * The interval to sleep between attempts is configured by the value contained in the passed
    * <code>interval</code> parameter.
    * </p>
    *
    * @param interval the <code>Interval</code> configuration parameter
-   * @param maxAttempts the <code>MaxAttempts</code> configuration parameter
+   * @param timeout the <code>Timeout</code> configuration parameter
    * @param fun the by-name parameter to repeatedly invoke
-   * @param config an <code>EventuallyConfig</code> object containing <code>maxAttempts</code> and
+   * @param config an <code>EventuallyConfig</code> object containing <code>timeout</code> and
    *          <code>interval</code> parameters that are unused by this method
    * @return the result of invoking the <code>fun</code> by-name parameter, the first time it succeeds
    */
-  def eventually[T](interval: Interval, maxAttempts: MaxAttempts)(fun: => T)(implicit config: EventuallyConfig): T =
-    eventually(fun)(EventuallyConfig(maxAttempts.value, interval.value))
+  def eventually[T](interval: Interval, timeout: Timeout)(fun: => T)(implicit config: EventuallyConfig): T =
+    eventually(fun)(EventuallyConfig(timeout.value, interval.value))
 
   /**
-   * Invokes the passed by-name parameter repeatedly until it either succeeds, or fails a configured maximum
-   * number of times, sleeping a configured interval between attempts.
+   * Invokes the passed by-name parameter repeatedly until it either succeeds, or a configured maximum
+   * amount of time has passed, sleeping a configured interval between attempts.
    *
    * <p>
    * The by-name parameter "succeeds" if it returns a result. It "fails" if it throws any exception that
-   * would normally cause a test to fail. (These are any exceptions except those listed in the
+   * would normally cause a test to fail. (These are any exceptions except <a href="TestPendingException"><code>TestPendingException</code></a> and
+   * <code>Error</code>s listed in the
    * <a href="Suite.html#errorHandling">Treatment of <code>java.lang.Error</code>s</a> section of the
    * documentation of trait <code>Suite</code>.)
    * </p>
    *
    * <p>
-   * The maximum attempts to make before giving up is configured by the value contained in the passed
-   * <code>maxAttempts</code> parameter.
+   * The maximum amount of time in milliseconds to tolerate unsuccessful attempts before giving up and throwing
+   * <code>TestFailedException</code> is configured by the value contained in the passed
+   * <code>timeout</code> parameter.
    * The interval to sleep between attempts is configured by the <code>interval</code> field of
    * the <code>EventuallyConfig</code> passed implicitly as the last parameter.
    * </p>
    *
-   * @param maxAttempts the <code>MaxAttempts</code> configuration parameter
+   * @param timeout the <code>Timeout</code> configuration parameter
    * @param fun the by-name parameter to repeatedly invoke
-   * @param config the <code>EventuallyConfig</code> object containing the (unused) <code>maxAttempts</code> and
+   * @param config the <code>EventuallyConfig</code> object containing the (unused) <code>timeout</code> and
    *          (used) <code>interval</code> parameters
    * @return the result of invoking the <code>fun</code> by-name parameter, the first time it succeeds
    */
-  def eventually[T](maxAttempts: MaxAttempts)(fun: => T)(implicit config: EventuallyConfig): T =
-    eventually(fun)(EventuallyConfig(maxAttempts.value, config.interval))
+  def eventually[T](timeout: Timeout)(fun: => T)(implicit config: EventuallyConfig): T =
+    eventually(fun)(EventuallyConfig(timeout.value, config.interval))
 
   /**
-   * Invokes the passed by-name parameter repeatedly until it either succeeds, or fails a configured maximum
-   * number of times, sleeping a configured interval between attempts.
+   * Invokes the passed by-name parameter repeatedly until it either succeeds, or a configured maximum
+   * amount of time has passed, sleeping a configured interval between attempts.
    *
    * <p>
    * The by-name parameter "succeeds" if it returns a result. It "fails" if it throws any exception that
-   * would normally cause a test to fail. (These are any exceptions except those listed in the
+   * would normally cause a test to fail. (These are any exceptions except <a href="TestPendingException"><code>TestPendingException</code></a> and
+   * <code>Error</code>s listed in the
    * <a href="Suite.html#errorHandling">Treatment of <code>java.lang.Error</code>s</a> section of the
    * documentation of trait <code>Suite</code>.)
    * </p>
    *
    * <p>
-   * The maximum attempts to make before giving up is configured by the <code>maxAttempts</code> field of
+   * The maximum amount of time in milliseconds to tolerate unsuccessful attempts before giving up is configured by the <code>timeout</code> field of
    * the <code>EventuallyConfig</code> passed implicitly as the last parameter.
    * The interval to sleep between attempts is configured by the value contained in the passed
    * <code>interval</code> parameter.
@@ -375,59 +382,62 @@ private[scalatest] trait Eventually {
    *
    * @param interval the <code>Interval</code> configuration parameter
    * @param fun the by-name parameter to repeatedly invoke
-   * @param config the <code>EventuallyConfig</code> object containing the (used) <code>maxAttempts</code> and
+   * @param config the <code>EventuallyConfig</code> object containing the (used) <code>timeout</code> and
    *          (unused) <code>interval</code> parameters
    * @return the result of invoking the <code>fun</code> by-name parameter, the first time it succeeds
    */
   def eventually[T](interval: Interval)(fun: => T)(implicit config: EventuallyConfig): T =
-    eventually(fun)(EventuallyConfig(config.maxAttempts, interval.value))
+    eventually(fun)(EventuallyConfig(config.timeout, interval.value))
 
   /**
-   * Invokes the passed by-name parameter repeatedly until it either succeeds, or fails a configured maximum
-   * number of times, sleeping a configured interval between attempts.
+   * Invokes the passed by-name parameter repeatedly until it either succeeds, or a configured maximum
+   * amount of time has passed, sleeping a configured interval between attempts.
    *
    * <p>
    * The by-name parameter "succeeds" if it returns a result. It "fails" if it throws any exception that
-   * would normally cause a test to fail. (These are any exceptions except those listed in the
+   * would normally cause a test to fail. (These are any exceptions except <a href="TestPendingException"><code>TestPendingException</code></a> and
+   * <code>Error</code>s listed in the
    * <a href="Suite.html#errorHandling">Treatment of <code>java.lang.Error</code>s</a> section of the
    * documentation of trait <code>Suite</code>.)
    * </p>
    *
    * <p>
-   * The maximum attempts to make before giving up is configured by the <code>maxAttempts</code> field of
+   * The maximum amount of time in milliseconds to tolerate unsuccessful attempts before giving up is configured by the <code>timeout</code> field of
    * the <code>EventuallyConfig</code> passed implicitly as the last parameter.
    * The interval to sleep between attempts is configured by the <code>interval</code> field of
    * the <code>EventuallyConfig</code> passed implicitly as the last parameter.
    * </p>
    *
    * @param fun the by-name parameter to repeatedly invoke
-   * @param config the <code>EventuallyConfig</code> object containing the <code>maxAttempts</code> and
+   * @param config the <code>EventuallyConfig</code> object containing the <code>timeout</code> and
    *          <code>interval</code> parameters
    * @return the result of invoking the <code>fun</code> by-name parameter, the first time it succeeds
    */
   def eventually[T](fun: => T)(implicit config: EventuallyConfig): T = {
-
+    val startMillis = System.currentTimeMillis
     def makeAValiantAttempt(): Either[Throwable, T] = {
       try {
         Right(fun)
       }
       catch {
+        case tpe: TestPendingException => throw tpe
         case e: Throwable if !anErrorThatShouldCauseAnAbort(e) => Left(e)
       }
     }
 
     @tailrec
     def tryTryAgain(attempt: Int): T = {
-      val maxAttempts = config.maxAttempts
+      val timeout = config.timeout
       val interval = config.interval
       makeAValiantAttempt() match {
         case Right(result) => result
         case Left(e) => 
-          if (attempt < maxAttempts)
+          val duration = System.currentTimeMillis - startMillis
+          if (duration < timeout)
             Thread.sleep(interval)
           else
             throw new TestFailedException(
-              sde => Some(Resources("didNotEventuallySucceed", maxAttempts.toString, interval.toString)),
+              sde => Some(Resources("didNotEventuallySucceed", attempt.toString, interval.toString)),
               Some(e),
               getStackDepthFun("Eventually.scala", "eventually")
             )
@@ -467,12 +477,12 @@ private[scalatest] trait Eventually {
  *
  * scala&gt; eventually { it.next should be (3) }
  *
- * scala&gt; eventually { it.next should be (110) }
+ * scala&gt; eventually { Thread.sleep(999); it.next should be (3) }
  * org.scalatest.TestFailedException: The code passed to eventually never returned normally.
- *     Attempted 100 times, sleeping 10 milliseconds between each attempt.
+ *     Attempted 2 times, sleeping 10 milliseconds between each attempt.
  *   at org.scalatest.Eventually$class.tryTryAgain$1(Eventually.scala:313)
  *   at org.scalatest.Eventually$class.eventually(Eventually.scala:322)
  *   ...
  * </pre>
  */
-private[scalatest] object Eventually extends Eventually
+object Eventually extends Eventually
