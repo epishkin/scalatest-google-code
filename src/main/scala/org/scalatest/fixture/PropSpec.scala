@@ -475,7 +475,7 @@ trait PropSpec extends Suite { thisSuite =>
   private final val engine = new FixtureEngine[FixtureParam]("concurrentFixturePropSpecMod", "FixturePropSpec")
   import engine._
   
-  protected[scalatest] val fileName = "PropSpec.scala"
+  private[scalatest] val sourceFileName = "PropSpec.scala"
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -502,7 +502,7 @@ trait PropSpec extends Suite { thisSuite =>
    * @throws NullPointerException if <code>testName</code> or any passed test tag is <code>null</code>
    */
   protected def property(testName: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-    registerTest(testName, testFun, "testCannotAppearInsideAnotherTest", fileName, "test", testTags: _*)
+    registerTest(testName, testFun, "testCannotAppearInsideAnotherTest", sourceFileName, "test", testTags: _*)
   }
 
   /**
@@ -521,7 +521,7 @@ trait PropSpec extends Suite { thisSuite =>
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    */
   protected def ignore(testName: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-    registerIgnoredTest(testName, testFun, "ignoreCannotAppearInsideATest", fileName, "ignore", testTags: _*)
+    registerIgnoredTest(testName, testFun, "ignoreCannotAppearInsideATest", sourceFileName, "ignore", testTags: _*)
   }
 
   /**

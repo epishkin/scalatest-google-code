@@ -30,5 +30,5 @@ package org.scalatest
  */
 @deprecated("Please use org.scalatest.FunSpec instead.")
 trait Spec extends FunSpec {
-  override protected[scalatest] val fileName = "Spec.scala"
+  override private[scalatest] val sourceFileName = "Spec.scala"
 }

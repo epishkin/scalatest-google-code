@@ -38,5 +38,5 @@ package org.scalatest.fixture
  */
 @deprecated("Please use org.scalatest.fixture.FeatureSpec instead.")
 trait FixtureFeatureSpec extends FeatureSpec {
-  override protected[scalatest] val fileName = "FixtureFeatureSpec.scala"
+  override private[scalatest] val sourceFileName = "FixtureFeatureSpec.scala"
 }

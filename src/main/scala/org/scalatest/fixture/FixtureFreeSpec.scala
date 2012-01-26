@@ -38,5 +38,5 @@ package org.scalatest.fixture
  */
 @deprecated("Please use org.scalatest.fixture.FreeSpec instead.")
 trait FixtureFreeSpec extends FreeSpec { thisSuite =>
-  override protected[scalatest] val fileName = "FixtureFreeSpec.scala"
+  override private[scalatest] val sourceFileName = "FixtureFreeSpec.scala"
 }

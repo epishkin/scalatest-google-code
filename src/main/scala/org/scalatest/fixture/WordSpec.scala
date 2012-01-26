@@ -386,7 +386,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   private final val engine = new FixtureEngine[FixtureParam]("concurrentFixtureWordSpecMod", "FixtureWordSpec")
   import engine._
   
-  protected[scalatest] val fileName = "WordSpec.scala"
+  private[scalatest] val sourceFileName = "WordSpec.scala"
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -418,7 +418,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    */
   private def registerTestToRun(specText: String, testTags: List[Tag], testFun: FixtureParam => Any) {
     // TODO: This is what was being used before but it is wrong
-    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", fileName, "it", testTags: _*)
+    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", sourceFileName, "it", testTags: _*)
   }
 
   /**
@@ -441,13 +441,13 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    */
   private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: FixtureParam => Any) {
     // TODO: This is how these were, but it needs attention. Mentions "it".
-    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", fileName, "ignore", testTags: _*)
+    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", sourceFileName, "ignore", testTags: _*)
   }
 
   private def registerBranch(description: String, childPrefix: Option[String], fun: () => Unit) {
 
     // TODO: Fix the resource name and method name
-    registerNestedBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", fileName, "describe")
+    registerNestedBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", sourceFileName, "describe")
   }
 
   /**

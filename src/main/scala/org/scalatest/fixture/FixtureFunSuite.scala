@@ -38,5 +38,5 @@ package org.scalatest.fixture
  */
 @deprecated("Please use org.scalatest.fixture.FunSuite instead.")
 trait FixtureFunSuite extends FunSuite { thisSuite =>
-  override protected[scalatest] val fileName = "FixtureFunSuite.scala"
+  override private[scalatest] val sourceFileName = "FixtureFunSuite.scala"
 }
