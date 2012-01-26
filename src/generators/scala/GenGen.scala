@@ -1124,7 +1124,7 @@ $tupleBusters$
       }
       val prop = Prop.forAll($genArgs$)(propF)
       val params = getParams(configParams, config)
-      Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "forAll")
+      Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "forAll", Some(List($argNameNames$)))
   }
 """
 
