@@ -1145,11 +1145,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * class Stack[T] {
  *
  *   val MAX = 10
- *   private var buf = new ListBuffer[T]
+ *   private val buf = new ListBuffer[T]
  *
  *   def push(o: T) {
  *     if (!full)
- *       o +: buf
+ *       buf.prepend(o)
  *     else
  *       throw new IllegalStateException("can't push onto a full stack")
  *   }
