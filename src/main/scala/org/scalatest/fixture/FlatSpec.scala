@@ -373,7 +373,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   private final val stackDepth = 4
   import engine._
   
-  protected[scalatest] val fileName = "FlatSpec.scala"
+  private[scalatest] val sourceFileName = "FlatSpec.scala"
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -408,7 +408,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
     // TODO: This is what was being used before but it is wrong
     // UPDATE: This should be correct now, to be confirmed by Bill.
-    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", fileName, 
+    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", sourceFileName, 
                  methodName, stackDepth, testTags: _*)
   }
 
@@ -452,7 +452,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      */
     def of(description: String) {
       // TODO: This is what was here, but it needs fixing.
-      registerFlatBranch(description, "describeCannotAppearInsideAnIt", fileName, "of", stackDepth + 2)
+      registerFlatBranch(description, "describeCannotAppearInsideAnIt", sourceFileName, "of", stackDepth + 2)
     }
   }
 
@@ -1693,7 +1693,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   private def registerTestToIgnore(specText: String, methodName: String, testTags: List[Tag], testFun: FixtureParam => Any) {
 
     // TODO: This is how these were, but it needs attention. Mentions "it".
-    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", fileName, methodName, stackDepth, testTags: _*)
+    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", sourceFileName, methodName, stackDepth, testTags: _*)
   }
 
   /**

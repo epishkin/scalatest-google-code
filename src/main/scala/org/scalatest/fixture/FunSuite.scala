@@ -372,7 +372,7 @@ trait FunSuite extends Suite { thisSuite =>
   private final val stackDepth = 4
   import engine._
   
-  protected[scalatest] val fileName = "FunSuite.scala"
+  private[scalatest] val sourceFileName = "FunSuite.scala"
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -399,7 +399,7 @@ trait FunSuite extends Suite { thisSuite =>
    * @throws NullPointerException if <code>testName</code> or any passed test tag is <code>null</code>
    */
   protected def test(testName: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-    registerTest(testName, testFun, "testCannotAppearInsideAnotherTest", fileName, "test", stackDepth, testTags: _*)
+    registerTest(testName, testFun, "testCannotAppearInsideAnotherTest", sourceFileName, "test", stackDepth, testTags: _*)
   }
 
   /**
@@ -418,7 +418,7 @@ trait FunSuite extends Suite { thisSuite =>
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    */
   protected def ignore(testName: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-    registerIgnoredTest(testName, testFun, "ignoreCannotAppearInsideATest", fileName, "ignore", stackDepth, testTags: _*)
+    registerIgnoredTest(testName, testFun, "ignoreCannotAppearInsideATest", sourceFileName, "ignore", stackDepth, testTags: _*)
   }
 
   /**

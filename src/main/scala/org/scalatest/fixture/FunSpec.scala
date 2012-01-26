@@ -390,7 +390,7 @@ trait FunSpec extends Suite { thisSuite =>
   private final val stackDepth = 3
   import engine._
   
-  protected[scalatest] val fileName = "FunSpec.scala"
+  private[scalatest] val sourceFileName = "FunSpec.scala"
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -445,7 +445,7 @@ trait FunSpec extends Suite { thisSuite =>
      * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
      */
     def apply(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-      registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", fileName, "apply", stackDepth, testTags: _*)
+      registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", sourceFileName, "apply", stackDepth, testTags: _*)
     }
 
     /**
@@ -530,7 +530,7 @@ trait FunSpec extends Suite { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", fileName, "ignore", stackDepth + 3, testTags: _*)
+    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", sourceFileName, "ignore", stackDepth + 3, testTags: _*)
   }
 
   /**
@@ -552,7 +552,7 @@ trait FunSpec extends Suite { thisSuite =>
    */
   protected def ignore(specText: String)(testFun: FixtureParam => Any) {
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepthFun(fileName, "ignore"))
+      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepthFun(sourceFileName, "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
   }
 
@@ -563,7 +563,7 @@ trait FunSpec extends Suite { thisSuite =>
    * description string and immediately invoke the passed function.
    */
   protected def describe(description: String)(fun: => Unit) {
-    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", fileName, "describe", stackDepth + 1)
+    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", sourceFileName, "describe", stackDepth + 1)
   }
 
   /**

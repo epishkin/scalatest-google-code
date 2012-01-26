@@ -38,5 +38,5 @@ package org.scalatest.fixture
  */
 @deprecated("Please use org.scalatest.fixture.FlatSpec instead.")
 trait FixtureFlatSpec extends FlatSpec {
-  override protected[scalatest] val fileName = "FixtureFlatSpec.scala"
+  override private[scalatest] val sourceFileName = "FixtureFlatSpec.scala"
 }

@@ -1265,7 +1265,7 @@ trait FunSpec extends Suite { thisSuite =>
   private final val stackDepth = 3
   import engine._
   
-  protected[scalatest] val fileName = "FunSpec.scala"
+  private[scalatest] val sourceFileName = "FunSpec.scala"
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -1334,7 +1334,7 @@ trait FunSpec extends Suite { thisSuite =>
      * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
      */
     def apply(specText: String, testTags: Tag*)(testFun: => Unit) {
-      registerTest(specText, testFun _, "itCannotAppearInsideAnotherIt", fileName, "apply", stackDepth, testTags: _*)
+      registerTest(specText, testFun _, "itCannotAppearInsideAnotherIt", sourceFileName, "apply", stackDepth, testTags: _*)
     }
 
     /**
@@ -1418,7 +1418,7 @@ trait FunSpec extends Suite { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(testText: String, testTags: Tag*)(testFun: => Unit) {
-    registerIgnoredTest(testText, testFun _, "ignoreCannotAppearInsideAnIt", fileName, "ignore", stackDepth + 1, testTags: _*)
+    registerIgnoredTest(testText, testFun _, "ignoreCannotAppearInsideAnIt", sourceFileName, "ignore", stackDepth + 1, testTags: _*)
   }
 
   /**
@@ -1429,7 +1429,7 @@ trait FunSpec extends Suite { thisSuite =>
    */
   protected def describe(description: String)(fun: => Unit) {
 
-    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", fileName, "describe", stackDepth + 1)
+    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", sourceFileName, "describe", stackDepth + 1)
   }
 
   /**

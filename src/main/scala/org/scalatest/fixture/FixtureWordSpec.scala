@@ -40,5 +40,5 @@ import org.scalatest.verb.{CanVerb, MustVerb, ShouldVerb}
  */
 @deprecated("Please use org.scalatest.fixture.WordSpec instead.")
 trait FixtureWordSpec extends WordSpec with ShouldVerb with MustVerb with CanVerb {
-  override protected[scalatest] val fileName = "FixtureWordSpec.scala"
+  override private[scalatest] val sourceFileName = "FixtureWordSpec.scala"
 }

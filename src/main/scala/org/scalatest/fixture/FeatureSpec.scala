@@ -380,7 +380,7 @@ trait FeatureSpec extends Suite { thisSuite =>
   private final val stackDepth = 4
   import engine._
   
-  protected[scalatest] val fileName = "FeatureSpec.scala"
+  private[scalatest] val sourceFileName = "FeatureSpec.scala"
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -412,7 +412,7 @@ trait FeatureSpec extends Suite { thisSuite =>
    */
   protected def scenario(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
 
-    registerTest(Resources("scenario", specText), testFun, "scenarioCannotAppearInsideAnotherScenario", fileName, "scenario", stackDepth, testTags: _*)
+    registerTest(Resources("scenario", specText), testFun, "scenarioCannotAppearInsideAnotherScenario", sourceFileName, "scenario", stackDepth, testTags: _*)
   }
 
   /**
@@ -434,7 +434,7 @@ trait FeatureSpec extends Suite { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-    registerIgnoredTest(Resources("scenario", specText), testFun , "ignoreCannotAppearInsideAScenario", fileName, "ignore", stackDepth, testTags: _*)
+    registerIgnoredTest(Resources("scenario", specText), testFun , "ignoreCannotAppearInsideAScenario", sourceFileName, "ignore", stackDepth, testTags: _*)
   }
 
   /**
@@ -446,9 +446,9 @@ trait FeatureSpec extends Suite { thisSuite =>
   protected def feature(description: String)(fun: => Unit) {
 
     if (!currentBranchIsTrunk)
-      throw new NotAllowedException(Resources("cantNestFeatureClauses"), getStackDepthFun(fileName, "feature"))
+      throw new NotAllowedException(Resources("cantNestFeatureClauses"), getStackDepthFun(sourceFileName, "feature"))
 
-    registerNestedBranch(description, None, fun, "featureCannotAppearInsideAScenario", fileName, "feature", stackDepth)
+    registerNestedBranch(description, None, fun, "featureCannotAppearInsideAScenario", sourceFileName, "feature", stackDepth)
   }
 
   /**
