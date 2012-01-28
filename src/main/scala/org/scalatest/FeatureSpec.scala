@@ -1195,9 +1195,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * import org.scalatest.GivenWhenThen
  * import org.scalatestexamples.helpers.Stack
  * 
- * trait FeatureSpecStackBehaviors { this: FeatureSpec with GivenWhenThen =>
+ * trait FeatureSpecStackBehaviors { this: FeatureSpec with GivenWhenThen =&gt;
  * 
- *   def nonEmptyStack(createNonEmptyStack: => Stack[Int], lastItemAdded: Int) {
+ *   def nonEmptyStack(createNonEmptyStack: =&gt; Stack[Int], lastItemAdded: Int) {
  * 
  *     scenario("empty is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
  * 
@@ -1238,7 +1238,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  *   
- *   def nonFullStack(createNonFullStack: => Stack[Int]) {
+ *   def nonFullStack(createNonFullStack: =&gt; Stack[Int]) {
  *       
  *     scenario("full is invoked on this non-full stack: " + createNonFullStack.toString) {
  * 

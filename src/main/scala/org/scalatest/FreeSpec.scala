@@ -1262,38 +1262,41 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  * 
  * <pre class="stHighlight">
- * trait StackBehaviors { this: FreeSpec =>
+ * trait StackBehaviors { this: FreeSpec =&gt;
  * 
- *   def nonEmptyStack(stack: Stack[Int], lastItemAdded: Int) {
- * 
+ *   def nonEmptyStack(newStack: =&gt; Stack[Int], lastItemAdded: Int) {
+ *
  *     "be non-empty" in {
- *       assert(!stack.empty)
- *     }  
- * 
- *     "return the top item on peek" in {
- *       assert(stack.peek === lastItemAdded)
+ *       assert(!newStack.empty)
  *     }
- *   
+ *
+ *     "return the top item on peek" in {
+ *       assert(newStack.peek === lastItemAdded)
+ *     }
+ *
  *     "not remove the top item on peek" in {
+ *       val stack = newStack
  *       val size = stack.size
  *       assert(stack.peek === lastItemAdded)
  *       assert(stack.size === size)
  *     }
- *   
+ *
  *     "remove the top item on pop" in {
+ *       val stack = newStack
  *       val size = stack.size
  *       assert(stack.pop === lastItemAdded)
  *       assert(stack.size === size - 1)
  *     }
  *   }
- *   
- *   def nonFullStack(stack: Stack[Int]) {
- *       
+ *
+ *   def nonFullStack(newStack: =&gt; Stack[Int]) {
+ *
  *     "not be full" in {
- *       assert(!stack.full)
+ *       assert(!newStack.full)
  *     }
- *       
+ *
  *     "add to the top on push" in {
+ *       val stack = newStack
  *       val size = stack.size
  *       stack.push(7)
  *       assert(stack.size === size + 1)
@@ -1302,7 +1305,6 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   }
  * }
  * </pre>
- *
  *
  * <p>
  * Given these behavior functions, you could invoke them directly, but <code>FreeSpec</code> offers a DSL for the purpose,
