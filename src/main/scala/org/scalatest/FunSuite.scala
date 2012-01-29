@@ -962,9 +962,9 @@ import Suite.checkRunTestParamsForNull
  * <pre class="stHighlight">
  * import org.scalatest.FunSuite
  * 
- * trait FunSuiteStackBehaviors { this: FunSuite =>
+ * trait FunSuiteStackBehaviors { this: FunSuite =&gt;
  * 
- *   def nonEmptyStack(createNonEmptyStack: => Stack[Int], lastItemAdded: Int) {
+ *   def nonEmptyStack(createNonEmptyStack: =&gt; Stack[Int], lastItemAdded: Int) {
  * 
  *     test("empty is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
  *       val stack = createNonEmptyStack
@@ -986,7 +986,7 @@ import Suite.checkRunTestParamsForNull
  *     }
  *   }
  *   
- *   def nonFullStack(createNonFullStack: => Stack[Int]) {
+ *   def nonFullStack(createNonFullStack: =&gt; Stack[Int]) {
  *       
  *     test("full is invoked on this non-full stack: " + createNonFullStack.toString) {
  *       val stack = createNonFullStack
