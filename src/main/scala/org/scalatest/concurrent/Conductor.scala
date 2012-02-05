@@ -116,7 +116,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * </pre>
  *
  * <p>
- * The <code>thread</code> calls create the threads and starts them, but they will not immediately
+ * The <code>thread</code> method invocations will create the threads and start the threads, but will not immediately
  * execute the by-name parameter passed to them. They will first block, waiting for the <code>Conductor</code>
  * to give them a green light to proceed.
  * </p>
@@ -165,7 +165,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * </p>
  *
  * <p>
- * If either the producer or consumer thread had completed abruptbly with an exception, the <code>conduct</code> method
+ * If either the producer or consumer thread had completed abruptly with an exception, the <code>conduct</code> method
  * (which was called by <code>whenFinished</code>) would have completed abruptly with an exception to indicate the test
  * failed. However, since both threads returned normally, <code>conduct</code> will return. Because <code>conduct</code> doesn't
  * throw an exception, <code>whenFinished</code> will execute the block of code passed as a by-name parameter to it: <code>buf should be ('empty)</code>.
@@ -232,16 +232,21 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * <p>
  * Class <code>Conductor</code> was inspired by the
  * <a href="http://www.cs.umd.edu/projects/PL/multithreadedtc/">MultithreadedTC project</a>,
- * created by Bill Pugh and Nat Ayewah of the University of Maryland.
+ * created by Bill Pugh and Nat Ayewah of the University of Maryland, and was brought to ScalaTest with major
+ * contributions by Josh Cough.
  * </p>
  *
  * <p>
  * Although useful, bear in mind that a <code>Conductor</code>'s results are not guaranteed to be
  * accurate 100% of the time. The reason is that it uses <code>java.lang.Thread</code>'s <code>getState</code> method to
- * decide when to advance the beat. This kind of use is advised against in the Javadoc documentation for
+ * decide when to advance the beat. This type of use is advised against in the Javadoc documentation for
  * <code>getState</code>, which says, "This method is designed for use in monitoring of the system state, not for
- * synchronization." In short, sometimes the return value of <code>getState</code may be inacurrate, which in turn means
- * that sometimes a <code>Conductor</code> may decide to advance the beat too early.
+ * synchronization." In short, sometimes the return value of <code>getState</code> may be inacurrate, which in turn means
+ * that sometimes a <code>Conductor</code> may decide to advance the beat too early. The upshot is that while <code>Conductor</code>
+ * can be quite helpful in developing a thread-safe class initially, once the class is done you may not want to run the resulting tests
+ * all the time as regression tests because they may generate occassional false negatives. (<code>Conductor</code> should never generate
+ * a false positive, though, so if a test passes you can believe that. If the test fails consistently, you can believe that as well. But
+ * if a test fails only occasionally, it may or may not indicate an actual concurrency bug.) 
  * </p>
  *
  * @author Josh Cough

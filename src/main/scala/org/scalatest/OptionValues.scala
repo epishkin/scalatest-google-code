@@ -28,7 +28,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * and that its value should meet some expectation. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * opt.value should be &gt; 9
  * </pre>
  *
@@ -36,7 +36,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * Or, using an assertion instead of a matcher expression:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * assert(opt.value &gt; 9)
  * </pre>
  *
@@ -45,7 +45,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * if the option wasn't defined, it would throw a <code>NoSuchElementException</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val opt: Option[Int] = None
  *
  * opt.get should be &gt; 9 // opt.get throws NoSuchElementException
@@ -59,7 +59,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * a stack depth exception you would need to make two statements, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val opt: Option[Int] = None
  *
  * opt should be ('defined) // throws TestFailedException
@@ -70,7 +70,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * The <code>OptionValues</code> trait allows you to state that more concisely:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val opt: Option[Int] = None
  *
  * opt.value should be &gt; 9 // opt.value throws TestFailedException
@@ -89,7 +89,7 @@ trait OptionValues {
    * Wrapper class that adds a <code>value</code> method to <code>Option</code>, allowing
    * you to make statements like:
    *
-   * <pre>
+   * <pre class="stHighlight">
    * opt.value should be &gt; 9
    * </pre>
    *

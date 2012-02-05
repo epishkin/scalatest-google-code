@@ -27,7 +27,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * and that its result value should meet some expectation. Here's an example:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * pf.valueAt("IV") should equal (4)
  * </pre>
  *
@@ -35,7 +35,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * Or, using an assertion instead of a matcher expression:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * assert(pf.valueAt("IV") === 4)
  * </pre>
  *
@@ -45,7 +45,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * that provides a <a href="StackDepth.html">stack depth</a>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * // Note: a Map[K, V] is a PartialFunction[K, V]
  * val pf: PartialFunction[String, Int] = Map("I" -&gt; 1, "II" -&gt; 2, "III" -&gt; 3, "IV" -&gt; 4)
  *
@@ -60,7 +60,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * a stack depth exception you would need to make two statements, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val pf: PartialFunction[String, Int] = Map("I" -&gt; 1, "II" -&gt; 2, "III" -&gt; 3, "IV" -&gt; 4)
  *
  * pf.isDefinedAt("V") should be (true) // throws TestFailedException
@@ -71,7 +71,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * The <code>PartialFunctionValues</code> trait allows you to state that more concisely:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val pf: PartialFunction[String, Int] = Map("I" -&gt; 1, "II" -&gt; 2, "III" -&gt; 3, "IV" -&gt; 4)
  *
  * pf.valueAt("V") should equal (5) // pf.valueAt("V") throws TestFailedException
@@ -90,7 +90,7 @@ trait PartialFunctionValues {
    * Wrapper class that adds a <code>valueAt</code> method to <code>PartialFunction</code>, allowing
    * you to make statements like:
    *
-   * <pre>
+   * <pre class="stHighlight">
    * pf.valueAt("VI") should equal (6)
    * </pre>
    *
@@ -117,6 +117,7 @@ trait PartialFunctionValues {
  * an alternative to mixing it in. One use case is to import <code>PartialFunctionValues</code>'s members so you can use
  * the <code>valueAt</code> method on <code>PartialFunction</code> in the Scala interpreter:
  *
+ * <pre class="stREPL">
  * $ scala -cp scalatest-1.7.jar
  * Welcome to Scala version 2.9.1.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_29).
  * Type in expressions to have them evaluated.
@@ -141,5 +142,6 @@ trait PartialFunctionValues {
  *   at scala.collection.MapLike$class.default(MapLike.scala:224)
  *   at scala.collection.immutable.Map$Map4.default(Map.scala:167)
  *   ...
+ * </pre>
  */
 object PartialFunctionValues extends PartialFunctionValues
