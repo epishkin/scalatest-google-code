@@ -23,7 +23,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * <p>
  * For example, given the following case classes:
  *
- * <pre>
+ * <pre class="stHighlight">
  * case class Address(street: String, city: String, state: String, zip: String)
  * case class Name(first: String, middle: String, last: String)
  * case class Record(name: Name, address: Address, age: Int)
@@ -31,7 +31,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  *
  * You could write:
  *
- * <pre>
+ * <pre class="stHighlight">
  * inside (rec) { case Record(name, address, age) =&gt;
  *   inside (name) { case Name(first, middle, last) =&gt;
  *     first should be ("Sally")
@@ -44,7 +44,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  *     state should equal ("CA")
  *     zip should be ("12345")
  *   }
- *   age should be < 99
+ *   age should be &lt; 99
  * }
  * </pre>
  *
@@ -54,7 +54,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * the previous expression was defined like this:
  * </p>
  * 
- * <pre>
+ * <pre class="stHighlight">
  * val rec = Record(
  *   Name("Sally", "Anna", "Jones"),
  *   Address("25 Main St", "Los Angeles", "CA", "12345"),

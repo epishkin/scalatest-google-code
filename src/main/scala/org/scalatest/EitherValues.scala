@@ -27,7 +27,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * and that its value should meet some expectation. Here's are some examples:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * either1.right.value should be &gt; 9
  * either2.left.value should be ("Muchas problemas")
  * </pre>
@@ -36,7 +36,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * Or, using assertions instead of matcher expressions:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * assert(either1.right.value &gt; 9)
  * assert(either2.left.value === "Muchas problemas")
  * </pre>
@@ -47,7 +47,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * would throw a <code>NoSuchElementException</code>:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val either: Either[String, Int] = Left("Muchas problemas")
  *
  * either.right.get should be &gt; 9 // either.right.get throws NoSuchElementException
@@ -61,7 +61,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * a stack depth exception you would need to make two statements, like this:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val either: Either[String, Int] = Left("Muchas problemas")
  *
  * either should be ('right) // throws TestFailedException
@@ -72,7 +72,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepthFun
  * The <code>EitherValues</code> trait allows you to state that more concisely:
  * </p>
  *
- * <pre>
+ * <pre class="stHighlight">
  * val either: Either[String, Int] = Left("Muchas problemas")
  *
  * either.right.value should be &gt; 9 // either.right.value throws TestFailedException
@@ -98,7 +98,7 @@ trait EitherValues {
    * Wrapper class that adds a <code>value</code> method to <code>LeftProjection</code>, allowing
    * you to make statements like:
    *
-   * <pre>
+   * <pre class="stHighlight">
    * either.left.value should be &gt; 9
    * </pre>
    *
@@ -126,7 +126,7 @@ trait EitherValues {
    * Wrapper class that adds a <code>value</code> method to <code>RightProjection</code>, allowing
    * you to make statements like:
    *
-   * <pre>
+   * <pre class="stHighlight">
    * either.right.value should be &gt; 9
    * </pre>
    *
