@@ -1,5 +1,4 @@
 Main-Class: org.scalatest.tools.Runner
-Class-Path: junit-4.1.jar
 
 Bundle-SymbolicName: org.scalatest
 Bundle-Version: ${release}
@@ -12,3 +11,6 @@ Import-Package: org.scalatest.*, scala.*;version="[${scala.version}, $(version;=
 
 Export-Package: org.scalatest.*;version="${release}"
 
+Include-Resource: images/=target/jar_contents/images/
+
+-removeheaders: Include-Resource
