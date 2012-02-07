@@ -785,15 +785,16 @@
         </filterset>
       </copy>
 
+      <delete dir="target/redeploy" />
       <mkdir dir="target/redeploy" />
-      <copy todir="target/redeploy">
+      <copy todir="target/redeploy" verbose="true">
         <fileset refid="old.scala.fileset" />
         <mapper classpathref="maven-ant-tasks.classpath"
                 classname="org.apache.maven.artifact.ant.VersionMapper"
-                from="${dependency.versions}" to="flatten" />
+                from="${scalatest.version}" to="flatten" />
       </copy>
 
-      <move todir="target/redeploy">
+      <move todir="target/redeploy" verbose="true">
         <fileset dir="target/redeploy" includes="scalatest_*.jar"/>
         <globmapper from="scalatest_${old.scala.version}*" to="scalatest*"/>
       </move>
