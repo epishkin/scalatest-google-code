@@ -408,7 +408,7 @@ trait PropSpec extends Suite { thisSuite =>
    * @throws NullPointerException if <code>testName</code> or any passed test tag is <code>null</code>
    */
   protected def property(testName: String, testTags: Tag*)(testFun: => Unit) {
-    registerTest(testName, testFun _, "propertyCannotAppearInsideAnotherProperty", "PropSpec.scala", "property", stackDepth, testTags: _*)
+    registerTest(testName, testFun _, "propertyCannotAppearInsideAnotherProperty", "PropSpec.scala", "property", stackDepth, None, None, testTags: _*)
   }
 
   /**

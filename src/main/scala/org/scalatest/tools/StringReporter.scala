@@ -567,7 +567,7 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
 private[scalatest] object StringReporter {
   def countTrailingEOLs(s: String): Int = s.length - s.lastIndexWhere(_ != '\n') - 1
   def countLeadingEOLs(s: String): Int = {
-    val idx = s.findIndexOf(_ != '\n')
+    val idx = s.indexWhere(_ != '\n')
     if (idx != -1) idx else 0
   }
   def colorizeLinesIndividually(text: String, ansiColor: String): String =

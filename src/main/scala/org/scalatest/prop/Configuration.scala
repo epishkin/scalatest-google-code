@@ -20,7 +20,7 @@ import org.scalacheck.Test.Params
 /**
  * Trait providing methods and classes used to configure property checks provided by the
  * the <code>forAll</code> methods of trait <code>GeneratorDrivenPropertyChecks</code> (for ScalaTest-style
- * property checks) and the <code>check</code> methods <code>Checkers</code> (for ScalaCheck-style property checks).
+ * property checks) and the <code>check</code> methods of trait <code>Checkers</code> (for ScalaCheck-style property checks).
  *
  * @author Bill Venners
  */

@@ -208,61 +208,6 @@ class FunSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen {
         assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 1))
       }
     }
-    it("should return registered tags, including ignore tags, from the tags method") {
-
-      val a = new FunSpec {
-        ignore("should test this") {}
-        it("should test that") {}
-      }
-      expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
-      }
-
-      val b = new FunSpec {
-        it("should test this") {}
-        ignore("should test that") {}
-      }
-      expect(Map("should test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
-      }
-
-      val c = new FunSpec {
-        ignore("should test this") {}
-        ignore("should test that") {}
-      }
-      expect(Map("should test this" -> Set("org.scalatest.Ignore"), "should test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
-      }
-
-      val d = new FunSpec {
-        it("should test this") {}
-        it("should test that") {}
-      }
-      expect(Map()) {
-        d.tags
-      }
-
-      val e = new FunSpec {
-        it("should test this", mytags.SlowAsMolasses) {}
-        ignore("should test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses"), "should test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        e.tags
-      }
-
-      val f = new FunSpec {}
-      expect(Map()) {
-        f.tags
-      }
-
-      val g = new FunSpec {
-        it("should test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
-        it("should test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        g.tags
-      }
-    }
 
     describe("(when a nesting rule has been violated)") {
 
@@ -417,54 +362,6 @@ class FunSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen {
         }
       }
     }
-    it("should return a correct tags map from the tags method") {
-
-      val a = new FunSpec {
-        ignore("test this") {}
-        it("test that") {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
-      }
-
-      val b = new FunSpec {
-        it("test this") {}
-        ignore("test that") {}
-      }
-      expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
-      }
-
-      val c = new FunSpec {
-        ignore("test this") {}
-        ignore("test that") {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
-      }
-
-      val d = new FunSpec {
-        it("test this", mytags.SlowAsMolasses) {}
-        ignore("test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
-      }
-
-      val e = new FunSpec {}
-      expect(Map()) {
-        e.tags
-      }
-
-      val f = new FunSpec {
-        it("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
-        it("test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
-      }
-    }
-
     class TestWasCalledSuite extends FunSpec {
       var theTestThisCalled = false
       var theTestThatCalled = false

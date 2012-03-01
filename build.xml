@@ -355,6 +355,7 @@
             <membersonly package="org.scalatest.prop" />
             <membersonly package="org.scalatest.tools" />
             <membersonly package="org.scalatest.matchers" />
+            <membersonly package="org.scalatest.suiteprop" />
             <membersonly package="org.scalatest.mock" />
             <config name="dbname" value="testdb" />
         </scalatest>

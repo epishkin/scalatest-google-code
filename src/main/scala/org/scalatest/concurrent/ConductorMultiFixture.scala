@@ -20,74 +20,21 @@ import fixture.ConfigMapFixture
 import org.scalatest.fixture
 
 /**
- * Trait that can pass a new <code>Conductor</code> fixture into tests, for use
- * in suites such as <code>MultipleFixtureFunSuite</code> or <code>MultipleFixtureSpec</code>,
- * which facilitate writing tests that take different types of fixtures.
+ * <strong>ConductorMultiFixture has been deprecated and will be removed in a future version of ScalaTest. Please
+ * copy the withConductorFixture method into your own trait instead.</strong>
  *
  * <p>
- * Here's an example of the use of this trait to test the <code>ArrayBlockingQueue</code>
- * concurrency abstraction from <code>java.util.concurrent</code>:
- * </p>
- *
- * <pre class="stHighlight">
- * import org.scalatest.fixture.MultipleFixtureFunSuite
- * import org.scalatest.concurrent.ConductorMultiFixture
- * import org.scalatest.matchers.ShouldMatchers
- * import java.util.concurrent.ArrayBlockingQueue
- *
- * class ArrayBlockingQueueSuite extends MultipleFixtureFunSuite with ConductorMultiFixture with ShouldMatchers {
- * 
- *   test("calling put on a full queue blocks the producer thread") { (conductor: Conductor) => import conductor._
- *
- *     val buf = new ArrayBlockingQueue[Int](1)
- * 
- *     thread("producer") {
- *       buf put 42
- *       buf put 17
- *       beat should be (1)
- *     }
- * 
- *     thread("consumer") {
- *       waitForBeat(1)
- *       buf.take should be (42)
- *       buf.take should be (17)
- *     }
- * 
- *     whenFinished {
- *       buf should be ('empty)
- *     }
- *   }
- *
- *   test("calling take on an empty queue blocks the consumer thread") { (conductor: Conductor) => import conductor._
- *
- *     val buf = new ArrayBlockingQueue[Int](1)
- *
- *     thread("producer") {
- *       waitForBeat(1)
- *       buf put 42
- *       buf put 17
- *     }
- *
- *     thread("consumer") {
- *       buf.take should be (42)
- *       buf.take should be (17)
- *       beat should be (1)
- *     }
- *
- *     whenFinished {
- *       buf should be ('empty)
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * For an explanation of how these tests work, see the documentation for <a href="Conductor.html"><code>Conductor</code></a>.
+ * This trait was originally intended for use with the "MultiFixture" traits in the <code>org.scalatest.fixture</code>
+ * package. Those traits were deprecated in favor of using explicit method calls (rather than implicit ones). So this
+ * trait is no longer relevant. You can still use the same approach if you want, of course, but since this will be
+ * going away in a future version of ScalaTest, please just copy the source code of the <code>withConductorFixture</code>
+ * method and place it into your own trait, then use that trait instead.
  * </p>
  *
  * @author Bill Venners
  */
 
+@deprecated("Please copy the withConductorFixture method into your own trait instead.")
 trait ConductorMultiFixture { this: fixture.Suite with ConfigMapFixture =>
 
   /**

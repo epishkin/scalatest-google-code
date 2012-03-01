@@ -1,5 +1,5 @@
 /*
- * Copyright 2001-2011 Artima, Inc.
+ * Copyright 2001-2008 Artima, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest;
 
-import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.matchers.ShouldMatchers
+import java.lang.annotation.*; 
 
-trait SuiteProp extends FunSuite with SuiteExamples with TableDrivenPropertyChecks with ShouldMatchers with SharedHelpers
+@TagAnnotation
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface WeakAsAKitten {
+}

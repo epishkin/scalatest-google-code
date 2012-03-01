@@ -16,6 +16,7 @@
 package org.scalatest.tools
 
 import org.scalatest._
+import java.util.regex.Pattern
 
 class RunnerSuite() extends Suite with PrivateMethodTester {
 
@@ -35,7 +36,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       expectedConcurrentList: List[String],
       expectedMemberOfList: List[String],
       expectedBeginsWithList: List[String],
-      expectedTestNGList: List[String]
+      expectedTestNGList: List[String],
+      expectedSuffixes: Option[Pattern]
     ) = {
 
       val (
@@ -49,7 +51,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
         concurrentList,
         memberOfList,
         beginsWithList,
-        testNGList
+        testNGList,
+        suffixes
       ) = Runner.parseArgs(args)
 
       assert(runpathList === expectedRunpathList)
@@ -63,6 +66,12 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       assert(memberOfList === expectedMemberOfList)
       assert(beginsWithList === expectedBeginsWithList)
       assert(testNGList === expectedTestNGList)
+      if (expectedSuffixes.isEmpty) {
+        assert(suffixes.isEmpty)
+      } else {
+        assert(!suffixes.isEmpty)
+        assert(suffixes.get.toString === expectedSuffixes.get.toString)
+      }
     }
 
     verify(
@@ -78,7 +87,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       Nil,
       Nil,
       Nil,
-      Nil
+      Nil,
+      None
     )
 
     verify(
@@ -95,7 +105,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       Nil,
       Nil,
       Nil,
-      Nil
+      Nil,
+      None
     )
 
     verify(
@@ -110,7 +121,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       Nil,
       Nil,
       Nil,
-      Nil
+      Nil,
+      None
     )
 
     verify(
@@ -127,7 +139,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       Nil,
       Nil,
       Nil,
-      Nil
+      Nil,
+      None
     )
 
     verify(
@@ -144,7 +157,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       Nil,
       Nil,
       Nil,
-      Nil
+      Nil,
+      None
     )
 
     verify(
@@ -161,7 +175,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-c"),
       Nil,
       Nil,
-      Nil
+      Nil,
+      None
     )
 
     verify(
@@ -179,7 +194,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-c"),
       List("-m", "com.example.webapp"),
       List("-w", "com.example.root"),
-      Nil
+      Nil,
+      None
     )
     // Try a TestNGSuite
     verify(
@@ -197,7 +213,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-c"),
       List("-m", "com.example.webapp"),
       List("-w", "com.example.root"),
-      List("-t", "some/path/file.xml")
+      List("-t", "some/path/file.xml"),
+      None
     )
     // Try a junit Suite
     verify(
@@ -215,7 +232,8 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-c"),
       List("-m", "com.example.webapp"),
       List("-w", "com.example.root"),
-      List("-t", "some/path/file.xml")
+      List("-t", "some/path/file.xml"),
+      None
     )
     // Test -u option
     verify(
@@ -233,7 +251,65 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-c"),
       List("-m", "com.example.webapp"),
       List("-w", "com.example.root"),
-      List("-t", "some/path/file.xml")
+      List("-t", "some/path/file.xml"),
+      None
+    )
+    // Test -q option
+    verify(
+      Array("-c", "-g", "-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188", "-p",
+          "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-u", "directory/",
+          "-n", "One Two Three", "-l", "SlowTests", "-s", "SuiteOne", "-q", "Spec|Suite",
+          "-m", "com.example.webapp", "-w", "com.example.root", "-t", "some/path/file.xml"),
+      List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
+      List("-g", "-g", "-u", "directory/"),
+      List("-s", "SuiteOne"),
+      Nil,
+      List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
+      List("-n", "One Two Three"),
+      List("-l", "SlowTests"),
+      List("-c"),
+      List("-m", "com.example.webapp"),
+      List("-w", "com.example.root"),
+      List("-t", "some/path/file.xml"),
+      Some(Pattern.compile(".*(Spec|Suite)$"))
+    )
+    // Test -q option
+    verify(
+      Array("-c", "-g", "-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188", "-p",
+          "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-u", "directory/",
+          "-n", "One Two Three", "-l", "SlowTests", "-s", "SuiteOne", "-q", "Spec", "-q", "Suite",
+          "-m", "com.example.webapp", "-w", "com.example.root", "-t", "some/path/file.xml"),
+      List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
+      List("-g", "-g", "-u", "directory/"),
+      List("-s", "SuiteOne"),
+      Nil,
+      List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
+      List("-n", "One Two Three"),
+      List("-l", "SlowTests"),
+      List("-c"),
+      List("-m", "com.example.webapp"),
+      List("-w", "com.example.root"),
+      List("-t", "some/path/file.xml"),
+      Some(Pattern.compile(".*(Spec|Suite)$"))
+    )
+    // Test -Q option
+    verify(
+      Array("-c", "-g", "-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188", "-p",
+          "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-u", "directory/",
+          "-n", "One Two Three", "-l", "SlowTests", "-s", "SuiteOne", "-Q", "-q", "foo",
+          "-m", "com.example.webapp", "-w", "com.example.root", "-t", "some/path/file.xml"),
+      List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
+      List("-g", "-g", "-u", "directory/"),
+      List("-s", "SuiteOne"),
+      Nil,
+      List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
+      List("-n", "One Two Three"),
+      List("-l", "SlowTests"),
+      List("-c"),
+      List("-m", "com.example.webapp"),
+      List("-w", "com.example.root"),
+      List("-t", "some/path/file.xml"),
+      Some(Pattern.compile(".*(Spec|Suite|Tests|foo)$"))
     )
   }
 

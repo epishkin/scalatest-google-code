@@ -39,7 +39,7 @@ import org.scalatest.Suite.getLineInFile
  This in turn means that a reporter may get hit by multiple threads sending InfoProvided
  messages. If run with the Runner, that will be OK, because DispatchReporter will be in front
  serializing events with its actor. If run() is invoked directly on a suite instance, such as
- from the Scala interpretter, then it may not work. I think I may just say that when running
+ from the Scala interpreter, then it may not work. I think I may just say that when running
  from the interpreter, say with run(), you may get interleaved output. This would only happen
  when doing a multi-threaded test that starts threads that calls informer methods, likely a
  rare case. Also, in that case I think it is reasonable to say you may get interleaved output
@@ -142,4 +142,46 @@ private[scalatest] object MessageRecorder {
   // First two params of function are the string message and a boolean indicating this was from the current thread, 
   // and an optional location.
   type ConcurrentMessageFiringFun = (String, Boolean, Option[Location]) => Unit 
+}
+
+// For path traits, need a message recording informer that only later gets 
+// (theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, theTest: TestLeaf, includeIcon: Boolean. thread: Thread)
+private[scalatest] class PathMessageRecordingInformer(fire: (String, Boolean, Boolean, Suite, Reporter, Tracker, String, Int, Boolean, Thread) => Unit) extends ThreadAwareness with Informer {
+
+  import scala.collection.mutable.SynchronizedBuffer
+  import scala.collection.mutable.ArrayBuffer
+  type Tup = (String, Thread, Boolean)
+  private val messages = new ArrayBuffer[Tup] with SynchronizedBuffer[Tup]
+
+  // Should only be called by the thread that constructed this
+  // ConcurrentInformer, because don't want to worry about synchronization here. Just send stuff from
+  // other threads whenever they come in. So only call record after first checking isConstructingThread
+  // So now do have to worry about concurrency
+  private def record(message: String) {
+    messages += ((message, Thread.currentThread, isConstructingThread))
+  }
+
+  // Returns them in order recorded
+ // private def recordedMessages: List[String] = for ((msg, _) <- messages) yield toList
+
+  def apply(message: String) {
+    if (message == null)
+      throw new NullPointerException
+    if (isConstructingThread)
+      record(message)
+    else 
+      record(message) 
+  }
+
+  // send out any recorded messages
+  def fireRecordedMessages(testWasPending: Boolean, theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, indentation: Int, includeIcon: Boolean) {
+    for ((message, thread, wasConstructingThread) <- messages) {
+     // (theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, theTest: TestLeaf, includeIcon: Boolean)
+      fire(message, wasConstructingThread, testWasPending, theSuite, report, tracker, testName, indentation, includeIcon, thread) // Fire the info provided event using the passed function
+    }
+  }
+}
+
+private[scalatest] object PathMessageRecordingInformer {
+  def apply(fire: (String, Boolean, Boolean, Suite, Reporter, Tracker, String, Int, Boolean, Thread) => Unit) = new PathMessageRecordingInformer(fire)
 }

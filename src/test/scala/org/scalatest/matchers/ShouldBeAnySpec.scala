@@ -197,4 +197,75 @@ class ShouldBeAnySpec extends FunSpec with ShouldMatchers with Checkers with Ret
       assert(caught3.getMessage === "1 was equal to 1, and 1 was equal to 1")
     }
   }
+  describe("The shouldBe verb") {
+    it("should do nothing when equal") {
+      1 shouldBe 1
+      val s = "hi"
+      s shouldBe s
+      s shouldBe (new String("hi"))
+    }
+    it("should put string differences in square bracket") {
+      val caught1 = intercept[TestFailedException] { "dummy" shouldBe "dunny" }
+      caught1.getMessage should equal ("\"du[mm]y\" was not equal to \"du[nn]y\"")
+    }
+    it("should be usable when the left expression results in null") {
+      val npe = new NullPointerException
+      npe.getMessage shouldBe null
+    }
+
+    it("should compare arrays structurally") {
+      val a1 = Array(1, 2, 3)
+      val a2 = Array(1, 2, 3)
+      val a3 = Array(4, 5, 6)
+      a1 should not be theSameInstanceAs (a2)
+      a1 shouldBe a2
+      intercept[TestFailedException] {
+        a1 shouldBe a3
+      }
+    }
+
+    it("should compare arrays deeply") {
+      val a1 = Array(1, Array("a", "b"), 3)
+      val a2 = Array(1, Array("a", "b"), 3)
+      val a3 = Array(1, Array("c", "d"), 3)
+      a1 should not be theSameInstanceAs (a2)
+      a1 shouldBe a2
+      intercept[TestFailedException] {
+        a1 shouldBe a3
+      }
+    }
+
+    it("should compare arrays containing nulls fine") {
+      val a1 = Array(1, Array("a", null), 3)
+      val a2 = Array(1, Array("a", null), 3)
+      val a3 = Array(1, Array("c", "d"), 3)
+      a1 should not be theSameInstanceAs (a2)
+      a1 shouldBe a2
+      intercept[TestFailedException] {
+        a1 shouldBe a3
+      }
+      intercept[TestFailedException] {
+        a3 shouldBe a1
+      }
+    }
+
+    it("should compare nulls in a satisfying manner") {
+      val n1: String = null
+      val n2: String = null
+      n1 shouldBe n2
+      intercept[TestFailedException] {
+        n1 shouldBe "hi"
+      }
+      intercept[TestFailedException] {
+        "hi" shouldBe n1
+      }
+      val a1 = Array(1, 2, 3)
+      intercept[TestFailedException] {
+        n1 shouldBe a1
+      }
+      intercept[TestFailedException] {
+        a1 shouldBe n1
+      }
+    }
+  }
 }

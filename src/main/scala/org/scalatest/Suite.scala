@@ -2574,10 +2574,11 @@ trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite 
    * </p>
    *
    * <ul>
-   * <li>the size of the <code>testNames</code> <code>List</code>, minus the number of tests marked as ignored
+   * <li>the size of the <code>testNames</code> <code>List</code>, minus the number of tests marked as ignored and
+   * any tests that are exluded by the passed <code>Filter</code></li>
    * <li>the sum of the values obtained by invoking
    *     <code>expectedTestCount</code> on every nested <code>Suite</code> contained in
-   *     <code>nestedSuites</code>
+   *     <code>nestedSuites</code></li>
    * </ul>
    *
    * @param filter a <code>Filter</code> with which to filter tests to count based on their tags

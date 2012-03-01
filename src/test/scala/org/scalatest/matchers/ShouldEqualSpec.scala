@@ -82,7 +82,7 @@ class ShouldEqualSpec extends FunSpec with ShouldMatchers with Checkers with Ret
       1 should (not equal (2) or not equal (3 - 1))
     }
 
-    it("should throw an assertion error when not equal") {
+    it("should throw a TFE when not equal") {
       val caught1 = intercept[TestFailedException] {
         1 should equal (2)
       }
@@ -97,7 +97,7 @@ class ShouldEqualSpec extends FunSpec with ShouldMatchers with Checkers with Ret
       assert(caught2.getMessage === "1 did not equal 2")
     }
 
-    it("should throw an assertion error when equal but used with should not") {
+    it("should throw a TFE when equal but used with should not") {
       val caught1 = intercept[TestFailedException] {
         1 should not { equal (1) }
       }
@@ -124,21 +124,21 @@ class ShouldEqualSpec extends FunSpec with ShouldMatchers with Checkers with Ret
       assert(caught3.getMessage === "1 equaled 1")
     }
 
-    it("should throw an assertion error when not equal and used in a logical-and expression") {
+    it("should throw a TFE when not equal and used in a logical-and expression") {
       val caught = intercept[TestFailedException] {
         1 should { equal (5) and equal (2 - 1) }
       }
       assert(caught.getMessage === "1 did not equal 5")
     }
 
-    it("should throw an assertion error when not equal and used in a logical-or expression") {
+    it("should throw a TFE when not equal and used in a logical-or expression") {
       val caught = intercept[TestFailedException] {
         1 should { equal (5) or equal (5 - 1) }
       }
       assert(caught.getMessage === "1 did not equal 5, and 1 did not equal 4")
     }
 
-    it("should throw an assertion error when equal and used in a logical-and expression with not") {
+    it("should throw a TFE when equal and used in a logical-and expression with not") {
 
       val caught1 = intercept[TestFailedException] {
         1 should { not { equal (1) } and not { equal (3 - 1) }}
@@ -171,7 +171,7 @@ class ShouldEqualSpec extends FunSpec with ShouldMatchers with Checkers with Ret
       assert(caught6.getMessage === "1 did not equal 2, but 1 equaled 1")
     }
 
-    it("should throw an assertion error when equal and used in a logical-or expression with not") {
+    it("should throw a TFE when equal and used in a logical-or expression with not") {
 
       val caught1 = intercept[TestFailedException] {
         1 should { not { equal (1) } or not { equal (2 - 1) }}
@@ -206,6 +206,66 @@ class ShouldEqualSpec extends FunSpec with ShouldMatchers with Checkers with Ret
       
       val caught2 = intercept[TestFailedException] { "dummy" should not be "dummy" }
       caught2.getMessage should equal ("\"dummy\" was equal to \"dummy\"")
+    }
+
+    it("should be usable when the left expression results in null") {
+      val npe = new NullPointerException
+      npe.getMessage should equal (null)
+    }
+
+    it("should compare arrays structurally") {
+      val a1 = Array(1, 2, 3)
+      val a2 = Array(1, 2, 3)
+      val a3 = Array(4, 5, 6)
+      a1 should not be theSameInstanceAs (a2)
+      a1 should equal (a2)
+      intercept[TestFailedException] {
+        a1 should equal (a3)
+      }
+    }
+
+    it("should compare arrays deeply") {
+      val a1 = Array(1, Array("a", "b"), 3)
+      val a2 = Array(1, Array("a", "b"), 3)
+      val a3 = Array(1, Array("c", "d"), 3)
+      a1 should not be theSameInstanceAs (a2)
+      a1 should equal (a2)
+      intercept[TestFailedException] {
+        a1 should equal (a3)
+      }
+    }
+
+    it("should compare arrays containing nulls fine") {
+      val a1 = Array(1, Array("a", null), 3)
+      val a2 = Array(1, Array("a", null), 3)
+      val a3 = Array(1, Array("c", "d"), 3)
+      a1 should not be theSameInstanceAs (a2)
+      a1 should equal (a2)
+      intercept[TestFailedException] {
+        a1 should equal (a3)
+      }
+      intercept[TestFailedException] {
+        a3 should equal (a1)
+      }
+    }
+
+    it("should compare nulls in a satisfying manner") {
+      val n1: String = null
+      val n2: String = null
+      n1 should equal (n2)
+      intercept[TestFailedException] {
+        n1 should equal ("hi")
+      }
+      intercept[TestFailedException] {
+        "hi" should equal (n1)
+      }
+      val a1 = Array(1, 2, 3)
+      intercept[TestFailedException] {
+        n1 should equal (a1)
+      }
+      intercept[TestFailedException] {
+        a1 should equal (n1)
+      }
     }
   }
 }

@@ -208,61 +208,6 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 1))
       }
     }
-    it("should return registered tags, including ignore tags, from the tags method") {
-
-      val a = new Spec {
-        ignore("should test this") {}
-        it("should test that") {}
-      }
-      expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
-      }
-
-      val b = new Spec {
-        it("should test this") {}
-        ignore("should test that") {}
-      }
-      expect(Map("should test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
-      }
-
-      val c = new Spec {
-        ignore("should test this") {}
-        ignore("should test that") {}
-      }
-      expect(Map("should test this" -> Set("org.scalatest.Ignore"), "should test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
-      }
-
-      val d = new Spec {
-        it("should test this") {}
-        it("should test that") {}
-      }
-      expect(Map()) {
-        d.tags
-      }
-
-      val e = new Spec {
-        it("should test this", mytags.SlowAsMolasses) {}
-        ignore("should test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses"), "should test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        e.tags
-      }
-
-      val f = new Spec {}
-      expect(Map()) {
-        f.tags
-      }
-
-      val g = new Spec {
-        it("should test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
-        it("should test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        g.tags
-      }
-    }
 
     describe("(when a nesting rule has been violated)") {
 
@@ -415,53 +360,6 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         new Spec {
           ignore("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
         }
-      }
-    }
-    it("should return a correct tags map from the tags method") {
-
-      val a = new Spec {
-        ignore("test this") {}
-        it("test that") {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
-      }
-
-      val b = new Spec {
-        it("test this") {}
-        ignore("test that") {}
-      }
-      expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
-      }
-
-      val c = new Spec {
-        ignore("test this") {}
-        ignore("test that") {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
-      }
-
-      val d = new Spec {
-        it("test this", mytags.SlowAsMolasses) {}
-        ignore("test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
-      }
-
-      val e = new Spec {}
-      expect(Map()) {
-        e.tags
-      }
-
-      val f = new Spec {
-        it("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
-        it("test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
       }
     }
 

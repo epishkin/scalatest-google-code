@@ -421,7 +421,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   private def registerTestToRun(specText: String, methodName: String, testTags: List[Tag], testFun: FixtureParam => Any) {
     // TODO: This is what was being used before but it is wrong
     registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", sourceFileName, 
-                 methodName, stackDepth, testTags: _*)
+                 methodName, stackDepth, None, None, testTags: _*)
   }
 
   /**

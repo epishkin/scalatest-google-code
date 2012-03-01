@@ -18,6 +18,7 @@ package org.scalatest.tools
 import org.scalatest._
 import scala.collection.mutable
 import java.io.File
+import java.util.regex.Pattern
 
 class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper.type) {
 
@@ -50,12 +51,13 @@ class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper.type) {
     m.invoke(sdt, Array[Object](clazz): _*).asInstanceOf[Boolean]
   }
 
-  def processFileNames(fileNames: Iterator[String], fileSeparator: Char, loader: ClassLoader): Set[String] = {
-
+  def processFileNames(fileNames: Iterator[String], fileSeparator: Char, loader: ClassLoader, suffixes: Option[Pattern]):
+  Set[String] =
+  {
     val m = Class.forName("org.scalatest.tools.SuiteDiscoveryHelper$").getDeclaredMethod("org$scalatest$tools$SuiteDiscoveryHelper$$processFileNames",
-      Array(classOf[Iterator[String]], classOf[Char], classOf[ClassLoader]): _*)
+      Array(classOf[Iterator[String]], classOf[Char], classOf[ClassLoader], classOf[Option[Pattern]]): _*)
     m.setAccessible(true)
-    m.invoke(sdt, Array[Object](fileNames, new java.lang.Character(fileSeparator), loader): _*).asInstanceOf[Set[String]]
+    m.invoke(sdt, Array[Object](fileNames, new java.lang.Character(fileSeparator), loader, suffixes): _*).asInstanceOf[Set[String]]
   }
 
   def getFileNamesSetFromFile(file: File, fileSeparator: Char): Set[String] = {
@@ -111,10 +113,10 @@ class SuiteDiscoveryHelperSuite extends Suite {
   def testProcessFileNames() {
 
     val loader = getClass.getClassLoader
-    val discoveredSet1 = sdtf.processFileNames(List("doesNotExist.txt", "noSuchfile.class").iterator, '/', loader)
+    val discoveredSet1 = sdtf.processFileNames(List("doesNotExist.txt", "noSuchfile.class").iterator, '/', loader, None)
     assert(discoveredSet1.isEmpty)
 
-    val discoveredSet2 = sdtf.processFileNames(List("org/scalatest/EasySuite.class", "noSuchfile.class", "org/scalatest/FastAsLight.class").iterator, '/', loader)
+    val discoveredSet2 = sdtf.processFileNames(List("org/scalatest/EasySuite.class", "noSuchfile.class", "org/scalatest/FastAsLight.class").iterator, '/', loader, None)
     assert(discoveredSet2 === Set("org.scalatest.EasySuite"))
 
     val fileNames3 =
@@ -132,7 +134,7 @@ class SuiteDiscoveryHelperSuite extends Suite {
         // "org.scalatest.RunnerSuite", dropped this when moved RunnerSuite to tools
         "org.scalatest.SuiteSuite"
       )
-    val discoveredSet3 = sdtf.processFileNames(fileNames3.iterator, '/', loader)
+    val discoveredSet3 = sdtf.processFileNames(fileNames3.iterator, '/', loader, None)
     assert(discoveredSet3 === classNames3)
 
     // Test with backslashes
@@ -145,7 +147,7 @@ class SuiteDiscoveryHelperSuite extends Suite {
         "noSuchfile.class",
         "org\\scalatest\\FastAsLight.class"
       )
-    val discoveredSet4 = sdtf.processFileNames(fileNames4.iterator, '\\', loader)
+    val discoveredSet4 = sdtf.processFileNames(fileNames4.iterator, '\\', loader, None)
     assert(discoveredSet4 === classNames3)
 
     // Test with leading slashes
@@ -158,8 +160,33 @@ class SuiteDiscoveryHelperSuite extends Suite {
         "/noSuchfile.class",
         "/org/scalatest/FastAsLight.class"
       )
-    val discoveredSet5 = sdtf.processFileNames(fileNames5.iterator, '/', loader)
+    val discoveredSet5 = sdtf.processFileNames(fileNames5.iterator, '/', loader, None)
     assert(discoveredSet5 === classNames3)
+
+    // Test for specified suffixes only
+    val fileNames6 =
+      List(
+        "/org/scalatest/EasySuite.class",
+        "/org/scalatest/RunnerSuite.class",
+        "/org/scalatest/SlowAsMolasses.class",
+        "/org/scalatest/SuiteSuite.class",
+        "/org/scalatest/FilterSpec.class",
+        "/noSuchfile.class",
+        "/org/scalatest/FastAsLight.class"
+      )
+
+    val classNames4 =
+      Set(
+        "org.scalatest.EasySuite",
+        "org.scalatest.SuiteSuite",
+        "org.scalatest.FilterSpec"
+      )
+
+    val discoveredSet6 = sdtf.processFileNames(fileNames6.iterator, '/', loader, Some(Pattern.compile(".*(Suite)$")))
+    assert(discoveredSet6 === classNames3)
+
+    val discoveredSet7 = sdtf.processFileNames(fileNames6.iterator, '/', loader, Some(Pattern.compile(".*(Spec|Suite)$")))
+    assert(discoveredSet7 === classNames4)
   }
 
   def testGetFileNamesSetFromFile() {

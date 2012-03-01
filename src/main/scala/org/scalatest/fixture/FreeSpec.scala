@@ -422,7 +422,7 @@ trait FreeSpec extends Suite { thisSuite =>
    */
   private def registerTestToRun(specText: String, methodName: String, testTags: List[Tag], testFun: FixtureParam => Any) {
     // TODO: This is what was being used before but it is wrong
-    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", sourceFileName, methodName, stackDepth, testTags: _*)
+    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", sourceFileName, methodName, stackDepth, None, None, testTags: _*)
   }
 
   /**

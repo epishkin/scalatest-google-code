@@ -1464,6 +1464,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * to form the test name
    * @param methodName Method name of the caller
    * @param testTags the optional list of tags for this test
+   * @param methodName method name of the caller
    * @param testFun the test function
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
@@ -1472,8 +1473,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   private def registerTestToRun(specText: String, methodName: String, testTags: List[Tag], testFun: () => Unit) {
 
     // TODO: This is what was being used before but it is wrong
-    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "FlatSpec.scala", 
-                 methodName, stackDepth, testTags: _*)
+    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "FlatSpec.scala", methodName, stackDepth, None, None, testTags: _*)
   }
 
   /**

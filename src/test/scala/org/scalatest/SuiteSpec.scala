@@ -126,47 +126,6 @@ class SuiteSpec extends FunSpec with PrivateMethodTester with SharedHelpers {
       assert(b.testNames === TreeSet[String]())
     }
 
-    it("should return a correct tags map from the tags method") {
-
-      val a = new Suite {
-        @Ignore
-        def testThis() = ()
-        def testThat(info: Informer) = ()
-      }
-
-      assert(a.tags === Map("testThis" -> Set("org.scalatest.Ignore")))
-
-      val b = new Suite {
-        def testThis() = ()
-        @Ignore
-        def testThat(info: Informer) = ()
-      }
-
-      assert(b.tags === Map("testThat(Informer)" -> Set("org.scalatest.Ignore")))
-
-      val c = new Suite {
-        @Ignore
-        def testThis() = ()
-        @Ignore
-        def testThat(info: Informer) = ()
-      }
-
-      assert(c.tags === Map("testThis" -> Set("org.scalatest.Ignore"), "testThat(Informer)" -> Set("org.scalatest.Ignore")))
-
-      val d = new Suite {
-        @SlowAsMolasses
-        def testThis() = ()
-        @SlowAsMolasses
-        @Ignore
-        def testThat(info: Informer) = ()
-      }
-
-      assert(d.tags === Map("testThis" -> Set("org.scalatest.SlowAsMolasses"), "testThat(Informer)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
-
-      val e = new Suite {}
-      assert(e.tags === Map())
-    }
-
     class TestWasCalledSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false

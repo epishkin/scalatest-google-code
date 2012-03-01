@@ -222,6 +222,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * the word <em>test</em> will be used, for clarity and to be consistent with the rest of ScalaTest.
  * </p>
  *
+ * <a name="ignoredTests" />
  * <h2>Ignored tests</h2>
  *
  * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
@@ -276,6 +277,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <span class="stGreen">- should throw NoSuchElementException if an empty stack is popped</span>
  * </pre>
  *
+ * <a name="informers" />
  * <h2>Informers</h2>
  *
  * <p>
@@ -388,6 +390,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   + Then the result is the difference of the two numbers</span> 
  * </pre>
  *
+ * <a name="pendingTests" />
  * <h2>Pending tests</h2>
  *
  * <p>
@@ -497,6 +500,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   + Then the result is the sum of the two numbers</span> 
  * </pre>
  *
+ * <a name="taggingTests" />
  * <h2>Tagging tests</h2>
  *
  * A <code>FreeSpec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
@@ -1306,7 +1310,6 @@ import Suite.anErrorThatShouldCauseAnAbort
  * }
  * </pre>
  *
- *
  * <p>
  * Given these behavior functions, you could invoke them directly, but <code>FreeSpec</code> offers a DSL for the purpose,
  * which looks like this:
@@ -1527,7 +1530,7 @@ trait FreeSpec extends Suite { thisSuite =>
   private def registerTestToRun(specText: String, methodName: String, testTags: List[Tag], testFun: () => Unit) {
     // TODO: This is what was being used before but it is wrong
     registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "FreeSpec.scala", 
-                 methodName, stackDepth, testTags: _*)
+                 methodName, stackDepth, None, None, testTags: _*)
   }
 
   /**
@@ -1751,7 +1754,7 @@ trait FreeSpec extends Suite { thisSuite =>
   /**
    * Run a test. This trait's implementation runs the test registered with the name specified by
    * <code>testName</code>. Each test's name is a concatenation of the text of all describers surrounding a test,
-   * from outside in, and the test's  spec text, with one space placed between each item. (See the documenation
+   * from outside in, and the test's  spec text, with one space placed between each item. (See the documentation
    * for <code>testNames</code> for an example.)
    *
    * @param testName the name of one test to execute.
@@ -1856,13 +1859,13 @@ trait FreeSpec extends Suite { thisSuite =>
    * <pre class="stHighlight">
    * import org.scalatest.FreeSpec
    *
-   * class StackSpec {
-   *   "A Stack" when {
-   *     "not empty" must {
-   *       "allow me to pop" in {}
+   * class StackSpec extends FreeSpec {
+   *   "A Stack" - {
+   *     "when not empty" - {
+   *       "must allow me to pop" in {}
    *     }
-   *     "not full" must {
-   *       "allow me to push" in {}
+   *     "when not full" - {
+   *       "must allow me to push" in {}
    *     }
    *   }
    * }
@@ -1874,8 +1877,8 @@ trait FreeSpec extends Suite { thisSuite =>
    * </p>
    *
    * <pre>
-   * "A Stack (when not empty) must allow me to pop"
-   * "A Stack (when not full) must allow me to push"
+   * "A Stack when not empty must allow me to pop"
+   * "A Stack when not full must allow me to push"
    * </pre>
    */
   override def testNames: Set[String] = {

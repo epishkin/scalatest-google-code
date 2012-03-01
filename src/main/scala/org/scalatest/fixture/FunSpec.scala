@@ -445,7 +445,7 @@ trait FunSpec extends Suite { thisSuite =>
      * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
      */
     def apply(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-      registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", sourceFileName, "apply", stackDepth, testTags: _*)
+      registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", sourceFileName, "apply", stackDepth, None, None, testTags: _*)
     }
 
     /**

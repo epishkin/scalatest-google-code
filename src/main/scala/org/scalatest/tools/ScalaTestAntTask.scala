@@ -185,6 +185,17 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
+ * Use attribute <code>suffixes="[pipe-delimited list of suffixes]"</code>
+ * to specify that only classes whose names end in one of the specified suffixes
+ * should be included in discovery searches for Suites to test.  This can
+ * be used to improve discovery time or to limit the scope of a test. E.g.:
+ * </p>
+ *
+ * <pre class="stExamples">
+ *   &lt;scalatest suffixes="Spec|Suite"&gt;
+ * </pre>
+ *
+ * <p>
  * Use attribute <code>parallel="true"</code> to specify parallel execution of suites.
  * (If the <code>parallel</code> attribute is left out or set to false, suites will be executed sequentially by one thread.)
  * When <code>parallel</code> is true, you can include an optional <code>numthreads</code> attribute to specify the number
@@ -229,6 +240,7 @@ class ScalaTestAntTask extends Task {
   private var includes:  String = null
   private var excludes:  String = null
   private var maxMemory: String = null
+  private var suffixes:  String = null
 
   private var parallel      = false
   private var haltonfailure = false
@@ -260,6 +272,7 @@ class ScalaTestAntTask extends Task {
     addRunpathArgs(args)
     addTestNGSuiteArgs(args)
     addParallelArg(args)
+    addSuffixesArg(args)
 
     val argsArray = args.toArray
 
@@ -319,6 +332,17 @@ class ScalaTestAntTask extends Task {
   private def addParallelArg(args: ListBuffer[String]) {
     if (parallel) {
       args += "-c" + (if (numthreads > 0) ("" + numthreads) else "")
+    }
+  }
+
+  //
+  // Adds '-q' arg to args list if 'suffixes' attribute was
+  // specified for task.
+  //
+  private def addSuffixesArg(args: ListBuffer[String]) {
+    if (suffixes != null) {
+      args += "-q"
+      args += suffixes
     }
   }
 
@@ -553,6 +577,13 @@ class ScalaTestAntTask extends Task {
    */
   def setFork(fork: Boolean) {
     this.fork = fork
+  }
+  
+  /**
+   * Sets value of the <code>suffixes</code> attribute.
+   */
+  def setSuffixes(suffixes: String) {
+    this.suffixes = suffixes
   }
   
   /**

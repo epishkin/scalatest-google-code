@@ -168,66 +168,6 @@ class FeatureSpecSpec extends org.scalatest.FunSpec with SharedHelpers {
         }
       }
     }
-    it("should return a correct tags map from the tags method") {
-
-      val a = new FeatureSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        ignore("test this") { fixture => }
-        scenario("test that") { fixture => }
-      }
-      expect(Map("Scenario: test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
-      }
-
-      val b = new FeatureSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        scenario("test this") { fixture => }
-        ignore("test that") { fixture => }
-      }
-      expect(Map("Scenario: test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
-      }
-
-      val c = new FeatureSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        ignore("test this") { fixture => }
-        ignore("test that") { fixture => }
-      }
-      expect(Map("Scenario: test this" -> Set("org.scalatest.Ignore"), "Scenario: test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
-      }
-
-      val d = new FeatureSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        scenario("test this", mytags.SlowAsMolasses) { fixture => }
-        ignore("test that", mytags.SlowAsMolasses) { fixture => }
-      }
-      expect(Map("Scenario: test this" -> Set("org.scalatest.SlowAsMolasses"), "Scenario: test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
-      }
-
-      val e = new FeatureSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-      }
-      expect(Map()) {
-        e.tags
-      }
-
-      val f = new FeatureSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        scenario("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) { fixture => }
-        scenario("test that", mytags.SlowAsMolasses) { fixture => }
-      }
-      expect(Map("Scenario: test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "Scenario: test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
-      }
-    }
 
     class TestWasCalledSuite extends FeatureSpec {
       type FixtureParam = String

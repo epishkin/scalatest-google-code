@@ -409,7 +409,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     // TODO: This is what was being used before but it is wrong
     // UPDATE: This should be correct now, to be confirmed by Bill.
     registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", sourceFileName, 
-                 methodName, stackDepth, testTags: _*)
+                 methodName, stackDepth, None, None, testTags: _*)
   }
 
   /**
@@ -1692,7 +1692,6 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    */
   private def registerTestToIgnore(specText: String, methodName: String, testTags: List[Tag], testFun: FixtureParam => Any) {
 
-    // TODO: This is how these were, but it needs attention. Mentions "it".
     registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", sourceFileName, methodName, stackDepth, testTags: _*)
   }
 

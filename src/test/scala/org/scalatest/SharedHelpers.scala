@@ -69,6 +69,15 @@ trait SharedHelpers extends Assertions {
         case _ => throw new RuntimeException("should never happen")
       }
     }
+    def testStartingEventsReceived: List[TestStarting] = {
+      eventsReceived filter {
+        case event: TestStarting => true
+        case _ => false
+      } map {
+        case event: TestStarting => event
+        case _ => throw new RuntimeException("should never happen")
+      }
+    }
     // Why doesn't this work:
     // for (event: TestSucceeded <- eventsReceived) yield event
     def infoProvidedEventsReceived: List[InfoProvided] = {
@@ -165,7 +174,10 @@ trait SharedHelpers extends Assertions {
     val indexedList = myRep.eventsReceived.zipWithIndex
 
     val testStartingOption = indexedList.find(_._1.isInstanceOf[TestStarting])
-    val infoProvidedOption = indexedList.find(_._1.isInstanceOf[InfoProvided])
+    val infoProvidedOption = indexedList.find {
+      case (event: InfoProvided, index) => event.message == infoMsg
+      case _ => false
+    }
     val testSucceededOption = indexedList.find(_._1.isInstanceOf[TestSucceeded])
 
     assert(testStartingOption.isDefined, "TestStarting for Suite='" + suite.suiteId + "', testName='" + testName + "' not defined.")

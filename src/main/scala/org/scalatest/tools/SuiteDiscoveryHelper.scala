@@ -25,6 +25,7 @@ import java.io.File
 import java.net.URL
 import java.net.MalformedURLException
 import java.io.IOException
+import java.util.regex.Pattern
 
 // TODO: Make this an object. To do so need to figure out how
 // to invoke private method with reflection on an object, because
@@ -36,8 +37,9 @@ import java.io.IOException
  */
 private[scalatest] object SuiteDiscoveryHelper {
 
-  def discoverSuiteNames(runpath: List[String], loader: ClassLoader): Set[String] = {
-
+  def discoverSuiteNames(runpath: List[String], loader: ClassLoader,
+                         suffixes: Option[Pattern]): Set[String] =
+  {
     val fileSeparatorString = System.getProperty("path.separator")
     val fileSeparator = if (!fileSeparatorString.isEmpty) fileSeparatorString(0) else ':'
 
@@ -86,18 +88,32 @@ private[scalatest] object SuiteDiscoveryHelper {
               }
     
             jarFileOption match {
-              case Some(jf) => processFileNames(getFileNamesIteratorFromJar(jf), '/', loader)
+              case Some(jf) => processFileNames(getFileNamesIteratorFromJar(jf), '/', loader, suffixes)
               case None => Set[String]()
             }
           }
           else {
-            processFileNames(getFileNamesSetFromFile(new File(path), fileSeparator).iterator, fileSeparator, loader)
+            processFileNames(getFileNamesSetFromFile(new File(path), fileSeparator).iterator, fileSeparator, loader, suffixes)
           }
         }
 
     Set() ++ listOfSets.flatMap(_.iterator.toList)
   }
 
+  //
+  // Given a file name composed using specified separator, converts name to
+  // corresponding class name.  E.g., for separator '/':
+  //
+  //    org/scalatest/fixture/FixtureFunSuiteSpec.class
+  //
+  // -> org.scalatest.fixture.FixtureFunSuiteSpec
+  //
+  // Returns None if file name doesn't end in '.class'.
+  //
+  // (Typically we compose file names using ':' instead of '/', but
+  // that's probably just a mistake where path.separator got used instead
+  // of file.separator and doesn't affect how things turn out.)
+  // 
   private def transformToClassName(fileName: String, fileSeparator: Char): Option[String] = {
 
     // If the fileName starts with a file separator char, lop that off
@@ -176,10 +192,14 @@ private[scalatest] object SuiteDiscoveryHelper {
     }
   }
 
+  //
+  // Determines whether specified class is to be included in
+  // test run.
+  //
   // Returns Some(<class name>) if processed, else None
-  private def processClassName(className: String, loader: ClassLoader): Option[String] = {
+  private def processClassName(className: String, loader: ClassLoader, suffixes: Option[Pattern]): Option[String] = {
 
-    if (isAccessibleSuite(className, loader)
+    if (classNameSuffixOkay(className, suffixes) && isAccessibleSuite(className, loader)
         && 
         (isDiscoverableSuite(className, loader) || isRunnable(className, loader))) 
       Some(className)
@@ -187,12 +207,35 @@ private[scalatest] object SuiteDiscoveryHelper {
       None 
   }
 
-  // Returns a set of class names that were processed
-  private def processFileNames(fileNames: Iterator[String], fileSeparator: Char, loader: ClassLoader): Set[String] = {
+  //
+  // Determines whether class should be included in test based
+  // on whether its class name matches one of the suffixes
+  // specified by user.
+  //
+  // Users may specify that only classes whose names end with
+  // specified suffixes be included in test.
+  //
+  private def classNameSuffixOkay(className: String,
+                                  suffixes: Option[Pattern]): Boolean =
+  {
+    (suffixes == None) ||
+    suffixes.get.matcher(className).matches
+  }
 
+  //
+  // Scans specified files and returns names of classes to
+  // be included in test run.
+  //
+  // Extracts class names from the file names of .class files
+  // specified by the passed-in iterator, and returns those
+  // classes found that are to be included in run.
+  //
+  private def processFileNames(fileNames: Iterator[String], fileSeparator: Char, loader: ClassLoader,
+                               suffixes: Option[Pattern]): Set[String] =
+  {
     val classNameOptions = // elements are Some(<class name>) if processed, else None
       for (className <- extractClassNames(fileNames, fileSeparator))
-        yield processClassName(className, loader)
+        yield processClassName(className, loader, suffixes)
 
     val classNames = 
       for (Some(className) <- classNameOptions)
@@ -240,8 +283,11 @@ private[scalatest] object SuiteDiscoveryHelper {
     new EnumerationWrapper[JarEntry](file.entries).map(_.getName)
   }
 
+  //
+  // Given a fileNames iterator, returns an iterator of class names
+  // corresponding to .class files found.
+  //
   private def extractClassNames(fileNames: Iterator[String], fileSeparator: Char): Iterator[String] = {
-
     val options =
       for (fileName <- fileNames) yield
         transformToClassName(fileName, fileSeparator)

@@ -186,58 +186,6 @@ class SuiteSpec extends org.scalatest.FunSpec with PrivateMethodTester with Shar
       assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
     }
     
-    it("should return a correct tags map from the tags method") {
-
-      val a = new Suite {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        @Ignore
-        def testThis(fixture: FixtureParam) = ()
-        def testThat(fixture: FixtureParam, info: Informer) = ()
-      }
-
-      assert(a.tags === Map("testThis(FixtureParam)" -> Set("org.scalatest.Ignore")))
-
-      val b = new Suite {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        def testThis(fixture: FixtureParam) = ()
-        @Ignore
-        def testThat(fixture: FixtureParam, info: Informer) = ()
-      }
-
-      assert(b.tags === Map("testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore")))
-
-      val c = new Suite {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        @Ignore
-        def testThis(fixture: FixtureParam) = ()
-        @Ignore
-        def testThat(fixture: FixtureParam, info: Informer) = ()
-      }
-
-      assert(c.tags === Map("testThis(FixtureParam)" -> Set("org.scalatest.Ignore"), "testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore")))
-
-      val d = new Suite {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        @SlowAsMolasses
-        def testThis(fixture: FixtureParam) = ()
-        @SlowAsMolasses
-        @Ignore
-        def testThat(fixture: FixtureParam, info: Informer) = ()
-      }
-
-      assert(d.tags === Map("testThis(FixtureParam)" -> Set("org.scalatest.SlowAsMolasses"), "testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
-
-      val e = new Suite {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-      }
-      assert(e.tags === Map())
-    }
-
     class TestWasCalledSuite extends Suite {
       type FixtureParam = String
       def withFixture(test: OneArgTest) { test("hi") }

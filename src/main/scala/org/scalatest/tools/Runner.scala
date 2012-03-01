@@ -51,7 +51,7 @@ import SuiteDiscoveryHelper._
 [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] 
 [-n &lt;includes&gt;] [-l &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; 
 [...]] [-j &lt;junit class name&gt; [...]] [-m &lt;members-only suite path&gt; 
-[...]] [-w &lt;wildcard suite path&gt; [...]] [-b &lt;TestNG config file 
+[...]] [-w &lt;wildcard suite path&gt; [...]] [-q &lt;suffixes&gt;] [-Q] [-b &lt;TestNG config file 
 path&gt; [...]]
  * </pre>
  *
@@ -285,6 +285,34 @@ path&gt; [...]]
  * <li><code>-n FunctionalTests -l SlowTests</code></li>
  * <li><code>-n "CheckinTests FunctionalTests" -l "SlowTests NetworkTests"</code></li>
  * </ul>
+ * </p>
+ *
+ * <h2>Specifying suffixes to include</h2>
+ *
+ * <p>
+ * You can specify suffixes of Suite names to include in a run. To specify suffixes to include,
+ * use <code>-q</code> followed by a vertical-bar-separated list of suffixes to include, surrounded by
+ * double quotes. (The double quotes are not needed if specifying just one suffix.)  Or you can specify
+ * them individually using multiple -q's.
+ * If suffixes to include is not specified, then all suffixes are allowed.
+ * If suffixes is specified, then only those Suites whose class names end in one of the specified suffixes
+ * will be executed. Here are some examples:
+ * </p>
+ *
+ * <p>
+ * <ul>
+ * <li><code>-q Spec</code></li>
+ * <li><code>-q "Spec|Suite"</code></li>
+ * <li><code>-q Spec -q Suite</code></li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * Option -Q can be used to specify a default set of suffixes "Spec|Suite|Tests".
+ * </p>
+ *
+ * <p>
+ * Specifying suffixes can speed up the discovery process when running tests.
  * </p>
  *
  * <h2>Executing <code>Suite</code>s in parallel</h2>
@@ -531,7 +559,8 @@ object Runner {
       concurrentList,
       membersOnlyArgsList,
       wildcardArgsList,
-      testNGArgsList
+      testNGArgsList,
+      suffixes
     ) = parseArgs(args)
 
     val fullReporterConfigurations: ReporterConfigurations =
@@ -593,7 +622,8 @@ object Runner {
         val abq = new ArrayBlockingQueue[RunnerJFrame](1)
         usingEventDispatchThread {
           val rjf = new RunnerJFrame(graphicEventsToPresent, reporterConfigs, suitesList, junitsList, runpathList,
-            filter, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, passFailReporter, numThreads)
+            filter, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, passFailReporter, numThreads,
+            suffixes)
           rjf.setLocation(RUNNER_JFRAME_START_X, RUNNER_JFRAME_START_Y)
           rjf.setVisible(true)
           rjf.prepUIForRunning()
@@ -609,7 +639,7 @@ object Runner {
         withClassLoaderAndDispatchReporter(runpathList, reporterConfigs, None, passFailReporter) {
           (loader, dispatchReporter) => {
             doRunRunRunDaDoRunRun(dispatchReporter, suitesList, junitsList, new Stopper {}, filter,
-                propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}, 1, numThreads) 
+                propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}, 1, numThreads, suffixes) 
           }
         }
       }
@@ -631,7 +661,7 @@ object Runner {
       // Style advice
       // If it is multiple else ifs, then make it symetrical. If one needs an open curly brace, put it on all
       // If an if just has another if, a compound statement, go ahead and put the open curly brace's around the outer one
-      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-u") || s.startsWith("-d") || s.startsWith("-a") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || /* s.startsWith("-x") || */ s.startsWith("-l") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-b") || s.startsWith("-t")) {
+      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-u") || s.startsWith("-d") || s.startsWith("-a") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || /* s.startsWith("-x") || */ s.startsWith("-l") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-b") || s.startsWith("-t") || s.startsWith("-q") || s.startsWith("-Q")) {
         if (it.hasNext)
           it.next
       }
@@ -665,6 +695,17 @@ object Runner {
     }
   }
 
+  //
+  // Generates a Pattern based on suffixes passed in by user.  Pattern
+  // matches class names that end with one of the specified suffixes.
+  //
+  private def genSuffixesPattern(suffixesList: List[String]): Option[Pattern] = {
+    if (suffixesList.isEmpty)
+      None
+    else
+      Some(Pattern.compile(".*(" + suffixesList.mkString("|") + ")$"))
+  }
+
   private[scalatest] def parseArgs(args: Array[String]) = {
 
     val runpath = new ListBuffer[String]()
@@ -678,6 +719,7 @@ object Runner {
     val membersOnly = new ListBuffer[String]()
     val wildcard = new ListBuffer[String]()
     val testNGXMLFiles = new ListBuffer[String]()
+    val suffixes = new ListBuffer[String]()
 
     val it = args.iterator
     while (it.hasNext) {
@@ -784,6 +826,13 @@ object Runner {
         if (it.hasNext)
           testNGXMLFiles += it.next
       }
+      else if (s.startsWith("-q")) {
+        if (it.hasNext)
+          suffixes += it.next()
+      }
+      else if (s.startsWith("-Q")) {
+        suffixes += "Spec|Suite|Tests"
+      }
       else {
         throw new IllegalArgumentException("Unrecognized argument: " + s)
       }
@@ -800,9 +849,11 @@ object Runner {
       concurrent.toList,
       membersOnly.toList,
       wildcard.toList,
-      testNGXMLFiles.toList
+      testNGXMLFiles.toList,
+      genSuffixesPattern(suffixes.toList)
     )
   }
+
 
   /**
    * Returns a possibly empty ConfigSet containing configuration
@@ -1325,7 +1376,8 @@ object Runner {
     loader: ClassLoader,
     doneListener: RunDoneListener,
     runStamp: Int,
-    numThreads: Int
+    numThreads: Int,
+    suffixes: Option[Pattern]
   ) = {
 
     // TODO: add more, and to RunnerThread too
@@ -1426,7 +1478,7 @@ object Runner {
             else {
               println("DEBUG: Discovery Starting")
               val discoveryStartTime = System.currentTimeMillis
-              val accessibleSuites = discoverSuiteNames(runpath, loader)
+              val accessibleSuites = discoverSuiteNames(runpath, loader, suffixes)
               val discoveryDuration = System.currentTimeMillis - discoveryStartTime
               println("DEBUG: Discovery Completed: " + discoveryDuration + " milliseconds")
 

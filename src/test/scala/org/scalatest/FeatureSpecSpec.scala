@@ -132,53 +132,6 @@ class FeatureSpecSpec extends FunSpec with SharedHelpers {
         }
       }
     }
-    it("should return a correct tags map from the tags method") {
-
-      val a = new FeatureSpec {
-        ignore("test this") {}
-        scenario("test that") {}
-      }
-      expect(Map("Scenario: test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
-      }
-
-      val b = new FeatureSpec {
-        scenario("test this") {}
-        ignore("test that") {}
-      }
-      expect(Map("Scenario: test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
-      }
-
-      val c = new FeatureSpec {
-        ignore("test this") {}
-        ignore("test that") {}
-      }
-      expect(Map("Scenario: test this" -> Set("org.scalatest.Ignore"), "Scenario: test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
-      }
-
-      val d = new FeatureSpec {
-        scenario("test this", mytags.SlowAsMolasses) {}
-        ignore("test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("Scenario: test this" -> Set("org.scalatest.SlowAsMolasses"), "Scenario: test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
-      }
-
-      val e = new FeatureSpec {}
-      expect(Map()) {
-        e.tags
-      }
-
-      val f = new FeatureSpec {
-        scenario("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
-        scenario("test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("Scenario: test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "Scenario: test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
-      }
-    }
 
     class TestWasCalledSuite extends FeatureSpec {
       var theTestThisCalled = false

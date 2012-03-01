@@ -54,6 +54,7 @@ import javax.swing.event.ListSelectionListener
 import Runner.usingEventDispatchThread
 import Runner.withClassLoaderAndDispatchReporter
 import java.util.concurrent.Semaphore
+import java.util.regex.Pattern
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.awt.EventQueue
@@ -75,7 +76,7 @@ import EventToPresent.eventToEventToPresent
 private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresent],
     reporterConfigurations: ReporterConfigurations, suitesList: List[String], junitsList: List[String], runpathList: List[String], filter: Filter,
     propertiesMap: Map[String, String], concurrent: Boolean, memberOfList: List[String], beginsWithList: List[String],
-    testNGList: List[String], passFailReporter: Option[Reporter], numThreads: Int) extends
+    testNGList: List[String], passFailReporter: Option[Reporter], numThreads: Int, suffixes: Option[Pattern]) extends
     JFrame(Resources("ScalaTestTitle")) with RunDoneListener with RunnerGUI {
 
   // This should only be updated by the event handler thread.
@@ -1411,7 +1412,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
         (loader, dispatchReporter) => {
           try {
             Runner.doRunRunRunDaDoRunRun(dispatchReporter, suitesList, junitsList, stopper, filter,
-                propertiesMap, concurrent, memberOfList, beginsWithList, testNGList, runpathList, loader, RunnerJFrame.this, nextRunStamp, numThreads) 
+                propertiesMap, concurrent, memberOfList, beginsWithList, testNGList, runpathList, loader, RunnerJFrame.this, nextRunStamp, numThreads, suffixes) 
           }
           finally {
             stopper.reset()

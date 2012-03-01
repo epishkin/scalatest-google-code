@@ -169,66 +169,6 @@ class FunSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester with Sh
         }
       }
     }
-    it("should return a correct tags map from the tags method") {
-
-      val a = new FunSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        ignore("test this") { fixture => }
-        it("test that") { fixture => }
-      }
-      expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
-      }
-
-      val b = new FunSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        it("test this") { fixture => }
-        ignore("test that") { fixture => }
-      }
-      expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
-      }
-
-      val c = new FunSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        ignore("test this") { fixture => }
-        ignore("test that") { fixture => }
-      }
-      expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
-      }
-
-      val d = new FunSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        it("test this", mytags.SlowAsMolasses) { fixture => }
-        ignore("test that", mytags.SlowAsMolasses) { fixture => }
-      }
-      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
-      }
-
-      val e = new FunSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-      }
-      expect(Map()) {
-        e.tags
-      }
-
-      val f = new FunSpec {
-        type FixtureParam = String
-        def withFixture(test: OneArgTest) {}
-        it("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) { fixture => }
-        it("test that", mytags.SlowAsMolasses) { fixture => }
-      }
-      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
-      }
-    }
 
     class TestWasCalledSuite extends FunSpec {
       type FixtureParam = String

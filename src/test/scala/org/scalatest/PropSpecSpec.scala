@@ -258,53 +258,6 @@ class PropSpecSpec extends FunSpec with SharedHelpers {
         }
       }
     }
-    it("should return a correct tags map from the tags method") {
-
-      val a = new PropSpec {
-        ignore("test this") {}
-        property("test that") {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
-      }
-
-      val b = new PropSpec {
-        property("test this") {}
-        ignore("test that") {}
-      }
-      expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
-      }
-
-      val c = new PropSpec {
-        ignore("test this") {}
-        ignore("test that") {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
-      }
-
-      val d = new PropSpec {
-        property("test this", mytags.SlowAsMolasses) {}
-        ignore("test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
-      }
-
-      val e = new PropSpec {}
-      expect(Map()) {
-        e.tags
-      }
-
-      val f = new PropSpec {
-        property("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
-        property("test that", mytags.SlowAsMolasses) {}
-      }
-      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
-      }
-    }
 
     class TestWasCalledSuite extends PropSpec {
       var theTestThisCalled = false

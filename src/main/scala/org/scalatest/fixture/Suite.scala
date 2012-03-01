@@ -544,16 +544,6 @@ trait Suite extends org.scalatest.Suite { thisSuite =>
             val anyRefFixture: AnyRef = fixture.asInstanceOf[AnyRef] // TODO zap this cast
             val args: Array[Object] =
               if (testMethodTakesAFixtureAndInformer(testName)) {
-/*
-                val informer =
-                  new Informer {
-                    def apply(message: String) {
-                      if (message == null)
-                        throw new NullPointerException
-                      reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, true)
-                    }
-                  }
-*/
                 Array(anyRefFixture, informerForThisTest)
               }
               else

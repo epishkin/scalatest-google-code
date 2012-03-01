@@ -74,4 +74,43 @@ class EngineSpec extends FlatSpec with SharedHelpers with ShouldMatchers {
     grandchildTest.indentationLevel should be (1)
     greatGrandchildTest.indentationLevel should be (2)
   }
+
+  def pathEngine = {
+    import scala.collection.mutable.ListBuffer
+    val engine = new Engine("concurrentFunSuiteBundleMod", "FunSuite")
+    engine.registerNestedBranch("Given an empty list", None, {
+      val list = ListBuffer[Int]() 
+      engine.registerNestedBranch("when 1 is inserted", None, {
+        list += 1 
+        engine.registerTest("then the list has only 1 in it", () => {
+          list should be (ListBuffer(1)) 
+          list.clear()
+        }, "Anything", "Anything", "Anything", 2, None, None)
+        engine.registerTest("then the list length = 1", () => {
+          list.length should be (1) 
+        }, "Anything", "Anything", "Anything", 2, None, None)
+      }, "Anything", "Anything", "Anything", 3)
+      engine.registerNestedBranch("when 2 is inserted", None, {
+        list += 2
+        engine.registerTest("then the list has only 2 in it", () => {
+          list should be (ListBuffer(2)) 
+        }, "Anything", "Anything", "Anything", 2, None, None)
+      }, "Anything", "Anything", "Anything", 3)
+    }, "Anything", "Anything", "Anything", 3)
+    engine
+  }
+  
+  "Engine.getPathForTest" should "throw IAE for not existing task" in {
+    val engine = pathEngine
+    intercept[IllegalArgumentException] { 
+      engine.testPath("Invalid test name") 
+    } 
+  }
+  
+  "Engine.getPathForTest" should "return correct path for test" in {
+    val engine = pathEngine
+    engine.testPath("Given an empty list when 1 is inserted then the list has only 1 in it") should be (List(0, 0, 0))
+    engine.testPath("Given an empty list when 1 is inserted then the list length = 1") should be (List(0, 0, 1))
+    engine.testPath("Given an empty list when 2 is inserted then the list has only 2 in it") should be (List(0, 1, 0))
+  }
 }
