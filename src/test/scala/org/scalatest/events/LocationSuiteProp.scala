@@ -3,7 +3,7 @@ import org.scalatest.Suite
 import org.scalatest.SuiteProp
 import org.scalatest.FunSuite
 import org.scalatest.FunSpec
-import org.scalatest.StringFixtureSpec
+import org.scalatest.StringFixtureFunSpec
 import org.scalatest.StringFixtureFunSuite
 import org.scalatest.Stopper
 import org.scalatest.Filter
@@ -187,7 +187,7 @@ class LocationSuiteProp extends SuiteProp
   }
   
   def fixtureSpec = new TestLocationFixtureSpec
-  class TestLocationFixtureSpec extends StringFixtureSpec with FixtureServices {
+  class TestLocationFixtureSpec extends StringFixtureFunSpec with FixtureServices {
     val suiteTypeName = "org.scalatest.events.LocationSuiteProp$TestLocationFixtureSpec"
     val expectedSuiteStartingList = List(TopOfClassPair(suiteTypeName + "$NestedSuite"), 
                                          TopOfClassPair(suiteTypeName + "$AbortNestedSuite"),
@@ -198,12 +198,12 @@ class LocationSuiteProp extends SuiteProp
     val expectedTestFailedList = List(SeeStackDepthExceptionPair("fail"))
     val expectedInfoProvidedList = List(LineInFilePair("test info", "LocationSuiteProp.scala", thisLineNumber + 4))
     
-    class NestedSuite extends StringFixtureSpec {
+    class NestedSuite extends StringFixtureFunSpec {
       it("info") { param =>
         info("test info")
       }
     }
-    class AbortNestedSuite extends StringFixtureSpec {
+    class AbortNestedSuite extends StringFixtureFunSpec {
       override protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
                                 configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
         throw new RuntimeException
