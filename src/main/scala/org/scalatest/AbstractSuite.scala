@@ -178,6 +178,16 @@ trait AbstractSuite { this: Suite =>
    * </p>
    */
   def testTags: Map[String, Set[String]]
+  
+  /**
+   * A <code>Set</code> of tag names which this <code>Suite</code> are marked.  If this <code>Suite</code> contains no tags, this 
+   * method returns an empty <code>Set</code>.
+   * 
+   * <p>
+   * Subclasses may implement this method to define and/or discover tags in a custom manner.
+   * </p>
+   */
+  def suiteTags: Set[String]
 
   /**
    * The total number of tests that are expected to run when this <code>Suite</code>'s <code>run</code> method is invoked.

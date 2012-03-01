@@ -1879,6 +1879,17 @@ trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite 
     Map() ++ elements
     
   }
+  
+  def suiteTags: Set[String] = {
+    
+    val elements = for { 
+      a <- getClass.getDeclaredAnnotations
+      annotationClass = a.annotationType
+      if annotationClass.isAnnotationPresent(classOf[TagAnnotation])
+    } yield annotationClass.getName
+    
+    Set() ++ elements
+  }
 
   /**
   * A <code>Set</code> of test names. If this <code>Suite</code> contains no tests, this method returns an empty <code>Set</code>.

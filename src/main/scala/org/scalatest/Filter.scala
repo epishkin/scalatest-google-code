@@ -27,7 +27,7 @@ import Filter.IgnoreTag
  * @throws NullPointerException if either <code>tagsToInclude</code> or <code>tagsToExclude</code> are null
  * @throws IllegalArgumentException if <code>tagsToInclude</code> is defined, but contains an empty set
  */
-final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Set[String], val includeNestedSuites: Boolean = true, val dynaTags: DynaTags = Map.empty) extends Function2[Set[String], Map[String, Set[String]], List[(String, Boolean)]] {
+final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Set[String], val includeNestedSuites: Boolean = true, val dynaTags: DynaTags = DynaTags(Set.empty, Map.empty)) extends Function2[Set[String], Map[String, Set[String]], List[(String, Boolean)]] {
 
   if (tagsToInclude == null)
     throw new NullPointerException("tagsToInclude was null")

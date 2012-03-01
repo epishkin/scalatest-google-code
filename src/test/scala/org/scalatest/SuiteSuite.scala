@@ -407,6 +407,18 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       }
     }
   }
+  
+  def testSuiteTags() {
+    class NoTagSuite extends Suite {}
+    @SlowAsMolasses
+    class TagSuite extends Suite {}
+    
+    val noTagSuite = new NoTagSuite
+    assert(noTagSuite.suiteTags == Set.empty)
+    val tagSuite = new TagSuite
+    assert(tagSuite.suiteTags.size == 1)
+    assert(tagSuite.suiteTags.toList(0) == classOf[SlowAsMolasses].getName)
+  }
 }
 
 class `My Test` extends Suite {}
