@@ -277,7 +277,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
         if (!stopRequested()) {
           node match {
             case testLeaf @ TestLeaf(_, testName, testText, _, _, _, _) =>
-              val (filterTest, ignoreTest) = filter(testName, theSuite.tags)
+              val (filterTest, ignoreTest) = filter(testName, theSuite.testTags)
               if (!filterTest)
                 if (ignoreTest) {
                   val testTextWithOptionalPrefix = prependChildPrefix(branch, testText)
@@ -345,7 +345,7 @@ private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResou
     // by testNames.
     testName match {
       case Some(tn) =>
-        val (filterTest, ignoreTest) = filter(tn, theSuite.tags)
+        val (filterTest, ignoreTest) = filter(tn, theSuite.testTags)
         if (!filterTest) {
           if (ignoreTest) {
             val theTest = atomic.get.testsMap(tn)

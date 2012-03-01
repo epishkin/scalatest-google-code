@@ -2561,7 +2561,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * methods <code>test</code> and <code>ignore</code>. 
    * </p>
    */
-  override def tags: Map[String, Set[String]] = atomic.get.tagsMap
+  override def testTags: Map[String, Set[String]] = atomic.get.tagsMap
 
   /**
    * Run a test. This trait's implementation runs the test registered with the name specified by

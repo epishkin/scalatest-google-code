@@ -485,12 +485,12 @@ trait Suite extends org.scalatest.Suite { thisSuite =>
     def isTestMethod(m: Method) = {
 
       // Factored out to share code with Suite.testNames
-      val (isInstanceMethod, simpleName, firstFour, paramTypes, hasNoParams, isTestNames) = isTestMethodGoodies(m)
+      val (isInstanceMethod, simpleName, firstFour, paramTypes, hasNoParams, isTestNames, isTestTags) = isTestMethodGoodies(m)
 
       // Also, will discover both
       // testNames(Object) and testNames(Object, Informer). Reason is if I didn't discover these
       // it would likely just be silently ignored, and that might waste users' time
-      isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames) ||
+      isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames && !isTestTags) ||
           takesInformer(m) || takesOneParamOfAnyType(m) || takesTwoParamsOfTypesAnyAndInformer(m))
     }
 

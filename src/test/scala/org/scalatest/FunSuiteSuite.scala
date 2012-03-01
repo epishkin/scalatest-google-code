@@ -31,7 +31,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
     val a = new FunSuite {
       test("test not in a group") {}
     }
-    assert(a.tags.keySet.size === 0)
+    assert(a.testTags.keySet.size === 0)
   }
 
   def testThatTestFunctionsThatResultInNonUnitAreRegistered() {
@@ -41,7 +41,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
     }
     assert(a.expectedTestCount(Filter()) === 2)
     assert(a.testNames.size === 2)
-    assert(a.tags.keySet.size === 0)
+    assert(a.testTags.keySet.size === 0)
   }
 
   def testThatTestNameCantBeReused() {

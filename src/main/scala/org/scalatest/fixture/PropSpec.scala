@@ -572,7 +572,7 @@ trait PropSpec extends Suite { thisSuite =>
    * methods <code>test</code> and <code>ignore</code>.
    * </p>
    */
-  override def tags: Map[String, Set[String]] = atomic.get.tagsMap
+  override def testTags: Map[String, Set[String]] = atomic.get.tagsMap
 
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {

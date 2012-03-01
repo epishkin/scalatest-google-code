@@ -351,7 +351,7 @@ class WordSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen {
         "test that" is (pending)
       }
       expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
+        a.testTags
       }
 
       val b = new WordSpec {
@@ -359,7 +359,7 @@ class WordSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen {
         "test that" ignore {}
       }
       expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
+        b.testTags
       }
 
       val c = new WordSpec {
@@ -367,7 +367,7 @@ class WordSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen {
         "test that" ignore {}
       }
       expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
+        c.testTags
       }
 
       val d = new WordSpec {
@@ -375,7 +375,7 @@ class WordSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen {
         "test that" taggedAs(mytags.SlowAsMolasses) ignore {}
       }
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
+        d.testTags
       }
 
       val e = new WordSpec {
@@ -383,7 +383,7 @@ class WordSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen {
         "test that" is (pending)
       }
       expect(Map()) {
-        e.tags
+        e.testTags
       }
 
       val f = new WordSpec {
@@ -391,7 +391,7 @@ class WordSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen {
         "test that" taggedAs(mytags.SlowAsMolasses) in  {}
       }
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
+        f.testTags
       }
 
       val g = new WordSpec {
@@ -399,7 +399,7 @@ class WordSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen {
         "test that" taggedAs(mytags.SlowAsMolasses) in  {}
       }
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        g.tags
+        g.testTags
       }
     }
 

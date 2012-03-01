@@ -1033,7 +1033,7 @@ trait FunSpec extends org.scalatest.Suite with OneInstancePerTest { thisSuite =>
    * <a href="#sharedFixtures">Shared fixtures</a> section in the main documentation for this trait.
    * </p>
    */
-  final override def tags: Map[String, Set[String]] = {
+  final override def testTags: Map[String, Set[String]] = {
     ensureTestResultsRegistered(thisSuite)
     atomic.get.tagsMap
   }

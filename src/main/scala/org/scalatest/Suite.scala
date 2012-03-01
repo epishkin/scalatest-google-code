@@ -1836,6 +1836,15 @@ trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite 
   }
 
   /**
+   * This method has been deprecated and will be replaced by testTags, subclasses should implement testTags.
+   * 
+   * This trait's implementation is just forward it to testTags.
+   */
+  final def tags: Map[String, Set[String]] = {
+    testTags
+  }
+  
+  /**
    * A <code>Map</code> whose keys are <code>String</code> tag names with which tests in this <code>Suite</code> are marked, and
    * whose values are the <code>Set</code> of test names marked with each tag.  If this <code>Suite</code> contains no tags, this
    * method returns an empty <code>Map</code>.
@@ -1854,8 +1863,8 @@ trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite 
    * returned <code>Map</code>.
    * </p>
    */
-  def tags: Map[String, Set[String]] = {
-
+  def testTags: Map[String, Set[String]] = {
+    
     def getTags(testName: String) =
       for {
         a <- getMethodForTestName(testName).getDeclaredAnnotations
@@ -1868,6 +1877,7 @@ trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite 
         yield testName -> (Set() ++ getTags(testName))
 
     Map() ++ elements
+    
   }
 
   /**
@@ -1918,9 +1928,9 @@ trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite 
     def isTestMethod(m: Method) = {
 
       // Factored out to share code with fixture.Suite.testNames
-      val (isInstanceMethod, simpleName, firstFour, paramTypes, hasNoParams, isTestNames) = isTestMethodGoodies(m)
+      val (isInstanceMethod, simpleName, firstFour, paramTypes, hasNoParams, isTestNames, isTestTags) = isTestMethodGoodies(m)
 
-      isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames) || takesInformer(m))
+      isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames && !isTestTags) || takesInformer(m))
     }
 
     val testNameArray =
@@ -2200,7 +2210,7 @@ trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite 
     testName match {
 
       case Some(tn) =>
-        val (filterTest, ignoreTest) = filter(tn, tags)
+        val (filterTest, ignoreTest) = filter(tn, testTags)
         if (!filterTest) {
           if (ignoreTest)
             reportTestIgnored(thisSuite, report, tracker, tn, tn, getDecodedName(tn), 1, Some(getTopOfMethod(tn)))
@@ -2209,7 +2219,7 @@ trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite 
         }
 
       case None =>
-        for ((tn, ignoreTest) <- filter(testNames, tags)) {
+        for ((tn, ignoreTest) <- filter(testNames, testTags)) {
           if (!stopRequested()) {
             if (ignoreTest)
               reportTestIgnored(thisSuite, report, tracker, tn, tn, getDecodedName(tn), 1, Some(getTopOfMethod(tn)))
@@ -2594,7 +2604,7 @@ trait Suite extends Assertions with AbstractSuite with Serializable { thisSuite 
             countNestedSuiteTests(nestedSuites, filter)
     }
 
-    filter.runnableTestCount(testNames, tags) + countNestedSuiteTests(nestedSuites, filter)
+    filter.runnableTestCount(testNames, testTags) + countNestedSuiteTests(nestedSuites, filter)
   }
 
   // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
@@ -2761,8 +2771,9 @@ private[scalatest] object Suite {
     // Discover testNames(Informer) because if we didn't it might be confusing when someone
     // actually wrote a testNames(Informer) method and it was silently ignored.
     val isTestNames = simpleName == "testNames"
+    val isTestTags = simpleName == "testTags"
 
-    (isInstanceMethod, simpleName, firstFour, paramTypes, hasNoParams, isTestNames)
+    (isInstanceMethod, simpleName, firstFour, paramTypes, hasNoParams, isTestNames, isTestTags)
   }
 
   def testMethodTakesAnInformer(testName: String) = testName.endsWith(InformerInParens)

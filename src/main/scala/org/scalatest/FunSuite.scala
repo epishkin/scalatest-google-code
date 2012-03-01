@@ -1292,7 +1292,7 @@ trait FunSuite extends Suite { thisSuite =>
    * methods <code>test</code> and <code>ignore</code>. 
    * </p>
    */
-  override def tags: Map[String, Set[String]] = atomic.get.tagsMap
+  override def testTags: Map[String, Set[String]] = atomic.get.tagsMap
 
   /**
    * Run zero to many of this <code>FunSuite</code>'s tests.

@@ -77,7 +77,7 @@ class JUnitSuiteSpec extends FunSpec with SharedHelpers {
         @Test def testThat() = ()
       }
 
-      assert(a.tags === Map("testThis" -> Set("org.scalatest.Ignore")))
+      assert(a.testTags === Map("testThis" -> Set("org.scalatest.Ignore")))
 
       val b = new JUnitSuite {
         @Test def testThis() = ()
@@ -85,7 +85,7 @@ class JUnitSuiteSpec extends FunSpec with SharedHelpers {
         @Test def testThat() = ()
       }
 
-      assert(b.tags === Map("testThat" -> Set("org.scalatest.Ignore")))
+      assert(b.testTags === Map("testThat" -> Set("org.scalatest.Ignore")))
 
       val c = new JUnitSuite {
         @Ignore
@@ -94,7 +94,7 @@ class JUnitSuiteSpec extends FunSpec with SharedHelpers {
         @Test def testThat() = ()
       }
 
-      assert(c.tags === Map("testThis" -> Set("org.scalatest.Ignore"), "testThat" -> Set("org.scalatest.Ignore")))
+      assert(c.testTags === Map("testThis" -> Set("org.scalatest.Ignore"), "testThat" -> Set("org.scalatest.Ignore")))
 
       val d = new JUnitSuite {
         @SlowAsMolasses
@@ -104,10 +104,10 @@ class JUnitSuiteSpec extends FunSpec with SharedHelpers {
         @Test def testThat() = ()
       }
 
-      assert(d.tags === Map("testThat" -> Set("org.scalatest.Ignore")))
+      assert(d.testTags === Map("testThat" -> Set("org.scalatest.Ignore")))
 
       val e = new JUnitSuite {}
-      assert(e.tags === Map())
+      assert(e.testTags === Map())
     }
 
     it("should execute all tests when run is called with testName None") {
