@@ -13,6 +13,7 @@ import org.scalatest.Tag
 import org.scalatest.verb.BehaveWord
 import scala.collection.immutable.ListSet
 import org.scalatest.PathEngine.isInTargetPath
+import org.scalatest.Style
 
 /**
  * A sister trait to <code>org.scalatest.FunSpec</code> that isolates tests by running each test in its own
@@ -688,6 +689,7 @@ import org.scalatest.PathEngine.isInTargetPath
  * @author Bill Venners
  * @author Chua Chee Seng
  */
+@Style("org.scalatest.finders.FunSpecFinder")
 trait FunSpec extends org.scalatest.Suite with OneInstancePerTest { thisSuite =>
   
   private final val engine = PathEngine.getEngine()

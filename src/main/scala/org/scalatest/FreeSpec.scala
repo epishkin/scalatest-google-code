@@ -1482,6 +1482,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * @author Bill Venners
  */
+@Style("org.scalatest.finders.FreeSpecFinder")
 trait FreeSpec extends Suite { thisSuite =>
 
   private final val engine = new Engine("concurrentFreeSpecMod", "FreeSpec")

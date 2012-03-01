@@ -1179,6 +1179,7 @@ import Suite.checkRunTestParamsForNull
  *
  * @author Bill Venners
  */
+@Style("org.scalatest.finders.FunSuiteFinder")
 trait FunSuite extends Suite { thisSuite =>
 
   private final val engine = new Engine("concurrentFunSuiteMod", "FunSuite")
