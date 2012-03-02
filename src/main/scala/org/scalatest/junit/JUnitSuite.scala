@@ -234,10 +234,10 @@ trait JUnitSuite extends Suite with AssertionsForJUnit { thisSuite =>
    * </p>
    */
   override def expectedTestCount(filter: Filter) =
-    if (filter.tagsToInclude.isDefined) 0 else (testNames.size - tags.size)
+    if (filter.tagsToInclude.isDefined) 0 else (testNames.size - testTags.size)
 
   // Returns just tests that have org.junit.Ignore on them, but calls it org.scalatest.Ignore!
-  override def tags: Map[String, Set[String]] = {
+  override def testTags: Map[String, Set[String]] = {
 
     def getMethodForJUnitTestName(testName: String) =
       getClass.getMethod(testName, new Array[Class[_]](0): _*)

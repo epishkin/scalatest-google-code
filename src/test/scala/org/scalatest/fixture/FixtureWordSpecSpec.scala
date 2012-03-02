@@ -176,7 +176,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" in { fixture => }
       }
       expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
+        a.testTags
       }
 
       val b = new FixtureWordSpec {
@@ -186,7 +186,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" ignore { fixture => }
       }
       expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
+        b.testTags
       }
 
       val c = new FixtureWordSpec {
@@ -196,7 +196,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" ignore { fixture => }
       }
       expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
+        c.testTags
       }
 
       val d = new FixtureWordSpec {
@@ -206,7 +206,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
       }
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
+        d.testTags
       }
 
       val e = new FixtureWordSpec {
@@ -216,7 +216,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" in { fixture => }
       }
       expect(Map()) {
-        e.tags
+        e.testTags
       }
 
       val f = new FixtureWordSpec {
@@ -226,7 +226,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" taggedAs(mytags.SlowAsMolasses) in  { fixture => }
       }
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
+        f.testTags
       }
 
       val g = new FixtureWordSpec {
@@ -236,7 +236,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" taggedAs(mytags.SlowAsMolasses) in  { fixture => }
       }
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        g.tags
+        g.testTags
       }
     }
     it("should return a correct tags map from the tags method using is (pending)") {
@@ -248,7 +248,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" is (pending)
       }
       expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
+        a.testTags
       }
 
       val b = new FixtureWordSpec {
@@ -258,7 +258,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" ignore { fixture => }
       }
       expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
+        b.testTags
       }
 
       val c = new FixtureWordSpec {
@@ -268,7 +268,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" ignore { fixture => }
       }
       expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
+        c.testTags
       }
 
       val d = new FixtureWordSpec {
@@ -278,7 +278,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
       }
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
+        d.testTags
       }
 
       val e = new FixtureWordSpec {
@@ -288,7 +288,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" is (pending)
       }
       expect(Map()) {
-        e.tags
+        e.testTags
       }
 
       val f = new FixtureWordSpec {
@@ -298,7 +298,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
       }
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
+        f.testTags
       }
 
       val g = new FixtureWordSpec {
@@ -308,7 +308,7 @@ class FixtureWordSpecSpec extends org.scalatest.FunSpec with PrivateMethodTester
         "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
       }
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        g.tags
+        g.testTags
       }
     }
     class TestWasCalledSuite extends FixtureWordSpec {

@@ -192,7 +192,7 @@ class JUnit3Suite extends TestCase with Suite with AssertionsForJUnit {
   /**
    * Returns an empty <code>Map</code>, because tags are not supported by JUnit 3.
    */
-  override def tags = Map()
+  override def testTags = Map()
 
   /**
    * Returns the number of tests expected to be run by JUnit when <code>run</code> is invoked

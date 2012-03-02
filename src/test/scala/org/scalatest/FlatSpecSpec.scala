@@ -414,7 +414,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         it should "test that" is (pending)
       }
       expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
+        a.testTags
       }
 
       val b = new FlatSpec {
@@ -422,7 +422,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         ignore can "test that" is (pending)
       }
       expect(Map("can test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
+        b.testTags
       }
 
       val c = new FlatSpec {
@@ -430,7 +430,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         ignore must "test that" is (pending)
       }
       expect(Map("must test this" -> Set("org.scalatest.Ignore"), "must test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
+        c.testTags
       }
 
       val d = new FlatSpec {
@@ -438,7 +438,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         ignore must "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
       }
       expect(Map("must test this" -> Set("org.scalatest.SlowAsMolasses"), "must test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
+        d.testTags
       }
 
       val e = new FlatSpec {
@@ -446,7 +446,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         it must "test that" is (pending)
       }
       expect(Map()) {
-        e.tags
+        e.testTags
       }
 
       val f = new FlatSpec {
@@ -454,7 +454,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         it can "test that" taggedAs(mytags.SlowAsMolasses) in  {}
       }
       expect(Map("can test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "can test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
+        f.testTags
       }
 
       val g = new FlatSpec {
@@ -462,7 +462,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         it should "test that" taggedAs(mytags.SlowAsMolasses) in  {}
       }
       expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        g.tags
+        g.testTags
       }
     }
     it("should return a correct tags map from the tags method is (pending), when using regular (not shorthand)" +
@@ -473,7 +473,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         it should "test that" is (pending)
       }
       expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
+        a.testTags
       }
 
       val b = new FlatSpec {
@@ -481,7 +481,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         it can "test that" ignore {}
       }
       expect(Map("can test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
+        b.testTags
       }
 
       val c = new FlatSpec {
@@ -489,7 +489,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         it must "test that" ignore {}
       }
       expect(Map("must test this" -> Set("org.scalatest.Ignore"), "must test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
+        c.testTags
       }
 
       val d = new FlatSpec {
@@ -497,7 +497,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         it must "test that" taggedAs(mytags.SlowAsMolasses) ignore {}
       }
       expect(Map("must test this" -> Set("org.scalatest.SlowAsMolasses"), "must test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
+        d.testTags
       }
     }
 
@@ -508,7 +508,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         "A Stack" should "test that" is (pending)
       }
       expect(Map("A Stack should test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
+        a.testTags
       }
 
       val b = new FlatSpec {
@@ -516,7 +516,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         "A Stack" can "test that" ignore {}
       }
       expect(Map("A Stack can test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
+        b.testTags
       }
 
       val c = new FlatSpec {
@@ -524,7 +524,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         "A Stack" must "test that" ignore {}
       }
       expect(Map("A Stack must test this" -> Set("org.scalatest.Ignore"), "A Stack must test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
+        c.testTags
       }
 
       val d = new FlatSpec {
@@ -532,7 +532,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         "A Stack" must "test that" taggedAs(mytags.SlowAsMolasses) ignore {}
       }
       expect(Map("A Stack must test this" -> Set("org.scalatest.SlowAsMolasses"), "A Stack must test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
+        d.testTags
       }
 
       val e = new FlatSpec {
@@ -540,7 +540,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         "A Stack" must "test that" is (pending)
       }
       expect(Map()) {
-        e.tags
+        e.testTags
       }
 
       val f = new FlatSpec {
@@ -548,7 +548,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         "A Stack" can "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
       }
       expect(Map("A Stack can test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "A Stack can test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
+        f.testTags
       }
 
       val g = new FlatSpec {
@@ -556,7 +556,7 @@ class FlatSpecSpec extends FunSpec with SharedHelpers with GivenWhenThen with Sh
         "A Stack" should "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
       }
       expect(Map("A Stack should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "A Stack should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        g.tags
+        g.testTags
       }
     }
 

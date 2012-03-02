@@ -89,7 +89,7 @@ class FunSpecSpec extends org.scalatest.FreeSpec with SharedHelpers with GivenWh
           it("should test this") {}
           override def newInstance = new AFunSpec
         }
-        (new AFunSpec).tags // Must call a method to get it to attempt to register the second test
+        (new AFunSpec).testTags // Must call a method to get it to attempt to register the second test
       }
       intercept[DuplicateTestNameException] {
         class AFunSpec extends PathFunSpec {
@@ -97,7 +97,7 @@ class FunSpecSpec extends org.scalatest.FreeSpec with SharedHelpers with GivenWh
           ignore("should test this") {}
           override def newInstance = new AFunSpec
         }
-        (new AFunSpec).tags
+        (new AFunSpec).testTags
       }
       intercept[DuplicateTestNameException] {
         class AFunSpec extends PathFunSpec {
@@ -105,7 +105,7 @@ class FunSpecSpec extends org.scalatest.FreeSpec with SharedHelpers with GivenWh
           ignore("should test this") {}
           override def newInstance = new AFunSpec
         }
-        (new AFunSpec).tags
+        (new AFunSpec).testTags
       }
       intercept[DuplicateTestNameException] {
         class AFunSpec extends PathFunSpec {
@@ -113,7 +113,7 @@ class FunSpecSpec extends org.scalatest.FreeSpec with SharedHelpers with GivenWh
           it("should test this") {}
           override def newInstance = new AFunSpec
         }
-        (new AFunSpec).tags
+        (new AFunSpec).testTags
       }
     }
 

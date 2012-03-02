@@ -191,7 +191,7 @@ class FreeSpecSpec extends org.scalatest.FunSpec with SharedHelpers with GivenWh
           "should test this" in {}
           override def newInstance = new AFreeSpec
         }
-        (new AFreeSpec).tags // Must call a method to get it to attempt to register the second test
+        (new AFreeSpec).testTags // Must call a method to get it to attempt to register the second test
       }
       intercept[DuplicateTestNameException] {
         class AFreeSpec extends   PathFreeSpec {
@@ -199,7 +199,7 @@ class FreeSpecSpec extends org.scalatest.FunSpec with SharedHelpers with GivenWh
           "should test this" ignore {}
           override def newInstance = new AFreeSpec
         }
-        (new AFreeSpec).tags
+        (new AFreeSpec).testTags
       }
       intercept[DuplicateTestNameException] {
         class AFreeSpec extends   PathFreeSpec {
@@ -207,7 +207,7 @@ class FreeSpecSpec extends org.scalatest.FunSpec with SharedHelpers with GivenWh
           "should test this" ignore {}
           override def newInstance = new AFreeSpec
         }
-        (new AFreeSpec).tags
+        (new AFreeSpec).testTags
       }
       intercept[DuplicateTestNameException] {
         class AFreeSpec extends   PathFreeSpec {
@@ -215,7 +215,7 @@ class FreeSpecSpec extends org.scalatest.FunSpec with SharedHelpers with GivenWh
           "should test this" in {}
           override def newInstance = new AFreeSpec
         }
-        (new AFreeSpec).tags
+        (new AFreeSpec).testTags
       }
     }
 
@@ -335,7 +335,7 @@ class FreeSpecSpec extends org.scalatest.FunSpec with SharedHelpers with GivenWh
       }
       val a = new AFreeSpec
       expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
+        a.testTags
       }
 
       class BFreeSpec extends PathFreeSpec {
@@ -345,7 +345,7 @@ class FreeSpecSpec extends org.scalatest.FunSpec with SharedHelpers with GivenWh
       }
       val b = new BFreeSpec
       expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
+        b.testTags
       }
 
       class CFreeSpec extends PathFreeSpec {
@@ -355,7 +355,7 @@ class FreeSpecSpec extends org.scalatest.FunSpec with SharedHelpers with GivenWh
       }
       val c = new CFreeSpec
       expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
+        c.testTags
       }
 
       class DFreeSpec extends PathFreeSpec {
@@ -365,7 +365,7 @@ class FreeSpecSpec extends org.scalatest.FunSpec with SharedHelpers with GivenWh
       }
       val d = new DFreeSpec
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
+        d.testTags
       }
 
       class EFreeSpec extends PathFreeSpec {
@@ -375,7 +375,7 @@ class FreeSpecSpec extends org.scalatest.FunSpec with SharedHelpers with GivenWh
       }
       val e = new EFreeSpec
       expect(Map()) {
-        e.tags
+        e.testTags
       }
 
       class FFreeSpec extends PathFreeSpec {
@@ -385,7 +385,7 @@ class FreeSpecSpec extends org.scalatest.FunSpec with SharedHelpers with GivenWh
       }
       val f = new FFreeSpec
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
+        f.testTags
       }
 
       class GFreeSpec extends PathFreeSpec {
@@ -395,7 +395,7 @@ class FreeSpecSpec extends org.scalatest.FunSpec with SharedHelpers with GivenWh
       }
       val g = new GFreeSpec
       expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        g.tags
+        g.testTags
       }
     }
 

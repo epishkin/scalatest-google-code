@@ -80,13 +80,4 @@ package object scalatest {
   def run(suite: Suite, testName: String = null, configMap: Map[String, Any] = Map()) {
     defaultShell.run(suite, testName, configMap)
   }
-  
-  // Suite ID -> Test Name -> Set of Tag Names
-  // TODO: Add scaladoc there.
-  // TODO: If want to support rerunning an entire suite that aborted, then, I need a way
-  // to say just rerun all the tests in the suite. Rerun the entire suite. And that means
-  // DynaTags should be:
-  // type DynaTags = Map[String, Option[Map[String, Set[String]]]]
-  // Such that if the option is a None, it means rerun the entire suite.
-  type DynaTags = Map[String, Map[String, Set[String]]]
 }

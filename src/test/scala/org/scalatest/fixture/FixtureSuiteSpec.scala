@@ -196,7 +196,7 @@ class FixtureSuiteSpec extends org.scalatest.FunSpec with PrivateMethodTester wi
         def testThat(fixture: FixtureParam, info: Informer) = ()
       }
 
-      assert(a.tags === Map("testThis(FixtureParam)" -> Set("org.scalatest.Ignore")))
+      assert(a.testTags === Map("testThis(FixtureParam)" -> Set("org.scalatest.Ignore")))
 
       val b = new FixtureSuite {
         type FixtureParam = String
@@ -206,7 +206,7 @@ class FixtureSuiteSpec extends org.scalatest.FunSpec with PrivateMethodTester wi
         def testThat(fixture: FixtureParam, info: Informer) = ()
       }
 
-      assert(b.tags === Map("testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore")))
+      assert(b.testTags === Map("testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore")))
 
       val c = new FixtureSuite {
         type FixtureParam = String
@@ -217,7 +217,7 @@ class FixtureSuiteSpec extends org.scalatest.FunSpec with PrivateMethodTester wi
         def testThat(fixture: FixtureParam, info: Informer) = ()
       }
 
-      assert(c.tags === Map("testThis(FixtureParam)" -> Set("org.scalatest.Ignore"), "testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore")))
+      assert(c.testTags === Map("testThis(FixtureParam)" -> Set("org.scalatest.Ignore"), "testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore")))
 
       val d = new FixtureSuite {
         type FixtureParam = String
@@ -229,13 +229,13 @@ class FixtureSuiteSpec extends org.scalatest.FunSpec with PrivateMethodTester wi
         def testThat(fixture: FixtureParam, info: Informer) = ()
       }
 
-      assert(d.tags === Map("testThis(FixtureParam)" -> Set("org.scalatest.SlowAsMolasses"), "testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
+      assert(d.testTags === Map("testThis(FixtureParam)" -> Set("org.scalatest.SlowAsMolasses"), "testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
 
       val e = new FixtureSuite {
         type FixtureParam = String
         def withFixture(test: OneArgTest) {}
       }
-      assert(e.tags === Map())
+      assert(e.testTags === Map())
     }
 
     class TestWasCalledSuite extends FixtureSuite {

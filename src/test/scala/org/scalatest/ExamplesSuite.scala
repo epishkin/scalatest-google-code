@@ -90,7 +90,7 @@ class ExamplesSuite extends FunSuite {
       aExamples()
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-      a.tags
+      a.testTags
     }
 
     val b = new FunSpec {
@@ -98,7 +98,7 @@ class ExamplesSuite extends FunSuite {
       bExamples()
     }
     expect(Map()) {
-      b.tags
+      b.testTags
     }
 
     val c = new FunSpec {
@@ -109,7 +109,7 @@ class ExamplesSuite extends FunSuite {
       cExamples()
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-      c.tags
+      c.testTags
     }
   }
 }

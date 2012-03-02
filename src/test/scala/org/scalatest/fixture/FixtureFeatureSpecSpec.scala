@@ -177,7 +177,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.FunSpec with SharedHelpers {
         scenario("test that") { fixture => }
       }
       expect(Map("Scenario: test this" -> Set("org.scalatest.Ignore"))) {
-        a.tags
+        a.testTags
       }
 
       val b = new FixtureFeatureSpec {
@@ -187,7 +187,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.FunSpec with SharedHelpers {
         ignore("test that") { fixture => }
       }
       expect(Map("Scenario: test that" -> Set("org.scalatest.Ignore"))) {
-        b.tags
+        b.testTags
       }
 
       val c = new FixtureFeatureSpec {
@@ -197,7 +197,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.FunSpec with SharedHelpers {
         ignore("test that") { fixture => }
       }
       expect(Map("Scenario: test this" -> Set("org.scalatest.Ignore"), "Scenario: test that" -> Set("org.scalatest.Ignore"))) {
-        c.tags
+        c.testTags
       }
 
       val d = new FixtureFeatureSpec {
@@ -207,7 +207,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.FunSpec with SharedHelpers {
         ignore("test that", mytags.SlowAsMolasses) { fixture => }
       }
       expect(Map("Scenario: test this" -> Set("org.scalatest.SlowAsMolasses"), "Scenario: test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-        d.tags
+        d.testTags
       }
 
       val e = new FixtureFeatureSpec {
@@ -215,7 +215,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.FunSpec with SharedHelpers {
         def withFixture(test: OneArgTest) {}
       }
       expect(Map()) {
-        e.tags
+        e.testTags
       }
 
       val f = new FixtureFeatureSpec {
@@ -225,7 +225,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.FunSpec with SharedHelpers {
         scenario("test that", mytags.SlowAsMolasses) { fixture => }
       }
       expect(Map("Scenario: test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "Scenario: test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-        f.tags
+        f.testTags
       }
     }
 

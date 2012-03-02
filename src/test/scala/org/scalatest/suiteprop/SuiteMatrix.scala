@@ -35,7 +35,7 @@ class SuiteMatrix extends PropSpec with ShouldMatchers with TableDrivenPropertyC
   property("should, if no test is marked as ignored and there are no tests tagged, return an empty tags map") {
     new InfoInsideTestFiredAfterTestExamples {
       forAll (examples) { suite =>
-        suite.tags should be ('empty)
+        suite.testTags should be ('empty)
       }
     }
   }
@@ -44,7 +44,7 @@ class SuiteMatrix extends PropSpec with ShouldMatchers with TableDrivenPropertyC
     new FirstTestIgnoredExamples {
       forAll (examples) { suite =>
         val firstTestName = suite.theTestNames(0)
-        suite.tags should be (Map(firstTestName -> Set("org.scalatest.Ignore")))
+        suite.testTags should be (Map(firstTestName -> Set("org.scalatest.Ignore")))
       }
     }
   }
@@ -53,7 +53,7 @@ class SuiteMatrix extends PropSpec with ShouldMatchers with TableDrivenPropertyC
     new SecondTestIgnoredExamples {
       forAll (examples) { suite =>
         val secondTestName = suite.theTestNames(1)
-        suite.tags should be (Map(secondTestName -> Set("org.scalatest.Ignore")))
+        suite.testTags should be (Map(secondTestName -> Set("org.scalatest.Ignore")))
       }
     }
   }
@@ -63,7 +63,7 @@ class SuiteMatrix extends PropSpec with ShouldMatchers with TableDrivenPropertyC
       forAll (examples) { suite =>
         val firstTestName = suite.theTestNames(0)
         val secondTestName = suite.theTestNames(1)
-        suite.tags should be (Map(firstTestName -> Set("org.scalatest.Ignore"), secondTestName -> Set("org.scalatest.Ignore")))
+        suite.testTags should be (Map(firstTestName -> Set("org.scalatest.Ignore"), secondTestName -> Set("org.scalatest.Ignore")))
       }
     }
   }
@@ -74,7 +74,7 @@ class SuiteMatrix extends PropSpec with ShouldMatchers with TableDrivenPropertyC
       forAll (examples) { suite =>
         val firstTestName = suite.theTestNames(0)
         val secondTestName = suite.theTestNames(1)
-        suite.tags should be (
+        suite.testTags should be (
           Map(
             firstTestName -> Set("org.scalatest.SlowAsMolasses"),
             secondTestName -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")
@@ -90,7 +90,7 @@ class SuiteMatrix extends PropSpec with ShouldMatchers with TableDrivenPropertyC
       forAll (examples) { suite =>
         val firstTestName = suite.theTestNames(0)
         val secondTestName = suite.theTestNames(1)
-        suite.tags should be (
+        suite.testTags should be (
           Map(
             firstTestName -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"),
             secondTestName -> Set("org.scalatest.SlowAsMolasses")

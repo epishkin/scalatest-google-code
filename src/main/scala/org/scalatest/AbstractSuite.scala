@@ -161,6 +161,12 @@ trait AbstractSuite { this: Suite =>
   def nestedSuites: List[Suite]
 
   /**
+   * This method has been deprecated and will be replaced by testTags, subclasses should implement testTags.
+   */
+  @deprecated("Please use testTags instead.")
+  def tags: Map[String, Set[String]]
+  
+  /**
    * A <code>Map</code> whose keys are <code>String</code> tag names with which tests in this <code>Suite</code> are marked, and
    * whose values are the <code>Set</code> of test names marked with each tag.  If this <code>Suite</code> contains no tags, this
    * method returns an empty <code>Map</code>.
@@ -171,7 +177,17 @@ trait AbstractSuite { this: Suite =>
    * returned <code>Map</code>.
    * </p>
    */
-  def tags: Map[String, Set[String]]
+  def testTags: Map[String, Set[String]]
+  
+  /**
+   * A <code>Set</code> of tag names which this <code>Suite</code> are marked.  If this <code>Suite</code> contains no tags, this 
+   * method returns an empty <code>Set</code>.
+   * 
+   * <p>
+   * Subclasses may implement this method to define and/or discover tags in a custom manner.
+   * </p>
+   */
+  def suiteTags: Set[String]
 
   /**
    * The total number of tests that are expected to run when this <code>Suite</code>'s <code>run</code> method is invoked.

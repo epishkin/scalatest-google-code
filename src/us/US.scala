@@ -34,7 +34,7 @@ trait StateSuite extends Suite {
 
   override def testNames: Set[String] = allTestNames.take(testCounts(simpleName)).toSet
 
-  override def tags: Map[String, Set[String]] = Map()
+  override def testTags: Map[String, Set[String]] = Map()
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
     configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {

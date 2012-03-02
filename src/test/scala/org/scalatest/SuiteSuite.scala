@@ -27,7 +27,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     }
     assert(a.expectedTestCount(Filter()) === 1)
     val tnResult: Set[String] = a.testNames
-    val gResult: Map[String, Set[String]] = a.tags
+    val gResult: Map[String, Set[String]] = a.testTags
     assert(tnResult.size === 1)
     assert(gResult.keySet.size === 0)
   }
@@ -37,7 +37,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     val a = new Suite {
       def testNotInAGroup() = ()
     }
-    assert(a.tags.keySet.size === 0)
+    assert(a.testTags.keySet.size === 0)
   }
 
   def testThatTestMethodsThatReturnNonUnitAreDiscovered() {
@@ -47,7 +47,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     }
     assert(a.expectedTestCount(Filter()) === 2)
     assert(a.testNames.size === 2)
-    assert(a.tags.keySet.size === 0)
+    assert(a.testTags.keySet.size === 0)
   }
 
   def testThatOverloadedTestMethodsAreDiscovered() {
@@ -57,7 +57,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     }
     assert(a.expectedTestCount(Filter()) === 2)
     assert(a.testNames.size === 2)
-    assert(a.tags.keySet.size === 0)
+    assert(a.testTags.keySet.size === 0)
   }
 
   def testThatInterceptCatchesSubtypes() {
@@ -406,6 +406,18 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
         case _ =>
       }
     }
+  }
+  
+  def testSuiteTags() {
+    class NoTagSuite extends Suite {}
+    @SlowAsMolasses
+    class TagSuite extends Suite {}
+    
+    val noTagSuite = new NoTagSuite
+    assert(noTagSuite.suiteTags == Set.empty)
+    val tagSuite = new TagSuite
+    assert(tagSuite.suiteTags.size == 1)
+    assert(tagSuite.suiteTags.toList(0) == classOf[SlowAsMolasses].getName)
   }
 }
 
