@@ -27,7 +27,7 @@ import Filter.IgnoreTag
  * @throws NullPointerException if either <code>tagsToInclude</code> or <code>tagsToExclude</code> are null
  * @throws IllegalArgumentException if <code>tagsToInclude</code> is defined, but contains an empty set
  */
-final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Set[String], val includeNestedSuites: Boolean = true, val dynaTags: DynaTags = DynaTags(Set.empty, Map.empty)) extends Function2[Set[String], Map[String, Set[String]], List[(String, Boolean)]] {
+final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Set[String], val includeNestedSuites: Boolean = true, val dynaTags: DynaTags = DynaTags(Map.empty, Map.empty)) extends Function2[Set[String], Map[String, Set[String]], List[(String, Boolean)]] {
 
   if (tagsToInclude == null)
     throw new NullPointerException("tagsToInclude was null")
@@ -90,6 +90,7 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
    *
    * @throws IllegalArgumentException if any set contained in the passed <code>tags</code> map is empty
    */
+  @deprecated("Please use the apply method that takes a suiteId instead, the one with this signature: def apply(testNames: Set[String], testTags: Map[String, Set[String]], suiteId: String): List[(String, Boolean)]")
   def apply(testNames: Set[String], tags: Map[String, Set[String]]): List[(String, Boolean)] = {
 
     verifyPreconditionsForMethods(testNames, tags)
@@ -106,8 +107,8 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
     filtered
   }
   
-  def apply(testNames: Set[String], tags: Map[String, Set[String]], suiteId: String): List[(String, Boolean)] = {
-    apply(testNames, tags)
+  def apply(testNames: Set[String], testTags: Map[String, Set[String]], suiteId: String): List[(String, Boolean)] = {
+    apply(testNames, testTags)
   }
 
   /**
@@ -141,6 +142,7 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
    *
    * @throws IllegalArgumentException if any set contained in the passed <code>tags</code> map is empty
    */
+  @deprecated("Please use the apply method that takes a suiteId instead, the one with this signature: def apply(testName: String, testTags: Map[String, Set[String]], suiteId: String): (Boolean, Boolean)")
   def apply(testName: String, tags: Map[String, Set[String]]): (Boolean, Boolean) = {
     val list = apply(Set(testName), tags)
     if (list.isEmpty)
@@ -149,8 +151,8 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
       (false, list.head._2)
   }
   
-  def apply(testName: String, tags: Map[String, Set[String]], suiteId: String): (Boolean, Boolean) = {
-    apply(testName, tags)
+  def apply(testName: String, testTags: Map[String, Set[String]], suiteId: String): (Boolean, Boolean) = {
+    apply(testName, testTags)
   }
 
   /**
@@ -169,6 +171,7 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
    *
    * @throws IllegalArgumentException if any set contained in the passed <code>tags</code> map is empty
    */
+  @deprecated("Please use the runnableTestCount method that takes a suiteId instead, the one with this signature: def runnableTestCount(testNames: Set[String], testTags: Map[String, Set[String]], suiteId: String): Int")
   def runnableTestCount(testNames: Set[String], tags: Map[String, Set[String]]): Int = {
 
     verifyPreconditionsForMethods(testNames, tags)
@@ -181,6 +184,43 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
       } yield testName
 
     runnableTests.size
+  }
+
+  def runnableTestCount(testNames: Set[String], testTags: Map[String, Set[String]], suiteId: String): Int = {
+    runnableTestCount(testNames, testTags)
+  }
+
+  // pair._1 is filterSuite and pair._1 is ignoreSuite
+   /**
+   * <pre class="stHighlight">
+   * val (filterSuite, ignoreSuite) = filter(suite)
+   * if (!filterSuite)
+   *   if (ignoreSuite)
+   *     // ignore the Suite
+   *     fireSuiteIgnored(suite, ...
+   *   else
+   *     // execute the Suite
+   *     suite.run(...
+   * </pre>
+   */
+  def apply(suite: Suite): (Boolean, Boolean) = {
+    (false, false)
+  }
+
+  // The boolean is ignoreSuite
+  /*
+   * <pre class="stHighlight">
+   * for ((suite, ignoreSuite) <- filter(nestedSuites))
+   *   if (ignoreSuite)
+   *     // ignore the Suite
+   *     fireSuiteIgnored(...
+   *   else
+   *     // execute the Suite
+   *     suite.run(...
+   * </pre>
+   */
+  def apply(suites: List[Suite]): List[(Suite, Boolean)] = {
+    List.empty
   }
 }
 
