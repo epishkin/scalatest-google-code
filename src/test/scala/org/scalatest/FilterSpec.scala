@@ -321,7 +321,7 @@ class FilterSpec extends FunSpec {
     
     it("should have default value of empty Set for suiteTags and empty Map for testTags") {
       val filter = new Filter(Some(Set("SlowAsMolasses")), Set[String]())
-      assert(filter.dynaTags.suiteTags == Set.empty)
+      assert(filter.dynaTags.suiteTags == Map.empty)
       assert(filter.dynaTags.testTags == Map.empty)
     }
     
